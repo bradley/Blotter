@@ -1,0 +1,2 @@
+var bar;
+var foo;

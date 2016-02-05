@@ -1,0 +1,1 @@
+var blotter_vendors = ["ms", "moz", "webkit", "o"];

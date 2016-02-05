@@ -1,0 +1,29 @@
+{
+  "name": "blotter",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [
+    "lsd",
+    "acid",
+    "webgl",
+    "tripping",
+    "canvas",
+    "animation",
+    "substances"
+  ],
+  "homepage": "",
+  "author": {
+    "name": "Bradley Griffith",
+    "url": "http://bradley.computer"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bradley/blotter.git"
+  },
+  "main": "blotter.js",
+  "devDependencies": {
+    "smash": "0.0",
+    "uglify-js": "2.6.1"
+  },
+  "license": "BSD-3-Clause"
+}
