@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+	<head>
+	  <meta charset="utf-8">
+	  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-beta1/jquery.js"></script>
+	  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+	  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r74/three.js"></script>
+	  <script type="text/javascript" src="../blotter.js"></script>
+	</head>
+	<body>
+		<div class="canvas-region"></div>
+
+	  <script>
+	  	$(document).ready(function() {
+	  		var $canvasRegion = $(".canvas-region");
+
+				var texts = ["To", "communicate", "Mars", "converse", "spirits", "report", "the", "behaviour", "of", "sea", "monster", "Describe", "horoscope", "haruspicate", "or", "scry", "Observe", "disease", "in", "signatures", "evoke", "Biography", "from", "wrinkles", "palm", "And", "tragedy", "fingers", "release", "omens", "By", "sortilege", "tea", "leaves", "riddle", "inevitable", "With", "playing", "cards", "fiddle", "pentagrams", "Or", "barbituric", "acids", "dissect", 'Sed', 'To', 'communicate', 'Mars', 'converse', 'spirits', 'report', 'the', 'behaviour', 'of', 'sea', 'monster', 'Describe', 'horoscope', 'haruspicate', 'or', 'scry', 'Observe', 'disease', 'in', 'signatures', 'evoke', 'Biography', 'from', 'wrinkles', 'palm', 'And', 'tragedy', 'fingers', 'release', 'omens', 'By', 'sortilege', 'tea', 'leaves', 'riddle', 'inevitable', 'With', 'playing', 'cards', 'fiddle', 'pentagrams', 'Or', 'barbituric', 'acids', 'dissect', 'Sed', 'tincidunt', 'tempor', 'consectetur.', 'Cras', 'imperdiet', 'suscipit', 'massa,', 'ut', 'malesuada', 'enim', 'sollicitudin', 'in.', 'Nullam', 'cursus,', 'lorem', 'vitae', 'cursus', 'gravida,', 'erat'];
+
+			  var stylingOptions = {
+			    fontFamily: "Charcoal,sans-serif",
+				  fontSize: "12px",
+				  padding: "12px 17px",
+				  lineHeight: 1.5,
+				  fillStyle: "#0d0f17"
+			  };
+
+			  var textDescriptor = new BLOTTER.TextDescription(stylingOptions);
+
+			  var renderer = new BLOTTER.MappedRenderer($(".canvas-region"), textDescriptor, texts);
+			  renderer.build(function() {
+			  	renderer.start();
+			  });
+	  	});
+	  </script>
+	</body>
+</html>

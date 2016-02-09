@@ -1,5 +1,6 @@
 VENDOR_FILES = \
-	lib/packer/packer.growing.js
+	lib/packer/packer.growing.js \
+	lib/detector/Detector.js
 
 GENERATED_FILES = \
 	blotter.js \

@@ -8,7 +8,6 @@ var blotter_TextureMapper = function (textDescriber, texts) {
 
 blotter_TextureMapper.prototype = {
 	init: function(textDescriber, texts) {
-
     if (!(textDescriber instanceof BLOTTER.TextDescription)) {
       blotter_error("blotter_textureMapper", "second argument must be of type Blotter.TextDescription");
     }
@@ -43,7 +42,7 @@ blotter_TextureMapper.prototype = {
     	texts = [texts];
     }
 
-    for (var i = 0; i < texts.length; texts++) {
+    for (var i = 0; i < texts.length; i++) {
       eachCallback.apply(this, [texts[i]])
     }
 
@@ -114,7 +113,6 @@ blotter_TextureMapper.prototype = {
       	nearest = next;
       }
     }
-
     return nearest;
   },
 

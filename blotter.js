@@ -143,8 +143,85 @@ GrowingPacker.prototype = {
   }
 
 }
-!function() {
-  var blotter = {
+/**
+ * @author alteredq / http://alteredqualia.com/
+ * @author mr.doob / http://mrdoob.com/
+ */
+
+var Detector = {
+
+	canvas: !! window.CanvasRenderingContext2D,
+	webgl: ( function () {
+
+		try {
+
+			var canvas = document.createElement( 'canvas' ); return !! ( window.WebGLRenderingContext && ( canvas.getContext( 'webgl' ) || canvas.getContext( 'experimental-webgl' ) ) );
+
+		} catch ( e ) {
+
+			return false;
+
+		}
+
+	} )(),
+	workers: !! window.Worker,
+	fileapi: window.File && window.FileReader && window.FileList && window.Blob,
+
+	getWebGLErrorMessage: function () {
+
+		var element = document.createElement( 'div' );
+		element.id = 'webgl-error-message';
+		element.style.fontFamily = 'monospace';
+		element.style.fontSize = '13px';
+		element.style.fontWeight = 'normal';
+		element.style.textAlign = 'center';
+		element.style.background = '#fff';
+		element.style.color = '#000';
+		element.style.padding = '1.5em';
+		element.style.width = '400px';
+		element.style.margin = '5em auto 0';
+
+		if ( ! this.webgl ) {
+
+			element.innerHTML = window.WebGLRenderingContext ? [
+				'Your graphics card does not seem to support <a href="http://khronos.org/webgl/wiki/Getting_a_WebGL_Implementation" style="color:#000">WebGL</a>.<br />',
+				'Find out how to get it <a href="http://get.webgl.org/" style="color:#000">here</a>.'
+			].join( '\n' ) : [
+				'Your browser does not seem to support <a href="http://khronos.org/webgl/wiki/Getting_a_WebGL_Implementation" style="color:#000">WebGL</a>.<br/>',
+				'Find out how to get it <a href="http://get.webgl.org/" style="color:#000">here</a>.'
+			].join( '\n' );
+
+		}
+
+		return element;
+
+	},
+
+	addGetWebGLMessage: function ( parameters ) {
+
+		var parent, id, element;
+
+		parameters = parameters || {};
+
+		parent = parameters.parent !== undefined ? parameters.parent : document.body;
+		id = parameters.id !== undefined ? parameters.id : 'oldie';
+
+		element = Detector.getWebGLErrorMessage();
+		element.id = id;
+
+		parent.appendChild( element );
+
+	}
+
+};
+
+// browserify support
+if ( typeof module === 'object' ) {
+
+	module.exports = Detector;
+
+}!function() {
+  var BLOTTER = {
     version: "1.0.0"
   };
   var blotter_vendors = [ "ms", "moz", "webkit", "o" ];
@@ -191,9 +268,12 @@ GrowingPacker.prototype = {
     console.error(domain + ": " + message);
   };
   BLOTTER.TextDescription = function(options) {
-    function extractPaddingValues() {
+    this.init.apply(this, arguments);
+  };
+  BLOTTER.TextDescription.prototype = function() {
+    function extractPaddingValues(paddingStr) {
       var extractedPaddingValues = [ 0, 0, 0, 0 ];
-      var paddingSettings = (options.padding || "").match(/\d+\w*/);
+      var paddingSettings = (paddingStr || "").match(/\d+\w*/);
       if (paddingSettings) {
         paddingSettings = paddingSettings.slice(0, 4);
         switch (paddingSettings.length) {
@@ -220,22 +300,33 @@ GrowingPacker.prototype = {
       }
       return extractedPaddingValues;
     }
-    var paddings = extractPaddingValues();
-    options.paddingTop = options.paddingTop || paddings[0];
-    options.paddingRight = options.paddingRight || paddings[1];
-    options.paddingBottom = options.paddingBottom || paddings[2];
-    options.paddingLeft = options.paddingLeft || paddings[3];
+    function extractFloatValue(s) {
+      var v = 0;
+      if (s) {
+        if (typeof s === "string" || s instanceof String) {
+          var match = s.match(/\d+/);
+          if (match) {
+            s = match[0];
+          }
+        }
+        v = parseFloat(s);
+      }
+      return v;
+    }
     return {
-      fontFamily: options.fontFamily,
-      fontSize: options.fontSize,
-      paddingTop: options.paddingTop,
-      paddingRight: options.paddingRight,
-      paddingBottom: options.paddingBottom,
-      paddingLeft: options.paddingLeft,
-      lineHeight: options.lineHeight,
-      fillStyle: options.color
+      init: function(options) {
+        var paddings = extractPaddingValues(options.padding), lineHeight = extractFloatValue(options.lineHeight);
+        this.fontFamily = options.fontFamily;
+        this.fontSize = options.fontSize;
+        this.paddingTop = extractFloatValue(options.paddingTop || paddings[0]);
+        this.paddingRight = extractFloatValue(options.paddingRight || paddings[1]);
+        this.paddingBottom = extractFloatValue(options.paddingBottom || paddings[2]);
+        this.paddingLeft = extractFloatValue(options.paddingLeft || paddings[3]);
+        this.lineHeight = extractFloatValue(options.lineHeight);
+        this.fillStyle = options.color;
+      }
     };
-  };
+  }();
   blotter_getTextSize = function(textStr, fontFamily, fontSize) {
     var tempText = document.createElement("p"), size;
     tempText.innerHTML = textStr;
@@ -283,7 +374,7 @@ GrowingPacker.prototype = {
       if (typeof texts === "string" || texts instanceof String) {
         texts = [ texts ];
       }
-      for (var i = 0; i < texts.length; texts++) {
+      for (var i = 0; i < texts.length; i++) {
         eachCallback.apply(this, [ texts[i] ]);
       }
       this.textsKeys = Object.keys(this.texts);
@@ -345,103 +436,72 @@ GrowingPacker.prototype = {
       return this.getCanvas().toDataURL();
     }
   };
-  var texts = [ "To", "communicate", "Mars", "converse", "spirits", "report", "the", "behaviour", "of", "sea", "monster", "Describe", "horoscope", "haruspicate", "or", "scry", "Observe", "disease", "in", "signatures", "evoke", "Biography", "from", "wrinkles", "palm", "And", "tragedy", "fingers", "release", "omens", "By", "sortilege", "tea", "leaves", "riddle", "inevitable", "With", "playing", "cards", "fiddle", "pentagrams", "Or", "barbituric", "acids", "dissect", "Sed", "To", "communicate", "Mars", "converse", "spirits", "report", "the", "behaviour", "of", "sea", "monster", "Describe", "horoscope", "haruspicate", "or", "scry", "Observe", "disease", "in", "signatures", "evoke", "Biography", "from", "wrinkles", "palm", "And", "tragedy", "fingers", "release", "omens", "By", "sortilege", "tea", "leaves", "riddle", "inevitable", "With", "playing", "cards", "fiddle", "pentagrams", "Or", "barbituric", "acids", "dissect", "Sed", "tincidunt", "tempor", "consectetur.", "Cras", "imperdiet", "suscipit", "massa,", "ut", "malesuada", "enim", "sollicitudin", "in.", "Nullam", "cursus,", "lorem", "vitae", "cursus", "gravida,", "erat" ];
-  var fragmentSrc = [ "precision highp float;", "uniform sampler2D uSampler;", "uniform sampler2D spriteIndices;", "uniform sampler2D spriteDataTexture;", "uniform sampler2D centerPointsTexture;", "uniform float uTime;", "uniform float canvasWidth;", "uniform float canvasHeight;", "uniform float lenseWeight;", "varying vec2 vTexCoord;", "void main(void) {", "   vec2 aspect = vec2(canvasWidth, canvasHeight).xy;", "   vec4 spriteIndexData = texture2D(spriteIndices, vTexCoord);", "   float spriteIndex = spriteIndexData.x;// 0.6230769230769231;", "   vec4 spriteData = texture2D(spriteDataTexture, vec2(spriteIndex, 0.5));", "   // p = x, y percentage for texel position within of total resolution", "   vec2 p = (gl_FragCoord.xy - spriteData.rg) / spriteData.ba;", "   // m = x, y percentage for center position within total resolution", "   // note: you should know this, but swizzling allows access to vecN data using x,y,z, and w (or r, g, b, and a) in that order.", "   vec4 centerPointsData = texture2D(centerPointsTexture, vec2(spriteIndex, 0.5));", "   vec2 m = centerPointsData.xy;", "   //vec2 m = vec2(0.5);", "   // d = difference between p and m (obviously, but see above).", "   vec2 d = p - m;", "   // The dot function returns the dot product of the two", "   // input parameters, i.e. the sum of the component-wise", "   // products. If x and y are the same the square root of", "   // the dot product is equivalent to the length of the vector.", "   // Therefore, r = length of vector represented by d (the ", "   // distance of the texel from center position).", "   // In order to apply weights here, we add our weight to this distance", "   // (pushing it closer to 1 - essentially giving no effect at all) and", "   // find the min between our weighted distance and 1.0", "   float inverseLenseWeight = 1.0 - lenseWeight;", "   float r = min(sqrt(dot(d, d)) + inverseLenseWeight, 1.0);", "   vec2 offsetUV = m + (d * r);", "   vec2 adjustedFragCoord = spriteData.rg + vec2((spriteData.b * offsetUV.x), (spriteData.a * offsetUV.y));", "   //adjustedFragCoord.x = clamp(adjustedFragCoord.x, spriteData.r, (spriteData.r + spriteData.b));", "   //adjustedFragCoord.y = clamp(adjustedFragCoord.y, spriteData.g, (spriteData.g + spriteData.a));", "   vec2 uv = adjustedFragCoord.xy / aspect;", "   // RGB shift", "   vec2 offset = vec2(0.0);", "   if (r < 1.0) {", "     float amount = 0.0013;", "     float angle = 0.45;", "     offset = (amount * (1.0 - r)) * vec2(cos(angle), sin(angle));", "   }", "   vec4 cr = texture2D(uSampler, (uv + offset));", "   vec4 cga = texture2D(uSampler, uv);", "   vec4 cb = texture2D(uSampler, (uv - offset));", "   vec4 outColor = vec4(0.0);", "   if (cr.r > 0.0 || cga.g > 0.0 || cb.b > 0.0) {", "     // Adjust rgb values so that colors with transparency appear as if they were atop an opaque white background.", "     // (vec4(0.0, 0.0, 0.0, 0.5) _atop white_ is visibly the same as vec4(0.5, 0.5, 0.5, 0.0))", "     if (cr.a != 0.0) {", "       cr.r = cr.r + cr.a;", "     }", "     if (cga.a != 0.0) {", "       cga.g = cga.g + cga.a;", "     }", "     if (cb.b != 0.0) {", "       cb.b = cb.b + cb.a;", "     }", "     // Ensure offseted/shifted texels have alpha similar to the texel they are offsetting", "     // (this prevents texel from being invisible if cga.a = vec4(0.0, 0.0, 0.0, 0.0)", "     cga.a = max(cga.a, max(cr.a, cb.a));", "     // Set alpha adjustment value so that white texels keep their transparency.", "   	float alpha = 1.0 - cga.a;", "     // Invert colors (this is cheating but optimal) so that we have CMYK rather than RGB", "     // shifted colors and the combination of offsets creates a blacker rather than whiter color.", "     outColor = vec4((1.0 - cr.r) - alpha, (1.0 - cga.g) - alpha, (1.0 - cb.b) - alpha, cga.a);", "   }", "   else {", "     outColor = vec4(cr.r, cga.g, cb.b, cga.a);", "   }", "   // Multiply alpha by original spriteIndexData's alpha value.", "   // this will be 0 for texels not within any 'sprite' area.", "   outColor.a = outColor.a * spriteIndexData.a;", "   gl_FragColor = outColor;", "}" ].join("\n");
+  var fragmentSrc = [ "precision highp float;", "uniform sampler2D uSampler;", "uniform sampler2D spriteIndices;", "uniform sampler2D spriteDataTexture;", "uniform float uTime;", "uniform float canvasWidth;", "uniform float canvasHeight;", "uniform float lenseWeight;", "varying vec2 vTexCoord;", "void main(void) {", "   vec2 aspect = vec2(canvasWidth, canvasHeight).xy;", "   vec4 spriteIndexData = texture2D(spriteIndices, vTexCoord);", "   float spriteIndex = spriteIndexData.x;// 0.6230769230769231;", "   vec4 spriteData = texture2D(spriteDataTexture, vec2(spriteIndex, 0.5));", "   // p = x, y percentage for texel position within of total resolution", "   vec2 p = (gl_FragCoord.xy - spriteData.rg) / spriteData.ba;", "   // m = x, y percentage for center position within total resolution", "   // note: you should know this, but swizzling allows access to vecN data using x,y,z, and w (or r, g, b, and a) in that order.", "   //vec4 centerPointsData = texture2D(centerPointsTexture, vec2(spriteIndex, 0.5));", "   //vec2 m = centerPointsData.xy;", "   vec2 m = vec2(0.5);", "   // d = difference between p and m (obviously, but see above).", "   vec2 d = p - m;", "   // The dot function returns the dot product of the two", "   // input parameters, i.e. the sum of the component-wise", "   // products. If x and y are the same the square root of", "   // the dot product is equivalent to the length of the vector.", "   // Therefore, r = length of vector represented by d (the ", "   // distance of the texel from center position).", "   // In order to apply weights here, we add our weight to this distance", "   // (pushing it closer to 1 - essentially giving no effect at all) and", "   // find the min between our weighted distance and 1.0", "   float inverseLenseWeight = 1.0 - lenseWeight;", "   float r = min(sqrt(dot(d, d)) + inverseLenseWeight, 1.0);", "   vec2 offsetUV = m + (d * r);", "   vec2 adjustedFragCoord = spriteData.rg + vec2((spriteData.b * offsetUV.x), (spriteData.a * offsetUV.y));", "   //adjustedFragCoord.x = clamp(adjustedFragCoord.x, spriteData.r, (spriteData.r + spriteData.b));", "   //adjustedFragCoord.y = clamp(adjustedFragCoord.y, spriteData.g, (spriteData.g + spriteData.a));", "   vec2 uv = adjustedFragCoord.xy / aspect;", "   // RGB shift", "   vec2 offset = vec2(0.0);", "   if (r < 1.0) {", "     float amount = 0.0013;", "     float angle = 0.45;", "     offset = (amount * (1.0 - r)) * vec2(cos(angle), sin(angle));", "   }", "   vec4 cr = texture2D(uSampler, (uv + offset));", "   vec4 cga = texture2D(uSampler, uv);", "   vec4 cb = texture2D(uSampler, (uv - offset));", "   vec4 outColor = vec4(0.0);", "   if (cr.r > 0.0 || cga.g > 0.0 || cb.b > 0.0) {", "     // Adjust rgb values so that colors with transparency appear as if they were atop an opaque white background.", "     // (vec4(0.0, 0.0, 0.0, 0.5) _atop white_ is visibly the same as vec4(0.5, 0.5, 0.5, 0.0))", "     if (cr.a != 0.0) {", "       cr.r = cr.r + cr.a;", "     }", "     if (cga.a != 0.0) {", "       cga.g = cga.g + cga.a;", "     }", "     if (cb.b != 0.0) {", "       cb.b = cb.b + cb.a;", "     }", "     // Ensure offseted/shifted texels have alpha similar to the texel they are offsetting", "     // (this prevents texel from being invisible if cga.a = vec4(0.0, 0.0, 0.0, 0.0)", "     cga.a = max(cga.a, max(cr.a, cb.a));", "     // Set alpha adjustment value so that white texels keep their transparency.", "   	float alpha = 1.0 - cga.a;", "     // Invert colors (this is cheating but optimal) so that we have CMYK rather than RGB", "     // shifted colors and the combination of offsets creates a blacker rather than whiter color.", "     outColor = vec4((1.0 - cr.r) - alpha, (1.0 - cga.g) - alpha, (1.0 - cb.b) - alpha, cga.a);", "   }", "   else {", "     outColor = vec4(cr.r, cga.g, cb.b, cga.a);", "   }", "   // Multiply alpha by original spriteIndexData's alpha value.", "   // this will be 0 for texels not within any 'sprite' area.", "   outColor.a = outColor.a * spriteIndexData.a;", "   gl_FragColor = outColor;", "}" ].join("\n");
   var vertexSrc = [ "varying vec2 vTexCoord;", "void main() {", "vTexCoord = uv;", "gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);", "}" ].join("\n");
-  var blotter_Renderer = function(textDescriber, texts) {
-    this.init.apply(this, arguments);
+  var blotter_allowedUserDefinedUniformTypes = [ "1f", "2f", "3f", "4f" ];
+  BLOTTER.MappedRenderer = function($canvasRegion, textDescriber, texts, options) {
+    this.init($canvasRegion, textDescriber, texts);
   };
-  blotter_Renderer.prototype = function() {
+  BLOTTER.MappedRenderer.prototype = function() {
     return {
-      init: function(textDescriber, texts) {
+      constructor: BLOTTER.MappedRenderer,
+      init: function($canvasRegion, textDescriber, texts, options) {
+        options = options || {};
+        this.$canvasRegion = $canvasRegion;
         this.textDescriber = textDescriber;
         this.mapper = this.createMapper(textDescriber, texts);
-        this.textKeys = this.mapper.textKeys;
-      },
-      prepare: function(callback) {
-        var loader = new THREE.TextureLoader();
-        loader.load(this.mapper.url, _.bind(function(texture) {
-          this.ratio = blotter_pixelRatio;
-          var adjustedWidth = this.mapper.width * this.ratio;
-          var adjustedHeight = this.mapper.height * this.ratio;
-          if (!Detector.webgl) {}
-          this.renderer = new THREE.WebGLRenderer({
-            antialias: true,
-            alpha: true
-          });
-          this.renderer.setSize(adjustedWidth, adjustedHeight);
-          this.scene = new THREE.Scene();
-          this.camera = new THREE.Camera();
-          this.geometry = new THREE.PlaneGeometry(2, 2, 0);
-          this.texture = texture;
-          this.texture.needsUpdate = true;
-          this.canvas = this.renderer.domElement;
-          $(this.canvas).css({
-            width: this.mapper.width,
-            height: this.mapper.height
-          });
-          $(this.canvas).attr({
-            width: adjustedWidth,
-            height: adjustedHeight
-          });
-          this.spriteIndicesTexture(_.bind(function(spriteIndicesTexture) {
-            this.spriteDataTexture(_.bind(function(spriteDataTexture) {
-              this.centerPointsTexture(_.bind(function(centerPointsTexture) {
-                this.uniforms = {
-                  uTime: {
-                    type: "f",
-                    value: 1
-                  },
-                  uSampler: {
-                    type: "t",
-                    value: this.texture
-                  },
-                  spriteIndices: {
-                    type: "t",
-                    value: spriteIndicesTexture
-                  },
-                  spriteDataTexture: {
-                    type: "t",
-                    value: spriteDataTexture
-                  },
-                  centerPointsTexture: {
-                    type: "t",
-                    value: centerPointsTexture
-                  },
-                  canvasWidth: {
-                    type: "f",
-                    value: this.canvas.width
-                  },
-                  canvasHeight: {
-                    type: "f",
-                    value: this.canvas.height
-                  },
-                  lenseWeight: {
-                    type: "f",
-                    value: .9
-                  }
-                };
-                this.material = new THREE.ShaderMaterial({
-                  vertexShader: vertexSrc,
-                  fragmentShader: fragmentSrc,
-                  uniforms: this.uniforms
-                });
-                this.material.depthTest = false;
-                this.material.depthWrite = false;
-                this.mesh = new THREE.Mesh(this.geometry, this.material);
-                this.scene.add(this.mesh);
-                callback();
-              }, this));
-            }, this));
-          }, this));
-        }, this));
+        this.userDefinedUniforms = options.uniforms || {};
+        this.textsKeys = this.mapper.textsKeys;
+        this.pixelRatio = blotter_pixelRatio();
+        this.ratioAdjustedWidth = this.mapper.width * this.pixelRatio;
+        this.ratioAdjustedHeight = this.mapper.height * this.pixelRatio;
       },
       createMapper: function(textDescriber, texts) {
-        if (!(textDescriber instanceof Blotter.TextDescription)) {
+        if (!(textDescriber instanceof BLOTTER.TextDescription)) {
           blotter_error("blotter_renderer", "first argument must be of type Blotter.TextDescription");
           return;
         }
         return new blotter_TextureMapper(textDescriber, texts);
+      },
+      build: function(callback) {
+        var self = this, loader = new THREE.TextureLoader(), url = this.mapper.getImage();
+        loader.load(url, function(textsTexture) {
+          if (!Detector.webgl) {
+            blotter_error("blotter_Renderer", "device does not support webgl");
+          }
+          self.renderer = new THREE.WebGLRenderer({
+            antialias: true,
+            alpha: true
+          });
+          self.renderer.setSize(self.ratioAdjustedWidth, self.ratioAdjustedHeight);
+          self.scene = new THREE.Scene();
+          self.camera = new THREE.Camera();
+          self.geometry = new THREE.PlaneGeometry(2, 2, 0);
+          self.textsTexture = textsTexture;
+          self.textsTexture.needsUpdate = true;
+          self.canvas = self.renderer.domElement;
+          $(self.canvas).css({
+            width: self.mapper.width,
+            height: self.mapper.height
+          });
+          $(self.canvas).attr({
+            width: self.ratioAdjustedWidth,
+            height: self.ratioAdjustedHeight
+          });
+          self.$canvasRegion.html(self.canvas);
+          self.materialUniforms(function(uniforms) {
+            self.material = new THREE.ShaderMaterial({
+              vertexShader: vertexSrc,
+              fragmentShader: fragmentSrc,
+              uniforms: uniforms
+            });
+            self.material.depthTest = false;
+            self.material.depthWrite = false;
+            self.mesh = new THREE.Mesh(self.geometry, self.material);
+            self.scene.add(self.mesh);
+            callback();
+          });
+        });
       },
       start: function() {
         this.lastDrawTime = Date.now();
@@ -492,42 +552,160 @@ GrowingPacker.prototype = {
         var data = new Float32Array(this.mapper.textsKeys.length * 4), i = 0;
         setTimeout(_.bind(function() {
           $.each(this.mapper.texts, _.bind(function(_, v) {
-            data[4 * i] = v.fit.x * this.ratio;
-            data[4 * i + 1] = this.canvas.height - (v.fit.y + v.h) * this.ratio;
-            data[4 * i + 2] = v.w * this.ratio;
-            data[4 * i + 3] = v.h * this.ratio;
+            data[4 * i] = v.fit.x * this.pixelRatio;
+            data[4 * i + 1] = this.canvas.height - (v.fit.y + v.h) * this.pixelRatio;
+            data[4 * i + 2] = v.w * this.pixelRatio;
+            data[4 * i + 3] = v.h * this.pixelRatio;
             i++;
           }, this));
           completion(data);
         }, this), 1);
       },
-      centerPointsTexture: function(callback) {
-        this.centerPointsArray(_.bind(function(centerPoints) {
-          var texture = new THREE.DataTexture(centerPoints, this.mapper.textsKeys.length, 1, THREE.RGBAFormat, THREE.FloatType);
-          texture.needsUpdate = true;
-          callback(texture);
+      materialUniforms: function(callback) {
+        var self = this, uniforms, userDefinedUniformTextures = this.uniformsForUserDefinedUniformValues();
+        this.spriteIndicesTexture(_.bind(function(spriteIndicesTexture) {
+          this.spriteDataTexture(_.bind(function(spriteDataTexture) {
+            uniforms = {
+              uTime: {
+                type: "f",
+                value: 1
+              },
+              uSampler: {
+                type: "t",
+                value: self.textsTexture
+              },
+              spriteIndices: {
+                type: "t",
+                value: spriteIndicesTexture
+              },
+              spriteDataTexture: {
+                type: "t",
+                value: spriteDataTexture
+              },
+              canvasWidth: {
+                type: "f",
+                value: self.canvas.width
+              },
+              canvasHeight: {
+                type: "f",
+                value: self.canvas.height
+              },
+              lenseWeight: {
+                type: "f",
+                value: .9
+              }
+            };
+            for (var uniformName in userDefinedUniformTextures) {
+              uniforms[uniformName] = userDefinedUniformTextures[uniformName];
+            }
+            callback(uniforms);
+          }, this));
         }, this));
       },
-      centerPointsArray: function(completion) {
-        var data = new Float32Array(this.mapper.textsKeys.length * 4), i = 0;
-        setTimeout(_.bind(function() {
-          $.each(this.mapper.texts, _.bind(function(_, v) {
-            var adjustedW = v.w, adjustedH = v.h;
-            data[4 * i] = this.randomNumberBetween(adjustedW / 2 - adjustedW / 4, adjustedW / 2 + adjustedW / 4) / adjustedW;
-            data[4 * i + 1] = this.randomNumberBetween(adjustedH / 2 - adjustedH / 7, adjustedH / 2 + adjustedH / 7) / adjustedH;
+      uniformTextureNameForUniformName: function(uniformName) {
+        return uniformName + "Texture";
+      },
+      uniformsForUserDefinedUniformValues: function() {
+        var uniforms = {};
+        this.textUniformValues = {};
+        for (var uniformName in this.userDefinedUniforms) {
+          if (this.userDefinedUniforms.hasOwnProperty(uniformName)) {
+            for (var i = 0; i < this.mapper.textsKeys.length; i++) {
+              var uniform = this.userDefinedUniforms[uniformName];
+              if (blotter_allowedUserDefinedUniformTypes.indexOf(uniform.type) == -1) {
+                blotter_error("blotter_Renderer", "user defined uniforms must be one of type: " + blotter_allowedUserDefinedUniformTypes.join(", "));
+                return;
+              }
+              if (!this.isValidValueForType(uniform.type, uniform.value)) {
+                blotter_error("blotter_Renderer", "user defined uniform value for " + uniformName + " is incorrect for type: " + uniform.type);
+                return;
+              }
+              this.textUniformValues[this.mapper.textsKeys[i]][uniformName] = uniform.value;
+            }
+          }
+          uniforms[this.uniformTextureNameForUniformName(uniformName)] = this.uniformTextureForUniformName(uniformName);
+        }
+        return uniforms;
+      },
+      updateUniformValueForText: function(text, uniformName, value) {
+        if (!this.textUniformValues[text]) {
+          blotter_error("blotter_Renderer", "cannot find text for updateUniformsForText");
+          return;
+        }
+        if (!this.textUniformValues[text][uniformName]) {
+          blotter_error("blotter_Renderer", "cannot find uniformName for updateUniformsForText");
+          return;
+        }
+        if (!this.isValidValueForType(this.userDefinedUniforms[uniformName].type, value)) {
+          blotter_error("blotter_Renderer", "user defined uniform value for " + uniformName + " is incorrect for type: " + this.userDefinedUniforms[uniformName].type);
+          return;
+        }
+        this.textUniformValues[text][uniformName] = value;
+        if (this.material) {
+          this.material.uniforms[this.uniformTextureNameForUniformName(uniformName)] = this.uniformTextureForUniformName(uniformName);
+        }
+      },
+      uniformTextureForUniformName: function(uniformName) {
+        var uniformDescription = this.userDefinedUniforms[uniformName], data = new Float32Array(this.mapper.textsKeys.length * 4);
+        if (!uniformDescription) blotter_error("blotter_Renderer", "cannot find uniformName for buildUniformTexture");
+        for (var i = 0; i < this.mapper.textsKeys.length; i++) {
+          var value = this.textUniformValues[this.mapper.textsKeys[i]][uniformName];
+          switch (uniformDescription.type) {
+           case "1f":
+            data[4 * i] = value;
+            data[4 * i + 1] = 0;
             data[4 * i + 2] = 0;
             data[4 * i + 3] = 0;
-            i++;
-          }, this));
-          completion(data);
-        }, this), 1);
+            break;
+
+           case "2f":
+            data[4 * i] = value[0];
+            data[4 * i + 1] = value[1];
+            data[4 * i + 2] = 0;
+            data[4 * i + 3] = 0;
+            break;
+
+           case "3f":
+            data[4 * i] = value[0];
+            data[4 * i + 1] = value[1];
+            data[4 * i + 2] = value[2];
+            data[4 * i + 3] = 0;
+            break;
+
+           case "4f":
+            data[4 * i] = value[0];
+            data[4 * i + 1] = value[1];
+            data[4 * i + 2] = value[2];
+            data[4 * i + 3] = value[3];
+            break;
+          }
+        }
+        var texture = new THREE.DataTexture(data, this.mapper.textsKeys.length, 1, THREE.RGBAFormat, THREE.FloatType);
+        texture.needsUpdate = true;
+        return texture;
       },
-      randomNumberBetween: function(a, b) {
-        return Math.random() * (b - a) + a;
+      isValidValueForType: function(type, value) {
+        var valid = false;
+        switch (type) {
+         case "1f":
+          valid = !isNaN(value);
+          break;
+
+         case "2f":
+          valid = Array.isArray(value) && value.length == 2;
+          break;
+
+         case "3f":
+          valid = Array.isArray(value) && value.length == 3;
+          break;
+
+         case "4f":
+          valid = Array.isArray(value) && value.length == 4;
+          break;
+        }
+        return valid;
       },
       loop: function() {
-        var delta = (Date.now() - this.lastDrawTime) / 1e3;
-        this.lastDrawTime = Date.now();
         this.renderer.render(this.scene, this.camera);
         this.currentAnimationLoop = blotter_requestAnimationFrame(_.bind(function() {
           this.loop();
@@ -546,5 +724,5 @@ GrowingPacker.prototype = {
       }
     };
   }();
-  this.blotter = blotter;
+  this.BLOTTER = BLOTTER;
 }();
