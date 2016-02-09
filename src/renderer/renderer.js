@@ -27,7 +27,7 @@ var fragmentSrc = [
   "   vec2 aspect = vec2(canvasWidth, canvasHeight).xy;",
 
   "   vec4 spriteIndexData = texture2D(spriteIndices, vTexCoord);",
-  "   float spriteIndex = spriteIndexData.x;// 0.6230769230769231;",
+  "   float spriteIndex = spriteIndexData.x;",
 
   "   vec4 spriteData = texture2D(spriteDataTexture, vec2(spriteIndex, 0.5));",
 
