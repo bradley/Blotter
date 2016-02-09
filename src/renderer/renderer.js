@@ -2,6 +2,7 @@ import "../core/";
 import "../messaging/";
 import "../canvas/";
 import "../text/";
+import "uniformTypes";
 
 
 var fragmentSrc = [
@@ -12,7 +13,7 @@ var fragmentSrc = [
   "uniform sampler2D spriteIndices;",
 
   "uniform sampler2D spriteDataTexture;",
-  //"uniform sampler2D centerPointsTexture;",
+  "uniform sampler2D centerPointTexture;",
 
   "uniform float uTime;",
   "uniform float canvasWidth;",
@@ -36,9 +37,9 @@ var fragmentSrc = [
 
   "   // m = x, y percentage for center position within total resolution",
   "   // note: you should know this, but swizzling allows access to vecN data using x,y,z, and w (or r, g, b, and a) in that order.",
-  "   //vec4 centerPointsData = texture2D(centerPointsTexture, vec2(spriteIndex, 0.5));",
-  "   //vec2 m = centerPointsData.xy;",
-  "   vec2 m = vec2(0.5);",
+  "   vec4 centerPointData = texture2D(centerPointTexture, vec2(spriteIndex, 0.5));",
+  "   vec2 m = centerPointData.xy;",
+  "   //vec2 m = vec2(0.5);",
 
   "   // d = difference between p and m (obviously, but see above).",
   "   vec2 d = p - m;",
@@ -127,10 +128,10 @@ var vertexSrc = [
 
 
 
-var blotter_allowedUserDefinedUniformTypes = ["1f", "2f", "3f", "4f"];
+
 
 BLOTTER.MappedRenderer = function($canvasRegion, textDescriber, texts, options) {
-  this.init($canvasRegion, textDescriber, texts);
+  this.init($canvasRegion, textDescriber, texts, options);
 }
 BLOTTER.MappedRenderer.prototype = (function() {
   return {
@@ -150,6 +151,9 @@ BLOTTER.MappedRenderer.prototype = (function() {
       this.pixelRatio = blotter_pixelRatio();// * 4;
       this.ratioAdjustedWidth = this.mapper.width * this.pixelRatio;
       this.ratioAdjustedHeight = this.mapper.height * this.pixelRatio;
+
+      // Setup text specific uniforms immediately.
+      this.setTextUniformValues();
     },
 
     createMapper : function(textDescriber, texts) {
@@ -332,6 +336,17 @@ BLOTTER.MappedRenderer.prototype = (function() {
 
     uniformsForUserDefinedUniformValues : function() {
       var uniforms = {};
+
+      for (var uniformName in this.userDefinedUniforms) {
+        uniforms[this.uniformTextureNameForUniformName(uniformName)] = {
+          value : this.uniformTextureForUniformName(uniformName),
+          type : "t"
+        }
+      }
+      return uniforms;
+    },
+
+    setTextUniformValues : function() {
       this.textUniformValues = {};
       for (var uniformName in this.userDefinedUniforms) {
         if (this.userDefinedUniforms.hasOwnProperty(uniformName)) {
@@ -347,16 +362,16 @@ BLOTTER.MappedRenderer.prototype = (function() {
               return;
             }
 
+            this.textUniformValues[this.mapper.textsKeys[i]] = this.textUniformValues[this.mapper.textsKeys[i]] || {};
             this.textUniformValues[this.mapper.textsKeys[i]][uniformName] = uniform.value;
           }
         }
-
-        uniforms[this.uniformTextureNameForUniformName(uniformName)] = this.uniformTextureForUniformName(uniformName);
       }
-      return uniforms;
     },
 
     updateUniformValueForText : function(text, uniformName, value) {
+      var self = this;
+
       if (!this.textUniformValues[text]) {
         blotter_error("blotter_Renderer", "cannot find text for updateUniformsForText");
         return;
@@ -374,7 +389,9 @@ BLOTTER.MappedRenderer.prototype = (function() {
       this.textUniformValues[text][uniformName] = value;
 
       if (this.material) {
-        this.material.uniforms[this.uniformTextureNameForUniformName(uniformName)] = this.uniformTextureForUniformName(uniformName);
+        setTimeout(function() {
+          this.material.uniforms[self.uniformTextureNameForUniformName(uniformName)] = this.uniformTextureForUniformName(uniformName);
+        }, 1);
       }
     },
 

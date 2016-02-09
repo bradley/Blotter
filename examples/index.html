@@ -26,7 +26,13 @@
 
 			  var textDescriptor = new BLOTTER.TextDescription(stylingOptions);
 
-			  var renderer = new BLOTTER.MappedRenderer($(".canvas-region"), textDescriptor, texts);
+			  var renderer = new BLOTTER.MappedRenderer($(".canvas-region"), textDescriptor, texts, {
+			  		uniforms : {
+			  			centerPoint : { type : "2f", value : [0.5, 0.5] }
+			  		}
+			  	});
+
+			  renderer.updateUniformValueForText("inevitable", "centerPoint", [0.3, 0.8]);
 			  renderer.build(function() {
 			  	renderer.start();
 			  });

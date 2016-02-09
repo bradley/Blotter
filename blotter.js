@@ -436,11 +436,11 @@ if ( typeof module === 'object' ) {
       return this.getCanvas().toDataURL();
     }
   };
-  var fragmentSrc = [ "precision highp float;", "uniform sampler2D uSampler;", "uniform sampler2D spriteIndices;", "uniform sampler2D spriteDataTexture;", "uniform float uTime;", "uniform float canvasWidth;", "uniform float canvasHeight;", "uniform float lenseWeight;", "varying vec2 vTexCoord;", "void main(void) {", "   vec2 aspect = vec2(canvasWidth, canvasHeight).xy;", "   vec4 spriteIndexData = texture2D(spriteIndices, vTexCoord);", "   float spriteIndex = spriteIndexData.x;", "   vec4 spriteData = texture2D(spriteDataTexture, vec2(spriteIndex, 0.5));", "   // p = x, y percentage for texel position within of total resolution", "   vec2 p = (gl_FragCoord.xy - spriteData.rg) / spriteData.ba;", "   // m = x, y percentage for center position within total resolution", "   // note: you should know this, but swizzling allows access to vecN data using x,y,z, and w (or r, g, b, and a) in that order.", "   //vec4 centerPointsData = texture2D(centerPointsTexture, vec2(spriteIndex, 0.5));", "   //vec2 m = centerPointsData.xy;", "   vec2 m = vec2(0.5);", "   // d = difference between p and m (obviously, but see above).", "   vec2 d = p - m;", "   // The dot function returns the dot product of the two", "   // input parameters, i.e. the sum of the component-wise", "   // products. If x and y are the same the square root of", "   // the dot product is equivalent to the length of the vector.", "   // Therefore, r = length of vector represented by d (the ", "   // distance of the texel from center position).", "   // In order to apply weights here, we add our weight to this distance", "   // (pushing it closer to 1 - essentially giving no effect at all) and", "   // find the min between our weighted distance and 1.0", "   float inverseLenseWeight = 1.0 - lenseWeight;", "   float r = min(sqrt(dot(d, d)) + inverseLenseWeight, 1.0);", "   vec2 offsetUV = m + (d * r);", "   vec2 adjustedFragCoord = spriteData.rg + vec2((spriteData.b * offsetUV.x), (spriteData.a * offsetUV.y));", "   //adjustedFragCoord.x = clamp(adjustedFragCoord.x, spriteData.r, (spriteData.r + spriteData.b));", "   //adjustedFragCoord.y = clamp(adjustedFragCoord.y, spriteData.g, (spriteData.g + spriteData.a));", "   vec2 uv = adjustedFragCoord.xy / aspect;", "   // RGB shift", "   vec2 offset = vec2(0.0);", "   if (r < 1.0) {", "     float amount = 0.0013;", "     float angle = 0.45;", "     offset = (amount * (1.0 - r)) * vec2(cos(angle), sin(angle));", "   }", "   vec4 cr = texture2D(uSampler, (uv + offset));", "   vec4 cga = texture2D(uSampler, uv);", "   vec4 cb = texture2D(uSampler, (uv - offset));", "   vec4 outColor = vec4(0.0);", "   if (cr.r > 0.0 || cga.g > 0.0 || cb.b > 0.0) {", "     // Adjust rgb values so that colors with transparency appear as if they were atop an opaque white background.", "     // (vec4(0.0, 0.0, 0.0, 0.5) _atop white_ is visibly the same as vec4(0.5, 0.5, 0.5, 0.0))", "     if (cr.a != 0.0) {", "       cr.r = cr.r + cr.a;", "     }", "     if (cga.a != 0.0) {", "       cga.g = cga.g + cga.a;", "     }", "     if (cb.b != 0.0) {", "       cb.b = cb.b + cb.a;", "     }", "     // Ensure offseted/shifted texels have alpha similar to the texel they are offsetting", "     // (this prevents texel from being invisible if cga.a = vec4(0.0, 0.0, 0.0, 0.0)", "     cga.a = max(cga.a, max(cr.a, cb.a));", "     // Set alpha adjustment value so that white texels keep their transparency.", "   	float alpha = 1.0 - cga.a;", "     // Invert colors (this is cheating but optimal) so that we have CMYK rather than RGB", "     // shifted colors and the combination of offsets creates a blacker rather than whiter color.", "     outColor = vec4((1.0 - cr.r) - alpha, (1.0 - cga.g) - alpha, (1.0 - cb.b) - alpha, cga.a);", "   }", "   else {", "     outColor = vec4(cr.r, cga.g, cb.b, cga.a);", "   }", "   // Multiply alpha by original spriteIndexData's alpha value.", "   // this will be 0 for texels not within any 'sprite' area.", "   outColor.a = outColor.a * spriteIndexData.a;", "   gl_FragColor = outColor;", "}" ].join("\n");
-  var vertexSrc = [ "varying vec2 vTexCoord;", "void main() {", "vTexCoord = uv;", "gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);", "}" ].join("\n");
   var blotter_allowedUserDefinedUniformTypes = [ "1f", "2f", "3f", "4f" ];
+  var fragmentSrc = [ "precision highp float;", "uniform sampler2D uSampler;", "uniform sampler2D spriteIndices;", "uniform sampler2D spriteDataTexture;", "uniform sampler2D centerPointTexture;", "uniform float uTime;", "uniform float canvasWidth;", "uniform float canvasHeight;", "uniform float lenseWeight;", "varying vec2 vTexCoord;", "void main(void) {", "   vec2 aspect = vec2(canvasWidth, canvasHeight).xy;", "   vec4 spriteIndexData = texture2D(spriteIndices, vTexCoord);", "   float spriteIndex = spriteIndexData.x;", "   vec4 spriteData = texture2D(spriteDataTexture, vec2(spriteIndex, 0.5));", "   // p = x, y percentage for texel position within of total resolution", "   vec2 p = (gl_FragCoord.xy - spriteData.rg) / spriteData.ba;", "   // m = x, y percentage for center position within total resolution", "   // note: you should know this, but swizzling allows access to vecN data using x,y,z, and w (or r, g, b, and a) in that order.", "   vec4 centerPointData = texture2D(centerPointTexture, vec2(spriteIndex, 0.5));", "   vec2 m = centerPointData.xy;", "   //vec2 m = vec2(0.5);", "   // d = difference between p and m (obviously, but see above).", "   vec2 d = p - m;", "   // The dot function returns the dot product of the two", "   // input parameters, i.e. the sum of the component-wise", "   // products. If x and y are the same the square root of", "   // the dot product is equivalent to the length of the vector.", "   // Therefore, r = length of vector represented by d (the ", "   // distance of the texel from center position).", "   // In order to apply weights here, we add our weight to this distance", "   // (pushing it closer to 1 - essentially giving no effect at all) and", "   // find the min between our weighted distance and 1.0", "   float inverseLenseWeight = 1.0 - lenseWeight;", "   float r = min(sqrt(dot(d, d)) + inverseLenseWeight, 1.0);", "   vec2 offsetUV = m + (d * r);", "   vec2 adjustedFragCoord = spriteData.rg + vec2((spriteData.b * offsetUV.x), (spriteData.a * offsetUV.y));", "   //adjustedFragCoord.x = clamp(adjustedFragCoord.x, spriteData.r, (spriteData.r + spriteData.b));", "   //adjustedFragCoord.y = clamp(adjustedFragCoord.y, spriteData.g, (spriteData.g + spriteData.a));", "   vec2 uv = adjustedFragCoord.xy / aspect;", "   // RGB shift", "   vec2 offset = vec2(0.0);", "   if (r < 1.0) {", "     float amount = 0.0013;", "     float angle = 0.45;", "     offset = (amount * (1.0 - r)) * vec2(cos(angle), sin(angle));", "   }", "   vec4 cr = texture2D(uSampler, (uv + offset));", "   vec4 cga = texture2D(uSampler, uv);", "   vec4 cb = texture2D(uSampler, (uv - offset));", "   vec4 outColor = vec4(0.0);", "   if (cr.r > 0.0 || cga.g > 0.0 || cb.b > 0.0) {", "     // Adjust rgb values so that colors with transparency appear as if they were atop an opaque white background.", "     // (vec4(0.0, 0.0, 0.0, 0.5) _atop white_ is visibly the same as vec4(0.5, 0.5, 0.5, 0.0))", "     if (cr.a != 0.0) {", "       cr.r = cr.r + cr.a;", "     }", "     if (cga.a != 0.0) {", "       cga.g = cga.g + cga.a;", "     }", "     if (cb.b != 0.0) {", "       cb.b = cb.b + cb.a;", "     }", "     // Ensure offseted/shifted texels have alpha similar to the texel they are offsetting", "     // (this prevents texel from being invisible if cga.a = vec4(0.0, 0.0, 0.0, 0.0)", "     cga.a = max(cga.a, max(cr.a, cb.a));", "     // Set alpha adjustment value so that white texels keep their transparency.", "   	float alpha = 1.0 - cga.a;", "     // Invert colors (this is cheating but optimal) so that we have CMYK rather than RGB", "     // shifted colors and the combination of offsets creates a blacker rather than whiter color.", "     outColor = vec4((1.0 - cr.r) - alpha, (1.0 - cga.g) - alpha, (1.0 - cb.b) - alpha, cga.a);", "   }", "   else {", "     outColor = vec4(cr.r, cga.g, cb.b, cga.a);", "   }", "   // Multiply alpha by original spriteIndexData's alpha value.", "   // this will be 0 for texels not within any 'sprite' area.", "   outColor.a = outColor.a * spriteIndexData.a;", "   gl_FragColor = outColor;", "}" ].join("\n");
+  var vertexSrc = [ "varying vec2 vTexCoord;", "void main() {", "vTexCoord = uv;", "gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);", "}" ].join("\n");
   BLOTTER.MappedRenderer = function($canvasRegion, textDescriber, texts, options) {
-    this.init($canvasRegion, textDescriber, texts);
+    this.init($canvasRegion, textDescriber, texts, options);
   };
   BLOTTER.MappedRenderer.prototype = function() {
     return {
@@ -455,6 +455,7 @@ if ( typeof module === 'object' ) {
         this.pixelRatio = blotter_pixelRatio();
         this.ratioAdjustedWidth = this.mapper.width * this.pixelRatio;
         this.ratioAdjustedHeight = this.mapper.height * this.pixelRatio;
+        this.setTextUniformValues();
       },
       createMapper: function(textDescriber, texts) {
         if (!(textDescriber instanceof BLOTTER.TextDescription)) {
@@ -607,6 +608,15 @@ if ( typeof module === 'object' ) {
       },
       uniformsForUserDefinedUniformValues: function() {
         var uniforms = {};
+        for (var uniformName in this.userDefinedUniforms) {
+          uniforms[this.uniformTextureNameForUniformName(uniformName)] = {
+            value: this.uniformTextureForUniformName(uniformName),
+            type: "t"
+          };
+        }
+        return uniforms;
+      },
+      setTextUniformValues: function() {
         this.textUniformValues = {};
         for (var uniformName in this.userDefinedUniforms) {
           if (this.userDefinedUniforms.hasOwnProperty(uniformName)) {
@@ -620,14 +630,14 @@ if ( typeof module === 'object' ) {
                 blotter_error("blotter_Renderer", "user defined uniform value for " + uniformName + " is incorrect for type: " + uniform.type);
                 return;
               }
+              this.textUniformValues[this.mapper.textsKeys[i]] = this.textUniformValues[this.mapper.textsKeys[i]] || {};
               this.textUniformValues[this.mapper.textsKeys[i]][uniformName] = uniform.value;
             }
           }
-          uniforms[this.uniformTextureNameForUniformName(uniformName)] = this.uniformTextureForUniformName(uniformName);
         }
-        return uniforms;
       },
       updateUniformValueForText: function(text, uniformName, value) {
+        var self = this;
         if (!this.textUniformValues[text]) {
           blotter_error("blotter_Renderer", "cannot find text for updateUniformsForText");
           return;
@@ -642,7 +652,9 @@ if ( typeof module === 'object' ) {
         }
         this.textUniformValues[text][uniformName] = value;
         if (this.material) {
-          this.material.uniforms[this.uniformTextureNameForUniformName(uniformName)] = this.uniformTextureForUniformName(uniformName);
+          setTimeout(function() {
+            this.material.uniforms[self.uniformTextureNameForUniformName(uniformName)] = this.uniformTextureForUniformName(uniformName);
+          }, 1);
         }
       },
       uniformTextureForUniformName: function(uniformName) {
