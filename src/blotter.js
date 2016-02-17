@@ -1,8 +1,7 @@
 import "start";
 
 import "core/";
-import "canvas/";
-import "messaging/";
+import "extras/";
 import "text/";
 import "renderer/";
 

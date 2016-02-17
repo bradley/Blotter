@@ -1,42 +1,79 @@
 <!doctype html>
 <html lang="en">
-	<head>
-	  <meta charset="utf-8">
-	  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-beta1/jquery.js"></script>
-	  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
-	  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r74/three.js"></script>
-	  <script type="text/javascript" src="../blotter.js"></script>
-	</head>
-	<body>
-		<div class="canvas-region"></div>
+  <head>
+    <meta charset="utf-8">
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-beta1/jquery.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r74/three.js"></script>
+    <script type="text/javascript" src="../blotter.min.js"></script>
+  </head>
+  <body>
+    <div class="canvas-region"></div>
 
-	  <script>
-	  	$(document).ready(function() {
-	  		var $canvasRegion = $(".canvas-region");
+    <canvas class="mouse-position-canvas" width="200" height="200"></canvas>
 
-				var texts = ["To", "communicate", "Mars", "converse", "spirits", "report", "the", "behaviour", "of", "sea", "monster", "Describe", "horoscope", "haruspicate", "or", "scry", "Observe", "disease", "in", "signatures", "evoke", "Biography", "from", "wrinkles", "palm", "And", "tragedy", "fingers", "release", "omens", "By", "sortilege", "tea", "leaves", "riddle", "inevitable", "With", "playing", "cards", "fiddle", "pentagrams", "Or", "barbituric", "acids", "dissect", 'Sed', 'To', 'communicate', 'Mars', 'converse', 'spirits', 'report', 'the', 'behaviour', 'of', 'sea', 'monster', 'Describe', 'horoscope', 'haruspicate', 'or', 'scry', 'Observe', 'disease', 'in', 'signatures', 'evoke', 'Biography', 'from', 'wrinkles', 'palm', 'And', 'tragedy', 'fingers', 'release', 'omens', 'By', 'sortilege', 'tea', 'leaves', 'riddle', 'inevitable', 'With', 'playing', 'cards', 'fiddle', 'pentagrams', 'Or', 'barbituric', 'acids', 'dissect', 'Sed', 'tincidunt', 'tempor', 'consectetur.', 'Cras', 'imperdiet', 'suscipit', 'massa,', 'ut', 'malesuada', 'enim', 'sollicitudin', 'in.', 'Nullam', 'cursus,', 'lorem', 'vitae', 'cursus', 'gravida,', 'erat'];
+    <script>
+      $(document).ready(function() {
 
-			  var stylingOptions = {
-			    fontFamily: "Charcoal,sans-serif",
-				  fontSize: "12px",
-				  padding: "12px 17px",
-				  lineHeight: 1.5,
-				  color: "#0d0f17"
-			  };
 
-			  var textDescriptor = new BLOTTER.TextDescription(stylingOptions);
+        /**
+        *   SET UP BLOTTER.
+        *   ------------------------------------------------------
+        */
 
-			  var renderer = new BLOTTER.MappedRenderer($(".canvas-region"), textDescriptor, texts, {
-			  		uniforms : {
-			  			centerPoint : { type : "2f", value : [0.5, 0.5] }
-			  		}
-			  	});
+        var texts = ["To", "communicate", "Mars", "converse", "spirits", "report", "the", "behaviour", "of", "sea", "monster", "Describe", "horoscope", "haruspicate", "or", "scry", "Observe", "disease", "in", "signatures", "evoke", "Biography", "from", "wrinkles", "palm", "And", "tragedy", "fingers", "release", "omens", "By", "sortilege", "tea", "leaves", "riddle", "inevitable", "With", "playing", "cards", "fiddle", "pentagrams", "Or", "barbituric", "acids", "dissect", 'Sed', 'To', 'communicate', 'Mars', 'converse', 'spirits', 'report', 'the', 'behaviour', 'of', 'sea', 'monster', 'Describe', 'horoscope', 'haruspicate', 'or', 'scry', 'Observe', 'disease', 'in', 'signatures', 'evoke', 'Biography', 'from', 'wrinkles', 'palm', 'And', 'tragedy', 'fingers', 'release', 'omens', 'By', 'sortilege', 'tea', 'leaves', 'riddle', 'inevitable', 'With', 'playing', 'cards', 'fiddle', 'pentagrams', 'Or', 'barbituric', 'acids', 'dissect', 'Sed', 'tincidunt', 'tempor', 'consectetur.', 'Cras', 'imperdiet', 'suscipit', 'massa,', 'ut', 'malesuada', 'enim', 'sollicitudin', 'in.', 'Nullam', 'cursus,', 'lorem', 'vitae', 'cursus', 'gravida,', 'erat'];
 
-			  renderer.updateUniformValueForText("inevitable", "centerPoint", [0.3, 0.8]);
-			  renderer.build(function() {
-			  	renderer.start();
-			  });
-	  	});
-	  </script>
-	</body>
+        var styleProperties = {
+          family: "Charcoal,sans-serif",
+          size: "12px",
+          paddingTop: 12,
+          paddingRight: 17,
+          paddingBottom: 12,
+          paddingLeft: 17,
+          lineHeight: 1.5,
+          fill: "#0d0f17"
+        };
+
+        var composer = new BLOTTER.Composer(texts, styleProperties, {
+          uniforms : {
+            centerPoint : { type : "2f", value : [0.5, 0.5] }
+          }
+        });
+
+        composer.build(function() {
+          $(".canvas-region").html(composer.renderer.domElement);
+          composer.start();
+        });
+
+
+
+
+        /**
+        *   STUFF FOR MOUSE POSITION FOR THIS EXAMPLE.
+        *   ------------------------------------------------------
+        */
+
+        var mousePositionCanvas = document.getElementsByClassName("mouse-position-canvas")[0],
+            ctx = mousePositionCanvas.getContext("2d");
+
+        mousePositionCanvas.style.border = "1px solid black";
+
+        function getMousePos(canvas, e) {
+          var rect = canvas.getBoundingClientRect();
+          return {
+            x: e.clientX - rect.left,
+            y: e.clientY - rect.top
+          };
+        }
+
+        mousePositionCanvas.addEventListener('mousemove', function(e) {
+          var mousePos = getMousePos(mousePositionCanvas, e),
+              nX = mousePos.x / mousePositionCanvas.width,
+              nY = 1.0 - (mousePos.y / mousePositionCanvas.height);
+
+          composer.updateUniformValueForText("inevitable", "centerPoint", [nX, nY]);
+        }, false);
+      });
+    </script>
+  </body>
 </html>

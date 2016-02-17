@@ -1,3 +1,1 @@
-import "description";
-import "size";
-import "map";
+import "_TextureMapper";

@@ -1,4 +1,6 @@
 VENDOR_FILES = \
+	lib/objectKeys.js \
+	lib/requestAnimationFrame.js \
 	lib/packer/packer.growing.js \
 	lib/detector/Detector.js
 

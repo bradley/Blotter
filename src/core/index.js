@@ -1,2 +1,1 @@
-import "vendor";
-import "animation";
+import "_VendorPrefixes";
