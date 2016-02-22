@@ -229,7 +229,7 @@ Blotter.Composer.prototype = (function() {
         indicesOffset = (1 / this.mapper.texts.length) / 2;
 
     setTimeout(function() {
-      for (i = 1; i < points.length / 4; i++) {
+      for (var i = 1; i < points.length / 4; i++) {
 
         var y = Math.ceil(i / (width - widthStepModifier)),
             x = i - ((width - widthStepModifier) * (y - 1)),
@@ -401,7 +401,7 @@ Blotter.Composer.prototype = (function() {
 
         _materialUniforms.call(self, function(uniforms) {
 
-          material = new THREE.ShaderMaterial({
+          var material = new THREE.ShaderMaterial({
             vertexShader: vertexSrc,
             fragmentShader: fragmentSrc,
             uniforms: uniforms

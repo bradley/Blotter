@@ -160,7 +160,8 @@ GrowingPacker.prototype = {
       down: this.root,
       right: { x: this.root.w, y: 0, w: w, h: this.root.h }
     };
-    if (node = this.findNode(this.root, w, h))
+    var node = this.findNode(this.root, w, h);
+    if (node)
       return this.splitNode(node, w, h);
     else
       return null;
@@ -176,7 +177,8 @@ GrowingPacker.prototype = {
       down:  { x: 0, y: this.root.h, w: this.root.w, h: h },
       right: this.root
     };
-    if (node = this.findNode(this.root, w, h))
+    var node = this.findNode(this.root, w, h);
+    if (node)
       return this.splitNode(node, w, h);
     else
       return null;
@@ -413,7 +415,6 @@ if ( typeof module === 'object' ) {
   };
   Blotter.Mapper.prototype = function() {
     function _updateTexts(texts, eachCallback) {
-      var self = this;
       if (!(texts instanceof Array)) {
         texts = [ texts ];
       }
@@ -428,7 +429,7 @@ if ( typeof module === 'object' ) {
     }
     function _determineTextsMapping() {
       var packer = new GrowingPacker(), tempTextsSizesArray = [];
-      for (textId in this.textsSizes) {
+      for (var textId in this.textsSizes) {
         var tempSizesObject = this.textsSizes[textId];
         tempSizesObject.referenceId = textId;
         tempTextsSizesArray.push(tempSizesObject);
@@ -492,8 +493,7 @@ if ( typeof module === 'object' ) {
         var canvas = blotter_CanvasUtils.hiDpiCanvas(this.width, this.height), ctx = canvas.getContext("2d");
         for (var i = 0; i < this.texts.length; i++) {
           var text = this.texts[i], size = this.textsSizes[text.id], lineHeightOffset = (size.h * text.properties.leading - size.h) / 2;
-          console.log("FIX NEXT LINE. DONT USE STATIC 12px!!!");
-          ctx.font = text.properties.style + " " + text.properties.weight + " " + "12px" + " " + text.properties.family;
+          ctx.font = text.properties.style + " " + text.properties.weight + " " + text.properties.size + "px " + text.properties.family;
           ctx.fillStyle = text.properties.fill;
           ctx.fillText(text.value, size.fit.x + text.properties.paddingLeft, size.fit.y + text.properties.paddingTop + lineHeightOffset);
         }
@@ -683,7 +683,7 @@ if ( typeof module === 'object' ) {
     function _spriteIndices(completion) {
       var self = this, height = this.mapper.height * this.fidelityModifier, width = this.mapper.width * this.fidelityModifier, points = new Float32Array(height * width * 4), widthStepModifier = width % 1, indicesOffset = 1 / this.mapper.texts.length / 2;
       setTimeout(function() {
-        for (i = 1; i < points.length / 4; i++) {
+        for (var i = 1; i < points.length / 4; i++) {
           var y = Math.ceil(i / (width - widthStepModifier)), x = i - (width - widthStepModifier) * (y - 1), referenceIndex = 0, a = 0;
           for (var ki = 0; ki < self.mapper.texts.length; ki++) {
             var text = self.mapper.texts[ki], textSize = self.mapper.sizeForText(text), fitY = textSize.fit.y * self.fidelityModifier, fitX = textSize.fit.x * self.fidelityModifier, vH = textSize.h * self.fidelityModifier, vW = textSize.w * self.fidelityModifier;
@@ -796,7 +796,7 @@ if ( typeof module === 'object' ) {
           self.textsTexture = textsTexture;
           self.textsTexture.needsUpdate = true;
           _materialUniforms.call(self, function(uniforms) {
-            material = new THREE.ShaderMaterial({
+            var material = new THREE.ShaderMaterial({
               vertexShader: vertexSrc,
               fragmentShader: fragmentSrc,
               uniforms: uniforms

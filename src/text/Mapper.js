@@ -9,8 +9,6 @@ Blotter.Mapper = function (texts) {
 Blotter.Mapper.prototype = (function () {
 
   function _updateTexts (texts, eachCallback) {
-    var self = this;
-
     if (!(texts instanceof Array)) {
       texts = [texts];
     }
@@ -33,7 +31,7 @@ Blotter.Mapper.prototype = (function () {
         tempTextsSizesArray = [];
 
     // Build array of objects holding a Text object's id, width, and height for sorting.
-    for (textId in this.textsSizes) {
+    for (var textId in this.textsSizes) {
       var tempSizesObject = this.textsSizes[textId];
       tempSizesObject.referenceId = textId;
       tempTextsSizesArray.push(tempSizesObject);
@@ -127,8 +125,8 @@ Blotter.Mapper.prototype = (function () {
         var text = this.texts[i],
             size = this.textsSizes[text.id],
             lineHeightOffset = (((size.h * text.properties.leading) - size.h) / 2);
-        console.log("FIX NEXT LINE. DONT USE STATIC 12px!!!");
-        ctx.font = text.properties.style + " " + text.properties.weight + " " + "12px" + " " + text.properties.family;
+
+        ctx.font = text.properties.style + " " + text.properties.weight + " " + text.properties.size + "px " + text.properties.family;
         ctx.fillStyle = text.properties.fill;
         ctx.fillText(
           text.value,
