@@ -47,9 +47,8 @@ Blotter.Mapper.prototype = (function () {
       this.textsSizes[packedSizesObject.referenceId].fit = packedSizesObject.fit;
     }
 
-    // Force width/height to be equal power of 2 values for optimal textures.
-    var wh = _nearestPowerOfTwo(Math.max(packer.root.w, packer.root.h));
-    this.width = this.height = wh;
+    this.width = packer.root.w;
+    this.height = packer.root.h;
   }
 
   function _sortTexts (textA, textB) {
@@ -57,20 +56,6 @@ Blotter.Mapper.prototype = (function () {
         areaB = textB.w * textB.h;
 
     return areaB - areaA;
-  }
-
-  function _nearestPowerOfTwo (n) {
-    // TODO: Pretty not great. As yet unsure what an actual appropriate maximum would be here and
-    //   in any case we need to probably throw an error if it exceeds 32768...
-    var powers = [8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768],
-        nearest = powers[powers.length - 1];
-    for (var i = 0; i < powers.length; i++) {
-      var next = powers[i + 1];
-      if (powers[i] < n && next >= n) {
-        nearest = next;
-      }
-    }
-    return nearest;
   }
 
   return {

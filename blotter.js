@@ -439,22 +439,12 @@ if ( typeof module === 'object' ) {
         var packedSizesObject = tempTextsSizesArray[i];
         this.textsSizes[packedSizesObject.referenceId].fit = packedSizesObject.fit;
       }
-      var wh = _nearestPowerOfTwo(Math.max(packer.root.w, packer.root.h));
-      this.width = this.height = wh;
+      this.width = packer.root.w;
+      this.height = packer.root.h;
     }
     function _sortTexts(textA, textB) {
       var areaA = textA.w * textA.h, areaB = textB.w * textB.h;
       return areaB - areaA;
-    }
-    function _nearestPowerOfTwo(n) {
-      var powers = [ 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768 ], nearest = powers[powers.length - 1];
-      for (var i = 0; i < powers.length; i++) {
-        var next = powers[i + 1];
-        if (powers[i] < n && next >= n) {
-          nearest = next;
-        }
-      }
-      return nearest;
     }
     return {
       constructor: Blotter.Mapper,
@@ -684,7 +674,7 @@ if ( typeof module === 'object' ) {
       var self = this, height = this.mapper.height * this.fidelityModifier, width = this.mapper.width * this.fidelityModifier, points = new Float32Array(height * width * 4), widthStepModifier = width % 1, indicesOffset = 1 / this.mapper.texts.length / 2;
       setTimeout(function() {
         for (var i = 1; i < points.length / 4; i++) {
-          var y = Math.ceil(i / (width - widthStepModifier)), x = i - (width - widthStepModifier) * (y - 1), referenceIndex = 0, a = 0;
+          var y = Math.ceil(i / (width - widthStepModifier)), x = i - (width - widthStepModifier) * (y - 1), referenceIndex = 0, bg = 0, a = 0;
           for (var ki = 0; ki < self.mapper.texts.length; ki++) {
             var text = self.mapper.texts[ki], textSize = self.mapper.sizeForText(text), fitY = textSize.fit.y * self.fidelityModifier, fitX = textSize.fit.x * self.fidelityModifier, vH = textSize.h * self.fidelityModifier, vW = textSize.w * self.fidelityModifier;
             if (y >= fitY && y <= fitY + vH && x >= fitX && x <= fitX + vW) {
@@ -695,8 +685,8 @@ if ( typeof module === 'object' ) {
           }
           var index = i - 1;
           points[4 * index + 0] = referenceIndex;
-          points[4 * index + 1] = referenceIndex;
-          points[4 * index + 2] = referenceIndex;
+          points[4 * index + 1] = bg;
+          points[4 * index + 2] = bg;
           points[4 * index + 3] = a;
         }
         completion(points);
@@ -794,6 +784,9 @@ if ( typeof module === 'object' ) {
         var self = this, loader = new THREE.TextureLoader(), url = this.mapper.getImage();
         loader.load(url, function(textsTexture) {
           self.textsTexture = textsTexture;
+          self.textsTexture.generateMipmaps = false;
+          self.textsTexture.minFilter = THREE.LinearFilter;
+          self.textsTexture.magFilter = THREE.LinearFilter;
           self.textsTexture.needsUpdate = true;
           _materialUniforms.call(self, function(uniforms) {
             var material = new THREE.ShaderMaterial({

@@ -212,6 +212,7 @@ Blotter.Composer.prototype = (function() {
 
   function _textSpriteIndicesTexture (callback) {
   	var self = this;
+
   	_spriteIndices.call(this, function(dataPoints) {
       var texture = new THREE.DataTexture(dataPoints, self.mapper.width * self.fidelityModifier, self.mapper.height * self.fidelityModifier, THREE.RGBAFormat, THREE.FloatType);
       texture.flipY = true;
@@ -234,6 +235,7 @@ Blotter.Composer.prototype = (function() {
         var y = Math.ceil(i / (width - widthStepModifier)),
             x = i - ((width - widthStepModifier) * (y - 1)),
             referenceIndex = 0.0,
+            bg = 0.0,
             a = 0.0;
 
         for (var ki = 0; ki < self.mapper.texts.length; ki++) {
@@ -245,7 +247,10 @@ Blotter.Composer.prototype = (function() {
               vW = textSize.w * self.fidelityModifier;
 
           // If x and y are within the fit bounds of the text space within our mapper.
-          if (y >= fitY && y <= fitY + vH && x >= fitX && x <= fitX + vW) {
+          if (y >= fitY &&
+              y <= fitY + vH &&
+              x >= fitX &&
+              x <= fitX + vW) {
             referenceIndex = (ki / self.mapper.texts.length) + indicesOffset;
             a = 1.0;
             break;
@@ -254,8 +259,8 @@ Blotter.Composer.prototype = (function() {
 
         var index = i - 1;
         points[4*index+0] = referenceIndex;
-        points[4*index+1] = referenceIndex;
-        points[4*index+2] = referenceIndex;
+        points[4*index+1] = bg;
+        points[4*index+2] = bg;
         points[4*index+3] = a;
       }
 
@@ -397,6 +402,9 @@ Blotter.Composer.prototype = (function() {
 
         // Setup texture
         self.textsTexture = textsTexture;
+        self.textsTexture.generateMipmaps = false;
+        self.textsTexture.minFilter = THREE.LinearFilter;
+        self.textsTexture.magFilter = THREE.LinearFilter;
         self.textsTexture.needsUpdate = true;
 
         _materialUniforms.call(self, function(uniforms) {
