@@ -1,2 +1,2 @@
 !function(){
-  var BLOTTER = {version: "1.0.0"}; // semver
+  var Blotter = {version: "1.0.0"}; // semver

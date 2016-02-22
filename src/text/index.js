@@ -1,1 +1,2 @@
-import "_TextureMapper";
+import "Text";
+import "Mapper";

@@ -1,2 +1,2 @@
-	this.BLOTTER = BLOTTER;
+	this.Blotter = Blotter;
 }();

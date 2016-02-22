@@ -131,20 +131,20 @@ var vertexSrc = [
 
 
 
-BLOTTER.Composer = function(texts, properties, options) {
-  this.init(texts, properties, options);
+Blotter.Composer = function(texts, options) {
+  this.init(texts, options);
 }
 
-BLOTTER.Composer.prototype = (function() {
+Blotter.Composer.prototype = (function() {
 
 	// Create object holding the name and values of every text specific uniform, each referencable through any given text.
 
-  function _setTextUniformValues () {
-    this.textUniformValues = {};
+  function _setTextsUniformsValues () {
     for (var uniformName in this.userDefinedUniforms) {
       if (this.userDefinedUniforms.hasOwnProperty(uniformName)) {
-        for (var i = 0; i < this.mapper.textsKeys.length; i++) {
-          var uniform = this.userDefinedUniforms[uniformName];
+        for (var i = 0; i < this.mapper.texts.length; i++) {
+          var text = this.mapper.texts[i],
+              uniform = this.userDefinedUniforms[uniformName];
 
           if (blotter_UniformUtils.UniformTypes.indexOf(uniform.type) == -1) {
             blotter_Messaging.logError("blotter_Renderer", "user defined uniforms must be one of type: " +
@@ -157,8 +157,8 @@ BLOTTER.Composer.prototype = (function() {
             return;
           }
 
-          this.textUniformValues[this.mapper.textsKeys[i]] = this.textUniformValues[this.mapper.textsKeys[i]] || {};
-          this.textUniformValues[this.mapper.textsKeys[i]][uniformName] = uniform.value;
+          this.textsUniformsValues[text.id] = this.textsUniformsValues[text.id] || {};
+          this.textsUniformsValues[text.id][uniformName] = JSON.parse(JSON.stringify(uniform));
         }
       }
     }
@@ -225,8 +225,8 @@ BLOTTER.Composer.prototype = (function() {
     		height = this.mapper.height * this.fidelityModifier,
         width = this.mapper.width * this.fidelityModifier,
     		points = new Float32Array((height * width) * 4),
-        widthStepModifier = (width % 1),
-        indicesOffset = (1 / this.mapper.textsKeys.length) / 2;
+        widthStepModifier = width % 1,
+        indicesOffset = (1 / this.mapper.texts.length) / 2;
 
     setTimeout(function() {
       for (i = 1; i < points.length / 4; i++) {
@@ -236,17 +236,18 @@ BLOTTER.Composer.prototype = (function() {
             referenceIndex = 0.0,
             a = 0.0;
 
-        for (ki = 0; ki < self.mapper.textsKeys.length; ki++) {
-          var v = self.mapper.texts[self.mapper.textsKeys[ki]],
-          		fitY = v.fit.y * self.fidelityModifier,
-              fitX = v.fit.x * self.fidelityModifier,
-              vH = v.h * self.fidelityModifier,
-              vW = v.w * self.fidelityModifier;
+        for (var ki = 0; ki < self.mapper.texts.length; ki++) {
+          var text = self.mapper.texts[ki],
+              textSize = self.mapper.sizeForText(text),
+              fitY = textSize.fit.y * self.fidelityModifier,
+              fitX = textSize.fit.x * self.fidelityModifier,
+              vH = textSize.h * self.fidelityModifier,
+              vW = textSize.w * self.fidelityModifier;
 
+          // If x and y are within the fit bounds of the text space within our mapper.
           if (y >= fitY && y <= fitY + vH && x >= fitX && x <= fitX + vW) {
-            referenceIndex = (ki / self.mapper.textsKeys.length) + indicesOffset;
+            referenceIndex = (ki / self.mapper.texts.length) + indicesOffset;
             a = 1.0;
-
             break;
           }
         }
@@ -267,7 +268,7 @@ BLOTTER.Composer.prototype = (function() {
   function _textSpriteBoundsTexture (completion) {
   	var self = this;
   	_spriteBoundsArray.call(this, function(spriteData) {
-    	var texture = new THREE.DataTexture(spriteData, self.mapper.textsKeys.length, 1, THREE.RGBAFormat, THREE.FloatType);
+    	var texture = new THREE.DataTexture(spriteData, self.mapper.texts.length, 1, THREE.RGBAFormat, THREE.FloatType);
 			texture.needsUpdate = true;
       completion(texture);
     });
@@ -275,17 +276,18 @@ BLOTTER.Composer.prototype = (function() {
 
   function _spriteBoundsArray (completion) {
     var self = this,
-    		data = new Float32Array(this.mapper.textsKeys.length * 4),
-        i = 0;
+    		data = new Float32Array(this.mapper.texts.length * 4);
 
     setTimeout(function() {
-      $.each(self.mapper.texts, function(_, v) {
-        data[4*i] = v.fit.x * self.pixelRatio;                                  // x
-        data[4*i+1] = self.ratioAdjustedHeight - ((v.fit.y + v.h) * self.pixelRatio); // y
-        data[4*i+2] = (v.w) * self.pixelRatio;                                  // w
-        data[4*i+3] = (v.h) * self.pixelRatio;                                  // h
-        i++;
-      });
+      for (var i = 0; i < self.mapper.texts.length; i++) {
+        var text = self.mapper.texts[i],
+            textSize = self.mapper.sizeForText(text);
+
+        data[4*i] = textSize.fit.x * self.pixelRatio;                                               // x
+        data[4*i+1] = self.ratioAdjustedHeight - ((textSize.fit.y + textSize.h) * self.pixelRatio); // y
+        data[4*i+2] = (textSize.w) * self.pixelRatio;                                               // w
+        data[4*i+3] = (textSize.h) * self.pixelRatio;                                               // h
+      };
       completion(data);
     }, 1);
   }
@@ -294,46 +296,64 @@ BLOTTER.Composer.prototype = (function() {
 
 	function _uniformTextureForUniformName (uniformName) {
     var uniformDescription = this.userDefinedUniforms[uniformName],
-        data = new Float32Array(this.mapper.textsKeys.length * 4);
+        data = new Float32Array(this.mapper.texts.length * 4);
 
     if (!uniformDescription)
-      blotter_Messaging.logError("BLOTTER.Composer", "cannot find uniformName for _uniformTextureForUniformName");
+      blotter_Messaging.logError("Blotter.Composer", "cannot find uniformName for _uniformTextureForUniformName");
 
-    for (var i = 0; i < this.mapper.textsKeys.length; i++) {
-      var value = this.textUniformValues[this.mapper.textsKeys[i]][uniformName];
+    for (var i = 0; i < this.mapper.texts.length; i++) {
+      var text = this.mapper.texts[i],
+          textUniformsValues = this.textsUniformsValues[text.id];
 
-      switch (uniformDescription.type) {
-        case '1f':
-          data[4*i]   = value; // x (r)
-          data[4*i+1] = 0.0;
-          data[4*i+2] = 0.0;
-          data[4*i+3] = 0.0;
-          break;
+      if (textUniformsValues) {
+        var textUniform = textUniformsValues[uniformName];
 
-        case '2f':
-          data[4*i]   = value[0]; // x (r)
-          data[4*i+1] = value[1]; // y (g)
-          data[4*i+2] = 0.0;
-          data[4*i+3] = 0.0;
-          break;
+        switch (textUniform.type) {
+          case '1f':
+            data[4*i]   = textUniform.value; // x (r)
+            data[4*i+1] = 0.0;
+            data[4*i+2] = 0.0;
+            data[4*i+3] = 0.0;
+            break;
 
-        case '3f':
-          data[4*i]   = value[0]; // x (r)
-          data[4*i+1] = value[1]; // y (g)
-          data[4*i+2] = value[2]; // z (b)
-          data[4*i+3] = 0.0;
-          break;
+          case '2f':
+            data[4*i]   = textUniform.value[0]; // x (r)
+            data[4*i+1] = textUniform.value[1]; // y (g)
+            data[4*i+2] = 0.0;
+            data[4*i+3] = 0.0;
+            break;
 
-        case '4f':
-          data[4*i]   = value[0]; // x (r)
-          data[4*i+1] = value[1]; // y (g)
-          data[4*i+2] = value[2]; // z (b)
-          data[4*i+3] = value[3]; // w (a)
-          break;
+          case '3f':
+            data[4*i]   = textUniform.value[0]; // x (r)
+            data[4*i+1] = textUniform.value[1]; // y (g)
+            data[4*i+2] = textUniform.value[2]; // z (b)
+            data[4*i+3] = 0.0;
+            break;
+
+          case '4f':
+            data[4*i]   = textUniform.value[0]; // x (r)
+            data[4*i+1] = textUniform.value[1]; // y (g)
+            data[4*i+2] = textUniform.value[2]; // z (b)
+            data[4*i+3] = textUniform.value[3]; // w (a)
+            break;
+
+          default:
+            data[4*i]   = 0.0;
+            data[4*i+1] = 0.0;
+            data[4*i+2] = 0.0;
+            data[4*i+3] = 0.0;
+            break;
+        }
+      }
+      else {
+        data[4*i]   = 0.0;
+        data[4*i+1] = 0.0;
+        data[4*i+2] = 0.0;
+        data[4*i+3] = 0.0;
       }
     }
 
-    var texture = new THREE.DataTexture(data, this.mapper.textsKeys.length, 1, THREE.RGBAFormat, THREE.FloatType);
+    var texture = new THREE.DataTexture(data, this.mapper.texts.length, 1, THREE.RGBAFormat, THREE.FloatType);
     texture.needsUpdate = true;
 
     return texture;
@@ -342,13 +362,13 @@ BLOTTER.Composer.prototype = (function() {
 
   return {
 
-    constructor : BLOTTER.Composer,
+    constructor : Blotter.Composer,
 
-    init : function(texts, properties, options) {
+    init : function(texts, options) {
       options = options || {};
 
-      this.mapper = new blotter_TextMapper(texts, properties);
-      this.textsKeys = this.mapper.textsKeys;
+      this.mapper = new Blotter.Mapper(texts);
+
       this.userDefinedUniforms = options.uniforms || {};
 
       // There is a negative coorelation between this value and
@@ -363,7 +383,8 @@ BLOTTER.Composer.prototype = (function() {
       this.ratioAdjustedHeight = this.mapper.height * this.pixelRatio;
 
       // Setup text specific uniforms immediately.
-      _setTextUniformValues.call(this);
+      this.textsUniformsValues = {};
+      _setTextsUniformsValues.call(this);
     },
 
     build : function(callback) {
@@ -401,24 +422,25 @@ BLOTTER.Composer.prototype = (function() {
     },
 
     updateUniformValueForText : function(text, uniformName, value) {
-      var self = this;
+      var self = this,
+          textsUniformsObject = this.textsUniformsValues[text.id];
 
-      if (!this.textUniformValues[text]) {
+      if (!textsUniformsObject) {
         blotter_Messaging.logError("blotter_Renderer", "cannot find text for updateUniformsForText");
         return;
       }
 
-      if (!this.textUniformValues[text][uniformName]) {
+      if (!textsUniformsObject[uniformName]) {
         blotter_Messaging.logError("blotter_Renderer", "cannot find uniformName for updateUniformsForText");
         return;
       }
 
-      if (!blotter_UniformUtils.validValueForUniformType(this.userDefinedUniforms[uniformName].type, value)) {
+      if (!blotter_UniformUtils.validValueForUniformType(textsUniformsObject[uniformName].type, value)) {
         blotter_Messaging.logError("blotter_Renderer", "user defined uniform value for " + uniformName + " is incorrect for type: " + this.userDefinedUniforms[uniformName].type);
         return;
       }
 
-      this.textUniformValues[text][uniformName] = value;
+      textsUniformsObject[uniformName].value = value;
 
       if (this.renderer) {
         setTimeout(function() {

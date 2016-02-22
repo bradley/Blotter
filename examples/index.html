@@ -5,7 +5,7 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-beta1/jquery.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r74/three.js"></script>
-    <script type="text/javascript" src="../blotter.min.js"></script>
+    <script type="text/javascript" src="../blotter.js"></script>
   </head>
   <body>
     <div class="canvas-region"></div>
@@ -34,7 +34,9 @@
           fill: "#0d0f17"
         };
 
-        var composer = new BLOTTER.Composer(texts, styleProperties, {
+        var blotterTexts = texts.map(function(text) { return new Blotter.Text(text, styleProperties); });
+
+        var composer = new Blotter.Composer(blotterTexts, {
           uniforms : {
             centerPoint : { type : "2f", value : [0.5, 0.5] }
           }
@@ -71,7 +73,7 @@
               nX = mousePos.x / mousePositionCanvas.width,
               nY = 1.0 - (mousePos.y / mousePositionCanvas.height);
 
-          composer.updateUniformValueForText("inevitable", "centerPoint", [nX, nY]);
+          composer.updateUniformValueForText(blotterTexts[35], "centerPoint", [nX, nY]);
         }, false);
       });
     </script>

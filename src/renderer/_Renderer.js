@@ -55,16 +55,17 @@ blotter_Renderer.prototype = (function() {
     },
 
     loop : function() {
+      var self = this;
       this.renderer.render(this.scene, this.camera);
 
-      this.currentAnimationLoop = window.requestAnimationFrame(_.bind(function(){
-        this.loop();
-      }, this));
+      this.currentAnimationLoop = blotter_Animation.requestAnimationFrame(function () {
+        self.loop();
+      });
     },
 
     stop : function() {
       if (this.currentAnimationLoop) {
-        window.cancelAnimationFrame(this.currentAnimationLoop);
+        blotter_Animation.cancelAnimationFrame(this.currentAnimationLoop);
         this.currentAnimationLoop = undefined;
       }
     },
@@ -72,7 +73,7 @@ blotter_Renderer.prototype = (function() {
     teardown : function() {
       this.stop();
       this.renderer = null;
-      $(this.canvas).remove();
+      this.canvas.remove();
     }
   }
 })();

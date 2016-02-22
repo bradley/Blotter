@@ -48,12 +48,12 @@ var blotter_TextUtils = {
 
 	// Determines size of text within the document given certain style properties
 
-	sizeForText : function(text, properties) {
+	sizeForText : function(textValue, properties) {
 		var el = document.createElement('p'),
 				properties = this.ensurePropertyValues(properties),
 	  		size;
 
-	  el.innerHTML = text;
+	  el.innerHTML = textValue;
 	  el.style.fontFamily = properties.family;
 	  el.style.fontSize = properties.size;
 	  el.style.fontWeight = properties.weight;

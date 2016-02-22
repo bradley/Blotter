@@ -38,37 +38,7 @@ if (!Object.keys) {
       return result;
     };
   }());
-}// http://paulirish.com/2011/requestanimationframe-for-smart-animating/
-// http://my.opera.com/emoller/blog/2011/12/20/requestanimationframe-for-smart-er-animating
-
-// requestAnimationFrame polyfill by Erik Möller. fixes from Paul Irish and Tino Zijdel
-
-// MIT license
-
-(function() {
-    var lastTime = 0;
-    var vendors = ['ms', 'moz', 'webkit', 'o'];
-    for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
-        window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
-        window.cancelAnimationFrame = window[vendors[x]+'CancelAnimationFrame']
-                                   || window[vendors[x]+'CancelRequestAnimationFrame'];
-    }
-
-    if (!window.requestAnimationFrame)
-        window.requestAnimationFrame = function(callback, element) {
-            var currTime = new Date().getTime();
-            var timeToCall = Math.max(0, 16 - (currTime - lastTime));
-            var id = window.setTimeout(function() { callback(currTime + timeToCall); },
-              timeToCall);
-            lastTime = currTime + timeToCall;
-            return id;
-        };
-
-    if (!window.cancelAnimationFrame)
-        window.cancelAnimationFrame = function(id) {
-            clearTimeout(id);
-        };
-}());/******************************************************************************
+}/******************************************************************************
 
 This is a binary tree based bin packing algorithm that is more complex than
 the simple Packer (packer.js). Instead of starting off with a fixed width and
@@ -291,10 +261,41 @@ if ( typeof module === 'object' ) {
 	module.exports = Detector;
 
 }!function() {
-  var BLOTTER = {
+  var Blotter = {
     version: "1.0.0"
   };
   var blotter_VendorPrefixes = [ "ms", "moz", "webkit", "o" ];
+  var blotter_Animation = function() {
+    var lastTime = 0, requestAnimationFrame = window.requestAnimationFrame, cancelAnimationFrame = window.cancelAnimationFrame, vendors = blotter_VendorPrefixes;
+    for (var x = 0; x < vendors.length && !requestAnimationFrame; ++x) {
+      requestAnimationFrame = window[vendors[x] + "RequestAnimationFrame"];
+      cancelAnimationFrame = window[vendors[x] + "CancelAnimationFrame"] || window[vendors[x] + "CancelRequestAnimationFrame"];
+    }
+    if (!requestAnimationFrame) {
+      requestAnimationFrame = function(callback, element) {
+        var currTime = new Date().getTime();
+        var timeToCall = Math.max(0, 16 - (currTime - lastTime));
+        var id = window.setTimeout(function() {
+          callback(currTime + timeToCall);
+        }, timeToCall);
+        lastTime = currTime + timeToCall;
+        return id;
+      };
+    }
+    if (!cancelAnimationFrame) {
+      cancelAnimationFrame = function(id) {
+        clearTimeout(id);
+      };
+    }
+    return {
+      requestAnimationFrame: function(callback) {
+        requestAnimationFrame.call(window, callback);
+      },
+      cancelAnimationFrame: function(id) {
+        cancelAnimationFrame.call(window, id);
+      }
+    };
+  }();
   var blotter_Messaging = function() {
     function _formattedMessage(domain, message) {
       return domain + ": " + message;
@@ -362,9 +363,9 @@ if ( typeof module === 'object' ) {
       var _properties = properties || this.ensurePropertyValues(), pTop = properties.paddingTop || _properties.padding, pRight = _properties.paddingRight || _properties.padding, pBottom = _properties.paddingBottom || _properties.padding, pLeft = _properties.paddingLeft || _properties.padding;
       return "" + pTop + "px " + pRight + "px " + pBottom + "px " + pLeft + "px";
     },
-    sizeForText: function(text, properties) {
+    sizeForText: function(textValue, properties) {
       var el = document.createElement("p"), properties = this.ensurePropertyValues(properties), size;
-      el.innerHTML = text;
+      el.innerHTML = textValue;
       el.style.fontFamily = properties.family;
       el.style.fontSize = properties.size;
       el.style.fontWeight = properties.weight;
@@ -382,46 +383,67 @@ if ( typeof module === 'object' ) {
       return size;
     }
   };
-  var blotter_TextMapper = function(texts, properties) {
+  Blotter.Text = function(value, properties) {
+    this.init(value, properties);
+  };
+  Blotter.Text.prototype = function() {
+    function _generateId() {
+      var d = new Date().getTime();
+      if (window.performance && typeof window.performance.now === "function") {
+        d += performance.now();
+      }
+      var uuid = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(c) {
+        var r = (d + Math.random() * 16) % 16 | 0;
+        d = Math.floor(d / 16);
+        return (c == "x" ? r : r & 3 | 8).toString(16);
+      });
+      return uuid;
+    }
+    return {
+      constructor: Blotter.Text,
+      init: function(value, properties) {
+        this.id = _generateId.call(this);
+        this.value = value;
+        this.properties = blotter_TextUtils.ensurePropertyValues(properties);
+      }
+    };
+  }();
+  Blotter.Mapper = function(texts) {
     this.init.apply(this, arguments);
   };
-  blotter_TextMapper.prototype = function() {
+  Blotter.Mapper.prototype = function() {
     function _updateTexts(texts, eachCallback) {
       var self = this;
-      if (typeof texts === "string" || texts instanceof String) {
+      if (!(texts instanceof Array)) {
         texts = [ texts ];
       }
       for (var i = 0; i < texts.length; i++) {
-        eachCallback.apply(this, [ texts[i] ]);
+        var text = texts[i];
+        if (texts instanceof Blotter.Text) {
+          blotter_Messaging.throwError("Blotter.Mapper", "argument must be instance of Blotter.Text or array of objects that are instances of Blotter.Text");
+        }
+        eachCallback.call(this, text);
       }
-      this.textsKeys = Object.keys(this.texts);
-      _determineTextsMapping.apply(this);
+      _determineTextsMapping.call(this);
     }
     function _determineTextsMapping() {
-      var self = this, packer = new GrowingPacker(), values = this.textsKeys.map(function(k) {
-        var value = self.texts[k];
-        value.key = k;
-        return value;
-      }, self).sort(_sortTexts);
-      packer.fit(values);
-      for (var k in this.texts) {
-        var v = this.texts[k];
-        self.texts[v.key] = v;
-        delete v.key;
+      var packer = new GrowingPacker(), tempTextsSizesArray = [];
+      for (textId in this.textsSizes) {
+        var tempSizesObject = this.textsSizes[textId];
+        tempSizesObject.referenceId = textId;
+        tempTextsSizesArray.push(tempSizesObject);
+      }
+      packer.fit(tempTextsSizesArray.sort(_sortTexts));
+      for (var i = 0; i < tempTextsSizesArray.length; i++) {
+        var packedSizesObject = tempTextsSizesArray[i];
+        this.textsSizes[packedSizesObject.referenceId].fit = packedSizesObject.fit;
       }
       var wh = _nearestPowerOfTwo(Math.max(packer.root.w, packer.root.h));
-      this.width = wh;
-      this.height = wh;
+      this.width = this.height = wh;
     }
     function _sortTexts(textA, textB) {
       var areaA = textA.w * textA.h, areaB = textB.w * textB.h;
-      if (areaA < areaB) {
-        return 1;
-      }
-      if (areaA > areaB) {
-        return -1;
-      }
-      return 0;
+      return areaB - areaA;
     }
     function _nearestPowerOfTwo(n) {
       var powers = [ 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768 ], nearest = powers[powers.length - 1];
@@ -434,33 +456,46 @@ if ( typeof module === 'object' ) {
       return nearest;
     }
     return {
-      constructor: blotter_TextMapper,
-      init: function(texts, properties) {
-        this.properties = blotter_TextUtils.ensurePropertyValues(properties), this.texts = {};
-        this.textsKeys = [];
+      constructor: Blotter.Mapper,
+      init: function(texts) {
+        this.texts = [];
+        this.textsSizes = {};
+        this.width = 0;
+        this.height = 0;
         this.addTexts(texts);
       },
       addTexts: function(texts) {
-        _updateTexts.apply(this, [ texts, function(text) {
-          if (this.textsKeys.indexOf(text) == -1) {
-            this.texts[text] = blotter_TextUtils.sizeForText(text, this.properties);
+        _updateTexts.call(this, texts, function(text) {
+          var sizesObject = this.textsSizes[text.id];
+          if (this.texts.indexOf(text) == -1) {
+            this.texts.push(text);
           }
-        } ]);
+          if (!sizesObject) {
+            var size = blotter_TextUtils.sizeForText(text.value, text.properties);
+            this.textsSizes[text.id] = size;
+          }
+        });
       },
       removeTexts: function(texts) {
-        _updateTexts.apply(this, [ texts, function(text) {
-          if (this.textsKeys.indexOf(text) != -1) {
-            delete this.texts[text];
+        _updateTexts.call(this, texts, function(text) {
+          var textsIndex = this.texts.indexOf(text);
+          if (textsIndex != -1) {
+            this.texts.splice(textsIndex, 1);
           }
-        } ]);
+          delete this.textsSizes[text.id];
+        });
+      },
+      sizeForText: function(text) {
+        return this.textsSizes[text.id];
       },
       toCanvas: function() {
         var canvas = blotter_CanvasUtils.hiDpiCanvas(this.width, this.height), ctx = canvas.getContext("2d");
-        for (var k in this.texts) {
-          var v = this.texts[k], lineHeightOffset = (v.h * this.properties.leading - v.h) / 2;
-          ctx.font = this.properties.style + " " + this.properties.weight + " " + "12px" + " " + this.properties.family;
-          ctx.fillStyle = this.properties.fill;
-          ctx.fillText(k, v.fit.x + this.properties.paddingLeft, v.fit.y + this.properties.paddingTop + lineHeightOffset);
+        for (var i = 0; i < this.texts.length; i++) {
+          var text = this.texts[i], size = this.textsSizes[text.id], lineHeightOffset = (size.h * text.properties.leading - size.h) / 2;
+          console.log("FIX NEXT LINE. DONT USE STATIC 12px!!!");
+          ctx.font = text.properties.style + " " + text.properties.weight + " " + "12px" + " " + text.properties.family;
+          ctx.fillStyle = text.properties.fill;
+          ctx.fillText(text.value, size.fit.x + text.properties.paddingLeft, size.fit.y + text.properties.paddingTop + lineHeightOffset);
         }
         return canvas;
       },
@@ -538,36 +573,36 @@ if ( typeof module === 'object' ) {
         }
       },
       loop: function() {
+        var self = this;
         this.renderer.render(this.scene, this.camera);
-        this.currentAnimationLoop = window.requestAnimationFrame(_.bind(function() {
-          this.loop();
-        }, this));
+        this.currentAnimationLoop = blotter_Animation.requestAnimationFrame(function() {
+          self.loop();
+        });
       },
       stop: function() {
         if (this.currentAnimationLoop) {
-          window.cancelAnimationFrame(this.currentAnimationLoop);
+          blotter_Animation.cancelAnimationFrame(this.currentAnimationLoop);
           this.currentAnimationLoop = undefined;
         }
       },
       teardown: function() {
         this.stop();
         this.renderer = null;
-        $(this.canvas).remove();
+        this.canvas.remove();
       }
     };
   }();
   var fragmentSrc = [ "precision highp float;", "uniform sampler2D uSampler;", "uniform sampler2D spriteIndices;", "uniform sampler2D textSpriteBoundsTexture;", "uniform sampler2D centerPointTexture;", "uniform float uTime;", "uniform float canvasWidth;", "uniform float canvasHeight;", "uniform float lenseWeight;", "varying vec2 vTexCoord;", "void main(void) {", "   vec2 aspect = vec2(canvasWidth, canvasHeight).xy;", "   vec4 spriteIndexData = texture2D(spriteIndices, vTexCoord);", "   float spriteIndex = spriteIndexData.x;", "   vec4 spriteData = texture2D(textSpriteBoundsTexture, vec2(spriteIndex, 0.5));", "   // p = x, y percentage for texel position within of total resolution", "   vec2 p = (gl_FragCoord.xy - spriteData.rg) / spriteData.ba;", "   // m = x, y percentage for center position within total resolution", "   // note: you should know this, but swizzling allows access to vecN data using x,y,z, and w (or r, g, b, and a) in that order.", "   vec4 centerPointData = texture2D(centerPointTexture, vec2(spriteIndex, 0.5));", "   vec2 m = centerPointData.xy;", "   //vec2 m = vec2(0.5);", "   // d = difference between p and m (obviously, but see above).", "   vec2 d = p - m;", "   // The dot function returns the dot product of the two", "   // input parameters, i.e. the sum of the component-wise", "   // products. If x and y are the same the square root of", "   // the dot product is equivalent to the length of the vector.", "   // Therefore, r = length of vector represented by d (the ", "   // distance of the texel from center position).", "   // In order to apply weights here, we add our weight to this distance", "   // (pushing it closer to 1 - essentially giving no effect at all) and", "   // find the min between our weighted distance and 1.0", "   float inverseLenseWeight = 1.0 - lenseWeight;", "   float r = min(sqrt(dot(d, d)) + inverseLenseWeight, 1.0);", "   vec2 offsetUV = m + (d * r);", "   vec2 adjustedFragCoord = spriteData.rg + vec2((spriteData.b * offsetUV.x), (spriteData.a * offsetUV.y));", "   //adjustedFragCoord.x = clamp(adjustedFragCoord.x, spriteData.r, (spriteData.r + spriteData.b));", "   //adjustedFragCoord.y = clamp(adjustedFragCoord.y, spriteData.g, (spriteData.g + spriteData.a));", "   vec2 uv = adjustedFragCoord.xy / aspect;", "   // RGB shift", "   vec2 offset = vec2(0.0);", "   if (r < 1.0) {", "     float amount = 0.0013;", "     float angle = 0.45;", "     offset = (amount * (1.0 - r)) * vec2(cos(angle), sin(angle));", "   }", "   vec4 cr = texture2D(uSampler, (uv + offset));", "   vec4 cga = texture2D(uSampler, uv);", "   vec4 cb = texture2D(uSampler, (uv - offset));", "   vec4 outColor = vec4(0.0);", "   if (cr.r > 0.0 || cga.g > 0.0 || cb.b > 0.0) {", "   //if (r < 1.0) {", "     // Adjust rgb values so that colors with transparency appear as if they were atop an opaque white background.", "     // (vec4(0.0, 0.0, 0.0, 0.5) _atop white_ is visibly the same as vec4(0.5, 0.5, 0.5, 0.0))", "     if (cr.a != 0.0) {", "       cr.r = cr.r + cr.a;", "     }", "     if (cga.a != 0.0) {", "       cga.g = cga.g + cga.a;", "     }", "     if (cb.b != 0.0) {", "       cb.b = cb.b + cb.a;", "     }", "     // Ensure offseted/shifted texels have alpha similar to the texel they are offsetting", "     // (this prevents texel from being invisible if cga.a = vec4(0.0, 0.0, 0.0, 0.0)", "     cga.a = max(cga.a, max(cr.a, cb.a));", "     // Set alpha adjustment value so that white texels keep their transparency.", "   	float alpha = 1.0 - cga.a;", "     // Invert colors (this is cheating but optimal) so that we have CMYK rather than RGB", "     // shifted colors and the combination of offsets creates a blacker rather than whiter color.", "     outColor = vec4((1.0 - cr.r) - alpha, (1.0 - cga.g) - alpha, (1.0 - cb.b) - alpha, cga.a);", "     //outColor = vec4(0.0, 1.0, 0.0, 1.0);", "   }", "   else {", "     outColor = vec4(cr.r, cga.g, cb.b, cga.a);", "     //outColor = vec4(1.0, 0.0, 0.0, 1.0);", "   }", "   // Multiply alpha by original spriteIndexData's alpha value.", "   // this will be 0 for texels not within any 'sprite' area.", "   outColor.a = outColor.a * spriteIndexData.a;", "   gl_FragColor = outColor;", "}" ].join("\n");
   var vertexSrc = [ "varying vec2 vTexCoord;", "void main() {", "vTexCoord = uv;", "gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);", "}" ].join("\n");
-  BLOTTER.Composer = function(texts, properties, options) {
-    this.init(texts, properties, options);
+  Blotter.Composer = function(texts, options) {
+    this.init(texts, options);
   };
-  BLOTTER.Composer.prototype = function() {
-    function _setTextUniformValues() {
-      this.textUniformValues = {};
+  Blotter.Composer.prototype = function() {
+    function _setTextsUniformsValues() {
       for (var uniformName in this.userDefinedUniforms) {
         if (this.userDefinedUniforms.hasOwnProperty(uniformName)) {
-          for (var i = 0; i < this.mapper.textsKeys.length; i++) {
-            var uniform = this.userDefinedUniforms[uniformName];
+          for (var i = 0; i < this.mapper.texts.length; i++) {
+            var text = this.mapper.texts[i], uniform = this.userDefinedUniforms[uniformName];
             if (blotter_UniformUtils.UniformTypes.indexOf(uniform.type) == -1) {
               blotter_Messaging.logError("blotter_Renderer", "user defined uniforms must be one of type: " + blotter_UniformUtils.UniformTypes.join(", "));
               return;
@@ -576,8 +611,8 @@ if ( typeof module === 'object' ) {
               blotter_Messaging.logError("blotter_Renderer", "user defined uniform value for " + uniformName + " is incorrect for type: " + uniform.type);
               return;
             }
-            this.textUniformValues[this.mapper.textsKeys[i]] = this.textUniformValues[this.mapper.textsKeys[i]] || {};
-            this.textUniformValues[this.mapper.textsKeys[i]][uniformName] = uniform.value;
+            this.textsUniformsValues[text.id] = this.textsUniformsValues[text.id] || {};
+            this.textsUniformsValues[text.id][uniformName] = JSON.parse(JSON.stringify(uniform));
           }
         }
       }
@@ -646,14 +681,14 @@ if ( typeof module === 'object' ) {
       });
     }
     function _spriteIndices(completion) {
-      var self = this, height = this.mapper.height * this.fidelityModifier, width = this.mapper.width * this.fidelityModifier, points = new Float32Array(height * width * 4), widthStepModifier = width % 1, indicesOffset = 1 / this.mapper.textsKeys.length / 2;
+      var self = this, height = this.mapper.height * this.fidelityModifier, width = this.mapper.width * this.fidelityModifier, points = new Float32Array(height * width * 4), widthStepModifier = width % 1, indicesOffset = 1 / this.mapper.texts.length / 2;
       setTimeout(function() {
         for (i = 1; i < points.length / 4; i++) {
           var y = Math.ceil(i / (width - widthStepModifier)), x = i - (width - widthStepModifier) * (y - 1), referenceIndex = 0, a = 0;
-          for (ki = 0; ki < self.mapper.textsKeys.length; ki++) {
-            var v = self.mapper.texts[self.mapper.textsKeys[ki]], fitY = v.fit.y * self.fidelityModifier, fitX = v.fit.x * self.fidelityModifier, vH = v.h * self.fidelityModifier, vW = v.w * self.fidelityModifier;
+          for (var ki = 0; ki < self.mapper.texts.length; ki++) {
+            var text = self.mapper.texts[ki], textSize = self.mapper.sizeForText(text), fitY = textSize.fit.y * self.fidelityModifier, fitX = textSize.fit.x * self.fidelityModifier, vH = textSize.h * self.fidelityModifier, vW = textSize.w * self.fidelityModifier;
             if (y >= fitY && y <= fitY + vH && x >= fitX && x <= fitX + vW) {
-              referenceIndex = ki / self.mapper.textsKeys.length + indicesOffset;
+              referenceIndex = ki / self.mapper.texts.length + indicesOffset;
               a = 1;
               break;
             }
@@ -670,75 +705,90 @@ if ( typeof module === 'object' ) {
     function _textSpriteBoundsTexture(completion) {
       var self = this;
       _spriteBoundsArray.call(this, function(spriteData) {
-        var texture = new THREE.DataTexture(spriteData, self.mapper.textsKeys.length, 1, THREE.RGBAFormat, THREE.FloatType);
+        var texture = new THREE.DataTexture(spriteData, self.mapper.texts.length, 1, THREE.RGBAFormat, THREE.FloatType);
         texture.needsUpdate = true;
         completion(texture);
       });
     }
     function _spriteBoundsArray(completion) {
-      var self = this, data = new Float32Array(this.mapper.textsKeys.length * 4), i = 0;
+      var self = this, data = new Float32Array(this.mapper.texts.length * 4);
       setTimeout(function() {
-        $.each(self.mapper.texts, function(_, v) {
-          data[4 * i] = v.fit.x * self.pixelRatio;
-          data[4 * i + 1] = self.ratioAdjustedHeight - (v.fit.y + v.h) * self.pixelRatio;
-          data[4 * i + 2] = v.w * self.pixelRatio;
-          data[4 * i + 3] = v.h * self.pixelRatio;
-          i++;
-        });
+        for (var i = 0; i < self.mapper.texts.length; i++) {
+          var text = self.mapper.texts[i], textSize = self.mapper.sizeForText(text);
+          data[4 * i] = textSize.fit.x * self.pixelRatio;
+          data[4 * i + 1] = self.ratioAdjustedHeight - (textSize.fit.y + textSize.h) * self.pixelRatio;
+          data[4 * i + 2] = textSize.w * self.pixelRatio;
+          data[4 * i + 3] = textSize.h * self.pixelRatio;
+        }
         completion(data);
       }, 1);
     }
     function _uniformTextureForUniformName(uniformName) {
-      var uniformDescription = this.userDefinedUniforms[uniformName], data = new Float32Array(this.mapper.textsKeys.length * 4);
-      if (!uniformDescription) blotter_Messaging.logError("BLOTTER.Composer", "cannot find uniformName for _uniformTextureForUniformName");
-      for (var i = 0; i < this.mapper.textsKeys.length; i++) {
-        var value = this.textUniformValues[this.mapper.textsKeys[i]][uniformName];
-        switch (uniformDescription.type) {
-         case "1f":
-          data[4 * i] = value;
+      var uniformDescription = this.userDefinedUniforms[uniformName], data = new Float32Array(this.mapper.texts.length * 4);
+      if (!uniformDescription) blotter_Messaging.logError("Blotter.Composer", "cannot find uniformName for _uniformTextureForUniformName");
+      for (var i = 0; i < this.mapper.texts.length; i++) {
+        var text = this.mapper.texts[i], textUniformsValues = this.textsUniformsValues[text.id];
+        if (textUniformsValues) {
+          var textUniform = textUniformsValues[uniformName];
+          switch (textUniform.type) {
+           case "1f":
+            data[4 * i] = textUniform.value;
+            data[4 * i + 1] = 0;
+            data[4 * i + 2] = 0;
+            data[4 * i + 3] = 0;
+            break;
+
+           case "2f":
+            data[4 * i] = textUniform.value[0];
+            data[4 * i + 1] = textUniform.value[1];
+            data[4 * i + 2] = 0;
+            data[4 * i + 3] = 0;
+            break;
+
+           case "3f":
+            data[4 * i] = textUniform.value[0];
+            data[4 * i + 1] = textUniform.value[1];
+            data[4 * i + 2] = textUniform.value[2];
+            data[4 * i + 3] = 0;
+            break;
+
+           case "4f":
+            data[4 * i] = textUniform.value[0];
+            data[4 * i + 1] = textUniform.value[1];
+            data[4 * i + 2] = textUniform.value[2];
+            data[4 * i + 3] = textUniform.value[3];
+            break;
+
+           default:
+            data[4 * i] = 0;
+            data[4 * i + 1] = 0;
+            data[4 * i + 2] = 0;
+            data[4 * i + 3] = 0;
+            break;
+          }
+        } else {
+          data[4 * i] = 0;
           data[4 * i + 1] = 0;
           data[4 * i + 2] = 0;
           data[4 * i + 3] = 0;
-          break;
-
-         case "2f":
-          data[4 * i] = value[0];
-          data[4 * i + 1] = value[1];
-          data[4 * i + 2] = 0;
-          data[4 * i + 3] = 0;
-          break;
-
-         case "3f":
-          data[4 * i] = value[0];
-          data[4 * i + 1] = value[1];
-          data[4 * i + 2] = value[2];
-          data[4 * i + 3] = 0;
-          break;
-
-         case "4f":
-          data[4 * i] = value[0];
-          data[4 * i + 1] = value[1];
-          data[4 * i + 2] = value[2];
-          data[4 * i + 3] = value[3];
-          break;
         }
       }
-      var texture = new THREE.DataTexture(data, this.mapper.textsKeys.length, 1, THREE.RGBAFormat, THREE.FloatType);
+      var texture = new THREE.DataTexture(data, this.mapper.texts.length, 1, THREE.RGBAFormat, THREE.FloatType);
       texture.needsUpdate = true;
       return texture;
     }
     return {
-      constructor: BLOTTER.Composer,
-      init: function(texts, properties, options) {
+      constructor: Blotter.Composer,
+      init: function(texts, options) {
         options = options || {};
-        this.mapper = new blotter_TextMapper(texts, properties);
-        this.textsKeys = this.mapper.textsKeys;
+        this.mapper = new Blotter.Mapper(texts);
         this.userDefinedUniforms = options.uniforms || {};
         this.fidelityModifier = .5;
         this.pixelRatio = blotter_CanvasUtils.pixelRatio();
         this.ratioAdjustedWidth = this.mapper.width * this.pixelRatio;
         this.ratioAdjustedHeight = this.mapper.height * this.pixelRatio;
-        _setTextUniformValues.call(this);
+        this.textsUniformsValues = {};
+        _setTextsUniformsValues.call(this);
       },
       build: function(callback) {
         var self = this, loader = new THREE.TextureLoader(), url = this.mapper.getImage();
@@ -762,20 +812,20 @@ if ( typeof module === 'object' ) {
         this.renderer.start();
       },
       updateUniformValueForText: function(text, uniformName, value) {
-        var self = this;
-        if (!this.textUniformValues[text]) {
+        var self = this, textsUniformsObject = this.textsUniformsValues[text.id];
+        if (!textsUniformsObject) {
           blotter_Messaging.logError("blotter_Renderer", "cannot find text for updateUniformsForText");
           return;
         }
-        if (!this.textUniformValues[text][uniformName]) {
+        if (!textsUniformsObject[uniformName]) {
           blotter_Messaging.logError("blotter_Renderer", "cannot find uniformName for updateUniformsForText");
           return;
         }
-        if (!blotter_UniformUtils.validValueForUniformType(this.userDefinedUniforms[uniformName].type, value)) {
+        if (!blotter_UniformUtils.validValueForUniformType(textsUniformsObject[uniformName].type, value)) {
           blotter_Messaging.logError("blotter_Renderer", "user defined uniform value for " + uniformName + " is incorrect for type: " + this.userDefinedUniforms[uniformName].type);
           return;
         }
-        this.textUniformValues[text][uniformName] = value;
+        textsUniformsObject[uniformName].value = value;
         if (this.renderer) {
           setTimeout(function() {
             self.renderer.material.uniforms[_uniformTextureNameForUniformName.call(self, uniformName)] = {
@@ -788,5 +838,5 @@ if ( typeof module === 'object' ) {
       }
     };
   }();
-  this.BLOTTER = BLOTTER;
+  this.Blotter = Blotter;
 }();
