@@ -13,11 +13,11 @@ var fragmentSrc = [
 
   "uniform sampler2D textSpriteBoundsTexture;",
   "uniform sampler2D centerPointTexture;",
+  "uniform sampler2D lenseWeightTexture;",
 
   "uniform float uTime;",
   "uniform float canvasWidth;",
   "uniform float canvasHeight;",
-  "uniform float lenseWeight;",
 
   "varying vec2 vTexCoord;",
 
@@ -42,6 +42,9 @@ var fragmentSrc = [
 
   "   // d = difference between p and m (obviously, but see above).",
   "   vec2 d = p - m;",
+
+  "   vec4 lenseWeightData = texture2D(lenseWeightTexture, vec2(spriteIndex, 0.5));",
+  "   float lenseWeight = lenseWeightData.x;",
 
   "   // The dot function returns the dot product of the two",
   "   // input parameters, i.e. the sum of the component-wise",
@@ -180,8 +183,7 @@ Blotter.MappedMaterial.prototype = (function() {
           spriteIndices          : { type: "t", value: textSpriteIndicesTexture },
           textSpriteBoundsTexture: { type: "t", value: textSpriteBoundsTexture },
           canvasWidth            : { type: "f", value: self.ratioAdjustedWidth },
-          canvasHeight           : { type: "f", value: self.ratioAdjustedHeight },
-          lenseWeight            : { type: "f", value: 0.9 }
+          canvasHeight           : { type: "f", value: self.ratioAdjustedHeight }
         };
         for (var uniformName in userDefinedUniformTextures) {
           uniforms[uniformName] = userDefinedUniformTextures[uniformName];
