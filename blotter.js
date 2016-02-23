@@ -586,65 +586,6 @@ if ( typeof module === 'object' ) {
       }
     };
   }();
-  var blotter_Renderer = function(width, height, uniforms) {
-    this.init(width, height, uniforms);
-  };
-  blotter_Renderer.prototype = function() {
-    return {
-      constructor: blotter_Renderer,
-      init: function(width, height, material) {
-        if (!Detector.webgl) {
-          blotter_Messaging.throwError("blotter_Renderer", "device does not support webgl");
-        }
-        this.material = material;
-        this.pixelRatio = blotter_CanvasUtils.pixelRatio();
-        this.ratioAdjustedWidth = width * this.pixelRatio;
-        this.ratioAdjustedHeight = height * this.pixelRatio;
-        this.renderer = new THREE.WebGLRenderer({
-          antialias: true,
-          alpha: true
-        });
-        this.renderer.setSize(this.ratioAdjustedWidth, this.ratioAdjustedHeight);
-        this.domElement = this.renderer.domElement;
-        $(this.domElement).css({
-          width: width,
-          height: height
-        });
-        $(this.domElement).attr({
-          width: this.ratioAdjustedWidth,
-          height: this.ratioAdjustedHeight
-        });
-        this.scene = new THREE.Scene();
-        this.camera = new THREE.Camera();
-        this.geometry = new THREE.PlaneGeometry(2, 2, 0);
-        this.mesh = new THREE.Mesh(this.geometry, this.material);
-        this.scene.add(this.mesh);
-      },
-      start: function() {
-        if (!this.currentAnimationLoop) {
-          this.loop();
-        }
-      },
-      loop: function() {
-        var self = this;
-        this.renderer.render(this.scene, this.camera);
-        this.currentAnimationLoop = blotter_Animation.requestAnimationFrame(function() {
-          self.loop();
-        });
-      },
-      stop: function() {
-        if (this.currentAnimationLoop) {
-          blotter_Animation.cancelAnimationFrame(this.currentAnimationLoop);
-          this.currentAnimationLoop = undefined;
-        }
-      },
-      teardown: function() {
-        this.stop();
-        this.renderer = null;
-        this.canvas.remove();
-      }
-    };
-  }();
   var fragmentSrc = [ "precision highp float;", "uniform sampler2D uSampler;", "uniform sampler2D spriteIndices;", "uniform sampler2D textSpriteBoundsTexture;", "uniform sampler2D centerPointTexture;", "uniform sampler2D lenseWeightTexture;", "uniform float uTime;", "uniform float canvasWidth;", "uniform float canvasHeight;", "varying vec2 vTexCoord;", "void main(void) {", "   vec2 aspect = vec2(canvasWidth, canvasHeight).xy;", "   vec4 spriteIndexData = texture2D(spriteIndices, vTexCoord);", "   float spriteIndex = spriteIndexData.x;", "   vec4 spriteData = texture2D(textSpriteBoundsTexture, vec2(spriteIndex, 0.5));", "   // p = x, y percentage for texel position within of total resolution", "   vec2 p = (gl_FragCoord.xy - spriteData.rg) / spriteData.ba;", "   // m = x, y percentage for center position within total resolution", "   // note: you should know this, but swizzling allows access to vecN data using x,y,z, and w (or r, g, b, and a) in that order.", "   vec4 centerPointData = texture2D(centerPointTexture, vec2(spriteIndex, 0.5));", "   vec2 m = centerPointData.xy;", "   //vec2 m = vec2(0.5);", "   // d = difference between p and m (obviously, but see above).", "   vec2 d = p - m;", "   vec4 lenseWeightData = texture2D(lenseWeightTexture, vec2(spriteIndex, 0.5));", "   float lenseWeight = lenseWeightData.x;", "   // The dot function returns the dot product of the two", "   // input parameters, i.e. the sum of the component-wise", "   // products. If x and y are the same the square root of", "   // the dot product is equivalent to the length of the vector.", "   // Therefore, r = length of vector represented by d (the ", "   // distance of the texel from center position).", "   // In order to apply weights here, we add our weight to this distance", "   // (pushing it closer to 1 - essentially giving no effect at all) and", "   // find the min between our weighted distance and 1.0", "   float inverseLenseWeight = 1.0 - lenseWeight;", "   float r = min(sqrt(dot(d, d)) + inverseLenseWeight, 1.0);", "   vec2 offsetUV = m + (d * r);", "   vec2 adjustedFragCoord = spriteData.rg + vec2((spriteData.b * offsetUV.x), (spriteData.a * offsetUV.y));", "   //adjustedFragCoord.x = clamp(adjustedFragCoord.x, spriteData.r, (spriteData.r + spriteData.b));", "   //adjustedFragCoord.y = clamp(adjustedFragCoord.y, spriteData.g, (spriteData.g + spriteData.a));", "   vec2 uv = adjustedFragCoord.xy / aspect;", "   // RGB shift", "   vec2 offset = vec2(0.0);", "   if (r < 1.0) {", "     float amount = 0.0013;", "     float angle = 0.45;", "     offset = (amount * (1.0 - r)) * vec2(cos(angle), sin(angle));", "   }", "   vec4 cr = texture2D(uSampler, (uv + offset));", "   vec4 cga = texture2D(uSampler, uv);", "   vec4 cb = texture2D(uSampler, (uv - offset));", "   vec4 outColor = vec4(0.0);", "   if (cr.r > 0.0 || cga.g > 0.0 || cb.b > 0.0) {", "   //if (r < 1.0) {", "     // Adjust rgb values so that colors with transparency appear as if they were atop an opaque white background.", "     // (vec4(0.0, 0.0, 0.0, 0.5) _atop white_ is visibly the same as vec4(0.5, 0.5, 0.5, 0.0))", "     if (cr.a != 0.0) {", "       cr.r = cr.r + cr.a;", "     }", "     if (cga.a != 0.0) {", "       cga.g = cga.g + cga.a;", "     }", "     if (cb.b != 0.0) {", "       cb.b = cb.b + cb.a;", "     }", "     // Ensure offseted/shifted texels have alpha similar to the texel they are offsetting", "     // (this prevents texel from being invisible if cga.a = vec4(0.0, 0.0, 0.0, 0.0)", "     cga.a = max(cga.a, max(cr.a, cb.a));", "     // Set alpha adjustment value so that white texels keep their transparency.", "   	float alpha = 1.0 - cga.a;", "     // Invert colors (this is cheating but optimal) so that we have CMYK rather than RGB", "     // shifted colors and the combination of offsets creates a blacker rather than whiter color.", "     outColor = vec4((1.0 - cr.r) - alpha, (1.0 - cga.g) - alpha, (1.0 - cb.b) - alpha, cga.a);", "     //outColor = vec4(0.0, 1.0, 0.0, 1.0);", "   }", "   else {", "     outColor = vec4(cr.r, cga.g, cb.b, cga.a);", "     //outColor = vec4(1.0, 0.0, 0.0, 1.0);", "   }", "   // Multiply alpha by original spriteIndexData's alpha value.", "   // this will be 0 for texels not within any 'sprite' area.", "   outColor.a = outColor.a * spriteIndexData.a;", "   gl_FragColor = outColor;", "}" ].join("\n");
   var vertexSrc = [ "varying vec2 vTexCoord;", "void main() {", "vTexCoord = uv;", "gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);", "}" ].join("\n");
   Blotter.MappedMaterial = function(mapper, shaderSrc, options) {

@@ -1,7 +1,6 @@
 import "../core/";
 import "../extras/";
 import "_UniformUtils";
-import "_Renderer";
 
 
 var fragmentSrc = [
