@@ -342,10 +342,10 @@ if ( typeof module === 'object' ) {
     style: "normal",
     weight: 500,
     padding: 0,
-    paddingTop: null,
-    paddingRight: null,
-    paddingBottom: null,
-    paddingLeft: null
+    paddingTop: 0,
+    paddingRight: 0,
+    paddingBottom: 0,
+    paddingLeft: 0
   };
   var blotter_TextUtils = {
     Properties: function() {
@@ -363,7 +363,7 @@ if ( typeof module === 'object' ) {
     },
     stringifiedPadding: function(properties) {
       var _properties = properties || this.ensurePropertyValues(), pTop = properties.paddingTop || _properties.padding, pRight = _properties.paddingRight || _properties.padding, pBottom = _properties.paddingBottom || _properties.padding, pLeft = _properties.paddingLeft || _properties.padding;
-      return "" + pTop + "px " + pRight + "px " + pBottom + "px " + pLeft + "px";
+      return pTop + "px " + pRight + "px " + pBottom + "px " + pLeft + "px";
     },
     sizeForText: function(textValue, properties) {
       var el = document.createElement("p"), properties = this.ensurePropertyValues(properties), size;
@@ -482,7 +482,7 @@ if ( typeof module === 'object' ) {
       toCanvas: function() {
         var canvas = blotter_CanvasUtils.hiDpiCanvas(this.width, this.height), ctx = canvas.getContext("2d");
         for (var i = 0; i < this.texts.length; i++) {
-          var text = this.texts[i], size = this.textsSizes[text.id], lineHeightOffset = (size.h * text.properties.leading - size.h) / 2;
+          var text = this.texts[i], size = this.textsSizes[text.id], lineHeightOffset = text.properties.size / 2 + (text.properties.size * text.properties.leading - text.properties.size) / 2;
           ctx.font = text.properties.style + " " + text.properties.weight + " " + text.properties.size + "px " + text.properties.family;
           ctx.fillStyle = text.properties.fill;
           ctx.fillText(text.value, size.fit.x + text.properties.paddingLeft, size.fit.y + text.properties.paddingTop + lineHeightOffset);

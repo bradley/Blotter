@@ -6,12 +6,11 @@ var blotter_PropertyDefaults = {
 	style        : 'normal',
 	weight       : 500,
 	padding      : 0,
-	paddingTop   : null,
-	paddingRight : null,
-	paddingBottom: null,
-	paddingLeft  : null
+	paddingTop   : 0,
+	paddingRight : 0,
+	paddingBottom: 0,
+	paddingLeft  : 0
 };
-
 
 var blotter_TextUtils = {
 
@@ -43,7 +42,7 @@ var blotter_TextUtils = {
 				pBottom = _properties.paddingBottom || _properties.padding,
 				pLeft = _properties.paddingLeft || _properties.padding;
 
-		return "" + pTop + "px " + pRight + "px " + pBottom + "px " + pLeft + "px";
+		return pTop + "px " + pRight + "px " + pBottom + "px " + pLeft + "px";
 	},
 
 	// Determines size of text within the document given certain style properties

@@ -109,14 +109,14 @@ Blotter.Mapper.prototype = (function () {
       for (var i = 0; i < this.texts.length; i++) {
         var text = this.texts[i],
             size = this.textsSizes[text.id],
-            lineHeightOffset = (((size.h * text.properties.leading) - size.h) / 2);
+            lineHeightOffset = (text.properties.size / 2) + (((text.properties.size * text.properties.leading) - text.properties.size) / 2);
 
         ctx.font = text.properties.style + " " + text.properties.weight + " " + text.properties.size + "px " + text.properties.family;
         ctx.fillStyle = text.properties.fill;
         ctx.fillText(
           text.value,
           size.fit.x + text.properties.paddingLeft,
-          size.fit.y + text.properties.paddingTop + lineHeightOffset
+          (size.fit.y + text.properties.paddingTop) + lineHeightOffset
         );
       }
 
