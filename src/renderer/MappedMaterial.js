@@ -173,11 +173,11 @@ Blotter.MappedMaterial.prototype = (function() {
     var self = this,
         uniforms,
         userDefinedUniformTextures = _uniformsForUserDefinedUniformValues.call(this),
-        indicesTexture = new blotter_TextsIndicesTexture(this.mapper, this.fidelityModifier);
-
+        indicesTexture = new blotter_TextsIndicesTexture(this.mapper, this.fidelityModifier),
+        boundsTexture = new blotter_TextsBoundsTexture(this.mapper);
 
     indicesTexture.build(function(textSpriteIndicesTexture) {
-      _textSpriteBoundsTexture.call(self, function(textSpriteBoundsTexture) {
+      boundsTexture.build(function(textSpriteBoundsTexture) {
 
         uniforms = {
           uTime                  : { type: "f", value: 1.0 },
@@ -210,35 +210,6 @@ Blotter.MappedMaterial.prototype = (function() {
       }
     }
     return uniformsAsTextures;
-  }
-
-  // Create a Data Texture holding the boundaries (x/y offset and w/h) that should be available to any given texel for any given text.
-
-  function _textSpriteBoundsTexture (completion) {
-  	var self = this;
-  	_spriteBoundsArray.call(this, function(spriteData) {
-    	var texture = new THREE.DataTexture(spriteData, self.mapper.texts.length, 1, THREE.RGBAFormat, THREE.FloatType);
-			texture.needsUpdate = true;
-      completion(texture);
-    });
-  }
-
-  function _spriteBoundsArray (completion) {
-    var self = this,
-    		data = new Float32Array(this.mapper.texts.length * 4);
-
-    setTimeout(function() {
-      for (var i = 0; i < self.mapper.texts.length; i++) {
-        var text = self.mapper.texts[i],
-            textSize = self.mapper.sizeForText(text);
-
-        data[4*i] = textSize.fit.x * self.pixelRatio;                                               // x
-        data[4*i+1] = self.ratioAdjustedHeight - ((textSize.fit.y + textSize.h) * self.pixelRatio); // y
-        data[4*i+2] = (textSize.w) * self.pixelRatio;                                               // w
-        data[4*i+3] = (textSize.h) * self.pixelRatio;                                               // h
-      };
-      completion(data);
-    }, 1);
   }
 
   // Create a Data Texture holding the values for a specified uniform name that should be available to any given texel for any given text.

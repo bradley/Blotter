@@ -1,6 +1,6 @@
 // Create a Data Texture the size of our text map wherein every texel holds the index of text whose boundaries contain the given texel's position.
 
-blotter_TextsIndicesTexture = function (mapper, fidelityModifier) {
+var blotter_TextsIndicesTexture = function (mapper, fidelityModifier) {
   this.init(mapper, fidelityModifier);
 }
 

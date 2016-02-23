@@ -494,7 +494,7 @@ if ( typeof module === 'object' ) {
       }
     };
   }();
-  blotter_TextsIndicesTexture = function(mapper, fidelityModifier) {
+  var blotter_TextsIndicesTexture = function(mapper, fidelityModifier) {
     this.init(mapper, fidelityModifier);
   };
   blotter_TextsIndicesTexture.prototype = function() {
@@ -531,6 +531,43 @@ if ( typeof module === 'object' ) {
         _textsIndices.call(this, function(dataPoints) {
           var texture = new THREE.DataTexture(dataPoints, self.mapper.width * self.fidelityModifier, self.mapper.height * self.fidelityModifier, THREE.RGBAFormat, THREE.FloatType);
           texture.flipY = true;
+          texture.needsUpdate = true;
+          callback(texture);
+        });
+      }
+    };
+  }();
+  var blotter_TextsBoundsTexture = function(mapper) {
+    this.init(mapper);
+  };
+  blotter_TextsBoundsTexture.prototype = function() {
+    function _spriteBounds(completion) {
+      var self = this, data = new Float32Array(this.mapper.texts.length * 4);
+      setTimeout(function() {
+        for (var i = 0; i < self.mapper.texts.length; i++) {
+          var text = self.mapper.texts[i], textSize = self.mapper.sizeForText(text);
+          data[4 * i] = textSize.fit.x * self.pixelRatio;
+          data[4 * i + 1] = self.ratioAdjustedHeight - (textSize.fit.y + textSize.h) * self.pixelRatio;
+          data[4 * i + 2] = textSize.w * self.pixelRatio;
+          data[4 * i + 3] = textSize.h * self.pixelRatio;
+        }
+        completion(data);
+      }, 1);
+    }
+    return {
+      constructor: blotter_TextsBoundsTexture,
+      init: function(mapper) {
+        this.mapper = mapper;
+        this.pixelRatio = blotter_CanvasUtils.pixelRatio();
+        this.width = this.mapper.width;
+        this.height = this.mapper.height;
+        this.ratioAdjustedWidth = this.width * this.pixelRatio;
+        this.ratioAdjustedHeight = this.height * this.pixelRatio;
+      },
+      build: function(callback) {
+        var self = this;
+        _spriteBounds.call(this, function(spriteData) {
+          var texture = new THREE.DataTexture(spriteData, self.mapper.texts.length, 1, THREE.RGBAFormat, THREE.FloatType);
           texture.needsUpdate = true;
           callback(texture);
         });
@@ -655,9 +692,9 @@ if ( typeof module === 'object' ) {
       }
     }
     function _materialUniforms(callback) {
-      var self = this, uniforms, userDefinedUniformTextures = _uniformsForUserDefinedUniformValues.call(this), indicesTexture = new blotter_TextsIndicesTexture(this.mapper, this.fidelityModifier);
+      var self = this, uniforms, userDefinedUniformTextures = _uniformsForUserDefinedUniformValues.call(this), indicesTexture = new blotter_TextsIndicesTexture(this.mapper, this.fidelityModifier), boundsTexture = new blotter_TextsBoundsTexture(this.mapper);
       indicesTexture.build(function(textSpriteIndicesTexture) {
-        _textSpriteBoundsTexture.call(self, function(textSpriteBoundsTexture) {
+        boundsTexture.build(function(textSpriteBoundsTexture) {
           uniforms = {
             uTime: {
               type: "f",
@@ -703,27 +740,6 @@ if ( typeof module === 'object' ) {
         };
       }
       return uniformsAsTextures;
-    }
-    function _textSpriteBoundsTexture(completion) {
-      var self = this;
-      _spriteBoundsArray.call(this, function(spriteData) {
-        var texture = new THREE.DataTexture(spriteData, self.mapper.texts.length, 1, THREE.RGBAFormat, THREE.FloatType);
-        texture.needsUpdate = true;
-        completion(texture);
-      });
-    }
-    function _spriteBoundsArray(completion) {
-      var self = this, data = new Float32Array(this.mapper.texts.length * 4);
-      setTimeout(function() {
-        for (var i = 0; i < self.mapper.texts.length; i++) {
-          var text = self.mapper.texts[i], textSize = self.mapper.sizeForText(text);
-          data[4 * i] = textSize.fit.x * self.pixelRatio;
-          data[4 * i + 1] = self.ratioAdjustedHeight - (textSize.fit.y + textSize.h) * self.pixelRatio;
-          data[4 * i + 2] = textSize.w * self.pixelRatio;
-          data[4 * i + 3] = textSize.h * self.pixelRatio;
-        }
-        completion(data);
-      }, 1);
     }
     function _uniformTextureForUniformName(uniformName) {
       var uniformDescription = this.userDefinedUniforms[uniformName], data = new Float32Array(this.mapper.texts.length * 4);
