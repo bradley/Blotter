@@ -1,5 +1,6 @@
 import "../core/";
 import "../extras/";
+import "../texture/";
 import "_UniformUtils";
 
 
@@ -171,9 +172,11 @@ Blotter.MappedMaterial.prototype = (function() {
   function _materialUniforms (callback) {
     var self = this,
         uniforms,
-        userDefinedUniformTextures = _uniformsForUserDefinedUniformValues.call(this);
+        userDefinedUniformTextures = _uniformsForUserDefinedUniformValues.call(this),
+        indicesTexture = new blotter_TextsIndicesTexture(this.mapper, this.fidelityModifier);
 
-    _textSpriteIndicesTexture.call(self, function(textSpriteIndicesTexture) {
+
+    indicesTexture.build(function(textSpriteIndicesTexture) {
       _textSpriteBoundsTexture.call(self, function(textSpriteBoundsTexture) {
 
         uniforms = {
@@ -207,66 +210,6 @@ Blotter.MappedMaterial.prototype = (function() {
       }
     }
     return uniformsAsTextures;
-  }
-
-  // Create a Data Texture the size of our text map wherein every texel holds the index of text whose boundaries contain the given texel's position.
-
-  function _textSpriteIndicesTexture (callback) {
-  	var self = this;
-
-  	_spriteIndices.call(this, function(dataPoints) {
-      var texture = new THREE.DataTexture(dataPoints, self.mapper.width * self.fidelityModifier, self.mapper.height * self.fidelityModifier, THREE.RGBAFormat, THREE.FloatType);
-      texture.flipY = true;
-			texture.needsUpdate = true;
-      callback(texture);
-    });
-  }
-
-  function _spriteIndices (completion) {
-    var self = this,
-    		height = this.mapper.height * this.fidelityModifier,
-        width = this.mapper.width * this.fidelityModifier,
-    		points = new Float32Array((height * width) * 4),
-        widthStepModifier = width % 1,
-        indicesOffset = (1 / this.mapper.texts.length) / 2;
-
-    setTimeout(function() {
-      for (var i = 1; i < points.length / 4; i++) {
-
-        var y = Math.ceil(i / (width - widthStepModifier)),
-            x = i - ((width - widthStepModifier) * (y - 1)),
-            referenceIndex = 0.0,
-            bg = 0.0,
-            a = 0.0;
-
-        for (var ki = 0; ki < self.mapper.texts.length; ki++) {
-          var text = self.mapper.texts[ki],
-              textSize = self.mapper.sizeForText(text),
-              fitY = textSize.fit.y * self.fidelityModifier,
-              fitX = textSize.fit.x * self.fidelityModifier,
-              vH = textSize.h * self.fidelityModifier,
-              vW = textSize.w * self.fidelityModifier;
-
-          // If x and y are within the fit bounds of the text space within our mapper.
-          if (y >= fitY &&
-              y <= fitY + vH &&
-              x >= fitX &&
-              x <= fitX + vW) {
-            referenceIndex = (ki / self.mapper.texts.length) + indicesOffset;
-            a = 1.0;
-            break;
-          }
-        }
-
-        var index = i - 1;
-        points[4*index+0] = referenceIndex;
-        points[4*index+1] = bg;
-        points[4*index+2] = bg;
-        points[4*index+3] = a;
-      }
-
-      completion(points);
-    }, 1);
   }
 
   // Create a Data Texture holding the boundaries (x/y offset and w/h) that should be available to any given texel for any given text.
