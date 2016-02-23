@@ -523,6 +523,69 @@ if ( typeof module === 'object' ) {
       return valid;
     }
   };
+  Blotter.MaterialRenderer = function(material) {
+    this.init(material);
+  };
+  Blotter.MaterialRenderer.prototype = function() {
+    return {
+      constructor: Blotter.MaterialRenderer,
+      init: function(material) {
+        var width = material.width, height = material.height;
+        if (!Detector.webgl) {
+          blotter_Messaging.throwError("Blotter.MaterialRenderer", "device does not support webgl");
+        }
+        if (!material.threeMaterial) {
+          blotter_Messaging.throwError("Blotter.MaterialRenderer", "material does not expose property threeMaterial. Did you forget to call #load on material before instantiating Blotter.MaterialRenderer?");
+        }
+        this.pixelRatio = blotter_CanvasUtils.pixelRatio();
+        this.ratioAdjustedWidth = width * this.pixelRatio;
+        this.ratioAdjustedHeight = height * this.pixelRatio;
+        this.renderer = new THREE.WebGLRenderer({
+          antialias: true,
+          alpha: true
+        });
+        this.renderer.setSize(this.ratioAdjustedWidth, this.ratioAdjustedHeight);
+        this.domElement = this.renderer.domElement;
+        $(this.domElement).css({
+          width: width,
+          height: height
+        });
+        $(this.domElement).attr({
+          width: this.ratioAdjustedWidth,
+          height: this.ratioAdjustedHeight
+        });
+        this.scene = new THREE.Scene();
+        this.camera = new THREE.Camera();
+        this.geometry = new THREE.PlaneGeometry(2, 2, 0);
+        this.material = material;
+        this.mesh = new THREE.Mesh(this.geometry, this.material.threeMaterial);
+        this.scene.add(this.mesh);
+      },
+      start: function() {
+        if (!this.currentAnimationLoop) {
+          this.loop();
+        }
+      },
+      loop: function() {
+        var self = this;
+        this.renderer.render(this.scene, this.camera);
+        this.currentAnimationLoop = blotter_Animation.requestAnimationFrame(function() {
+          self.loop();
+        });
+      },
+      stop: function() {
+        if (this.currentAnimationLoop) {
+          blotter_Animation.cancelAnimationFrame(this.currentAnimationLoop);
+          this.currentAnimationLoop = undefined;
+        }
+      },
+      teardown: function() {
+        this.stop();
+        this.renderer = null;
+        this.canvas.remove();
+      }
+    };
+  }();
   var blotter_Renderer = function(width, height, uniforms) {
     this.init(width, height, uniforms);
   };
@@ -584,21 +647,21 @@ if ( typeof module === 'object' ) {
   }();
   var fragmentSrc = [ "precision highp float;", "uniform sampler2D uSampler;", "uniform sampler2D spriteIndices;", "uniform sampler2D textSpriteBoundsTexture;", "uniform sampler2D centerPointTexture;", "uniform float uTime;", "uniform float canvasWidth;", "uniform float canvasHeight;", "uniform float lenseWeight;", "varying vec2 vTexCoord;", "void main(void) {", "   vec2 aspect = vec2(canvasWidth, canvasHeight).xy;", "   vec4 spriteIndexData = texture2D(spriteIndices, vTexCoord);", "   float spriteIndex = spriteIndexData.x;", "   vec4 spriteData = texture2D(textSpriteBoundsTexture, vec2(spriteIndex, 0.5));", "   // p = x, y percentage for texel position within of total resolution", "   vec2 p = (gl_FragCoord.xy - spriteData.rg) / spriteData.ba;", "   // m = x, y percentage for center position within total resolution", "   // note: you should know this, but swizzling allows access to vecN data using x,y,z, and w (or r, g, b, and a) in that order.", "   vec4 centerPointData = texture2D(centerPointTexture, vec2(spriteIndex, 0.5));", "   vec2 m = centerPointData.xy;", "   //vec2 m = vec2(0.5);", "   // d = difference between p and m (obviously, but see above).", "   vec2 d = p - m;", "   // The dot function returns the dot product of the two", "   // input parameters, i.e. the sum of the component-wise", "   // products. If x and y are the same the square root of", "   // the dot product is equivalent to the length of the vector.", "   // Therefore, r = length of vector represented by d (the ", "   // distance of the texel from center position).", "   // In order to apply weights here, we add our weight to this distance", "   // (pushing it closer to 1 - essentially giving no effect at all) and", "   // find the min between our weighted distance and 1.0", "   float inverseLenseWeight = 1.0 - lenseWeight;", "   float r = min(sqrt(dot(d, d)) + inverseLenseWeight, 1.0);", "   vec2 offsetUV = m + (d * r);", "   vec2 adjustedFragCoord = spriteData.rg + vec2((spriteData.b * offsetUV.x), (spriteData.a * offsetUV.y));", "   //adjustedFragCoord.x = clamp(adjustedFragCoord.x, spriteData.r, (spriteData.r + spriteData.b));", "   //adjustedFragCoord.y = clamp(adjustedFragCoord.y, spriteData.g, (spriteData.g + spriteData.a));", "   vec2 uv = adjustedFragCoord.xy / aspect;", "   // RGB shift", "   vec2 offset = vec2(0.0);", "   if (r < 1.0) {", "     float amount = 0.0013;", "     float angle = 0.45;", "     offset = (amount * (1.0 - r)) * vec2(cos(angle), sin(angle));", "   }", "   vec4 cr = texture2D(uSampler, (uv + offset));", "   vec4 cga = texture2D(uSampler, uv);", "   vec4 cb = texture2D(uSampler, (uv - offset));", "   vec4 outColor = vec4(0.0);", "   if (cr.r > 0.0 || cga.g > 0.0 || cb.b > 0.0) {", "   //if (r < 1.0) {", "     // Adjust rgb values so that colors with transparency appear as if they were atop an opaque white background.", "     // (vec4(0.0, 0.0, 0.0, 0.5) _atop white_ is visibly the same as vec4(0.5, 0.5, 0.5, 0.0))", "     if (cr.a != 0.0) {", "       cr.r = cr.r + cr.a;", "     }", "     if (cga.a != 0.0) {", "       cga.g = cga.g + cga.a;", "     }", "     if (cb.b != 0.0) {", "       cb.b = cb.b + cb.a;", "     }", "     // Ensure offseted/shifted texels have alpha similar to the texel they are offsetting", "     // (this prevents texel from being invisible if cga.a = vec4(0.0, 0.0, 0.0, 0.0)", "     cga.a = max(cga.a, max(cr.a, cb.a));", "     // Set alpha adjustment value so that white texels keep their transparency.", "   	float alpha = 1.0 - cga.a;", "     // Invert colors (this is cheating but optimal) so that we have CMYK rather than RGB", "     // shifted colors and the combination of offsets creates a blacker rather than whiter color.", "     outColor = vec4((1.0 - cr.r) - alpha, (1.0 - cga.g) - alpha, (1.0 - cb.b) - alpha, cga.a);", "     //outColor = vec4(0.0, 1.0, 0.0, 1.0);", "   }", "   else {", "     outColor = vec4(cr.r, cga.g, cb.b, cga.a);", "     //outColor = vec4(1.0, 0.0, 0.0, 1.0);", "   }", "   // Multiply alpha by original spriteIndexData's alpha value.", "   // this will be 0 for texels not within any 'sprite' area.", "   outColor.a = outColor.a * spriteIndexData.a;", "   gl_FragColor = outColor;", "}" ].join("\n");
   var vertexSrc = [ "varying vec2 vTexCoord;", "void main() {", "vTexCoord = uv;", "gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);", "}" ].join("\n");
-  Blotter.Composer = function(texts, options) {
-    this.init(texts, options);
+  Blotter.MappedMaterial = function(mapper, shaderSrc, options) {
+    this.init(mapper, shaderSrc, options);
   };
-  Blotter.Composer.prototype = function() {
+  Blotter.MappedMaterial.prototype = function() {
     function _setTextsUniformsValues() {
       for (var uniformName in this.userDefinedUniforms) {
         if (this.userDefinedUniforms.hasOwnProperty(uniformName)) {
           for (var i = 0; i < this.mapper.texts.length; i++) {
             var text = this.mapper.texts[i], uniform = this.userDefinedUniforms[uniformName];
             if (blotter_UniformUtils.UniformTypes.indexOf(uniform.type) == -1) {
-              blotter_Messaging.logError("blotter_Renderer", "user defined uniforms must be one of type: " + blotter_UniformUtils.UniformTypes.join(", "));
+              blotter_Messaging.logError("Blotter.MappedMaterial", "user defined uniforms must be one of type: " + blotter_UniformUtils.UniformTypes.join(", "));
               return;
             }
             if (!blotter_UniformUtils.validValueForUniformType(uniform.type, uniform.value)) {
-              blotter_Messaging.logError("blotter_Renderer", "user defined uniform value for " + uniformName + " is incorrect for type: " + uniform.type);
+              blotter_Messaging.logError("Blotter.MappedMaterial", "user defined uniform value for " + uniformName + " is incorrect for type: " + uniform.type);
               return;
             }
             this.textsUniformsValues[text.id] = this.textsUniformsValues[text.id] || {};
@@ -768,19 +831,21 @@ if ( typeof module === 'object' ) {
       return texture;
     }
     return {
-      constructor: Blotter.Composer,
-      init: function(texts, options) {
+      constructor: Blotter.MappedMaterial,
+      init: function(mapper, shaderSrc, options) {
         options = options || {};
-        this.mapper = new Blotter.Mapper(texts);
+        this.mapper = mapper;
         this.userDefinedUniforms = options.uniforms || {};
         this.fidelityModifier = .5;
         this.pixelRatio = blotter_CanvasUtils.pixelRatio();
-        this.ratioAdjustedWidth = this.mapper.width * this.pixelRatio;
-        this.ratioAdjustedHeight = this.mapper.height * this.pixelRatio;
+        this.width = this.mapper.width;
+        this.height = this.mapper.height;
+        this.ratioAdjustedWidth = this.width * this.pixelRatio;
+        this.ratioAdjustedHeight = this.height * this.pixelRatio;
         this.textsUniformsValues = {};
         _setTextsUniformsValues.call(this);
       },
-      build: function(callback) {
+      load: function(callback) {
         var self = this, loader = new THREE.TextureLoader(), url = this.mapper.getImage();
         loader.load(url, function(textsTexture) {
           self.textsTexture = textsTexture;
@@ -789,45 +854,39 @@ if ( typeof module === 'object' ) {
           self.textsTexture.magFilter = THREE.LinearFilter;
           self.textsTexture.needsUpdate = true;
           _materialUniforms.call(self, function(uniforms) {
-            var material = new THREE.ShaderMaterial({
+            self.threeMaterial = new THREE.ShaderMaterial({
               vertexShader: vertexSrc,
               fragmentShader: fragmentSrc,
               uniforms: uniforms
             });
-            material.depthTest = false;
-            material.depthWrite = false;
-            self.renderer = new blotter_Renderer(self.mapper.width, self.mapper.height, material);
+            self.threeMaterial.depthTest = false;
+            self.threeMaterial.depthWrite = false;
             callback();
           });
         });
       },
-      start: function() {
-        this.renderer.start();
-      },
       updateUniformValueForText: function(text, uniformName, value) {
         var self = this, textsUniformsObject = this.textsUniformsValues[text.id];
         if (!textsUniformsObject) {
-          blotter_Messaging.logError("blotter_Renderer", "cannot find text for updateUniformsForText");
+          blotter_Messaging.logError("Blotter.MappedMaterial", "cannot find text for updateUniformsForText");
           return;
         }
         if (!textsUniformsObject[uniformName]) {
-          blotter_Messaging.logError("blotter_Renderer", "cannot find uniformName for updateUniformsForText");
+          blotter_Messaging.logError("Blotter.MappedMaterial", "cannot find uniformName for updateUniformsForText");
           return;
         }
         if (!blotter_UniformUtils.validValueForUniformType(textsUniformsObject[uniformName].type, value)) {
-          blotter_Messaging.logError("blotter_Renderer", "user defined uniform value for " + uniformName + " is incorrect for type: " + this.userDefinedUniforms[uniformName].type);
+          blotter_Messaging.logError("Blotter.MappedMaterial", "user defined uniform value for " + uniformName + " is incorrect for type: " + this.userDefinedUniforms[uniformName].type);
           return;
         }
         textsUniformsObject[uniformName].value = value;
-        if (this.renderer) {
-          setTimeout(function() {
-            self.renderer.material.uniforms[_uniformTextureNameForUniformName.call(self, uniformName)] = {
-              type: "t",
-              value: _uniformTextureForUniformName.call(self, uniformName)
-            };
-            self.renderer.material.needsUpdate = true;
-          }, 1);
-        }
+        setTimeout(function() {
+          self.threeMaterial.uniforms[_uniformTextureNameForUniformName.call(self, uniformName)] = {
+            type: "t",
+            value: _uniformTextureForUniformName.call(self, uniformName)
+          };
+          self.threeMaterial.needsUpdate = true;
+        }, 1);
       }
     };
   }();

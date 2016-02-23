@@ -36,16 +36,23 @@
 
         var blotterTexts = texts.map(function(text) { return new Blotter.Text(text, styleProperties); });
 
-        var composer = new Blotter.Composer(blotterTexts, {
+
+
+        var mapper = new Blotter.Mapper(blotterTexts);
+
+        var material = new Blotter.MappedMaterial(mapper, false, {
           uniforms : {
-            centerPoint : { type : "2f", value : [0.5, 0.5] }
+            centerPoint : { type : "2f", value : [0.5, 0.5] },
+            weight : { type : "1f", value : 0.9 }
           }
         });
 
-        composer.build(function() {
-          $(".canvas-region").html(composer.renderer.domElement);
-          composer.start();
-        });
+        material.load(function () {
+          var renderer = new Blotter.MaterialRenderer(material);
+          $(".canvas-region").html(renderer.domElement);
+          renderer.start();
+        })
+
 
 
 
@@ -73,7 +80,7 @@
               nX = mousePos.x / mousePositionCanvas.width,
               nY = 1.0 - (mousePos.y / mousePositionCanvas.height);
 
-          composer.updateUniformValueForText(blotterTexts[35], "centerPoint", [nX, nY]);
+          material.updateUniformValueForText(blotterTexts[35], "centerPoint", [nX, nY]);
         }, false);
       });
     </script>

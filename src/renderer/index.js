@@ -1,3 +1,3 @@
 import "_UniformUtils";
-import "_Renderer";
-import "composer";
+import "MaterialRenderer";
+import "MappedMaterial";
