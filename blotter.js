@@ -369,7 +369,7 @@ if ( typeof module === 'object' ) {
       var el = document.createElement("p"), properties = this.ensurePropertyValues(properties), size;
       el.innerHTML = textValue;
       el.style.fontFamily = properties.family;
-      el.style.fontSize = properties.size;
+      el.style.fontSize = properties.size + "px";
       el.style.fontWeight = properties.weight;
       el.style.fontStyle = properties.style;
       el.style.padding = this.stringifiedPadding(properties);

@@ -24,8 +24,8 @@
         var texts = ["To", "communicate", "Mars", "converse", "spirits", "report", "the", "behaviour", "of", "sea", "monster", "Describe", "horoscope", "haruspicate", "or", "scry", "Observe", "disease", "in", "signatures", "evoke", "Biography", "from", "wrinkles", "palm", "And", "tragedy", "fingers", "release", "omens", "By", "sortilege", "tea", "leaves", "riddle", "inevitable", "With", "playing", "cards", "fiddle", "pentagrams", "Or", "barbituric", "acids", "dissect", 'Sed', 'To', 'communicate', 'Mars', 'converse', 'spirits', 'report', 'the', 'behaviour', 'of', 'sea', 'monster', 'Describe', 'horoscope', 'haruspicate', 'or', 'scry', 'Observe', 'disease', 'in', 'signatures', 'evoke', 'Biography', 'from', 'wrinkles', 'palm', 'And', 'tragedy', 'fingers', 'release', 'omens', 'By', 'sortilege', 'tea', 'leaves', 'riddle', 'inevitable', 'With', 'playing', 'cards', 'fiddle', 'pentagrams', 'Or', 'barbituric', 'acids', 'dissect', 'Sed', 'tincidunt', 'tempor', 'consectetur.', 'Cras', 'imperdiet', 'suscipit', 'massa,', 'ut', 'malesuada', 'enim', 'sollicitudin', 'in.', 'Nullam', 'cursus,', 'lorem', 'vitae', 'cursus', 'gravida,', 'erat'];
 
         var styleProperties = {
-          family: "Charcoal,sans-serif",
-          size: "12px",
+          family: "Charcoal, sans-serif",
+          size: 12,
           paddingTop: 12,
           paddingRight: 17,
           paddingBottom: 12,
@@ -35,8 +35,6 @@
         };
 
         var blotterTexts = texts.map(function(text) { return new Blotter.Text(text, styleProperties); });
-
-
 
         var mapper = new Blotter.Mapper(blotterTexts);
 
