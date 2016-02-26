@@ -20,19 +20,24 @@ var fragmentSrc = [
   "uniform float canvasHeight;",
 
   "varying vec2 vTexCoord;",
+  "float spriteIndex;",
 
+  "void test( out vec4 spriteData ) {",
+    "spriteData = texture2D(textSpriteBoundsTexture, vec2(spriteIndex, 0.5));",
+  "}",
 
-  "void main(void) {",
+  "void main( void ) {",
 
   "   vec2 aspect = vec2(canvasWidth, canvasHeight).xy;",
 
   "   vec4 spriteIndexData = texture2D(spriteIndices, vTexCoord);",
-  "   float spriteIndex = spriteIndexData.x;",
+  "   spriteIndex = spriteIndexData.x;",
 
-  "   vec4 spriteData = texture2D(textSpriteBoundsTexture, vec2(spriteIndex, 0.5));",
+  "   vec4 spriteData = vec4(0.0);",// = texture2D(textSpriteBoundsTexture, vec2(spriteIndex, 0.5));",
+  "   test(spriteData);",
 
   "   // p = x, y percentage for texel position within of total resolution",
-  "   vec2 p = (gl_FragCoord.xy - spriteData.rg) / spriteData.ba;",
+  "   vec2 p = (gl_FragCoord.xy - spriteData.xy) / spriteData.zw;",
 
   "   // m = x, y percentage for center position within total resolution",
   "   // note: you should know this, but swizzling allows access to vecN data using x,y,z, and w (or r, g, b, and a) in that order.",
@@ -60,9 +65,7 @@ var fragmentSrc = [
 
   "   vec2 offsetUV = m + (d * r);",
 
-  "   vec2 adjustedFragCoord = spriteData.rg + vec2((spriteData.b * offsetUV.x), (spriteData.a * offsetUV.y));",
-	"   //adjustedFragCoord.x = clamp(adjustedFragCoord.x, spriteData.r, (spriteData.r + spriteData.b));",
-  "   //adjustedFragCoord.y = clamp(adjustedFragCoord.y, spriteData.g, (spriteData.g + spriteData.a));",
+  "   vec2 adjustedFragCoord = spriteData.xy + vec2((spriteData.z * offsetUV.x), (spriteData.w * offsetUV.y));",
   "   vec2 uv = adjustedFragCoord.xy / aspect;",
 
   "   // RGB shift",
@@ -117,14 +120,14 @@ var fragmentSrc = [
 
 var vertexSrc = [
 
-		"varying vec2 vTexCoord;",
+	"varying vec2 vTexCoord;",
 
-		"void main() {",
+	"void main() {",
 
-			"vTexCoord = uv;",
-			"gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);",
+	"  vTexCoord = uv;",
+	"  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);",
 
-		"}"
+	"}"
 
 ].join("\n");
 
