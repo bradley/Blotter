@@ -40,8 +40,8 @@
 
         var material = new Blotter.MappedMaterial(mapper, false, {
           uniforms : {
-            centerPoint : { type : "2f", value : [0.5, 0.5] },
-            lenseWeight : { type : "1f", value : 0.9 }
+            uCenterPoint : { type : "2f", value : [0.5, 0.5] },
+            uLenseWeight : { type : "1f", value : 0.9 }
           }
         });
 
@@ -78,7 +78,7 @@
               nX = mousePos.x / mousePositionCanvas.width,
               nY = 1.0 - (mousePos.y / mousePositionCanvas.height);
 
-          material.updateUniformValueForText(blotterTexts[35], "centerPoint", [nX, nY]);
+          material.updateUniformValueForText(blotterTexts[35], "uCenterPoint", [nX, nY]);
         }, false);
       });
     </script>
