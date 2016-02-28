@@ -34,6 +34,59 @@ var blotter_UniformUtils = {
 	  }
 
 	  return valid;
+	},
+
+	glslDataTypeForUniformType : function (type) {
+		var dataType;
+		switch (type) {
+	    case '1f':
+	      dataType = "float";
+	      break;
+
+	    case '2f':
+	     	dataType = "vec2";
+	      break;
+
+	    case '3f':
+	      dataType = "vec3";
+	      break;
+
+	    case '4f':
+	      dataType = "vec4";
+	      break;
+
+	    default:
+	    	break;
+	  }
+
+	  return dataType;
+	},
+
+	fullSwizzleStringForUniformType : function (type) {
+		var swizzleString;
+
+		switch (type) {
+	    case '1f':
+	      swizzleString = "x";
+	      break;
+
+	    case '2f':
+	     	swizzleString = "xy";
+	      break;
+
+	    case '3f':
+	      swizzleString = "xyz";
+	      break;
+
+	    case '4f':
+	      swizzleString = "xyzw";
+	      break;
+
+	    default:
+	    	break;
+	  }
+
+	  return swizzleString;
 	}
 
 }

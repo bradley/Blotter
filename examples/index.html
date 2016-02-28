@@ -21,6 +21,75 @@
         *   ------------------------------------------------------
         */
 
+        var mainImageSrc = [
+          "void mainImage( out vec4 mainImage, in vec2 fragCoord ) {",
+
+          "   // p = x, y percentage for texel position within total resolution.",
+          "   vec2 p = fragCoord / uResolution;",
+          "   // d = x, y percentage for texel position within total resolution relative to center point.",
+          "   vec2 d = p - uCenterPoint;",
+
+          "   // The dot function returns the dot product of the two",
+          "   // input parameters, i.e. the sum of the component-wise",
+          "   // products. If x and y are the same the square root of",
+          "   // the dot product is equivalent to the length of the vector.",
+          "   // Therefore, r = length of vector represented by d (the ",
+          "   // distance of the texel from center position).",
+          "   // ",
+          "   // In order to apply weights here, we add our weight to this distance",
+          "   // (pushing it closer to 1 - essentially giving no effect at all) and",
+          "   // find the min between our weighted distance and 1.0",
+          "   float inverseLenseWeight = 1.0 - uLenseWeight;",
+          "   float r = min(sqrt(dot(d, d)) + inverseLenseWeight, 1.0);",
+
+          "   vec2 offsetUV = uCenterPoint + (d * r);",
+
+          "   // RGB shift",
+          "   vec2 offset = vec2(0.0);",
+          "   if (r < 1.0) {",
+          "     float amount = 0.012;",
+          "     float angle = 0.45;",
+          "     offset = (amount * (1.0 - r)) * vec2(cos(angle), sin(angle));",
+          "   }",
+          "   vec4 cr = textTexture(offsetUV + offset);",
+          "   vec4 cga = textTexture(offsetUV);",
+          "   vec4 cb = textTexture(offsetUV - offset);",
+
+          "   vec4 outColor = vec4(0.0);",
+
+          "   if (cr.r > 0.0 || cga.g > 0.0 || cb.b > 0.0) {",
+          "     // Adjust rgb values so that colors with transparency appear as if they were atop an opaque white background.",
+          "     // (vec4(0.0, 0.0, 0.0, 0.5) _atop white_ is visibly the same as vec4(0.5, 0.5, 0.5, 0.0))",
+          "     if (cr.a != 0.0) {",
+          "       cr.r = cr.r + cr.a;",
+          "     }",
+          "     if (cga.a != 0.0) {",
+          "       cga.g = cga.g + cga.a;",
+          "     }",
+          "     if (cb.b != 0.0) {",
+          "       cb.b = cb.b + cb.a;",
+          "     }",
+
+          "     // Ensure offseted/shifted texels have alpha similar to the texel they are offsetting",
+          "     // (this prevents texel from being invisible if cga.a = vec4(0.0, 0.0, 0.0, 0.0)",
+          "     cga.a = max(cga.a, max(cr.a, cb.a));",
+
+          "     // Set alpha adjustment value so that white texels keep their transparency.",
+          "     float alpha = 1.0 - cga.a;",
+
+          "     // Invert colors (this is cheating but optimal) so that we have CMYK rather than RGB",
+          "     // shifted colors and the combination of offsets creates a blacker rather than whiter color.",
+          "     outColor = vec4((1.0 - cr.r) - alpha, (1.0 - cga.g) - alpha, (1.0 - cb.b) - alpha, cga.a);",
+          "   }",
+          "   else {",
+          "     outColor = vec4(cr.r, cga.g, cb.b, cga.a);",
+          "   }",
+
+          "   mainImage = outColor;",
+          "}"
+        ].join("\n");
+
+
         var texts = ['To', 'communicate', 'Mars', 'converse', 'spirits', 'report', 'the', 'behaviour', 'of', 'sea', 'monster', 'Describe', 'horoscope', 'haruspicate', 'or', 'scry', 'Observe', 'disease', 'in', 'signatures', 'evoke', 'Biography', 'from', 'wrinkles', 'palm', 'And', 'tragedy', 'fingers', 'release', 'omens', 'By', 'sortilege', 'tea', 'leaves', 'riddle', 'inevitable', 'With', 'playing', 'cards', 'fiddle', 'pentagrams', 'Or', 'barbituric', 'acids', 'dissect', 'Sed', 'tincidunt', 'tempor', 'consectetur.', 'Cras', 'imperdiet', 'suscipit', 'massa,', 'ut', 'malesuada', 'enim', 'sollicitudin', 'in.', 'Nullam', 'cursus,', 'lorem', 'vitae', 'cursus', 'gravida,', 'erat'];
 
         var styleProperties = {
@@ -38,7 +107,7 @@
 
         var mapper = new Blotter.Mapper(blotterTexts);
 
-        var material = new Blotter.MappedMaterial(mapper, false, {
+        var material = new Blotter.MappedMaterial(mapper, mainImageSrc, {
           uniforms : {
             uCenterPoint : { type : "2f", value : [0.5, 0.5] },
             uLenseWeight : { type : "1f", value : 0.9 }
