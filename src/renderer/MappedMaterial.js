@@ -8,34 +8,47 @@ var fragmentSrc = [
 
   "precision highp float;",
 
-  "uniform sampler2D uSampler;",
-
-  "uniform sampler2D spriteIndicesTexture;",
-  "uniform sampler2D spriteBoundsTexture;",
-
+  // Private uniforms.
+  "uniform sampler2D _uSampler;",
+  "uniform sampler2D _uSpriteIndicesTexture;",
+  "uniform sampler2D _uSpriteBoundsTexture;",
   "uniform sampler2D uCenterPointTexture;",
   "uniform sampler2D uLenseWeightTexture;",
+  "uniform vec2 _uCanvasResolution;",
 
-  "uniform float uTime;",
-  "uniform vec2 uCanvasResolution;",
+  // Private texCoord and sprite information.
+  "varying vec2 _vTexCoord;",
+  "vec4 _spriteBounds;",
 
-  "varying vec2 vTexCoord;",
+  // Public blotter defined uniforms.
+  "vec2 uResolution;",
 
-  // **************************
+  // Public version of user defined uniforms.
   "vec2 uCenterPoint;",
   "float uLenseWeight;",
-  // **************************
 
-  //---------------------------
-  "vec2 iResolution;",
-  //---------------------------
+  "vec4 textTexture(vec2 coord);",
 
 
+  // Public helper function used by user programs to retrieve texel color information within the bounds of
+  // any given text sprite. This is to be used instead of `texture2D`.
+  "vec4 textTexture(vec2 coord) {",
+  "   vec2 adjustedFragCoord = _spriteBounds.xy + vec2((_spriteBounds.z * coord.x), (_spriteBounds.w * coord.y));",
+  "   vec2 uv = adjustedFragCoord.xy / _uCanvasResolution;",
+  "   if (adjustedFragCoord.x < _spriteBounds.x ||",
+  "       adjustedFragCoord.x > _spriteBounds.x + _spriteBounds.z ||",
+  "       adjustedFragCoord.y < _spriteBounds.y ||",
+  "       adjustedFragCoord.y > _spriteBounds.y + _spriteBounds.w) {",
+  "     return vec4(0.0);",
+  "   }",
+  "   return texture2D(_uSampler, uv);",
+  "}",
 
-  "void mainImage( out vec4 mainImage, in vec2 fragCoord, in vec4 spriteBounds, in vec2 aspect ) {",
+
+  "void mainImage( out vec4 mainImage, in vec2 fragCoord ) {",
 
   "   // p = x, y percentage for texel position within total resolution.",
-  "   vec2 p = fragCoord / iResolution;",
+  "   vec2 p = fragCoord / uResolution;",
   "   // d = x, y percentage for texel position within total resolution relative to center point.",
   "   vec2 d = p - uCenterPoint;",
 
@@ -54,25 +67,20 @@ var fragmentSrc = [
 
   "   vec2 offsetUV = uCenterPoint + (d * r);",
 
-  //-----------------------------------------
-
-  "   vec2 adjustedFragCoord = spriteBounds.xy + vec2((spriteBounds.z * offsetUV.x), (spriteBounds.w * offsetUV.y));",
-  "   vec2 uv = adjustedFragCoord.xy / aspect;",
-
   "   // RGB shift",
   "   vec2 offset = vec2(0.0);",
   "   if (r < 1.0) {",
-  "     float amount = 0.0013;",
+  "     float amount = 0.012;",
   "     float angle = 0.45;",
   "     offset = (amount * (1.0 - r)) * vec2(cos(angle), sin(angle));",
   "   }",
-  "   vec4 cr = texture2D(uSampler, (uv + offset));",
-  "   vec4 cga = texture2D(uSampler, uv);",
-  "   vec4 cb = texture2D(uSampler, (uv - offset));",
+  "   vec4 cr = textTexture(offsetUV + offset);",
+  "   vec4 cga = textTexture(offsetUV);",
+  "   vec4 cb = textTexture(offsetUV - offset);",
 
   "   vec4 outColor = vec4(0.0);",
+
   "   if (cr.r > 0.0 || cga.g > 0.0 || cb.b > 0.0) {",
-  "   //if (r < 1.0) {",
   "     // Adjust rgb values so that colors with transparency appear as if they were atop an opaque white background.",
   "     // (vec4(0.0, 0.0, 0.0, 0.5) _atop white_ is visibly the same as vec4(0.5, 0.5, 0.5, 0.0))",
   "     if (cr.a != 0.0) {",
@@ -91,6 +99,7 @@ var fragmentSrc = [
 
   "     // Set alpha adjustment value so that white texels keep their transparency.",
   "     float alpha = 1.0 - cga.a;",
+
   "     // Invert colors (this is cheating but optimal) so that we have CMYK rather than RGB",
   "     // shifted colors and the combination of offsets creates a blacker rather than whiter color.",
   "     outColor = vec4((1.0 - cr.r) - alpha, (1.0 - cga.g) - alpha, (1.0 - cb.b) - alpha, cga.a);",
@@ -106,35 +115,32 @@ var fragmentSrc = [
 
   "void main( void ) {",
 
-  "   vec2 aspect = uCanvasResolution;",
-
-  "   vec4 spriteIndexData = texture2D(spriteIndicesTexture, vTexCoord);",
+  //  Retrieve sprite index and sprite alpha for sprite in which texel is contained.
+  "   vec4 spriteIndexData = texture2D(_uSpriteIndicesTexture, _vTexCoord);",
   "   float spriteIndex = spriteIndexData.r;",
   "   float spriteAlpha = spriteIndexData.a;",
 
-  "   vec4 spriteBounds = texture2D(spriteBoundsTexture, vec2(spriteIndex, 0.5));",
+  //  Make bounds for the current sprite globally visible.
+  "   _spriteBounds = texture2D(_uSpriteBoundsTexture, vec2(spriteIndex, 0.5));",
 
-  "   vec2 fragCoord = gl_FragCoord.xy - spriteBounds.xy;",
-
-  "   iResolution = spriteBounds.zw;",
-
-
-  //  Set user defined uniforms from textures.
-
+  //  Extract uniform data from user defined uniform textures.
   "   vec4 uCenterPointData = texture2D(uCenterPointTexture, vec2(spriteIndex, 0.5));",
-  "   uCenterPoint = uCenterPointData.xy;",
-
   "   vec4 uLenseWeightData = texture2D(uLenseWeightTexture, vec2(spriteIndex, 0.5));",
+
+  //  Set "uniform" values visible to user.
+  "   uResolution = _spriteBounds.zw;",
+  "   uCenterPoint = uCenterPointData.xy;",
   "   uLenseWeight = uLenseWeightData.x;",
 
+  //  Set fragment coordinate in respect to position within sprite bounds.
+  "   vec2 fragCoord = gl_FragCoord.xy - _spriteBounds.xy;",
 
-
-
+  //  Call user defined fragment function, setting outColor on return.
   "   vec4 outColor;",
-  "   mainImage(outColor, fragCoord, spriteBounds, aspect);",
+  "   mainImage(outColor, fragCoord);",
 
-  "   // Multiply alpha by original spriteIndexData's alpha value.",
-  "   // this will be 0 for texels not within any 'sprite' area.",
+  //  Multiply alpha by original spriteIndexData's alpha value."
+  //  this will be 0 for texels not within any 'sprite' area."
   "   outColor.a = outColor.a * spriteAlpha;",
   "   gl_FragColor = outColor;",
   "}"
@@ -143,11 +149,11 @@ var fragmentSrc = [
 
 var vertexSrc = [
 
-	"varying vec2 vTexCoord;",
+	"varying vec2 _vTexCoord;",
 
 	"void main() {",
 
-	"  vTexCoord = uv;",
+	"  _vTexCoord = uv;",
 	"  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);",
 
 	"}"
@@ -206,11 +212,10 @@ Blotter.MappedMaterial.prototype = (function() {
       boundsTexture.build(function(spriteBoundsTexture) {
 
         uniforms = {
-          uTime                : { type: "f" , value: 1.0 },
-          uSampler             : { type: "t" , value: self.textsTexture },
-          uCanvasResolution    : { type: "2f", value: [self.ratioAdjustedWidth, self.ratioAdjustedHeight] },
-          spriteIndicesTexture : { type: "t" , value: spriteIndicesTexture },
-          spriteBoundsTexture  : { type: "t" , value: spriteBoundsTexture }
+          _uSampler              : { type: "t" , value: self.textsTexture },
+          _uCanvasResolution     : { type: "2f", value: [self.ratioAdjustedWidth, self.ratioAdjustedHeight] },
+          _uSpriteIndicesTexture : { type: "t" , value: spriteIndicesTexture },
+          _uSpriteBoundsTexture  : { type: "t" , value: spriteBoundsTexture }
         };
         for (var uniformName in userDefinedUniformTextures) {
           uniforms[uniformName] = userDefinedUniformTextures[uniformName];
