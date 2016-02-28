@@ -4,27 +4,27 @@ import "../text/";
 import "_UniformUtils";
 
 
-Blotter.MaterialRenderer = function (material) {
+Blotter.Renderer = function (material) {
   this.init(material);
 }
 
-Blotter.MaterialRenderer.prototype = (function () {
+Blotter.Renderer.prototype = (function () {
 
   return {
 
-    constructor : Blotter.MaterialRenderer,
+    constructor : Blotter.Renderer,
 
     init : function (material) {
       var width = material.width,
           height = material.height;
 
       if (!Detector.webgl) {
-        blotter_Messaging.throwError("Blotter.MaterialRenderer", "device does not support webgl");
+        blotter_Messaging.throwError("Blotter.Renderer", "device does not support webgl");
       }
 
       if (!material.threeMaterial) {
-        blotter_Messaging.throwError("Blotter.MaterialRenderer",
-          "material does not expose property threeMaterial. Did you forget to call #load on material before instantiating Blotter.MaterialRenderer?");
+        blotter_Messaging.throwError("Blotter.Renderer",
+          "material does not expose property threeMaterial. Did you forget to call #load on material before instantiating Blotter.Renderer?");
       }
 
       this.pixelRatio = blotter_CanvasUtils.pixelRatio();

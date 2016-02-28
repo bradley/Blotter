@@ -105,9 +105,8 @@
 
         var blotterTexts = texts.map(function(text) { return new Blotter.Text(text, styleProperties); });
 
-        var mapper = new Blotter.Mapper(blotterTexts);
 
-        var material = new Blotter.MappedMaterial(mapper, mainImageSrc, {
+        var material = new Blotter.Material(blotterTexts, mainImageSrc, {
           uniforms : {
             uCenterPoint : { type : "2f", value : [0.5, 0.5] },
             uLenseWeight : { type : "1f", value : 0.9 }
@@ -115,7 +114,7 @@
         });
 
         material.load(function () {
-          var renderer = new Blotter.MaterialRenderer(material);
+          var renderer = new Blotter.Renderer(material);
           $(".canvas-region").html(renderer.domElement);
           renderer.start();
         })

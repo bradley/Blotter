@@ -410,10 +410,10 @@ if ( typeof module === 'object' ) {
       }
     };
   }();
-  Blotter.Mapper = function(texts) {
+  var blotter_Mapper = function(texts) {
     this.init.apply(this, arguments);
   };
-  Blotter.Mapper.prototype = function() {
+  blotter_Mapper.prototype = function() {
     function _updateTexts(texts, eachCallback) {
       if (!(texts instanceof Array)) {
         texts = [ texts ];
@@ -421,7 +421,7 @@ if ( typeof module === 'object' ) {
       for (var i = 0; i < texts.length; i++) {
         var text = texts[i];
         if (texts instanceof Blotter.Text) {
-          blotter_Messaging.throwError("Blotter.Mapper", "argument must be instance of Blotter.Text or array of objects that are instances of Blotter.Text");
+          blotter_Messaging.throwError("blotter_Mapper", "argument must be instance of Blotter.Text or array of objects that are instances of Blotter.Text");
         }
         eachCallback.call(this, text);
       }
@@ -447,7 +447,7 @@ if ( typeof module === 'object' ) {
       return areaB - areaA;
     }
     return {
-      constructor: Blotter.Mapper,
+      constructor: blotter_Mapper,
       init: function(texts) {
         this.texts = [];
         this.textsSizes = {};
@@ -651,19 +651,19 @@ if ( typeof module === 'object' ) {
       return swizzleString;
     }
   };
-  Blotter.MaterialRenderer = function(material) {
+  Blotter.Renderer = function(material) {
     this.init(material);
   };
-  Blotter.MaterialRenderer.prototype = function() {
+  Blotter.Renderer.prototype = function() {
     return {
-      constructor: Blotter.MaterialRenderer,
+      constructor: Blotter.Renderer,
       init: function(material) {
         var width = material.width, height = material.height;
         if (!Detector.webgl) {
-          blotter_Messaging.throwError("Blotter.MaterialRenderer", "device does not support webgl");
+          blotter_Messaging.throwError("Blotter.Renderer", "device does not support webgl");
         }
         if (!material.threeMaterial) {
-          blotter_Messaging.throwError("Blotter.MaterialRenderer", "material does not expose property threeMaterial. Did you forget to call #load on material before instantiating Blotter.MaterialRenderer?");
+          blotter_Messaging.throwError("Blotter.Renderer", "material does not expose property threeMaterial. Did you forget to call #load on material before instantiating Blotter.Renderer?");
         }
         this.pixelRatio = blotter_CanvasUtils.pixelRatio();
         this.ratioAdjustedWidth = width * this.pixelRatio;
@@ -714,10 +714,17 @@ if ( typeof module === 'object' ) {
       }
     };
   }();
-  Blotter.MappedMaterial = function(mapper, mainImageSrc, options) {
-    this.init(mapper, mainImageSrc, options);
+  Blotter.Material = function(texts, mainImageSrc, options) {
+    this.init(texts, mainImageSrc, options);
   };
-  Blotter.MappedMaterial.prototype = function() {
+  Blotter.Material.prototype = function() {
+    function _createMapperFromTexts(texts) {
+      if (!Array.isArray(texts)) {
+        texts = [ texts ];
+      }
+      var mapper = new blotter_Mapper(texts);
+      return mapper;
+    }
     function _vertexSrc() {
       var vertexSrc = [ "varying vec2 _vTexCoord;", "void main() {", "  _vTexCoord = uv;", "  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);", "}" ];
       return vertexSrc.join("\n");
@@ -745,11 +752,11 @@ if ( typeof module === 'object' ) {
           for (var i = 0; i < this.mapper.texts.length; i++) {
             var text = this.mapper.texts[i], uniform = this.userDefinedUniforms[uniformName];
             if (blotter_UniformUtils.UniformTypes.indexOf(uniform.type) == -1) {
-              blotter_Messaging.logError("Blotter.MappedMaterial", "user defined uniforms must be one of type: " + blotter_UniformUtils.UniformTypes.join(", "));
+              blotter_Messaging.logError("Blotter.Material", "user defined uniforms must be one of type: " + blotter_UniformUtils.UniformTypes.join(", "));
               return;
             }
             if (!blotter_UniformUtils.validValueForUniformType(uniform.type, uniform.value)) {
-              blotter_Messaging.logError("Blotter.MappedMaterial", "user defined uniform value for " + uniformName + " is incorrect for type: " + uniform.type);
+              blotter_Messaging.logError("Blotter.Material", "user defined uniform value for " + uniformName + " is incorrect for type: " + uniform.type);
               return;
             }
             this.textsUniformsValues[text.id] = this.textsUniformsValues[text.id] || {};
@@ -855,10 +862,10 @@ if ( typeof module === 'object' ) {
       return texture;
     }
     return {
-      constructor: Blotter.MappedMaterial,
-      init: function(mapper, mainImageSrc, options) {
+      constructor: Blotter.Material,
+      init: function(texts, mainImageSrc, options) {
         options = options || {};
-        this.mapper = mapper;
+        this.mapper = _createMapperFromTexts.call(this, texts);
         this.mainImageSrc = mainImageSrc;
         this.userDefinedUniforms = options.uniforms || {};
         this.fidelityModifier = .5;
@@ -893,15 +900,15 @@ if ( typeof module === 'object' ) {
       updateUniformValueForText: function(text, uniformName, value) {
         var self = this, textsUniformsObject = this.textsUniformsValues[text.id];
         if (!textsUniformsObject) {
-          blotter_Messaging.logError("Blotter.MappedMaterial", "cannot find text for updateUniformsForText");
+          blotter_Messaging.logError("Blotter.Material", "cannot find text for updateUniformsForText");
           return;
         }
         if (!textsUniformsObject[uniformName]) {
-          blotter_Messaging.logError("Blotter.MappedMaterial", "cannot find uniformName for updateUniformsForText");
+          blotter_Messaging.logError("Blotter.Material", "cannot find uniformName for updateUniformsForText");
           return;
         }
         if (!blotter_UniformUtils.validValueForUniformType(textsUniformsObject[uniformName].type, value)) {
-          blotter_Messaging.logError("Blotter.MappedMaterial", "user defined uniform value for " + uniformName + " is incorrect for type: " + this.userDefinedUniforms[uniformName].type);
+          blotter_Messaging.logError("Blotter.Material", "user defined uniform value for " + uniformName + " is incorrect for type: " + this.userDefinedUniforms[uniformName].type);
           return;
         }
         textsUniformsObject[uniformName].value = value;
