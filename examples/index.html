@@ -115,7 +115,7 @@
 
         material.load(function () {
           var renderer = new Blotter.Renderer(material);
-          $(".canvas-region").html(renderer.domElement);
+          renderer.appendTo($(".canvas-region")[0]);
           renderer.start();
         })
 
