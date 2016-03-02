@@ -7,6 +7,8 @@ Blotter.Text = function (value, properties) {
 Blotter.Text.prototype = (function () {
 
   function _generateId () {
+    // Note: I don't love this method of generating an object id.
+    //   I'm open to just using a serial count if that's determined to be a good option.
     var d = new Date().getTime();
     if(window.performance && typeof window.performance.now === "function"){
         d += performance.now(); //use high-precision timer if available

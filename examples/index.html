@@ -8,9 +8,6 @@
     <script type="text/javascript" src="../blotter.js"></script>
   </head>
   <body>
-    <div class="canvas-region"></div>
-
-    <canvas class="mouse-position-canvas" width="200" height="200"></canvas>
 
     <script>
       $(document).ready(function() {
@@ -115,39 +112,33 @@
 
         material.load(function () {
           var renderer = new Blotter.Renderer(material);
-          renderer.appendTo($(".canvas-region")[0]);
-          renderer.start();
-        })
 
+          var normalizedMousePosition = function(e, el) {
+            var relX = e.pageX - $(el).offset().left,
+              relY = e.pageY - $(el).offset().top,
+              nX = relX / $(el).width(),
+              nY = 1.0 - (relY / $(el).height());
 
+            return [nX, nY];
+          }
 
+          var setListener = function (text, outputEl) {
+            $(outputEl).on("mousemove", function (e) {
+              material.updateUniformValueForText(text, "uCenterPoint", normalizedMousePosition(e, outputEl));
+            });
+          }
 
+          for (var i = 0; i < blotterTexts.length; i++) {
+            var text = blotterTexts[i];
+                outputEl = document.createElement("span");
+            outputEl.style.display = "inline-block";
+            document.body.appendChild(outputEl);
+            renderer.forText(text).appendTo(outputEl);
 
-        /**
-        *   STUFF FOR MOUSE POSITION FOR THIS EXAMPLE.
-        *   ------------------------------------------------------
-        */
+            setListener(text, outputEl);
+          }
 
-        var mousePositionCanvas = document.getElementsByClassName("mouse-position-canvas")[0],
-            ctx = mousePositionCanvas.getContext("2d");
-
-        mousePositionCanvas.style.border = "1px solid black";
-
-        function getMousePos(canvas, e) {
-          var rect = canvas.getBoundingClientRect();
-          return {
-            x: e.clientX - rect.left,
-            y: e.clientY - rect.top
-          };
-        }
-
-        mousePositionCanvas.addEventListener('mousemove', function(e) {
-          var mousePos = getMousePos(mousePositionCanvas, e),
-              nX = mousePos.x / mousePositionCanvas.width,
-              nY = 1.0 - (mousePos.y / mousePositionCanvas.height);
-
-          material.updateUniformValueForText(blotterTexts[35], "uCenterPoint", [nX, nY]);
-        }, false);
+        });
       });
     </script>
   </body>

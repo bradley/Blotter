@@ -315,7 +315,7 @@ if ( typeof module === 'object' ) {
   }();
   var blotter_CanvasUtils = {
     hiDpiCanvas: function(w, h, pixelRatio) {
-      pixelRatio = pixelRatio || this.pixelRatio();
+      pixelRatio = pixelRatio || this.pixelRatio;
       var canvas = document.createElement("canvas");
       canvas.width = w * pixelRatio;
       canvas.height = h * pixelRatio;
@@ -332,7 +332,7 @@ if ( typeof module === 'object' ) {
       }
       bsr = bsr || 1;
       return dpr / bsr * legibilitySharpeningMultiplier;
-    }
+    }()
   };
   var blotter_PropertyDefaults = {
     family: "sans-serif",
@@ -558,7 +558,7 @@ if ( typeof module === 'object' ) {
       constructor: blotter_TextsBoundsTexture,
       init: function(mapper) {
         this.mapper = mapper;
-        this.pixelRatio = blotter_CanvasUtils.pixelRatio();
+        this.pixelRatio = blotter_CanvasUtils.pixelRatio;
         this.width = this.mapper.width;
         this.height = this.mapper.height;
         this.ratioAdjustedWidth = this.width * this.pixelRatio;
@@ -651,68 +651,110 @@ if ( typeof module === 'object' ) {
       return swizzleString;
     }
   };
+  var blotter_RendererScope = function(text, renderer, options) {
+    this.init(text, renderer, options);
+  };
+  blotter_RendererScope.prototype = function() {
+    function _render() {
+      var size = this.renderer.material.mapper.sizeForText(this.text), pixelRatio = blotter_CanvasUtils.pixelRatio;
+      if (this.domElement) {
+        this.context.clearRect(0, 0, size.w, size.h);
+        this.context.drawImage(this.renderer.domElement, size.fit.x * pixelRatio, size.fit.y * pixelRatio, size.w * pixelRatio, size.h * pixelRatio, 0, 0, size.w, size.h);
+      }
+    }
+    return {
+      constructor: blotter_RendererScope,
+      init: function(text, renderer, options) {
+        options = options || {};
+        if (typeof options.autostart === "undefined") {
+          options.autostart = true;
+        }
+        this.text = text;
+        this.renderer = renderer;
+        this.width = this.renderer.material.mapper.sizeForText(text).w;
+        this.height = this.renderer.material.mapper.sizeForText(text).h;
+        this.playing = options.autostart;
+        this.timeDelta = 0;
+        this.lastDrawTime;
+        this.frameCount = 0;
+        this.domElement;
+        this.context;
+      },
+      play: function() {
+        this.playing = true;
+      },
+      pause: function() {
+        this.playing = false;
+      },
+      update: function() {
+        this.playing += 1;
+        this.timeDelta = (Date.now() - this.lastDrawTime) / 1e3;
+        this.lastDrawTime = Date.now();
+        _render.call(this);
+      },
+      appendTo: function(element) {
+        if (this.domElement) {
+          this.domElement.remove();
+          this.context = null;
+        }
+        this.domElement = blotter_CanvasUtils.hiDpiCanvas(this.width, this.height);
+        this.context = this.domElement.getContext("2d");
+        element.appendChild(this.domElement);
+      }
+    };
+  }();
   Blotter.Renderer = function(material) {
     this.init(material);
   };
   Blotter.Renderer.prototype = function() {
-    function _createOutCanvasCtx(element) {
-      var testText = this.material.mapper.texts[35], size = this.material.mapper.sizeForText(testText), canvas = blotter_CanvasUtils.hiDpiCanvas(size.w, size.h);
-      element.appendChild(canvas);
-      return canvas.getContext("2d");
-    }
-    function _renderToOutCanvasCtx() {
-      var testText = this.material.mapper.texts[35], size = this.material.mapper.sizeForText(testText);
-      if (this.outCanvasCtx) {
-        this.outCanvasCtx.clearRect(0, 0, size.w, size.h);
-        this.outCanvasCtx.drawImage(this.domElement, size.fit.x * this.pixelRatio, size.fit.y * this.pixelRatio, size.w * this.pixelRatio, size.h * this.pixelRatio, 0, 0, size.w, size.h);
+    function _loop() {
+      var self = this;
+      this.renderer.render(this.scene, this.camera);
+      for (textId in this.textScopes) {
+        var scope = this.textScopes[textId];
+        if (scope.playing) {
+          scope.update();
+        }
       }
+      this.currentAnimationLoop = blotter_Animation.requestAnimationFrame(function() {
+        _loop.call(self);
+      });
     }
     return {
       constructor: Blotter.Renderer,
-      init: function(material) {
+      init: function(material, options) {
         var width = material.width, height = material.height;
+        options = options || {};
+        if (typeof options.autostart === "undefined") {
+          options.autostart = true;
+        }
         if (!Detector.webgl) {
           blotter_Messaging.throwError("Blotter.Renderer", "device does not support webgl");
         }
         if (!material.threeMaterial) {
           blotter_Messaging.throwError("Blotter.Renderer", "material does not expose property threeMaterial. Did you forget to call #load on your Blotter.Material object before instantiating Blotter.Renderer?");
         }
-        this.pixelRatio = blotter_CanvasUtils.pixelRatio();
-        this.ratioAdjustedWidth = width * this.pixelRatio;
-        this.ratioAdjustedHeight = height * this.pixelRatio;
         this.renderer = new THREE.WebGLRenderer({
           antialias: true,
           alpha: true
         });
-        this.renderer.setSize(this.ratioAdjustedWidth, this.ratioAdjustedHeight);
+        this.renderer.setSize(width * blotter_CanvasUtils.pixelRatio, height * blotter_CanvasUtils.pixelRatio);
         this.domElement = this.renderer.domElement;
-        $(this.domElement).css({
-          width: width,
-          height: height
-        });
-        $(this.domElement).attr({
-          width: this.ratioAdjustedWidth,
-          height: this.ratioAdjustedHeight
-        });
         this.scene = new THREE.Scene();
         this.camera = new THREE.Camera();
         this.geometry = new THREE.PlaneGeometry(2, 2, 0);
         this.material = material;
         this.mesh = new THREE.Mesh(this.geometry, this.material.threeMaterial);
         this.scene.add(this.mesh);
+        this.textScopes = {};
+        if (options.autostart) {
+          this.start();
+        }
       },
       start: function() {
         if (!this.currentAnimationLoop) {
-          this.loop();
+          _loop.call(this);
         }
-      },
-      loop: function() {
-        var self = this;
-        this.renderer.render(this.scene, this.camera);
-        _renderToOutCanvasCtx.call(this);
-        this.currentAnimationLoop = blotter_Animation.requestAnimationFrame(function() {
-          self.loop();
-        });
       },
       stop: function() {
         if (this.currentAnimationLoop) {
@@ -725,13 +767,27 @@ if ( typeof module === 'object' ) {
         this.renderer = null;
         this.canvas.remove();
       },
-      appendTo: function(element) {
-        this.outCanvasCtx = _createOutCanvasCtx.call(this, element);
+      forText: function(text, options) {
+        if (!(text instanceof Blotter.Text)) {
+          blotter_Messaging.logError("Blotter.Renderer", "argument must be instanceof Blotter.Text");
+          return;
+        }
+        if (!this.material.hasText(text)) {
+          blotter_Messaging.logError("Blotter.Renderer", "Blotter.Text object not found in material");
+          return;
+        }
+        options = options || {};
+        if (typeof options.autostart === "undefined") {
+          options.autostart = true;
+        }
+        var scope = new blotter_RendererScope(text, this, options);
+        this.textScopes[text.id] = scope;
+        return scope;
       }
     };
   }();
-  Blotter.Material = function(texts, mainImageSrc, options) {
-    this.init(texts, mainImageSrc, options);
+  Blotter.Material = function(texts, shaderSrc, options) {
+    this.init(texts, shaderSrc, options);
   };
   Blotter.Material.prototype = function() {
     function _createMapperFromTexts(texts) {
@@ -759,7 +815,7 @@ if ( typeof module === 'object' ) {
       privateUserDefinedUniformTextureDeclarations = privateUserDefinedUniformTextureDeclarations.join("\n");
       publicUserDefinedUniformDeclarations = publicUserDefinedUniformDeclarations.join("\n");
       uniformDefinitionsForUserDefinedUniforms = uniformDefinitionsForUserDefinedUniforms.join("\n");
-      fragmentSrc = [ "precision highp float;", "uniform sampler2D _uSampler;", "uniform sampler2D _uSpriteIndicesTexture;", "uniform sampler2D _uSpriteBoundsTexture;", "uniform vec2 _uCanvasResolution;", "varying vec2 _vTexCoord;", "vec4 _spriteBounds;", "vec2 uResolution;", privateUserDefinedUniformTextureDeclarations, publicUserDefinedUniformDeclarations, "vec4 textTexture( vec2 coord ) {", "   vec2 adjustedFragCoord = _spriteBounds.xy + vec2((_spriteBounds.z * coord.x), (_spriteBounds.w * coord.y));", "   vec2 uv = adjustedFragCoord.xy / _uCanvasResolution;", "   if (adjustedFragCoord.x < _spriteBounds.x ||", "       adjustedFragCoord.x > _spriteBounds.x + _spriteBounds.z ||", "       adjustedFragCoord.y < _spriteBounds.y ||", "       adjustedFragCoord.y > _spriteBounds.y + _spriteBounds.w) {", "     return vec4(0.0);", "   }", "   return texture2D(_uSampler, uv);", "}", "void mainImage( out vec4 mainImage, in vec2 fragCoord );", this.mainImageSrc, "void main( void ) {", "   vec4 spriteIndexData = texture2D(_uSpriteIndicesTexture, _vTexCoord);", "   float spriteIndex = spriteIndexData.r;", "   float spriteAlpha = spriteIndexData.a;", "   _spriteBounds = texture2D(_uSpriteBoundsTexture, vec2(spriteIndex, 0.5));", "   uResolution = _spriteBounds.zw;", uniformDefinitionsForUserDefinedUniforms, "   vec2 fragCoord = gl_FragCoord.xy - _spriteBounds.xy;", "   vec4 outColor;", "   mainImage(outColor, fragCoord);", "   outColor.a = outColor.a * spriteAlpha;", "   gl_FragColor = outColor;", "}" ];
+      fragmentSrc = [ "precision highp float;", "uniform sampler2D _uSampler;", "uniform sampler2D _uSpriteIndicesTexture;", "uniform sampler2D _uSpriteBoundsTexture;", "uniform vec2 _uCanvasResolution;", "varying vec2 _vTexCoord;", "vec4 _spriteBounds;", "vec2 uResolution;", privateUserDefinedUniformTextureDeclarations, publicUserDefinedUniformDeclarations, "vec4 textTexture( vec2 coord ) {", "   vec2 adjustedFragCoord = _spriteBounds.xy + vec2((_spriteBounds.z * coord.x), (_spriteBounds.w * coord.y));", "   vec2 uv = adjustedFragCoord.xy / _uCanvasResolution;", "   if (adjustedFragCoord.x < _spriteBounds.x ||", "       adjustedFragCoord.x > _spriteBounds.x + _spriteBounds.z ||", "       adjustedFragCoord.y < _spriteBounds.y ||", "       adjustedFragCoord.y > _spriteBounds.y + _spriteBounds.w) {", "     return vec4(0.0);", "   }", "   return texture2D(_uSampler, uv);", "}", "void mainImage( out vec4 mainImage, in vec2 fragCoord );", this.shaderSrc, "void main( void ) {", "   vec4 spriteIndexData = texture2D(_uSpriteIndicesTexture, _vTexCoord);", "   float spriteIndex = spriteIndexData.r;", "   float spriteAlpha = spriteIndexData.a;", "   _spriteBounds = texture2D(_uSpriteBoundsTexture, vec2(spriteIndex, 0.5));", "   uResolution = _spriteBounds.zw;", uniformDefinitionsForUserDefinedUniforms, "   vec2 fragCoord = gl_FragCoord.xy - _spriteBounds.xy;", "   vec4 outColor;", "   mainImage(outColor, fragCoord);", "   outColor.a = outColor.a * spriteAlpha;", "   gl_FragColor = outColor;", "}" ];
       return fragmentSrc.join("\n");
     }
     function _setTextsUniformsValues() {
@@ -782,7 +838,7 @@ if ( typeof module === 'object' ) {
       }
     }
     function _materialUniforms(callback) {
-      var self = this, uniforms, userDefinedUniformTextures = _uniformsForUserDefinedUniformValues.call(this), indicesTexture = new blotter_TextsIndicesTexture(this.mapper, this.fidelityModifier), boundsTexture = new blotter_TextsBoundsTexture(this.mapper);
+      var self = this, uniforms, userDefinedUniformTextures = _uniformsForUserDefinedUniformValues.call(this), indicesTexture = new blotter_TextsIndicesTexture(this.mapper, this.fidelity), boundsTexture = new blotter_TextsBoundsTexture(this.mapper);
       indicesTexture.build(function(spriteIndicesTexture) {
         boundsTexture.build(function(spriteBoundsTexture) {
           uniforms = {
@@ -792,7 +848,7 @@ if ( typeof module === 'object' ) {
             },
             _uCanvasResolution: {
               type: "2f",
-              value: [ self.ratioAdjustedWidth, self.ratioAdjustedHeight ]
+              value: [ self.width * blotter_CanvasUtils.pixelRatio, self.height * blotter_CanvasUtils.pixelRatio ]
             },
             _uSpriteIndicesTexture: {
               type: "t",
@@ -879,17 +935,14 @@ if ( typeof module === 'object' ) {
     }
     return {
       constructor: Blotter.Material,
-      init: function(texts, mainImageSrc, options) {
+      init: function(texts, shaderSrc, options) {
         options = options || {};
         this.mapper = _createMapperFromTexts.call(this, texts);
-        this.mainImageSrc = mainImageSrc;
-        this.userDefinedUniforms = options.uniforms || {};
-        this.fidelityModifier = .5;
-        this.pixelRatio = blotter_CanvasUtils.pixelRatio();
         this.width = this.mapper.width;
         this.height = this.mapper.height;
-        this.ratioAdjustedWidth = this.width * this.pixelRatio;
-        this.ratioAdjustedHeight = this.height * this.pixelRatio;
+        this.shaderSrc = shaderSrc;
+        this.userDefinedUniforms = options.uniforms || {};
+        this.fidelity = .5;
         this.textsUniformsValues = {};
         _setTextsUniformsValues.call(this);
       },
@@ -912,6 +965,12 @@ if ( typeof module === 'object' ) {
             callback();
           });
         });
+      },
+      hasText: function(text) {
+        if (!(text instanceof Blotter.Text)) {
+          blotter_Messaging.logError("Blotter.Material", "argument must be instanceof Blotter.Text");
+        }
+        return !!this.textsUniformsValues[text.id];
       },
       updateUniformValueForText: function(text, uniformName, value) {
         var self = this, textsUniformsObject = this.textsUniformsValues[text.id];

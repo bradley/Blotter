@@ -31,7 +31,7 @@ blotter_TextsBoundsTexture.prototype = (function () {
     init : function (mapper) {
       this.mapper = mapper;
 
-      this.pixelRatio = blotter_CanvasUtils.pixelRatio();
+      this.pixelRatio = blotter_CanvasUtils.pixelRatio;
       this.width = this.mapper.width;
       this.height = this.mapper.height;
       this.ratioAdjustedWidth = this.width * this.pixelRatio;

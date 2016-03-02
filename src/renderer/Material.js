@@ -4,8 +4,8 @@ import "../texture/";
 import "_UniformUtils";
 
 
-Blotter.Material = function(texts, mainImageSrc, options) {
-  this.init(texts, mainImageSrc, options);
+Blotter.Material = function(texts, shaderSrc, options) {
+  this.init(texts, shaderSrc, options);
 }
 
 Blotter.Material.prototype = (function() {
@@ -107,7 +107,7 @@ Blotter.Material.prototype = (function() {
 
       "void mainImage( out vec4 mainImage, in vec2 fragCoord );",
 
-      this.mainImageSrc,
+      this.shaderSrc,
 
       "void main( void ) {",
 
@@ -174,7 +174,7 @@ Blotter.Material.prototype = (function() {
     var self = this,
         uniforms,
         userDefinedUniformTextures = _uniformsForUserDefinedUniformValues.call(this),
-        indicesTexture = new blotter_TextsIndicesTexture(this.mapper, this.fidelityModifier),
+        indicesTexture = new blotter_TextsIndicesTexture(this.mapper, this.fidelity),
         boundsTexture = new blotter_TextsBoundsTexture(this.mapper);
 
     indicesTexture.build(function(spriteIndicesTexture) {
@@ -182,7 +182,7 @@ Blotter.Material.prototype = (function() {
 
         uniforms = {
           _uSampler              : { type: "t" , value: self.textsTexture },
-          _uCanvasResolution     : { type: "2f", value: [self.ratioAdjustedWidth, self.ratioAdjustedHeight] },
+          _uCanvasResolution     : { type: "2f", value: [self.width * blotter_CanvasUtils.pixelRatio, self.height * blotter_CanvasUtils.pixelRatio] },
           _uSpriteIndicesTexture : { type: "t" , value: spriteIndicesTexture },
           _uSpriteBoundsTexture  : { type: "t" , value: spriteBoundsTexture }
         };
@@ -283,11 +283,14 @@ Blotter.Material.prototype = (function() {
 
     constructor : Blotter.Material,
 
-    init : function(texts, mainImageSrc, options) {
+    init : function (texts, shaderSrc, options) {
       options = options || {};
 
       this.mapper = _createMapperFromTexts.call(this, texts);
-      this.mainImageSrc = mainImageSrc;
+      this.width = this.mapper.width;
+      this.height = this.mapper.height;
+
+      this.shaderSrc = shaderSrc;
       this.userDefinedUniforms = options.uniforms || {};
 
       // There is a negative coorelation between this value and
@@ -295,20 +298,14 @@ Blotter.Material.prototype = (function() {
       // However, the lower this value, the less fidelity you can expect
       // for indexing into uniforms for any given text.
       // Value must be between 0.0 and 1.0, and you are advised to keep it around 0.5.
-      this.fidelityModifier = 0.5;
-
-      this.pixelRatio = blotter_CanvasUtils.pixelRatio();
-      this.width = this.mapper.width;
-      this.height = this.mapper.height;
-      this.ratioAdjustedWidth = this.width * this.pixelRatio;
-      this.ratioAdjustedHeight = this.height * this.pixelRatio;
+      this.fidelity = 0.5;
 
       // Setup text specific uniforms immediately.
       this.textsUniformsValues = {};
       _setTextsUniformsValues.call(this);
     },
 
-    load : function(callback) {
+    load : function (callback) {
       var self = this,
           loader = new THREE.TextureLoader(),
           url = this.mapper.getImage();
@@ -339,7 +336,15 @@ Blotter.Material.prototype = (function() {
       });
     },
 
-    updateUniformValueForText : function(text, uniformName, value) {
+    hasText : function (text) {
+      if (!(text instanceof Blotter.Text)) {
+        blotter_Messaging.logError("Blotter.Material", "argument must be instanceof Blotter.Text");
+      }
+
+      return !!this.textsUniformsValues[text.id];
+    },
+
+    updateUniformValueForText : function (text, uniformName, value) {
       var self = this,
           textsUniformsObject = this.textsUniformsValues[text.id];
 
