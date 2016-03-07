@@ -1489,7 +1489,7 @@ if ( typeof module === 'object' ) {
         return !!this.textsUniformsValues[text.id];
       },
       updateUniformValueForText: function(text, uniformName, value) {
-        var self = this, textsUniformsObject = this.textsUniformsValues[text.id];
+        var textsUniformsObject = this.textsUniformsValues[text.id];
         if (!textsUniformsObject) {
           blotter_Messaging.logError("Blotter.Material", "cannot find text for updateUniformsForText");
           return;
@@ -1503,13 +1503,11 @@ if ( typeof module === 'object' ) {
           return;
         }
         textsUniformsObject[uniformName].value = value;
-        setTimeout(function() {
-          self.threeMaterial.uniforms[_uniformTextureNameForUniformName.call(self, uniformName)] = {
-            type: "t",
-            value: _uniformTextureForUniformName.call(self, uniformName)
-          };
-          self.threeMaterial.needsUpdate = true;
-        }, 1);
+        this.threeMaterial.uniforms[_uniformTextureNameForUniformName.call(self, uniformName)] = {
+          type: "t",
+          value: _uniformTextureForUniformName.call(this, uniformName)
+        };
+        this.threeMaterial.needsUpdate = true;
       }
     };
   }();

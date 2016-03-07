@@ -344,8 +344,7 @@ Blotter.Material.prototype = (function() {
     },
 
     updateUniformValueForText : function (text, uniformName, value) {
-      var self = this,
-          textsUniformsObject = this.textsUniformsValues[text.id];
+      var textsUniformsObject = this.textsUniformsValues[text.id];
 
       if (!textsUniformsObject) {
         blotter_Messaging.logError("Blotter.Material", "cannot find text for updateUniformsForText");
@@ -364,14 +363,11 @@ Blotter.Material.prototype = (function() {
 
       textsUniformsObject[uniformName].value = value;
 
-      setTimeout(function() {
-        // try using this.threeMaterial
-        self.threeMaterial.uniforms[_uniformTextureNameForUniformName.call(self, uniformName)] = {
-          type : "t",
-          value : _uniformTextureForUniformName.call(self, uniformName)
-        };
-        self.threeMaterial.needsUpdate = true;
-      }, 1);
+      this.threeMaterial.uniforms[_uniformTextureNameForUniformName.call(self, uniformName)] = {
+        type : "t",
+        value : _uniformTextureForUniformName.call(this, uniformName)
+      };
+      this.threeMaterial.needsUpdate = true;
     }
   }
 })();
