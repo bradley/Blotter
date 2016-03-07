@@ -10,11 +10,40 @@ var blotter_RendererScope = function (text, renderer, options) {
 
 blotter_RendererScope.prototype = (function () {
 
+  function _setupEventEmission () {
+    var emitter = EventEmitter.prototype;
+
+    for (var prop in emitter) {
+      if (emitter.hasOwnProperty(prop)) {
+        this[prop] = emitter[prop];
+      }
+    }
+  }
+
+  function _setMouseEventListeners () {
+    var self = this,
+        eventNames = ["mousedown", "mouseup", "mousemove", "mouseenter", "mouseleave"];
+    for (var i = 0; i < eventNames.length; i++) {
+      var eventName = eventNames[i];
+      (function (self, name) {
+        self.domElement.addEventListener(name, function(e) {
+          var position = blotter_CanvasUtils.normalizedMousePosition(self.domElement, e);
+          self.emit(name, position)
+        }, false);
+      })(self, eventName);
+    }
+  }
+
+  function _setEventListeners () {
+    _setMouseEventListeners.call(this);
+  }
+
   function _render () {
     var size = this.renderer.material.mapper.sizeForText(this.text),
         pixelRatio = blotter_CanvasUtils.pixelRatio;
     if (this.domElement) {
       this.context.clearRect(0, 0, size.w, size.h);
+
       this.context.drawImage(
         this.renderer.domElement,
         size.fit.x * pixelRatio,
@@ -26,6 +55,8 @@ blotter_RendererScope.prototype = (function () {
         size.w,
         size.h
       );
+
+      this.emit("update", this.timeDelta);
     }
   }
 
@@ -44,6 +75,7 @@ blotter_RendererScope.prototype = (function () {
 
       this.width = this.renderer.material.mapper.sizeForText(text).w;
       this.height = this.renderer.material.mapper.sizeForText(text).h;
+
       this.playing = options.autostart;
       this.timeDelta = 0;
       this.lastDrawTime;
@@ -51,6 +83,8 @@ blotter_RendererScope.prototype = (function () {
 
       this.domElement;
       this.context;
+
+      _setupEventEmission.call(this);
     },
 
     play : function () {
@@ -62,9 +96,10 @@ blotter_RendererScope.prototype = (function () {
     },
 
     update : function () {
+      var now = Date.now();
       this.playing += 1;
-      this.timeDelta = (Date.now() - this.lastDrawTime) / 1000;
-      this.lastDrawTime = Date.now();
+      this.timeDelta = (now - (this.lastDrawTime || now)) / 1000;
+      this.lastDrawTime = now;
       _render.call(this);
     },
 
@@ -76,6 +111,7 @@ blotter_RendererScope.prototype = (function () {
       this.domElement = blotter_CanvasUtils.hiDpiCanvas(this.width, this.height);
       this.context = this.domElement.getContext("2d");
       element.appendChild(this.domElement);
+      _setEventListeners.call(this);
     }
   }
 })();
@@ -93,7 +129,7 @@ Blotter.Renderer.prototype = (function () {
 
     this.renderer.render(this.scene, this.camera);
 
-    for (textId in this.textScopes) {
+    for (var textId in this.textScopes) {
       var scope = this.textScopes[textId];
       if (scope.playing) {
         scope.update();
@@ -186,9 +222,12 @@ Blotter.Renderer.prototype = (function () {
         options.autostart = true;
       }
 
-      var scope = new blotter_RendererScope(text, this, options);
-      this.textScopes[text.id] = scope;
-      return scope;
+      if (!this.textScopes[text.id]) {
+        var scope = new blotter_RendererScope(text, this, options);
+        this.textScopes[text.id] = scope;
+      }
+
+      return this.textScopes[text.id];
     }
   }
 })();

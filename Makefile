@@ -1,7 +1,8 @@
 VENDOR_FILES = \
 	lib/objectKeys.js \
 	lib/packer/packer.growing.js \
-	lib/detector/Detector.js
+	lib/detector/Detector.js \
+	lib/event_emitter/EventEmitter.js
 
 GENERATED_FILES = \
 	blotter.js \

@@ -125,7 +125,6 @@ Blotter.Material.prototype = (function() {
 
       //  Set fragment coordinate in respect to position within sprite bounds.
       "   vec2 fragCoord = gl_FragCoord.xy - _spriteBounds.xy;",
-
       //  Call user defined fragment function, setting outColor on return.
       "   vec4 outColor;",
       "   mainImage(outColor, fragCoord);",

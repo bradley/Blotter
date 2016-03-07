@@ -102,7 +102,6 @@
 
         var blotterTexts = texts.map(function(text) { return new Blotter.Text(text, styleProperties); });
 
-
         var material = new Blotter.Material(blotterTexts, mainImageSrc, {
           uniforms : {
             uCenterPoint : { type : "2f", value : [0.5, 0.5] },
@@ -113,31 +112,17 @@
         material.load(function () {
           var renderer = new Blotter.Renderer(material);
 
-          var normalizedMousePosition = function(e, el) {
-            var relX = e.pageX - $(el).offset().left,
-              relY = e.pageY - $(el).offset().top,
-              nX = relX / $(el).width(),
-              nY = 1.0 - (relY / $(el).height());
-
-            return [nX, nY];
-          }
-
-          var setListener = function (text, outputEl) {
-            $(outputEl).on("mousemove", function (e) {
-              material.updateUniformValueForText(text, "uCenterPoint", normalizedMousePosition(e, outputEl));
-            });
-          }
-
           for (var i = 0; i < blotterTexts.length; i++) {
             var text = blotterTexts[i];
                 outputEl = document.createElement("span");
             outputEl.style.display = "inline-block";
             document.body.appendChild(outputEl);
             renderer.forText(text).appendTo(outputEl);
-
-            setListener(text, outputEl);
           }
 
+          renderer.forText(blotterTexts[35]).on("mousemove", function (mousePosition) {
+            material.updateUniformValueForText(blotterTexts[35], "uCenterPoint", [mousePosition.x, mousePosition.y]);
+          });
         });
       });
     </script>

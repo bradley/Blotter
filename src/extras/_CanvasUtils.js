@@ -20,9 +20,6 @@ var blotter_CanvasUtils = {
 	// Returns the device's pixel ratio
 
 	pixelRatio : (function () {
-    // Note: Could possibly do away with `legibilitySharpeningMultiplier`
-    //   but it makes our canvas text much sharper... open to discussion.
-    var legibilitySharpeningMultiplier = 2;
     var ctx = document.createElement("canvas").getContext("2d"),
         dpr = window.devicePixelRatio || 1,
         bsr = ctx.backingStorePixelRatio;
@@ -33,7 +30,24 @@ var blotter_CanvasUtils = {
 
     bsr = bsr || 1;
 
-    return (dpr / bsr) * legibilitySharpeningMultiplier;
-  })()
+    return dpr / bsr;
+  })(),
 
+  mousePosition : function (canvas, event) {
+    var rect = canvas.getBoundingClientRect();
+    return {
+      x: event.clientX - rect.left,
+      y: rect.height - (event.clientY - rect.top)
+    };
+  },
+
+  normalizedMousePosition : function (canvas, event) {
+    var rect = canvas.getBoundingClientRect();
+    var position = this.mousePosition(canvas, event);
+
+    return {
+      x: position.x / rect.width,
+      y: position.y / rect.height
+    }
+  }
 }
