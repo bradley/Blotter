@@ -764,7 +764,7 @@ if ( typeof module === 'object' ) {
     }
     return {
       requestAnimationFrame: function(callback) {
-        requestAnimationFrame.call(window, callback);
+        return requestAnimationFrame.call(window, callback);
       },
       cancelAnimationFrame: function(id) {
         cancelAnimationFrame.call(window, id);
@@ -1488,7 +1488,7 @@ if ( typeof module === 'object' ) {
       teardown: function() {
         this.stop();
         this.renderer = null;
-        this.canvas.remove();
+        this.domElement.remove();
       },
       forText: function(text, options) {
         if (!(text instanceof Blotter.Text)) {

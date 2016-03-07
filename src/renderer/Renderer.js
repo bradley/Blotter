@@ -90,7 +90,7 @@ Blotter.Renderer.prototype = (function () {
     teardown : function () {
       this.stop();
       this.renderer = null;
-      this.canvas.remove();
+      this.domElement.remove();
     },
 
     forText : function (text, options) {

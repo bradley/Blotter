@@ -35,7 +35,7 @@ var blotter_Animation = (function () {
     // Polyfill requestAnimationFrame without modifying window.requestAnimationFrame
 
     requestAnimationFrame : function (callback) {
-      requestAnimationFrame.call(window, callback);
+      return requestAnimationFrame.call(window, callback);
     },
 
     // Polyfill cancelAnimationFrame without modifying window.cancelAnimationFrame
