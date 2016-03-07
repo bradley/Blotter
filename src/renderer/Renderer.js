@@ -56,7 +56,7 @@ blotter_RendererScope.prototype = (function () {
         size.h
       );
 
-      this.emit("update", this.timeDelta);
+      this.emit("update", this.frameCount);
     }
   }
 
