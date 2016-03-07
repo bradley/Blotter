@@ -1,3 +1,2 @@
-import "_UniformUtils";
+import "_RenderScope";
 import "Renderer";
-import "Material";

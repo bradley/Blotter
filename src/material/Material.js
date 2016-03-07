@@ -1,8 +1,6 @@
 import "../core/";
 import "../extras/";
 import "../texture/";
-import "_UniformUtils";
-
 
 Blotter.Material = function(texts, shaderSrc, options) {
   this.init(texts, shaderSrc, options);
@@ -140,7 +138,7 @@ Blotter.Material.prototype = (function() {
   }
 
 
-	// Create object holding the name and values of every text specific uniform, each referencable through any given text.
+  // Create object holding the name and values of every text specific uniform, each referencable through any given text.
 
   function _setTextsUniformsValues () {
     for (var uniformName in this.userDefinedUniforms) {
@@ -212,7 +210,7 @@ Blotter.Material.prototype = (function() {
 
   // Create a Data Texture holding the values for a specified uniform name that should be available to any given texel for any given text.
 
-	function _uniformTextureForUniformName (uniformName) {
+  function _uniformTextureForUniformName (uniformName) {
     var uniformDescription = this.userDefinedUniforms[uniformName],
         data = new Float32Array(this.mapper.texts.length * 4);
 
