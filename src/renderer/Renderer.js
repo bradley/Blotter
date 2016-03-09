@@ -16,6 +16,21 @@ Blotter.Renderer.prototype = (function () {
 
     this.renderer.render(this.scene, this.camera);
 
+    this.backBufferContext.clearRect(0, 0, this.backBuffer.width, this.backBuffer.height);
+    //this.backBufferContext.drawImage(this.domElement, 0, 0);
+    this.backBufferContext.drawImage(
+      this.domElement,
+      0,
+      0,
+      Math.floor(this.domElement.width),
+      Math.floor(this.domElement.height),
+      0,
+      0,
+      Math.floor(this.backBuffer.width),
+      Math.floor(this.backBuffer.height)
+    );
+    this.backBufferData = this.backBufferContext.getImageData(0, 0, this.backBuffer.width, this.backBuffer.height);
+
     for (var textId in this.textScopes) {
       var scope = this.textScopes[textId];
       if (scope.playing) {
@@ -51,9 +66,17 @@ Blotter.Renderer.prototype = (function () {
       }
 
       this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-      this.renderer.setSize(width * blotter_CanvasUtils.pixelRatio, height * blotter_CanvasUtils.pixelRatio);
+      this.renderer.setSize(width, height);
 
       this.domElement = this.renderer.domElement;
+      this.domElementContext = this.renderer.getContext();
+
+      //this.backBuffer = document.createElement("canvas");
+      //this.backBuffer.width = width;// / blotter_CanvasUtils.pixelRatio;
+      //this.backBuffer.height = height;// / blotter_CanvasUtils.pixelRatio;
+      this.backBuffer = blotter_CanvasUtils.canvas(material.mapper.width, material.mapper.height);
+      this.backBufferContext = this.backBuffer.getContext("2d");
+
 
       this.scene = new THREE.Scene();
 

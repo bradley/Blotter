@@ -772,6 +772,14 @@ if ( typeof module === 'object' ) {
     };
   }();
   var blotter_CanvasUtils = {
+    canvas: function(w, h) {
+      var canvas = document.createElement("canvas");
+      canvas.width = w;
+      canvas.height = h;
+      canvas.style.width = w + "px";
+      canvas.style.height = h + "px";
+      return canvas;
+    },
     hiDpiCanvas: function(w, h, pixelRatio) {
       pixelRatio = pixelRatio || this.pixelRatio;
       var canvas = document.createElement("canvas");
@@ -783,12 +791,13 @@ if ( typeof module === 'object' ) {
       return canvas;
     },
     pixelRatio: function() {
+      var sharpness = 1.5;
       var ctx = document.createElement("canvas").getContext("2d"), dpr = window.devicePixelRatio || 1, bsr = ctx.backingStorePixelRatio;
       for (var x = 0; x < blotter_VendorPrefixes.length && !bsr; ++x) {
         bsr = ctx[blotter_VendorPrefixes[x] + "BackingStorePixelRatio"];
       }
       bsr = bsr || 1;
-      return dpr / bsr;
+      return dpr / bsr * sharpness;
     }(),
     mousePosition: function(canvas, event) {
       var rect = canvas.getBoundingClientRect();
@@ -1200,7 +1209,7 @@ if ( typeof module === 'object' ) {
             },
             _uCanvasResolution: {
               type: "2f",
-              value: [ self.width * blotter_CanvasUtils.pixelRatio, self.height * blotter_CanvasUtils.pixelRatio ]
+              value: [ self.width, self.height ]
             },
             _uSpriteIndicesTexture: {
               type: "t",
@@ -1290,8 +1299,8 @@ if ( typeof module === 'object' ) {
       init: function(texts, shaderSrc, options) {
         options = options || {};
         this.mapper = _createMapperFromTexts.call(this, texts);
-        this.width = this.mapper.width;
-        this.height = this.mapper.height;
+        this.width = this.mapper.width * blotter_CanvasUtils.pixelRatio;
+        this.height = this.mapper.height * blotter_CanvasUtils.pixelRatio;
         this.shaderSrc = shaderSrc;
         this.userDefinedUniforms = options.uniforms || {};
         this.fidelity = .5;
@@ -1375,10 +1384,10 @@ if ( typeof module === 'object' ) {
       _setMouseEventListeners.call(this);
     }
     function _render() {
-      var size = this.renderer.material.mapper.sizeForText(this.text), pixelRatio = blotter_CanvasUtils.pixelRatio;
+      var size = this.renderer.material.mapper.sizeForText(this.text);
       if (this.domElement) {
-        this.context.clearRect(0, 0, size.w, size.h);
-        this.context.drawImage(this.renderer.domElement, size.fit.x * pixelRatio, size.fit.y * pixelRatio, size.w * pixelRatio, size.h * pixelRatio, 0, 0, size.w, size.h);
+        this.context.clearRect(0, 0, this.width, this.height);
+        this.context.putImageData(this.renderer.backBufferData, -1 * Math.floor(size.fit.x), -1 * Math.floor(size.fit.y));
         this.emit("update", this.frameCount);
       }
     }
@@ -1419,7 +1428,7 @@ if ( typeof module === 'object' ) {
           this.domElement.remove();
           this.context = null;
         }
-        this.domElement = blotter_CanvasUtils.hiDpiCanvas(this.width, this.height);
+        this.domElement = blotter_CanvasUtils.canvas(this.width, this.height);
         this.context = this.domElement.getContext("2d");
         element.appendChild(this.domElement);
         _setEventListeners.call(this);
@@ -1433,6 +1442,9 @@ if ( typeof module === 'object' ) {
     function _loop() {
       var self = this;
       this.renderer.render(this.scene, this.camera);
+      this.backBufferContext.clearRect(0, 0, this.backBuffer.width, this.backBuffer.height);
+      this.backBufferContext.drawImage(this.domElement, 0, 0, Math.floor(this.domElement.width), Math.floor(this.domElement.height), 0, 0, Math.floor(this.backBuffer.width), Math.floor(this.backBuffer.height));
+      this.backBufferData = this.backBufferContext.getImageData(0, 0, this.backBuffer.width, this.backBuffer.height);
       for (var textId in this.textScopes) {
         var scope = this.textScopes[textId];
         if (scope.playing) {
@@ -1461,8 +1473,11 @@ if ( typeof module === 'object' ) {
           antialias: true,
           alpha: true
         });
-        this.renderer.setSize(width * blotter_CanvasUtils.pixelRatio, height * blotter_CanvasUtils.pixelRatio);
+        this.renderer.setSize(width, height);
         this.domElement = this.renderer.domElement;
+        this.domElementContext = this.renderer.getContext();
+        this.backBuffer = blotter_CanvasUtils.canvas(material.mapper.width, material.mapper.height);
+        this.backBufferContext = this.backBuffer.getContext("2d");
         this.scene = new THREE.Scene();
         this.camera = new THREE.Camera();
         this.geometry = new THREE.PlaneGeometry(2, 2, 0);

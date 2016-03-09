@@ -179,7 +179,7 @@ Blotter.Material.prototype = (function() {
 
         uniforms = {
           _uSampler              : { type: "t" , value: self.textsTexture },
-          _uCanvasResolution     : { type: "2f", value: [self.width * blotter_CanvasUtils.pixelRatio, self.height * blotter_CanvasUtils.pixelRatio] },
+          _uCanvasResolution     : { type: "2f", value: [self.width, self.height] },
           _uSpriteIndicesTexture : { type: "t" , value: spriteIndicesTexture },
           _uSpriteBoundsTexture  : { type: "t" , value: spriteBoundsTexture }
         };
@@ -284,8 +284,8 @@ Blotter.Material.prototype = (function() {
       options = options || {};
 
       this.mapper = _createMapperFromTexts.call(this, texts);
-      this.width = this.mapper.width;
-      this.height = this.mapper.height;
+      this.width = this.mapper.width * blotter_CanvasUtils.pixelRatio;
+      this.height = this.mapper.height * blotter_CanvasUtils.pixelRatio;
 
       this.shaderSrc = shaderSrc;
       this.userDefinedUniforms = options.uniforms || {};
