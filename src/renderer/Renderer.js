@@ -16,8 +16,8 @@ Blotter.Renderer.prototype = (function () {
 
     this.renderer.render(this.scene, this.camera);
 
+    // Downsize rendered content into backbuffer.
     this.backBufferContext.clearRect(0, 0, this.backBuffer.width, this.backBuffer.height);
-    //this.backBufferContext.drawImage(this.domElement, 0, 0);
     this.backBufferContext.drawImage(
       this.domElement,
       0,
@@ -71,12 +71,8 @@ Blotter.Renderer.prototype = (function () {
       this.domElement = this.renderer.domElement;
       this.domElementContext = this.renderer.getContext();
 
-      //this.backBuffer = document.createElement("canvas");
-      //this.backBuffer.width = width;// / blotter_CanvasUtils.pixelRatio;
-      //this.backBuffer.height = height;// / blotter_CanvasUtils.pixelRatio;
       this.backBuffer = blotter_CanvasUtils.canvas(material.mapper.width, material.mapper.height);
       this.backBufferContext = this.backBuffer.getContext("2d");
-
 
       this.scene = new THREE.Scene();
 

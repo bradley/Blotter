@@ -12,7 +12,9 @@ Blotter.Material.prototype = (function() {
     if (!Array.isArray(texts)) {
       texts = [texts];
     }
-    var mapper = new blotter_Mapper(texts);
+    var mapper = new blotter_Mapper(texts, this.pixelRatio);
+    this.width = mapper.width * this.pixelRatio;
+    this.height = mapper.height * this.pixelRatio;
     return mapper;
   }
 
@@ -170,24 +172,33 @@ Blotter.Material.prototype = (function() {
   function _materialUniforms (callback) {
     var self = this,
         uniforms,
+        loader = new THREE.TextureLoader(),
         userDefinedUniformTextures = _uniformsForUserDefinedUniformValues.call(this),
         indicesTexture = new blotter_TextsIndicesTexture(this.mapper, this.fidelity),
-        boundsTexture = new blotter_TextsBoundsTexture(this.mapper);
+        boundsTexture = new blotter_TextsBoundsTexture(this.mapper, this.pixelRatio);
 
-    indicesTexture.build(function(spriteIndicesTexture) {
-      boundsTexture.build(function(spriteBoundsTexture) {
+    loader.load(this.mapper.getImage(), function(textsTexture) {
+      indicesTexture.build(function(spriteIndicesTexture) {
+        boundsTexture.build(function(spriteBoundsTexture) {
 
-        uniforms = {
-          _uSampler              : { type: "t" , value: self.textsTexture },
-          _uCanvasResolution     : { type: "2f", value: [self.width, self.height] },
-          _uSpriteIndicesTexture : { type: "t" , value: spriteIndicesTexture },
-          _uSpriteBoundsTexture  : { type: "t" , value: spriteBoundsTexture }
-        };
-        for (var uniformName in userDefinedUniformTextures) {
-          uniforms[uniformName] = userDefinedUniformTextures[uniformName];
-        }
+          // Setup texture
+          textsTexture.generateMipmaps = false;
+          textsTexture.minFilter = THREE.LinearFilter;
+          textsTexture.magFilter = THREE.LinearFilter;
+          textsTexture.needsUpdate = true;
 
-        callback(uniforms);
+          uniforms = {
+            _uSampler              : { type: "t" , value: textsTexture },
+            _uCanvasResolution     : { type: "2f", value: [self.width, self.height] },
+            _uSpriteIndicesTexture : { type: "t" , value: spriteIndicesTexture },
+            _uSpriteBoundsTexture  : { type: "t" , value: spriteBoundsTexture }
+          };
+          for (var uniformName in userDefinedUniformTextures) {
+            uniforms[uniformName] = userDefinedUniformTextures[uniformName];
+          }
+
+          callback(uniforms);
+        });
       });
     });
   }
@@ -283,10 +294,9 @@ Blotter.Material.prototype = (function() {
     init : function (texts, shaderSrc, options) {
       options = options || {};
 
-      this.mapper = _createMapperFromTexts.call(this, texts);
-      this.width = this.mapper.width * blotter_CanvasUtils.pixelRatio;
-      this.height = this.mapper.height * blotter_CanvasUtils.pixelRatio;
+      this.pixelRatio = options.pixelRatio || blotter_CanvasUtils.pixelRatio;
 
+      this.mapper = _createMapperFromTexts.call(this, texts);
       this.shaderSrc = shaderSrc;
       this.userDefinedUniforms = options.uniforms || {};
 
@@ -303,33 +313,20 @@ Blotter.Material.prototype = (function() {
     },
 
     load : function (callback) {
-      var self = this,
-          loader = new THREE.TextureLoader(),
-          url = this.mapper.getImage();
+      var self = this;
 
-      // load a resource
-      loader.load(url, function(textsTexture) {
+      _materialUniforms.call(this, function(uniforms) {
 
-        // Setup texture
-        self.textsTexture = textsTexture;
-        self.textsTexture.generateMipmaps = false;
-        self.textsTexture.minFilter = THREE.LinearFilter;
-        self.textsTexture.magFilter = THREE.LinearFilter;
-        self.textsTexture.needsUpdate = true;
-
-        _materialUniforms.call(self, function(uniforms) {
-
-          self.threeMaterial = new THREE.ShaderMaterial({
-            vertexShader: _vertexSrc.call(self),
-            fragmentShader: _fragmentSrc.call(self),
-            uniforms: uniforms
-          });
-
-          self.threeMaterial.depthTest = false;
-          self.threeMaterial.depthWrite = false;
-
-          callback();
+        self.threeMaterial = new THREE.ShaderMaterial({
+          vertexShader: _vertexSrc.call(self),
+          fragmentShader: _fragmentSrc.call(self),
+          uniforms: uniforms
         });
+
+        self.threeMaterial.depthTest = false;
+        self.threeMaterial.depthWrite = false;
+
+        callback();
       });
     },
 

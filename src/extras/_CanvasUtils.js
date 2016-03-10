@@ -36,7 +36,7 @@ var blotter_CanvasUtils = {
     // Note: `sharpness` is used to increase the legibility of our rendered content.
     //   However I suspect it probably slows things down a bit - I haven't really
     //   checked. I'm open to thoughts.
-    var sharpness = 1.5;
+    var sharpness = 1;//1.5;
     var ctx = document.createElement("canvas").getContext("2d"),
         dpr = window.devicePixelRatio || 1,
         bsr = ctx.backingStorePixelRatio;

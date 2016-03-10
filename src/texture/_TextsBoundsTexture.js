@@ -1,7 +1,7 @@
 // Create a Data Texture holding the boundaries (x/y offset and w/h) that should be available to any given texel for any given text.
 
-var blotter_TextsBoundsTexture = function (mapper) {
-  this.init(mapper);
+var blotter_TextsBoundsTexture = function (mapper, pixelRatio) {
+  this.init(mapper, pixelRatio);
 }
 
 blotter_TextsBoundsTexture.prototype = (function () {
@@ -15,10 +15,10 @@ blotter_TextsBoundsTexture.prototype = (function () {
         var text = self.mapper.texts[i],
             textSize = self.mapper.sizeForText(text);
 
-        data[4*i] = textSize.fit.x * self.pixelRatio;                                               // x
-        data[4*i+1] = self.ratioAdjustedHeight - ((textSize.fit.y + textSize.h) * self.pixelRatio); // y
-        data[4*i+2] = (textSize.w) * self.pixelRatio;                                               // w
-        data[4*i+3] = (textSize.h) * self.pixelRatio;                                               // h
+        data[4*i] = textSize.fit.x * self.pixelRatio;                                                    // x
+        data[4*i+1] = self.height * self.pixelRatio - ((textSize.fit.y + textSize.h) * self.pixelRatio); // y
+        data[4*i+2] = (textSize.w) * self.pixelRatio;                                                    // w
+        data[4*i+3] = (textSize.h) * self.pixelRatio;                                                    // h
       };
       completion(data);
     }, 1);
@@ -28,14 +28,11 @@ blotter_TextsBoundsTexture.prototype = (function () {
 
     constructor : blotter_TextsBoundsTexture,
 
-    init : function (mapper) {
+    init : function (mapper, pixelRatio) {
       this.mapper = mapper;
-
-      this.pixelRatio = blotter_CanvasUtils.pixelRatio;
+      this.pixelRatio = pixelRatio || 1;
       this.width = this.mapper.width;
       this.height = this.mapper.height;
-      this.ratioAdjustedWidth = this.width * this.pixelRatio;
-      this.ratioAdjustedHeight = this.height * this.pixelRatio;
     },
 
     build : function (callback) {

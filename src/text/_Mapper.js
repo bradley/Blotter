@@ -62,7 +62,10 @@ blotter_Mapper.prototype = (function () {
 
     constructor : blotter_Mapper,
 
-  	init: function (texts) {
+  	init: function (texts, pixelRatio) {
+
+      this.pixelRatio = pixelRatio || 1;
+
       this.texts = [];
       this.textsSizes = {};
       this.width = 0;
@@ -103,7 +106,7 @@ blotter_Mapper.prototype = (function () {
     },
 
     toCanvas: function () {
-      var canvas = blotter_CanvasUtils.hiDpiCanvas(this.width, this.height),
+      var canvas = blotter_CanvasUtils.hiDpiCanvas(this.width, this.height, this.pixelRatio),
           ctx = canvas.getContext("2d");
 
       for (var i = 0; i < this.texts.length; i++) {
