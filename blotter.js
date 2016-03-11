@@ -1300,7 +1300,6 @@ if ( typeof module === 'object' ) {
         this.shaderSrc = shaderSrc;
         this.userDefinedUniforms = options.uniforms || {};
         this.fidelity = .5;
-        this.uniformTextureArrayCache = new Float32Array(this.mapper.texts.length * 4);
         this.textsUniformsValues = {};
         _setTextsUniformsValues.call(this);
       },
