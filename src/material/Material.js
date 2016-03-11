@@ -223,7 +223,7 @@ Blotter.Material.prototype = (function() {
 
   function _uniformTextureForUniformName (uniformName) {
     var uniformDescription = this.userDefinedUniforms[uniformName],
-        data = new Float32Array(this.mapper.texts.length * 4);//this.uniformTextureArrayCache;
+        data = new Float32Array(this.mapper.texts.length * 4);
 
     if (!uniformDescription)
       blotter_Messaging.logError("Blotter.Composer", "cannot find uniformName for _uniformTextureForUniformName");
@@ -300,8 +300,6 @@ Blotter.Material.prototype = (function() {
       // for indexing into uniforms for any given text.
       // Value must be between 0.0 and 1.0, and you are advised to keep it around 0.5.
       this.fidelity = 0.5;
-
-      this.uniformTextureArrayCache = new Float32Array(this.mapper.texts.length * 4);
 
       // Setup text specific uniforms immediately.
       this.textsUniformsValues = {};
