@@ -791,7 +791,7 @@ if ( typeof module === 'object' ) {
       return canvas;
     },
     pixelRatio: function() {
-      var sharpness = 1;
+      var sharpness = 2;
       var ctx = document.createElement("canvas").getContext("2d"), dpr = window.devicePixelRatio || 1, bsr = ctx.backingStorePixelRatio;
       for (var x = 0; x < blotter_VendorPrefixes.length && !bsr; ++x) {
         bsr = ctx[blotter_VendorPrefixes[x] + "BackingStorePixelRatio"];
@@ -1383,10 +1383,9 @@ if ( typeof module === 'object' ) {
       _setMouseEventListeners.call(this);
     }
     function _render() {
-      var size = this.renderer.material.mapper.sizeForText(this.text);
       if (this.domElement) {
-        this.context.clearRect(0, 0, this.width, this.height);
-        this.context.putImageData(this.renderer.backBufferData, -1 * Math.floor(size.fit.x), -1 * Math.floor(size.fit.y));
+        this.context.clearRect(0, 0, this.size.w, this.size.h);
+        this.context.putImageData(this.renderer.backBufferData, -1 * Math.floor(this.size.fit.x), -1 * Math.floor(this.size.fit.y));
         this.emit("update", this.frameCount);
       }
     }
@@ -1399,8 +1398,7 @@ if ( typeof module === 'object' ) {
         }
         this.text = text;
         this.renderer = renderer;
-        this.width = this.renderer.material.mapper.sizeForText(text).w;
-        this.height = this.renderer.material.mapper.sizeForText(text).h;
+        this.size = this.renderer.material.mapper.sizeForText(text);
         this.playing = options.autostart;
         this.timeDelta = 0;
         this.lastDrawTime;
@@ -1427,7 +1425,7 @@ if ( typeof module === 'object' ) {
           this.domElement.remove();
           this.context = null;
         }
-        this.domElement = blotter_CanvasUtils.canvas(this.width, this.height);
+        this.domElement = blotter_CanvasUtils.canvas(this.size.w, this.size.h);
         this.context = this.domElement.getContext("2d");
         element.appendChild(this.domElement);
         _setEventListeners.call(this);
@@ -1439,15 +1437,15 @@ if ( typeof module === 'object' ) {
   };
   Blotter.Renderer.prototype = function() {
     function _loop() {
-      var self = this;
+      var self = this, textScope;
       this.renderer.render(this.scene, this.camera);
       this.backBufferContext.clearRect(0, 0, this.backBuffer.width, this.backBuffer.height);
-      this.backBufferContext.drawImage(this.domElement, 0, 0, Math.floor(this.domElement.width), Math.floor(this.domElement.height), 0, 0, Math.floor(this.backBuffer.width), Math.floor(this.backBuffer.height));
+      this.backBufferContext.drawImage(this.domElement, 0, 0, this.domElement.width, this.domElement.height, 0, 0, this.backBuffer.width, this.backBuffer.height);
       this.backBufferData = this.backBufferContext.getImageData(0, 0, this.backBuffer.width, this.backBuffer.height);
       for (var textId in this.textScopes) {
-        var scope = this.textScopes[textId];
-        if (scope.playing) {
-          scope.update();
+        textScope = this.textScopes[textId];
+        if (textScope.playing) {
+          textScope.update();
         }
       }
       this.currentAnimationLoop = blotter_Animation.requestAnimationFrame(function() {

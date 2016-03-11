@@ -12,29 +12,29 @@ Blotter.Renderer = function (material) {
 Blotter.Renderer.prototype = (function () {
 
   function _loop () {
-    var self = this;
+    var self = this,
+        textScope;
 
     this.renderer.render(this.scene, this.camera);
 
-    // Downsize rendered content into backbuffer.
+    // Downsize (half resolution) rendered content into backbuffer.
     this.backBufferContext.clearRect(0, 0, this.backBuffer.width, this.backBuffer.height);
     this.backBufferContext.drawImage(
       this.domElement,
       0,
       0,
-      Math.floor(this.domElement.width),
-      Math.floor(this.domElement.height),
+      this.domElement.width,
+      this.domElement.height,
       0,
       0,
-      Math.floor(this.backBuffer.width),
-      Math.floor(this.backBuffer.height)
+      this.backBuffer.width,
+      this.backBuffer.height
     );
     this.backBufferData = this.backBufferContext.getImageData(0, 0, this.backBuffer.width, this.backBuffer.height);
-
     for (var textId in this.textScopes) {
-      var scope = this.textScopes[textId];
-      if (scope.playing) {
-        scope.update();
+      textScope = this.textScopes[textId];
+      if (textScope.playing) {
+        textScope.update();
       }
     }
 
