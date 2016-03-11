@@ -223,7 +223,7 @@ Blotter.Material.prototype = (function() {
 
   function _uniformTextureForUniformName (uniformName) {
     var uniformDescription = this.userDefinedUniforms[uniformName],
-        data = new Float32Array(this.mapper.texts.length * 4);
+        data = new Float32Array(this.mapper.texts.length * 4);//this.uniformTextureArrayCache;
 
     if (!uniformDescription)
       blotter_Messaging.logError("Blotter.Composer", "cannot find uniformName for _uniformTextureForUniformName");
@@ -235,41 +235,35 @@ Blotter.Material.prototype = (function() {
       if (textUniformsValues) {
         var textUniform = textUniformsValues[uniformName];
 
-        switch (textUniform.type) {
-          case '1f':
-            data[4*i]   = textUniform.value; // x (r)
-            data[4*i+1] = 0.0;
-            data[4*i+2] = 0.0;
-            data[4*i+3] = 0.0;
-            break;
-
-          case '2f':
-            data[4*i]   = textUniform.value[0]; // x (r)
-            data[4*i+1] = textUniform.value[1]; // y (g)
-            data[4*i+2] = 0.0;
-            data[4*i+3] = 0.0;
-            break;
-
-          case '3f':
-            data[4*i]   = textUniform.value[0]; // x (r)
-            data[4*i+1] = textUniform.value[1]; // y (g)
-            data[4*i+2] = textUniform.value[2]; // z (b)
-            data[4*i+3] = 0.0;
-            break;
-
-          case '4f':
-            data[4*i]   = textUniform.value[0]; // x (r)
-            data[4*i+1] = textUniform.value[1]; // y (g)
-            data[4*i+2] = textUniform.value[2]; // z (b)
-            data[4*i+3] = textUniform.value[3]; // w (a)
-            break;
-
-          default:
-            data[4*i]   = 0.0;
-            data[4*i+1] = 0.0;
-            data[4*i+2] = 0.0;
-            data[4*i+3] = 0.0;
-            break;
+        if (textUniform.type == "1f") {
+          data[4*i]   = textUniform.value; // x (r)
+          data[4*i+1] = 0.0;
+          data[4*i+2] = 0.0;
+          data[4*i+3] = 0.0;
+        }
+        else if (textUniform.type == "2f") {
+          data[4*i]   = textUniform.value[0]; // x (r)
+          data[4*i+1] = textUniform.value[1]; // y (g)
+          data[4*i+2] = 0.0;
+          data[4*i+3] = 0.0;
+        }
+        else if (textUniform.type == "3f") {
+          data[4*i]   = textUniform.value[0]; // x (r)
+          data[4*i+1] = textUniform.value[1]; // y (g)
+          data[4*i+2] = textUniform.value[2]; // z (b)
+          data[4*i+3] = 0.0;
+        }
+        else if (textUniform.type == "4f") {
+          data[4*i]   = textUniform.value[0]; // x (r)
+          data[4*i+1] = textUniform.value[1]; // y (g)
+          data[4*i+2] = textUniform.value[2]; // z (b)
+          data[4*i+3] = textUniform.value[3]; // w (a)
+        }
+        else {
+          data[4*i]   = 0.0;
+          data[4*i+1] = 0.0;
+          data[4*i+2] = 0.0;
+          data[4*i+3] = 0.0;
         }
       }
       else {
@@ -306,6 +300,8 @@ Blotter.Material.prototype = (function() {
       // for indexing into uniforms for any given text.
       // Value must be between 0.0 and 1.0, and you are advised to keep it around 0.5.
       this.fidelity = 0.5;
+
+      this.uniformTextureArrayCache = new Float32Array(this.mapper.texts.length * 4);
 
       // Setup text specific uniforms immediately.
       this.textsUniformsValues = {};

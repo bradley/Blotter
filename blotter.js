@@ -1254,41 +1254,31 @@ if ( typeof module === 'object' ) {
         var text = this.mapper.texts[i], textUniformsValues = this.textsUniformsValues[text.id];
         if (textUniformsValues) {
           var textUniform = textUniformsValues[uniformName];
-          switch (textUniform.type) {
-           case "1f":
+          if (textUniform.type == "1f") {
             data[4 * i] = textUniform.value;
             data[4 * i + 1] = 0;
             data[4 * i + 2] = 0;
             data[4 * i + 3] = 0;
-            break;
-
-           case "2f":
+          } else if (textUniform.type == "2f") {
             data[4 * i] = textUniform.value[0];
             data[4 * i + 1] = textUniform.value[1];
             data[4 * i + 2] = 0;
             data[4 * i + 3] = 0;
-            break;
-
-           case "3f":
+          } else if (textUniform.type == "3f") {
             data[4 * i] = textUniform.value[0];
             data[4 * i + 1] = textUniform.value[1];
             data[4 * i + 2] = textUniform.value[2];
             data[4 * i + 3] = 0;
-            break;
-
-           case "4f":
+          } else if (textUniform.type == "4f") {
             data[4 * i] = textUniform.value[0];
             data[4 * i + 1] = textUniform.value[1];
             data[4 * i + 2] = textUniform.value[2];
             data[4 * i + 3] = textUniform.value[3];
-            break;
-
-           default:
+          } else {
             data[4 * i] = 0;
             data[4 * i + 1] = 0;
             data[4 * i + 2] = 0;
             data[4 * i + 3] = 0;
-            break;
           }
         } else {
           data[4 * i] = 0;
@@ -1310,6 +1300,7 @@ if ( typeof module === 'object' ) {
         this.shaderSrc = shaderSrc;
         this.userDefinedUniforms = options.uniforms || {};
         this.fidelity = .5;
+        this.uniformTextureArrayCache = new Float32Array(this.mapper.texts.length * 4);
         this.textsUniformsValues = {};
         _setTextsUniformsValues.call(this);
       },
@@ -1415,7 +1406,7 @@ if ( typeof module === 'object' ) {
       },
       update: function() {
         var now = Date.now();
-        this.playing += 1;
+        this.frameCount += 1;
         this.timeDelta = (now - (this.lastDrawTime || now)) / 1e3;
         this.lastDrawTime = now;
         _render.call(this);
@@ -1438,6 +1429,8 @@ if ( typeof module === 'object' ) {
   Blotter.Renderer.prototype = function() {
     function _loop() {
       var self = this, textScope;
+      var time = (new Date().getTime() - this.startTime) / 1e3;
+      this.material.updateUniformValueForText(this.material.mapper.texts[1], "uLenseWeight", Math.abs(Math.sin(time)));
       this.renderer.render(this.scene, this.camera);
       this.backBufferContext.clearRect(0, 0, this.backBuffer.width, this.backBuffer.height);
       this.backBufferContext.drawImage(this.domElement, 0, 0, this.domElement.width, this.domElement.height, 0, 0, this.backBuffer.width, this.backBuffer.height);
@@ -1471,6 +1464,8 @@ if ( typeof module === 'object' ) {
           alpha: true
         });
         this.renderer.setSize(width, height);
+        this.startTime = new Date().getTime();
+        document.body.appendChild(this.renderer.domElement);
         this.domElement = this.renderer.domElement;
         this.domElementContext = this.renderer.getContext();
         this.backBuffer = blotter_CanvasUtils.canvas(material.mapper.width, material.mapper.height);

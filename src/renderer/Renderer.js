@@ -15,6 +15,8 @@ Blotter.Renderer.prototype = (function () {
     var self = this,
         textScope;
 
+var time = ((new Date()).getTime() - this.startTime) / 1000;
+            this.material.updateUniformValueForText(this.material.mapper.texts[1], "uLenseWeight", Math.abs(Math.sin(time)));
     this.renderer.render(this.scene, this.camera);
 
     // Downsize (half resolution) rendered content into backbuffer.
@@ -67,6 +69,8 @@ Blotter.Renderer.prototype = (function () {
 
       this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
       this.renderer.setSize(width, height);
+      this.startTime = new Date().getTime();
+      document.body.appendChild(this.renderer.domElement);
 
       this.domElement = this.renderer.domElement;
       this.domElementContext = this.renderer.getContext();

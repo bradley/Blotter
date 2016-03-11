@@ -82,7 +82,7 @@ blotter_RendererScope.prototype = (function () {
 
     update : function () {
       var now = Date.now();
-      this.playing += 1;
+      this.frameCount += 1;
       this.timeDelta = (now - (this.lastDrawTime || now)) / 1000;
       this.lastDrawTime = now;
       _render.call(this);
