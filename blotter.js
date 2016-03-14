@@ -791,7 +791,7 @@ if ( typeof module === 'object' ) {
       return canvas;
     },
     pixelRatio: function() {
-      var sharpness = 2;
+      var sharpness = 1;
       var ctx = document.createElement("canvas").getContext("2d"), dpr = window.devicePixelRatio || 1, bsr = ctx.backingStorePixelRatio;
       for (var x = 0; x < blotter_VendorPrefixes.length && !bsr; ++x) {
         bsr = ctx[blotter_VendorPrefixes[x] + "BackingStorePixelRatio"];
