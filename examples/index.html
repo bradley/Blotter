@@ -120,16 +120,16 @@
             renderer.forText(text).appendTo(outputEl);
           }
 
-          renderer.forText(blotterTexts[1]).on("mousemove", function (mousePosition) {
-            material.updateUniformValueForText(blotterTexts[1], "uCenterPoint", [mousePosition.x, mousePosition.y]);
-          });
+          // renderer.forText(blotterTexts[1]).on("mousemove", function (mousePosition) {
+          //   material.updateUniformValueForText(blotterTexts[1], "uCenterPoint", [mousePosition.x, mousePosition.y]);
+          // });
 
-          var startTime = new Date().getTime();
+          // var startTime = new Date().getTime();
 
-          renderer.forText(blotterTexts[1]).on("update", function (frameCount) {
-            var time = ((new Date()).getTime() - startTime) / 1000;
-            material.updateUniformValueForText(blotterTexts[1], "uLenseWeight", Math.abs(Math.sin(time)));
-          });
+          // renderer.forText(blotterTexts[1]).on("update", function (frameCount) {
+          //   var time = ((new Date()).getTime() - startTime) / 1000;
+          //   material.updateUniformValueForText(blotterTexts[1], "uLenseWeight", Math.abs(Math.sin(time)));
+          // });
         });
 
       });
