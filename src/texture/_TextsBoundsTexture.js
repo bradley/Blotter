@@ -15,10 +15,10 @@ blotter_TextsBoundsTexture.prototype = (function () {
         var text = self.mapper.texts[i],
             textSize = self.mapper.sizeForText(text);
 
-        data[4*i] = textSize.fit.x * self.pixelRatio;                                                    // x
-        data[4*i+1] = self.height * self.pixelRatio - ((textSize.fit.y + textSize.h) * self.pixelRatio); // y
-        data[4*i+2] = (textSize.w) * self.pixelRatio;                                                    // w
-        data[4*i+3] = (textSize.h) * self.pixelRatio;                                                    // h
+        data[4*i]   = textSize.fit.x * self.pixelRatio;                                                    // x
+        data[4*i+1] = (self.height * self.pixelRatio) - ((textSize.fit.y + textSize.h) * self.pixelRatio); // y
+        data[4*i+2] = textSize.w * self.pixelRatio;                                                        // w
+        data[4*i+3] = textSize.h * self.pixelRatio;                                                        // h
       };
       completion(data);
     }, 1);

@@ -123,77 +123,35 @@ Blotter.Renderer.prototype = (function () {
     this.renderer.render(this.scene, this.camera, this.backBufferTexture);
     this.renderer.render(this.scene, this.camera);
 
-    //var buffer = this.uint8ArrayArrayCache[text.id].next();
-    //this.renderer.readRenderTargetPixels(pickingTexture, mouse.x, pickingTexture.height - mouse.y, 1, 1, pixelBuffer);
+    var buffer = this.uint8ArrayArrayCache.next();
+    this.backBufferData = this.imageDataCache.next();
 
-    //jobC.send();
-    //setTimeout(function() {
-      // Downsize (half resolution) rendered content into backBuffer.
-      // self.backBufferContext.clearRect(0, 0, self.backBuffer.width, self.backBuffer.height);
-      // self.backBufferContext.drawImage(
-      //   self.domElement,
-      //   0,
-      //   0,
-      //   self.domElement.width,
-      //   self.domElement.height,
-      //   0,
-      //   0,
-      //   self.backBuffer.width,
-      //   self.backBuffer.height
-      // );
-      // self.backBufferData = self.backBufferContext.getImageData(0, 0, self.backBuffer.width, self.backBuffer.height);
-      //self.backBufferData = self.backBufferContext.createImageData(self.backBuffer.width, self.backBuffer.height);
+    this.renderer.readRenderTargetPixels(
+      this.backBufferTexture,
+      0,
+      0,
+      this.backBufferTexture.width,
+      this.backBufferTexture.height,
+      buffer
+    );
 
-      var buffer = this.uint8ArrayArrayCache.next(),
-          imageDataBuffer = this.imageDataCache.next();
-      this.renderer.readRenderTargetPixels(
-        this.backBufferTexture,
-        0,
-        0,
-        this.material.mapper.width,
-        this.material.mapper.height,
-        buffer
-      );
-      alert("im not sure exactly what is wrong here but we are getting closer i think. I do think this is basically the approach we want, im just not sure we are using backbuffertexture correctly. Look into readRenderTargetPixels more.");
-      debugger;
-      imageDataBuffer.data = buffer;
+    this.backBufferData.data.set(buffer);
 
-      for (var textId in self.textScopes) {
-        textScope = self.textScopes[textId];
-        if (textScope.playing) {
-          textScope.update(imageDataBuffer);
-        }
+    for (var textId in self.textScopes) {
+      textScope = self.textScopes[textId];
+      if (textScope.playing) {
+        textScope.update();
       }
+    }
 
-      // for (var textId in self.textScopes) {
-      //   textScope = self.textScopes[textId];
-      //   if (textScope.playing) {
-      //     var buffer = this.uint8ArrayArrayCache[textId].next(),
-      //         imageDataBuffer = this.imageDataCache[textId].next();
-      //     this.renderer.readRenderTargetPixels(
-      //       this.backBufferTexture,
-      //       textScope.size.fit.x,// * this.material.pixelRatio,
-      //       this.material.height - (textScope.size.fit.y),// * this.material.pixelRatio),
-      //       textScope.width,// * this.material.pixelRatio,
-      //       textScope.height,// * this.material.pixelRatio,
-      //       buffer);
-      //     imageDataBuffer.data = buffer;
 
-      //     textScope.update(imageDataBuffer);
-      //   }
-      // }
-    //});
 
-    // jobC.send(JSON.stringify({ url: this.domElementContext.toDataURL(), sW: this.domElement.width, sH: this.domElement.height, eW : this.material.mapper.width, eH : this.material.mapper.height }));
-    // jobC.on('done', function(backBufferData) {
-
-      // for (var textId in self.textScopes) {
-      //   textScope = self.textScopes[textId];
-      //   if (textScope.playing) {
-      //     textScope.update();
-      //   }
-      // }
-    // });
+    this.testOutputElementContext.clearRect(0, 0, this.testOutputElement.width, this.testOutputElement.height);
+    this.testOutputElementContext.putImageData(
+      this.backBufferData,
+      0,
+      0
+    );
 
     this.currentAnimationLoop = blotter_Animation.requestAnimationFrame(function () {
       _loop.call(self);
@@ -224,22 +182,20 @@ Blotter.Renderer.prototype = (function () {
 
       this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true});//, preserveDrawingBuffer: true });
       this.renderer.setSize(width, height);
+      this.renderer.setPixelRatio(material.pixelRatio);
       this.startTime = new Date().getTime();
-      document.body.appendChild(this.renderer.domElement);
 
       this.domElement = this.renderer.domElement;
-      this.domElementContext = this.renderer.getContext();
-
-      // this.backBuffer = blotter_CanvasUtils.canvas(material.mapper.width, material.mapper.height);
-      // this.backBufferContext = this.backBuffer.getContext("2d");
-      this.backBufferTexture = new THREE.WebGLRenderTarget( material.mapper.width, material.mapper.height );
-      this.backBufferTexture.texture.minFilter = THREE.LinearFilter;
+      document.body.appendChild(this.domElement);
 
       this.scene = new THREE.Scene();
 
       this.camera = new THREE.Camera()
 
       this.geometry = new THREE.PlaneGeometry(2, 2, 0);
+      this.geometry.doubleSided = true;
+      this.geometry.scale.y = - 1;
+      //this.geometry.scale( - 1, 1, 1 );
 
       this.material = material;
 
@@ -248,8 +204,23 @@ Blotter.Renderer.prototype = (function () {
       this.scene.add(this.mesh);
 
       this.textScopes = {};
-      this.uint8ArrayArrayCache = new Uint8ArrayCache(material.mapper.width * material.mapper.height * 4)
-      this.imageDataCache = new ImageDataCache(material.mapper.width, material.mapper.height);
+
+      this.uint8ArrayArrayCache = new Uint8ArrayCache(material.width * material.height * 4)
+      this.imageDataCache = new ImageDataCache(material.width, material.height);
+
+      this.backBufferTexture = new THREE.WebGLRenderTarget(material.width, material.height, { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, format: THREE.RGBAFormat });
+      // this.backBufferTexture.texture.format = THREE.RGBAFormat;
+      // this.backBufferTexture.texture.minFilter = THREE.LinearFilter;
+      // this.backBufferTexture.texture.repeat.x = - 1;
+      this.backBufferData;
+
+      // this.testOutputElement = document.createElement("canvas");
+      // this.testOutputElementContext = this.testOutputElement.getContext("2d");
+      // this.testOutputElement.width = material.width;
+      // this.testOutputElement.height = material.height;
+      this.testOutputElement = blotter_CanvasUtils.hiDpiCanvas(material.width, material.height);
+      this.testOutputElementContext = this.testOutputElement.getContext("2d");
+      document.body.appendChild(this.testOutputElement);
 
       if (options.autostart) {
         this.start();

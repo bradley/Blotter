@@ -791,7 +791,7 @@ if ( typeof module === 'object' ) {
       return canvas;
     },
     pixelRatio: function() {
-      var sharpness = 2;
+      var sharpness = 1;
       var ctx = document.createElement("canvas").getContext("2d"), dpr = window.devicePixelRatio || 1, bsr = ctx.backingStorePixelRatio;
       for (var x = 0; x < blotter_VendorPrefixes.length && !bsr; ++x) {
         bsr = ctx[blotter_VendorPrefixes[x] + "BackingStorePixelRatio"];
@@ -962,22 +962,10 @@ if ( typeof module === 'object' ) {
     this.init(value, properties);
   };
   Blotter.Text.prototype = function() {
-    function _generateId() {
-      var d = new Date().getTime();
-      if (window.performance && typeof window.performance.now === "function") {
-        d += performance.now();
-      }
-      var uuid = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(c) {
-        var r = (d + Math.random() * 16) % 16 | 0;
-        d = Math.floor(d / 16);
-        return (c == "x" ? r : r & 3 | 8).toString(16);
-      });
-      return uuid;
-    }
     return {
       constructor: Blotter.Text,
       init: function(value, properties) {
-        this.id = _generateId.call(this);
+        this.id = THREE.Math.generateUUID();
         this.value = value;
         this.properties = blotter_TextUtils.ensurePropertyValues(properties);
       }
@@ -1400,10 +1388,10 @@ if ( typeof module === 'object' ) {
     function _setEventListeners() {
       _setMouseEventListeners.call(this);
     }
-    function _render(buffer) {
+    function _render() {
       if (this.domElement) {
         this.context.clearRect(0, 0, this.width, this.height);
-        this.context.putImageData(buffer, -1 * Math.floor(this.size.fit.x), -1 * Math.floor(this.size.fit.y));
+        this.context.putImageData(this.renderer.backBufferData, -1 * Math.floor(this.size.fit.x), -1 * Math.floor(this.size.fit.y));
         this.emit("update", this.frameCount);
       }
     }
@@ -1433,12 +1421,12 @@ if ( typeof module === 'object' ) {
       pause: function() {
         this.playing = false;
       },
-      update: function(buffer) {
+      update: function() {
         var now = Date.now();
         this.frameCount += 1;
         this.timeDelta = (now - (this.lastDrawTime || now)) / 1e3;
         this.lastDrawTime = now;
-        _render.call(this, buffer);
+        _render.call(this);
       },
       appendTo: function(element) {
         if (this.domElement) {
@@ -1518,17 +1506,18 @@ if ( typeof module === 'object' ) {
       this.material.updateUniformValueForText(this.material.mapper.texts[1], "uLenseWeight", Math.abs(Math.sin(time)));
       this.renderer.render(this.scene, this.camera, this.backBufferTexture);
       this.renderer.render(this.scene, this.camera);
-      var buffer = this.uint8ArrayArrayCache.next(), imageDataBuffer = this.imageDataCache.next();
-      this.renderer.readRenderTargetPixels(this.backBufferTexture, 0, 0, this.material.mapper.width, this.material.mapper.height, buffer);
-      alert("im not sure exactly what is wrong here but we are getting closer i think. I do think this is basically the approach we want, im just not sure we are using backbuffertexture correctly. Look into readRenderTargetPixels more.");
-      debugger;
-      imageDataBuffer.data = buffer;
+      var buffer = this.uint8ArrayArrayCache.next();
+      this.backBufferData = this.imageDataCache.next();
+      this.renderer.readRenderTargetPixels(this.backBufferTexture, 0, 0, this.backBufferTexture.width, this.backBufferTexture.height, buffer);
+      this.backBufferData.data.set(buffer);
       for (var textId in self.textScopes) {
         textScope = self.textScopes[textId];
         if (textScope.playing) {
-          textScope.update(imageDataBuffer);
+          textScope.update();
         }
       }
+      this.testOutputElementContext.clearRect(0, 0, this.testOutputElement.width, this.testOutputElement.height);
+      this.testOutputElementContext.putImageData(this.backBufferData, 0, 0);
       this.currentAnimationLoop = blotter_Animation.requestAnimationFrame(function() {
         _loop.call(self);
       });
@@ -1552,21 +1541,31 @@ if ( typeof module === 'object' ) {
           alpha: true
         });
         this.renderer.setSize(width, height);
+        this.renderer.setPixelRatio(material.pixelRatio);
         this.startTime = new Date().getTime();
-        document.body.appendChild(this.renderer.domElement);
         this.domElement = this.renderer.domElement;
-        this.domElementContext = this.renderer.getContext();
-        this.backBufferTexture = new THREE.WebGLRenderTarget(material.mapper.width, material.mapper.height);
-        this.backBufferTexture.texture.minFilter = THREE.LinearFilter;
+        document.body.appendChild(this.domElement);
         this.scene = new THREE.Scene();
         this.camera = new THREE.Camera();
         this.geometry = new THREE.PlaneGeometry(2, 2, 0);
+        this.geometry.doubleSided = true;
+        this.geometry.scale.y = -1;
         this.material = material;
         this.mesh = new THREE.Mesh(this.geometry, this.material.threeMaterial);
         this.scene.add(this.mesh);
         this.textScopes = {};
-        this.uint8ArrayArrayCache = new Uint8ArrayCache(material.mapper.width * material.mapper.height * 4);
-        this.imageDataCache = new ImageDataCache(material.mapper.width, material.mapper.height);
+        this.uint8ArrayArrayCache = new Uint8ArrayCache(material.width * material.height * 4);
+        this.imageDataCache = new ImageDataCache(material.width, material.height);
+        this.backBufferTexture = new THREE.WebGLRenderTarget(material.width, material.height, {
+          minFilter: THREE.LinearFilter,
+          magFilter: THREE.NearestFilter,
+          format: THREE.RGBAFormat
+        });
+        this.backBufferTexture.texture.flipY = true;
+        this.backBufferData;
+        this.testOutputElement = blotter_CanvasUtils.hiDpiCanvas(material.width, material.height);
+        this.testOutputElementContext = this.testOutputElement.getContext("2d");
+        document.body.appendChild(this.testOutputElement);
         if (options.autostart) {
           this.start();
         }
