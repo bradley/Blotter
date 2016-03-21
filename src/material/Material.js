@@ -165,10 +165,10 @@ Blotter.Material.prototype = (function() {
       "   vec4 outColor;",
       "   mainImage(outColor, fragCoord);",
 
-      //  Multiply alpha by original spriteIndexData's alpha value."
+      //  Multiply alpha by original spriteIndexData's fourth value."
       //  this will be 0 for texels not within any 'sprite' area."
       "   outColor.a = outColor.a * spriteAlpha;",
-      "   gl_FragColor = outColor;//vec4(1.0, 1.0, 0.5, 1.0);//",
+      "   gl_FragColor = outColor;//vec4(1.0, 0.6705882353, 0.2509803922, 0.7);//outColor;//vec4(1.0, 1.0, 0.5, 1.0);//",
       "}"
 
     ];

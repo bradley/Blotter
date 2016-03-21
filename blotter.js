@@ -1192,7 +1192,7 @@ if ( typeof module === 'object' ) {
       privateUserDefinedUniformTextureDeclarations = privateUserDefinedUniformTextureDeclarations.join("\n");
       publicUserDefinedUniformDeclarations = publicUserDefinedUniformDeclarations.join("\n");
       uniformDefinitionsForUserDefinedUniforms = uniformDefinitionsForUserDefinedUniforms.join("\n");
-      fragmentSrc = [ "precision highp float;", "uniform sampler2D _uSampler;", "uniform sampler2D _uSpriteIndicesTexture;", "uniform sampler2D _uSpriteBoundsTexture;", "uniform vec2 _uCanvasResolution;", "varying vec2 _vTexCoord;", "vec4 _spriteBounds;", "vec2 uResolution;", privateUserDefinedUniformTextureDeclarations, publicUserDefinedUniformDeclarations, "vec4 textTexture( vec2 coord ) {", "   vec2 adjustedFragCoord = _spriteBounds.xy + vec2((_spriteBounds.z * coord.x), (_spriteBounds.w * coord.y));", "   vec2 uv = adjustedFragCoord.xy / _uCanvasResolution;", "   if (adjustedFragCoord.x < _spriteBounds.x ||", "       adjustedFragCoord.x > _spriteBounds.x + _spriteBounds.z ||", "       adjustedFragCoord.y < _spriteBounds.y ||", "       adjustedFragCoord.y > _spriteBounds.y + _spriteBounds.w) {", "     return vec4(0.0);", "   }", "   return texture2D(_uSampler, uv);", "}", "void mainImage( out vec4 mainImage, in vec2 fragCoord );", this.shaderSrc, "void main( void ) {", "   vec4 spriteIndexData = texture2D(_uSpriteIndicesTexture, _vTexCoord);", "   float spriteIndex = spriteIndexData.r;", "   float spriteAlpha = spriteIndexData.a;", "   _spriteBounds = texture2D(_uSpriteBoundsTexture, vec2(spriteIndex, 0.5));", "   uResolution = _spriteBounds.zw;", uniformDefinitionsForUserDefinedUniforms, "   vec2 fragCoord = gl_FragCoord.xy - _spriteBounds.xy;", "   vec4 outColor;", "   mainImage(outColor, fragCoord);", "   outColor.a = outColor.a * spriteAlpha;", "   gl_FragColor = outColor;//vec4(1.0, 1.0, 0.5, 1.0);//", "}" ];
+      fragmentSrc = [ "precision highp float;", "uniform sampler2D _uSampler;", "uniform sampler2D _uSpriteIndicesTexture;", "uniform sampler2D _uSpriteBoundsTexture;", "uniform vec2 _uCanvasResolution;", "varying vec2 _vTexCoord;", "vec4 _spriteBounds;", "vec2 uResolution;", privateUserDefinedUniformTextureDeclarations, publicUserDefinedUniformDeclarations, "vec4 textTexture( vec2 coord ) {", "   vec2 adjustedFragCoord = _spriteBounds.xy + vec2((_spriteBounds.z * coord.x), (_spriteBounds.w * coord.y));", "   vec2 uv = adjustedFragCoord.xy / _uCanvasResolution;", "   if (adjustedFragCoord.x < _spriteBounds.x ||", "       adjustedFragCoord.x > _spriteBounds.x + _spriteBounds.z ||", "       adjustedFragCoord.y < _spriteBounds.y ||", "       adjustedFragCoord.y > _spriteBounds.y + _spriteBounds.w) {", "     return vec4(0.0);", "   }", "   return texture2D(_uSampler, uv);", "}", "void mainImage( out vec4 mainImage, in vec2 fragCoord );", this.shaderSrc, "void main( void ) {", "   vec4 spriteIndexData = texture2D(_uSpriteIndicesTexture, _vTexCoord);", "   float spriteIndex = spriteIndexData.r;", "   float spriteAlpha = spriteIndexData.a;", "   _spriteBounds = texture2D(_uSpriteBoundsTexture, vec2(spriteIndex, 0.5));", "   uResolution = _spriteBounds.zw;", uniformDefinitionsForUserDefinedUniforms, "   vec2 fragCoord = gl_FragCoord.xy - _spriteBounds.xy;", "   vec4 outColor;", "   mainImage(outColor, fragCoord);", "   outColor.a = outColor.a * spriteAlpha;", "   gl_FragColor = outColor;//vec4(1.0, 0.6705882353, 0.2509803922, 0.7);//outColor;//vec4(1.0, 1.0, 0.5, 1.0);//", "}" ];
       return fragmentSrc.join("\n");
     }
     function _setTextsUniformsValues() {
@@ -1525,7 +1525,7 @@ if ( typeof module === 'object' ) {
     return {
       constructor: Blotter.Renderer,
       init: function(material, options) {
-        var width = material.width, height = material.height;
+        var width = material.mapper.width, height = material.mapper.height;
         options = options || {};
         if (typeof options.autostart === "undefined") {
           options.autostart = true;
@@ -1538,18 +1538,18 @@ if ( typeof module === 'object' ) {
         }
         this.renderer = new THREE.WebGLRenderer({
           antialias: true,
-          alpha: true
+          alpha: true,
+          premultipliedAlpha: false
         });
         this.renderer.setSize(width, height);
         this.renderer.setPixelRatio(material.pixelRatio);
         this.startTime = new Date().getTime();
         this.domElement = this.renderer.domElement;
+        this.domElementContext = this.renderer.getContext();
         document.body.appendChild(this.domElement);
         this.scene = new THREE.Scene();
         this.camera = new THREE.Camera();
         this.geometry = new THREE.PlaneGeometry(2, 2, 0);
-        this.geometry.doubleSided = true;
-        this.geometry.scale.y = -1;
         this.material = material;
         this.mesh = new THREE.Mesh(this.geometry, this.material.threeMaterial);
         this.scene.add(this.mesh);
@@ -1559,11 +1559,11 @@ if ( typeof module === 'object' ) {
         this.backBufferTexture = new THREE.WebGLRenderTarget(material.width, material.height, {
           minFilter: THREE.LinearFilter,
           magFilter: THREE.NearestFilter,
-          format: THREE.RGBAFormat
+          format: THREE.RGBAFormat,
+          type: THREE.UnsignedByteType
         });
-        this.backBufferTexture.texture.flipY = true;
         this.backBufferData;
-        this.testOutputElement = blotter_CanvasUtils.hiDpiCanvas(material.width, material.height);
+        this.testOutputElement = blotter_CanvasUtils.hiDpiCanvas(material.mapper.width, material.mapper.height);
         this.testOutputElementContext = this.testOutputElement.getContext("2d");
         document.body.appendChild(this.testOutputElement);
         if (options.autostart) {

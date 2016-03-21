@@ -8,7 +8,9 @@
     <script type="text/javascript" src="../blotter.js"></script>
   </head>
   <body>
-
+    <div style="display: none; position: absolute; top: 0; left: 0; z-index: -10; width: 900px;">
+      i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this.
+    </div>
     <script>
       $(document).ready(function() {
 
@@ -71,12 +73,9 @@
           "     // (this prevents texel from being invisible if cga.a = vec4(0.0, 0.0, 0.0, 0.0)",
           "     cga.a = max(cga.a, max(cr.a, cb.a));",
 
-          "     // Set alpha adjustment value so that white texels keep their transparency.",
-          "     float alpha = 1.0 - cga.a;",
-
           "     // Invert colors (this is cheating but optimal) so that we have CMYK rather than RGB",
           "     // shifted colors and the combination of offsets creates a blacker rather than whiter color.",
-          "     outColor = vec4((1.0 - cr.r) - alpha, (1.0 - cga.g) - alpha, (1.0 - cb.b) - alpha, cga.a);",
+          "     outColor = vec4(1.0 - cr.r, 1.0 - cga.g, 1.0 - cb.b, cga.a);",
           "   }",
           "   else {",
           "     outColor = vec4(cr.r, cga.g, cb.b, cga.a);",
@@ -112,13 +111,13 @@
         material.load(function () {
           var renderer = new Blotter.Renderer(material);
 
-          for (var i = 0; i < blotterTexts.length; i++) {
-            var text = blotterTexts[i];
-                outputEl = document.createElement("span");
-            outputEl.style.display = "inline-block";
-            document.body.appendChild(outputEl);
-            renderer.forText(text).appendTo(outputEl);
-          }
+          // for (var i = 0; i < blotterTexts.length; i++) {
+          //   var text = blotterTexts[i];
+          //       outputEl = document.createElement("span");
+          //   outputEl.style.display = "inline-block";
+          //   document.body.appendChild(outputEl);
+          //   renderer.forText(text).appendTo(outputEl);
+          // }
 
           // renderer.forText(blotterTexts[1]).on("mousemove", function (mousePosition) {
           //   material.updateUniformValueForText(blotterTexts[1], "uCenterPoint", [mousePosition.x, mousePosition.y]);

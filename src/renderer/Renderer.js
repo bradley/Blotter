@@ -144,8 +144,6 @@ Blotter.Renderer.prototype = (function () {
       }
     }
 
-
-
     this.testOutputElementContext.clearRect(0, 0, this.testOutputElement.width, this.testOutputElement.height);
     this.testOutputElementContext.putImageData(
       this.backBufferData,
@@ -163,8 +161,8 @@ Blotter.Renderer.prototype = (function () {
     constructor : Blotter.Renderer,
 
     init : function (material, options) {
-      var width = material.width,
-          height = material.height;
+      var width = material.mapper.width,
+          height = material.mapper.height;
 
       options = options || {};
       if (typeof options.autostart === "undefined") {
@@ -180,12 +178,14 @@ Blotter.Renderer.prototype = (function () {
           "material does not expose property threeMaterial. Did you forget to call #load on your Blotter.Material object before instantiating Blotter.Renderer?");
       }
 
-      this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true});//, preserveDrawingBuffer: true });
+      this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, premultipliedAlpha : false });
       this.renderer.setSize(width, height);
       this.renderer.setPixelRatio(material.pixelRatio);
       this.startTime = new Date().getTime();
 
       this.domElement = this.renderer.domElement;
+      this.domElementContext = this.renderer.getContext();
+
       document.body.appendChild(this.domElement);
 
       this.scene = new THREE.Scene();
@@ -193,9 +193,6 @@ Blotter.Renderer.prototype = (function () {
       this.camera = new THREE.Camera()
 
       this.geometry = new THREE.PlaneGeometry(2, 2, 0);
-      this.geometry.doubleSided = true;
-      this.geometry.scale.y = - 1;
-      //this.geometry.scale( - 1, 1, 1 );
 
       this.material = material;
 
@@ -208,7 +205,12 @@ Blotter.Renderer.prototype = (function () {
       this.uint8ArrayArrayCache = new Uint8ArrayCache(material.width * material.height * 4)
       this.imageDataCache = new ImageDataCache(material.width, material.height);
 
-      this.backBufferTexture = new THREE.WebGLRenderTarget(material.width, material.height, { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, format: THREE.RGBAFormat });
+      this.backBufferTexture = new THREE.WebGLRenderTarget(material.width, material.height, {
+        minFilter: THREE.LinearFilter,
+        magFilter: THREE.NearestFilter,
+        format: THREE.RGBAFormat,
+        type: THREE.UnsignedByteType
+      });
       // this.backBufferTexture.texture.format = THREE.RGBAFormat;
       // this.backBufferTexture.texture.minFilter = THREE.LinearFilter;
       // this.backBufferTexture.texture.repeat.x = - 1;
@@ -218,7 +220,7 @@ Blotter.Renderer.prototype = (function () {
       // this.testOutputElementContext = this.testOutputElement.getContext("2d");
       // this.testOutputElement.width = material.width;
       // this.testOutputElement.height = material.height;
-      this.testOutputElement = blotter_CanvasUtils.hiDpiCanvas(material.width, material.height);
+      this.testOutputElement = blotter_CanvasUtils.hiDpiCanvas(material.mapper.width, material.mapper.height);
       this.testOutputElementContext = this.testOutputElement.getContext("2d");
       document.body.appendChild(this.testOutputElement);
 
