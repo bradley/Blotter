@@ -120,22 +120,22 @@ Blotter.Renderer.prototype = (function () {
     var time = ((new Date()).getTime() - this.startTime) / 1000;
     this.material.updateUniformValueForText(this.material.mapper.texts[1], "uLenseWeight", Math.abs(Math.sin(time)));
 
-    // this.renderer.render(this.scene, this.camera, this.backBufferTexture);
+    this.renderer.render(this.scene, this.camera, this.backBufferTexture);
     this.renderer.render(this.scene, this.camera);
 
-    // var buffer = this.uint8ArrayArrayCache.next();
-    // this.backBufferData = this.imageDataCache.next();
+    var buffer = this.uint8ArrayArrayCache.next();
+    this.backBufferData = this.imageDataCache.next();
 
-    // this.renderer.readRenderTargetPixels(
-    //   this.backBufferTexture,
-    //   0,
-    //   0,
-    //   this.backBufferTexture.width,
-    //   this.backBufferTexture.height,
-    //   buffer
-    // );
+    this.renderer.readRenderTargetPixels(
+      this.backBufferTexture,
+      0,
+      0,
+      this.backBufferTexture.width,
+      this.backBufferTexture.height,
+      buffer
+    );
 
-    // this.backBufferData.data.set(buffer);
+    this.backBufferData.data.set(buffer);
 
     // for (var textId in self.textScopes) {
     //   textScope = self.textScopes[textId];
@@ -144,12 +144,12 @@ Blotter.Renderer.prototype = (function () {
     //   }
     // }
 
-    // this.testOutputElementContext.clearRect(0, 0, this.testOutputElement.width, this.testOutputElement.height);
-    // this.testOutputElementContext.putImageData(
-    //   this.backBufferData,
-    //   0,
-    //   0
-    // );
+    this.testOutputElementContext.clearRect(0, 0, this.testOutputElement.width, this.testOutputElement.height);
+    this.testOutputElementContext.putImageData(
+      this.backBufferData,
+      0,
+      0
+    );
 
     this.currentAnimationLoop = blotter_Animation.requestAnimationFrame(function () {
       _loop.call(self);
@@ -203,20 +203,20 @@ Blotter.Renderer.prototype = (function () {
 
       this.textScopes = {};
 
-      // this.uint8ArrayArrayCache = new Uint8ArrayCache(material.width * material.height * 4)
-      // this.imageDataCache = new ImageDataCache(material.width, material.height);
+      this.uint8ArrayArrayCache = new Uint8ArrayCache(material.width * material.height * 4)
+      this.imageDataCache = new ImageDataCache(material.width, material.height);
 
-      // this.backBufferTexture = new THREE.WebGLRenderTarget(material.width, material.height, {
-      //   minFilter: THREE.LinearFilter,
-      //   magFilter: THREE.NearestFilter,
-      //   format: THREE.RGBAFormat,
-      //   type: THREE.UnsignedByteType
-      // });;
-      // this.backBufferData;
+      this.backBufferTexture = new THREE.WebGLRenderTarget(material.width, material.height, {
+        minFilter: THREE.LinearFilter,
+        magFilter: THREE.LinearFilter,
+        format: THREE.RGBAFormat,
+        type: THREE.UnsignedByteType
+      });;
+      this.backBufferData;
 
-      // this.testOutputElement = blotter_CanvasUtils.hiDpiCanvas(material.mapper.width, material.mapper.height);
-      // this.testOutputElementContext = this.testOutputElement.getContext("2d");
-      // document.body.appendChild(this.testOutputElement);
+      this.testOutputElement = blotter_CanvasUtils.hiDpiCanvas(material.mapper.width, material.mapper.height);
+      this.testOutputElementContext = this.testOutputElement.getContext("2d");
+      document.body.appendChild(this.testOutputElement);
 
       if (options.autostart) {
         this.start();
