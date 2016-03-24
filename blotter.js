@@ -1504,7 +1504,7 @@ if ( typeof module === 'object' ) {
     function _loop() {
       var self = this, textScope;
       var time = (new Date().getTime() - this.startTime) / 1e3;
-      this.material.updateUniformValueForText(this.material.mapper.texts[1], "uLenseWeight", .9);
+      this.material.updateUniformValueForText(this.material.mapper.texts[1], "uLenseWeight", Math.abs(Math.sin(time)));
       this.renderer.render(this.scene, this.camera);
       this.currentAnimationLoop = blotter_Animation.requestAnimationFrame(function() {
         _loop.call(self);

@@ -118,7 +118,7 @@ Blotter.Renderer.prototype = (function () {
         textScope;
 
     var time = ((new Date()).getTime() - this.startTime) / 1000;
-    this.material.updateUniformValueForText(this.material.mapper.texts[1], "uLenseWeight", 0.9);//Math.abs(Math.sin(time)));
+    this.material.updateUniformValueForText(this.material.mapper.texts[1], "uLenseWeight", Math.abs(Math.sin(time)));
 
     // this.renderer.render(this.scene, this.camera, this.backBufferTexture);
     this.renderer.render(this.scene, this.camera);
