@@ -11,6 +11,9 @@
     <div style="display: none; position: absolute; top: 0; left: 0; z-index: -10; width: 900px;">
       i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this.
     </div>
+    <div style="font-size: 12px; font-family: Charcoal, sans-serif; position: absolute; top: 31px; left: 55px; z-index: -10;">
+      communicate pentagrams
+    </div>
     <script>
       $(document).ready(function() {
 
@@ -21,6 +24,27 @@
         */
 
         var mainImageSrc = [
+
+          "void combineColors( out vec4 adjustedColor, in vec4 bg, in vec4 color ) {",
+          "  float a = color.a;",
+
+          "  float r = (1.0 - a) * bg.r + a * color.r;",
+          "  float g = (1.0 - a) * bg.g + a * color.g;",
+          "  float b = (1.0 - a) * bg.b + a * color.b;",
+
+          "  adjustedColor = vec4(r, g, b, 1.0);",
+          "}",
+
+          "void rgbaFromRgb( out vec4 rgba, in vec3 rgb ) {",
+          "  float a = 1.0 - min(rgb.r, min(rgb.g, rgb.b));",
+
+          "  float r = 1.0 - (1.0 - rgb.r) / a;",
+          "  float g = 1.0 - (1.0 - rgb.g) / a;",
+          "  float b = 1.0 - (1.0 - rgb.b) / a;",
+
+          "  rgba = vec4(r, g, b, a);",
+          "}",
+
           "void mainImage( out vec4 mainImage, in vec2 fragCoord ) {",
 
           "   // p = x, y percentage for texel position within total resolution.",
@@ -50,38 +74,16 @@
           "     float angle = 0.45;",
           "     offset = (amount * (1.0 - r)) * vec2(cos(angle), sin(angle));",
           "   }",
+
           "   vec4 cr = textTexture(offsetUV + offset);",
           "   vec4 cga = textTexture(offsetUV);",
           "   vec4 cb = textTexture(offsetUV - offset);",
 
-          "   vec4 outColor = vec4(0.0);",
+          "   combineColors(cr, vec4(1.0, 1.0, 1.0, 1.0), cr);",
+          "   combineColors(cga, vec4(1.0, 1.0, 1.0, 1.0), cga);",
+          "   combineColors(cb, vec4(1.0, 1.0, 1.0, 1.0), cb);",
 
-          "   if (cr.r > 0.0 || cga.g > 0.0 || cb.b > 0.0) {",
-          "     // Adjust rgb values so that colors with transparency appear as if they were atop an opaque white background.",
-          "     // (vec4(0.0, 0.0, 0.0, 0.5) _atop white_ is visibly the same as vec4(0.5, 0.5, 0.5, 0.0))",
-          "     if (cr.a != 0.0) {",
-          "       cr.r = cr.r + cr.a;",
-          "     }",
-          "     if (cga.a != 0.0) {",
-          "       cga.g = cga.g + cga.a;",
-          "     }",
-          "     if (cb.b != 0.0) {",
-          "       cb.b = cb.b + cb.a;",
-          "     }",
-
-          "     // Ensure offseted/shifted texels have alpha similar to the texel they are offsetting",
-          "     // (this prevents texel from being invisible if cga.a = vec4(0.0, 0.0, 0.0, 0.0)",
-          "     cga.a = max(cga.a, max(cr.a, cb.a));",
-
-          "     // Invert colors (this is cheating but optimal) so that we have CMYK rather than RGB",
-          "     // shifted colors and the combination of offsets creates a blacker rather than whiter color.",
-          "     outColor = vec4(1.0 - cr.r, 1.0 - cga.g, 1.0 - cb.b, cga.a);",
-          "   }",
-          "   else {",
-          "     outColor = vec4(cr.r, cga.g, cb.b, cga.a);",
-          "   }",
-
-          "   mainImage = outColor;",
+          "   rgbaFromRgb(mainImage, vec3(cr.r, cga.g, cb.b));",
           "}"
         ].join("\n");
 
@@ -104,7 +106,7 @@
         var material = new Blotter.Material(blotterTexts, mainImageSrc, {
           uniforms : {
             uCenterPoint : { type : "2f", value : [0.5, 0.5] },
-            uLenseWeight : { type : "1f", value : 0.9 }
+            uLenseWeight : { type : "1f", value : 0.0 }
           }
         });
 

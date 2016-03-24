@@ -127,6 +127,7 @@ blotter_Mapper.prototype = (function () {
     },
 
     getImage: function () {
+      window.open(this.toCanvas().toDataURL());
     	return this.toCanvas().toDataURL();
     }
   }

@@ -118,38 +118,38 @@ Blotter.Renderer.prototype = (function () {
         textScope;
 
     var time = ((new Date()).getTime() - this.startTime) / 1000;
-    this.material.updateUniformValueForText(this.material.mapper.texts[1], "uLenseWeight", Math.abs(Math.sin(time)));
+    this.material.updateUniformValueForText(this.material.mapper.texts[1], "uLenseWeight", 0.9);//Math.abs(Math.sin(time)));
 
-    this.renderer.render(this.scene, this.camera, this.backBufferTexture);
+    // this.renderer.render(this.scene, this.camera, this.backBufferTexture);
     this.renderer.render(this.scene, this.camera);
 
-    var buffer = this.uint8ArrayArrayCache.next();
-    this.backBufferData = this.imageDataCache.next();
+    // var buffer = this.uint8ArrayArrayCache.next();
+    // this.backBufferData = this.imageDataCache.next();
 
-    this.renderer.readRenderTargetPixels(
-      this.backBufferTexture,
-      0,
-      0,
-      this.backBufferTexture.width,
-      this.backBufferTexture.height,
-      buffer
-    );
+    // this.renderer.readRenderTargetPixels(
+    //   this.backBufferTexture,
+    //   0,
+    //   0,
+    //   this.backBufferTexture.width,
+    //   this.backBufferTexture.height,
+    //   buffer
+    // );
 
-    this.backBufferData.data.set(buffer);
+    // this.backBufferData.data.set(buffer);
 
-    for (var textId in self.textScopes) {
-      textScope = self.textScopes[textId];
-      if (textScope.playing) {
-        textScope.update();
-      }
-    }
+    // for (var textId in self.textScopes) {
+    //   textScope = self.textScopes[textId];
+    //   if (textScope.playing) {
+    //     textScope.update();
+    //   }
+    // }
 
-    this.testOutputElementContext.clearRect(0, 0, this.testOutputElement.width, this.testOutputElement.height);
-    this.testOutputElementContext.putImageData(
-      this.backBufferData,
-      0,
-      0
-    );
+    // this.testOutputElementContext.clearRect(0, 0, this.testOutputElement.width, this.testOutputElement.height);
+    // this.testOutputElementContext.putImageData(
+    //   this.backBufferData,
+    //   0,
+    //   0
+    // );
 
     this.currentAnimationLoop = blotter_Animation.requestAnimationFrame(function () {
       _loop.call(self);
@@ -161,8 +161,8 @@ Blotter.Renderer.prototype = (function () {
     constructor : Blotter.Renderer,
 
     init : function (material, options) {
-      var width = material.mapper.width,
-          height = material.mapper.height;
+      var width = material.width,
+          height = material.height;
 
       options = options || {};
       if (typeof options.autostart === "undefined") {
@@ -179,9 +179,10 @@ Blotter.Renderer.prototype = (function () {
       }
 
       this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, premultipliedAlpha : false });
-      this.renderer.setSize(width, height);
+      this.renderer.setSize(material.mapper.width, material.mapper.height);
       this.renderer.setPixelRatio(material.pixelRatio);
-      this.startTime = new Date().getTime();
+
+    this.startTime = new Date().getTime();
 
       this.domElement = this.renderer.domElement;
       this.domElementContext = this.renderer.getContext();
@@ -190,9 +191,9 @@ Blotter.Renderer.prototype = (function () {
 
       this.scene = new THREE.Scene();
 
-      this.camera = new THREE.Camera()
+      this.camera = new THREE.OrthographicCamera(width / - 2, width / 2, height / 2, height / - 2, 0, 100);
 
-      this.geometry = new THREE.PlaneGeometry(2, 2, 0);
+      this.geometry = new THREE.PlaneGeometry(width, height);
 
       this.material = material;
 
@@ -202,27 +203,20 @@ Blotter.Renderer.prototype = (function () {
 
       this.textScopes = {};
 
-      this.uint8ArrayArrayCache = new Uint8ArrayCache(material.width * material.height * 4)
-      this.imageDataCache = new ImageDataCache(material.width, material.height);
+      // this.uint8ArrayArrayCache = new Uint8ArrayCache(material.width * material.height * 4)
+      // this.imageDataCache = new ImageDataCache(material.width, material.height);
 
-      this.backBufferTexture = new THREE.WebGLRenderTarget(material.width, material.height, {
-        minFilter: THREE.LinearFilter,
-        magFilter: THREE.NearestFilter,
-        format: THREE.RGBAFormat,
-        type: THREE.UnsignedByteType
-      });
-      // this.backBufferTexture.texture.format = THREE.RGBAFormat;
-      // this.backBufferTexture.texture.minFilter = THREE.LinearFilter;
-      // this.backBufferTexture.texture.repeat.x = - 1;
-      this.backBufferData;
+      // this.backBufferTexture = new THREE.WebGLRenderTarget(material.width, material.height, {
+      //   minFilter: THREE.LinearFilter,
+      //   magFilter: THREE.NearestFilter,
+      //   format: THREE.RGBAFormat,
+      //   type: THREE.UnsignedByteType
+      // });;
+      // this.backBufferData;
 
-      // this.testOutputElement = document.createElement("canvas");
+      // this.testOutputElement = blotter_CanvasUtils.hiDpiCanvas(material.mapper.width, material.mapper.height);
       // this.testOutputElementContext = this.testOutputElement.getContext("2d");
-      // this.testOutputElement.width = material.width;
-      // this.testOutputElement.height = material.height;
-      this.testOutputElement = blotter_CanvasUtils.hiDpiCanvas(material.mapper.width, material.mapper.height);
-      this.testOutputElementContext = this.testOutputElement.getContext("2d");
-      document.body.appendChild(this.testOutputElement);
+      // document.body.appendChild(this.testOutputElement);
 
       if (options.autostart) {
         this.start();

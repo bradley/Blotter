@@ -1052,6 +1052,7 @@ if ( typeof module === 'object' ) {
         return canvas;
       },
       getImage: function() {
+        window.open(this.toCanvas().toDataURL());
         return this.toCanvas().toDataURL();
       }
     };
@@ -1503,21 +1504,8 @@ if ( typeof module === 'object' ) {
     function _loop() {
       var self = this, textScope;
       var time = (new Date().getTime() - this.startTime) / 1e3;
-      this.material.updateUniformValueForText(this.material.mapper.texts[1], "uLenseWeight", Math.abs(Math.sin(time)));
-      this.renderer.render(this.scene, this.camera, this.backBufferTexture);
+      this.material.updateUniformValueForText(this.material.mapper.texts[1], "uLenseWeight", .9);
       this.renderer.render(this.scene, this.camera);
-      var buffer = this.uint8ArrayArrayCache.next();
-      this.backBufferData = this.imageDataCache.next();
-      this.renderer.readRenderTargetPixels(this.backBufferTexture, 0, 0, this.backBufferTexture.width, this.backBufferTexture.height, buffer);
-      this.backBufferData.data.set(buffer);
-      for (var textId in self.textScopes) {
-        textScope = self.textScopes[textId];
-        if (textScope.playing) {
-          textScope.update();
-        }
-      }
-      this.testOutputElementContext.clearRect(0, 0, this.testOutputElement.width, this.testOutputElement.height);
-      this.testOutputElementContext.putImageData(this.backBufferData, 0, 0);
       this.currentAnimationLoop = blotter_Animation.requestAnimationFrame(function() {
         _loop.call(self);
       });
@@ -1525,7 +1513,7 @@ if ( typeof module === 'object' ) {
     return {
       constructor: Blotter.Renderer,
       init: function(material, options) {
-        var width = material.mapper.width, height = material.mapper.height;
+        var width = material.width, height = material.height;
         options = options || {};
         if (typeof options.autostart === "undefined") {
           options.autostart = true;
@@ -1541,31 +1529,19 @@ if ( typeof module === 'object' ) {
           alpha: true,
           premultipliedAlpha: false
         });
-        this.renderer.setSize(width, height);
+        this.renderer.setSize(material.mapper.width, material.mapper.height);
         this.renderer.setPixelRatio(material.pixelRatio);
         this.startTime = new Date().getTime();
         this.domElement = this.renderer.domElement;
         this.domElementContext = this.renderer.getContext();
         document.body.appendChild(this.domElement);
         this.scene = new THREE.Scene();
-        this.camera = new THREE.Camera();
-        this.geometry = new THREE.PlaneGeometry(2, 2, 0);
+        this.camera = new THREE.OrthographicCamera(width / -2, width / 2, height / 2, height / -2, 0, 100);
+        this.geometry = new THREE.PlaneGeometry(width, height);
         this.material = material;
         this.mesh = new THREE.Mesh(this.geometry, this.material.threeMaterial);
         this.scene.add(this.mesh);
         this.textScopes = {};
-        this.uint8ArrayArrayCache = new Uint8ArrayCache(material.width * material.height * 4);
-        this.imageDataCache = new ImageDataCache(material.width, material.height);
-        this.backBufferTexture = new THREE.WebGLRenderTarget(material.width, material.height, {
-          minFilter: THREE.LinearFilter,
-          magFilter: THREE.NearestFilter,
-          format: THREE.RGBAFormat,
-          type: THREE.UnsignedByteType
-        });
-        this.backBufferData;
-        this.testOutputElement = blotter_CanvasUtils.hiDpiCanvas(material.mapper.width, material.mapper.height);
-        this.testOutputElementContext = this.testOutputElement.getContext("2d");
-        document.body.appendChild(this.testOutputElement);
         if (options.autostart) {
           this.start();
         }
