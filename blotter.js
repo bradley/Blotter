@@ -1007,6 +1007,17 @@ if ( typeof module === 'object' ) {
       var areaA = textA.w * textA.h, areaB = textB.w * textB.h;
       return areaB - areaA;
     }
+    function _getYOffset(size, lineHeight) {
+      var lineHeight = lineHeight || blotter_TextUtils.ensurePropertyValues().leading;
+      if (!isNaN(lineHeight)) {
+        lineHeight = size * lineHeight;
+      } else if (lineHeight.toString().indexOf("px") !== -1) {
+        lineHeight = parseInt(lineHeight);
+      } else if (lineHeight.toString().indexOf("%") !== -1) {
+        lineHeight = parseInt(lineHeight) / 100 * size;
+      }
+      return lineHeight;
+    }
     return {
       constructor: blotter_Mapper,
       init: function(texts, pixelRatio) {
@@ -1043,16 +1054,16 @@ if ( typeof module === 'object' ) {
       },
       toCanvas: function() {
         var canvas = blotter_CanvasUtils.hiDpiCanvas(this.width, this.height, this.pixelRatio), ctx = canvas.getContext("2d");
+        ctx.textBaseline = "middle";
         for (var i = 0; i < this.texts.length; i++) {
-          var text = this.texts[i], size = this.textsSizes[text.id], lineHeightOffset = text.properties.size / 2 + (text.properties.size * text.properties.leading - text.properties.size) / 2;
-          ctx.font = text.properties.style + " " + text.properties.weight + " " + text.properties.size + "px " + text.properties.family;
+          var text = this.texts[i], size = this.textsSizes[text.id], lineHeightOffset = (text.properties.size * text.properties.leading - text.properties.size) / 2, yOffset = _getYOffset.call(this, text.properties.size, text.properties.leading);
+          ctx.font = text.properties.style + " " + text.properties.weight + " " + text.properties.size + "px" + " " + text.properties.family;
           ctx.fillStyle = text.properties.fill;
-          ctx.fillText(text.value, size.fit.x + text.properties.paddingLeft, size.fit.y + text.properties.paddingTop + lineHeightOffset);
+          ctx.fillText(text.value, size.fit.x + text.properties.paddingLeft, size.fit.y + text.properties.paddingTop + yOffset / 2);
         }
         return canvas;
       },
       getImage: function() {
-        window.open(this.toCanvas().toDataURL());
         return this.toCanvas().toDataURL();
       }
     };
