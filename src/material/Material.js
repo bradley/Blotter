@@ -1,41 +1,10 @@
 import "../core/";
 import "../extras/";
 import "../texture/";
+import "../cache/";
 
 
-var Float32ArrayCache = function (length, poolSize) {
-  this.init(length, poolSize);
-};
 
-Float32ArrayCache.prototype = (function() {
-
-  function _buildCache (length, poolSize) {
-    this.cache = [];
-    for(var i = 0; i < poolSize; i++) {
-      this.cache.push(new Float32Array(length));
-    }
-  }
-
-  return {
-    constructor : Float32ArrayCache,
-
-    init : function (length, poolSize) {
-      poolSize = poolSize || 10;
-      this.lastIndex = 0;
-      _buildCache.call(this, length, poolSize);
-    },
-
-    next : function () {
-      var array = this.cache[this.lastIndex];
-      this.lastIndex++;
-      if (this.lastIndex == this.cache.length) {
-        this.lastIndex = 0;
-      }
-      return array;
-    }
-
-  }
-})();
 
 
 Blotter.Material = function(texts, shaderSrc, options) {
@@ -48,7 +17,7 @@ Blotter.Material.prototype = (function() {
     if (!Array.isArray(texts)) {
       texts = [texts];
     }
-    var mapper = new blotter_Mapper(texts, this.pixelRatio);
+    var mapper = new blotter_Mapper(texts, { pixelRatio: this.pixelRatio, flipY: true });
     this.width = mapper.width * this.pixelRatio;
     this.height = mapper.height * this.pixelRatio;
     return mapper;
@@ -168,7 +137,7 @@ Blotter.Material.prototype = (function() {
       //  Multiply alpha by original spriteIndexData's fourth value."
       //  this will be 0 for texels not within any 'sprite' area."
       "   outColor.a = outColor.a * spriteAlpha;",
-      "   gl_FragColor = outColor;//vec4(1.0, 0.6705882353, 0.2509803922, 0.7);//outColor;//vec4(1.0, 1.0, 0.5, 1.0);//",
+      "   gl_FragColor = outColor;//texture2D(_uSampler, _vTexCoord);//vec4(1.0, 0.6705882353, 0.2509803922, 0.7);//outColor;//vec4(1.0, 1.0, 0.5, 1.0);//",
       "}"
 
     ];
@@ -327,7 +296,7 @@ Blotter.Material.prototype = (function() {
       this.pixelRatio = options.pixelRatio || blotter_CanvasUtils.pixelRatio;
 
       this.mapper = _createMapperFromTexts.call(this, texts);
-      this.float32ArrayCache = new Float32ArrayCache(this.mapper.texts.length * 4);
+      this.float32ArrayCache = new blotter_Float32ArrayCache(this.mapper.texts.length * 4);
       this.shaderSrc = shaderSrc;
       this.userDefinedUniforms = options.uniforms || {};
 

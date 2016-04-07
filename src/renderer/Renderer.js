@@ -2,109 +2,8 @@ import "../core/";
 import "../extras/";
 import "../text/";
 import "../material/";
+import "../cache/";
 import "_RenderScope";
-
-
-var Uint8ArrayCache = function (length, poolSize) {
-  this.init(length, poolSize);
-};
-
-Uint8ArrayCache.prototype = (function() {
-
-  function _buildCache (length, poolSize) {
-    this.cache = [];
-    for(var i = 0; i < poolSize; i++) {
-      this.cache.push(new Uint8Array(length));
-    }
-  }
-
-  return {
-    constructor : Uint8ArrayCache,
-
-    init : function (length, poolSize) {
-      poolSize = poolSize || 10;
-      this.lastIndex = 0;
-      _buildCache.call(this, length, poolSize);
-    },
-
-    next : function () {
-      var array = this.cache[this.lastIndex];
-      this.lastIndex++;
-      if (this.lastIndex == this.cache.length) {
-        this.lastIndex = 0;
-      }
-      return array;
-    }
-
-  }
-})();
-
-
-// DEV NOTE: Not sure this should even work. Can context have ore than on of these?
-var ImageDataCache = function (width, height, poolSize) {
-  this.init(width, height, poolSize);
-};
-
-ImageDataCache.prototype = (function() {
-
-  function _buildCache (width, height, poolSize) {
-    var canvas = document.createElement("canvas"),
-        context = canvas.getContext("2d");
-    this.cache = [];
-    for(var i = 0; i < poolSize; i++) {
-      this.cache.push(context.createImageData(width, height));
-    }
-    delete canvas;
-  }
-
-  return {
-    constructor : ImageDataCache,
-
-    init : function (width, height, poolSize) {
-      poolSize = poolSize || 10;
-      this.lastIndex = 0;
-      _buildCache.call(this, width, height, poolSize);
-    },
-
-    next : function () {
-      var array = this.cache[this.lastIndex];
-      this.lastIndex++;
-      if (this.lastIndex == this.cache.length) {
-        this.lastIndex = 0;
-      }
-      return array;
-    }
-
-  }
-})();
-
-// const blotter_Pool = new thread.Pool();
-
-// // Run inline code
-// const jobC = blotter_Pool.run(
-//   function(options, done) {
-//     options = JSON.parse(options);
-//     var canvas = document.createElement("canvas"),
-//         context = canvas.getContext("2d");
-//     canvas.width = options.eW;
-//     canvas.height = options.eH;
-
-//     context.drawImage(
-//       option.url,
-//       0,
-//       0,
-//       options.sW,
-//       options.sH,
-//       0,
-//       0,
-//       options.eW,
-//       options.eH
-//     );
-
-//     const backBufferData = context.getImageData(0, 0, options.eW, options.eH);
-//     done(backBufferData);
-//   }
-// );
 
 
 Blotter.Renderer = function (material) {
@@ -114,42 +13,24 @@ Blotter.Renderer = function (material) {
 Blotter.Renderer.prototype = (function () {
 
   function _loop () {
-    var self = this,
-        textScope;
+    var self = this;
 
-    var time = ((new Date()).getTime() - this.startTime) / 1000;
-    this.material.updateUniformValueForText(this.material.mapper.texts[1], "uLenseWeight", Math.abs(Math.sin(time)));
+    this.backBufferRenderer.render(this.backBufferScene, this.backBufferCamera, this.backBufferTexture);
 
-    this.renderer.render(this.scene, this.camera, this.backBufferTexture);
-    this.renderer.render(this.scene, this.camera);
-
-    var buffer = this.uint8ArrayArrayCache.next();
-    this.backBufferData = this.imageDataCache.next();
-
-    this.renderer.readRenderTargetPixels(
+    this.backBufferRenderer.readRenderTargetPixels(
       this.backBufferTexture,
       0,
       0,
       this.backBufferTexture.width,
       this.backBufferTexture.height,
-      buffer
+      this.frameBuffer
     );
 
-    this.backBufferData.data.set(buffer);
-
-    // for (var textId in self.textScopes) {
-    //   textScope = self.textScopes[textId];
-    //   if (textScope.playing) {
-    //     textScope.update();
-    //   }
-    // }
-
-    this.testOutputElementContext.clearRect(0, 0, this.testOutputElement.width, this.testOutputElement.height);
-    this.testOutputElementContext.putImageData(
-      this.backBufferData,
-      0,
-      0
-    );
+    for (var textId in this.textScopes) {
+      if (this.textScopes[textId].playing) {
+        this.textScopes[textId].update();
+      }
+    }
 
     this.currentAnimationLoop = blotter_Animation.requestAnimationFrame(function () {
       _loop.call(self);
@@ -161,8 +42,6 @@ Blotter.Renderer.prototype = (function () {
     constructor : Blotter.Renderer,
 
     init : function (material, options) {
-      var width = material.width,
-          height = material.height;
 
       options = options || {};
       if (typeof options.autostart === "undefined") {
@@ -178,45 +57,49 @@ Blotter.Renderer.prototype = (function () {
           "material does not expose property threeMaterial. Did you forget to call #load on your Blotter.Material object before instantiating Blotter.Renderer?");
       }
 
-      this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, premultipliedAlpha : false });
-      this.renderer.setSize(material.mapper.width, material.mapper.height);
-      this.renderer.setPixelRatio(material.pixelRatio);
-
-    this.startTime = new Date().getTime();
-
-      this.domElement = this.renderer.domElement;
-      this.domElementContext = this.renderer.getContext();
-
-      document.body.appendChild(this.domElement);
-
-      this.scene = new THREE.Scene();
-
-      this.camera = new THREE.OrthographicCamera(width / - 2, width / 2, height / 2, height / - 2, 0, 100);
-
-      this.geometry = new THREE.PlaneGeometry(width, height);
-
-      this.material = material;
-
-      this.mesh = new THREE.Mesh(this.geometry, this.material.threeMaterial);
-
-      this.scene.add(this.mesh);
+      this.blotterMaterial = material;
 
       this.textScopes = {};
 
-      this.uint8ArrayArrayCache = new Uint8ArrayCache(material.width * material.height * 4)
-      this.imageDataCache = new ImageDataCache(material.width, material.height);
 
-      this.backBufferTexture = new THREE.WebGLRenderTarget(material.width, material.height, {
+      // Prepare back buffer scene
+
+      var backBufferWidth = this.blotterMaterial.width,
+          backBufferHeight = this.blotterMaterial.height;
+
+      this.backBufferScene = new THREE.Scene();
+
+      this.backBufferTexture = new THREE.WebGLRenderTarget(backBufferWidth, backBufferHeight, {
         minFilter: THREE.LinearFilter,
         magFilter: THREE.LinearFilter,
         format: THREE.RGBAFormat,
         type: THREE.UnsignedByteType
-      });;
-      this.backBufferData;
+      });
+      this.backBufferTexture.texture.generateMipmaps = false;
+      this.backBufferTexture.width = backBufferWidth;
+      this.backBufferTexture.height = backBufferHeight;
 
-      this.testOutputElement = blotter_CanvasUtils.hiDpiCanvas(material.mapper.width, material.mapper.height);
-      this.testOutputElementContext = this.testOutputElement.getContext("2d");
-      document.body.appendChild(this.testOutputElement);
+      this.backBufferMaterial = this.blotterMaterial.threeMaterial;
+
+      this.backBufferPlane = new THREE.PlaneGeometry(backBufferWidth, backBufferHeight);
+
+      this.backBufferObject = new THREE.Mesh(this.backBufferPlane, this.backBufferMaterial);
+
+      this.backBufferScene.add(this.backBufferObject);
+
+      this.backBufferRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, premultipliedAlpha : false });
+      this.backBufferRenderer.setSize(backBufferWidth, backBufferHeight);
+
+      this.backBufferCamera = new THREE.OrthographicCamera(backBufferWidth / - 2, backBufferWidth / 2, backBufferHeight / 2, backBufferHeight / - 2, 0, 100);
+
+
+      // Prepare pixel buffers
+
+      this.sharedBuffer = new ArrayBuffer(backBufferWidth * backBufferHeight * 4);
+      this.frameBuffer = new Uint8Array(this.sharedBuffer);
+      this.imageDataBuffer = new Uint8ClampedArray(this.sharedBuffer);
+      this.imageData = new ImageData(this.imageDataBuffer, backBufferWidth, backBufferHeight);
+
 
       if (options.autostart) {
         this.start();
@@ -248,7 +131,7 @@ Blotter.Renderer.prototype = (function () {
         return;
       }
 
-      if (!this.material.hasText(text)) {
+      if (!this.blotterMaterial.hasText(text)) {
         blotter_Messaging.logError("Blotter.Renderer", "Blotter.Text object not found in material");
         return;
       }

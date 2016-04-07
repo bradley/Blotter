@@ -43,6 +43,9 @@ blotter_Mapper.prototype = (function () {
     // Add fit objects back into this.textsSizes for each Text id.
     for (var i = 0; i < tempTextsSizesArray.length; i++) {
       var packedSizesObject = tempTextsSizesArray[i];
+      if (this.flipY) {
+        packedSizesObject.fit.y = packer.root.h - (packedSizesObject.fit.y + packedSizesObject.h);
+      }
       this.textsSizes[packedSizesObject.referenceId].fit = packedSizesObject.fit;
     }
 
@@ -74,9 +77,11 @@ blotter_Mapper.prototype = (function () {
 
     constructor : blotter_Mapper,
 
-  	init: function (texts, pixelRatio) {
+  	init: function (texts, options) {
+      var options = options || {};
 
-      this.pixelRatio = pixelRatio || 1;
+      this.pixelRatio = options.pixelRatio || 1;
+      this.flipY = options.flipY || false;
 
       this.texts = [];
       this.textsSizes = {};
@@ -119,25 +124,32 @@ blotter_Mapper.prototype = (function () {
 
     toCanvas: function () {
       var canvas = blotter_CanvasUtils.hiDpiCanvas(this.width, this.height, this.pixelRatio),
-          ctx = canvas.getContext("2d");
+          ctx = canvas.getContext("2d", { alpha: false });
 
       ctx.textBaseline = "middle";
 
       for (var i = 0; i < this.texts.length; i++) {
         var text = this.texts[i],
             size = this.textsSizes[text.id],
-            yOffset = _getYOffset.call(this, text.properties.size, text.properties.leading);
+            yOffset = _getYOffset.call(this, text.properties.size, text.properties.leading) / 2, // divide yOffset by 2 to accomodate `middle` textBaseline
+            adjustedY = size.fit.y + text.properties.paddingTop + yOffset;
 
         ctx.font = text.properties.style +
-                   " " + text.properties.weight +
-                   " " + text.properties.size + "px" +
-                   " " + text.properties.family;
+             " " + text.properties.weight +
+             " " + text.properties.size + "px" +
+             " " + text.properties.family;
+        ctx.save();
+        ctx.translate(size.fit.x + text.properties.paddingLeft, adjustedY);
+        if (this.flipY) {
+          ctx.scale(1, -1);
+        }
         ctx.fillStyle = text.properties.fill;
         ctx.fillText(
           text.value,
-          size.fit.x + text.properties.paddingLeft,
-          size.fit.y + text.properties.paddingTop + (yOffset / 2) // divide yOffset by 2 to accomodate `middle` textBaseline
+          0,
+          0
         );
+        ctx.restore();
       }
 
       return canvas;

@@ -11,7 +11,7 @@
     <div style="display: none; position: absolute; top: 0; left: 0; z-index: -10; width: 900px;">
       i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this.
     </div>
-    <div style="font-size: 12px; line-height: 1.5; font-family: Charcoal, sans-serif; position: absolute; top: 12px; left: 47px; z-index: -10;">
+    <div style="font-size: 12px; line-height: 1.5; font-family: Charcoal, sans-serif; position: absolute; top: 24px; left: 47px; z-index: -10;">
       communicate pentagrams
     </div>
     <script>
@@ -106,30 +106,30 @@
         var material = new Blotter.Material(blotterTexts, mainImageSrc, {
           uniforms : {
             uCenterPoint : { type : "2f", value : [0.5, 0.5] },
-            uLenseWeight : { type : "1f", value : 0.0 }
+            uLenseWeight : { type : "1f", value : 0.9 }
           }
         });
 
         material.load(function () {
           var renderer = new Blotter.Renderer(material);
 
-          // for (var i = 0; i < blotterTexts.length; i++) {
-          //   var text = blotterTexts[i];
-          //       outputEl = document.createElement("span");
-          //   outputEl.style.display = "inline-block";
-          //   document.body.appendChild(outputEl);
-          //   renderer.forText(text).appendTo(outputEl);
-          // }
+          for (var i = 0; i < blotterTexts.length; i++) {
+            var text = blotterTexts[i];
+                outputEl = document.createElement("span");
+            outputEl.style.display = "inline-block";
+            document.body.appendChild(outputEl);
+            renderer.forText(text).appendTo(outputEl);
+          }
 
-          // renderer.forText(blotterTexts[1]).on("mousemove", function (mousePosition) {
-          //   material.updateUniformValueForText(blotterTexts[1], "uCenterPoint", [mousePosition.x, mousePosition.y]);
-          // });
+          renderer.forText(blotterTexts[1]).on("mousemove", function (mousePosition) {
+            material.updateUniformValueForText(blotterTexts[1], "uCenterPoint", [mousePosition.x, mousePosition.y]);
+          });
 
           // var startTime = new Date().getTime();
 
           // renderer.forText(blotterTexts[1]).on("update", function (frameCount) {
           //   var time = ((new Date()).getTime() - startTime) / 1000;
-          //   material.updateUniformValueForText(blotterTexts[1], "uLenseWeight", Math.abs(Math.sin(time)));
+          //   material.updateUniformValueForText(blotterTexts[0], "uLenseWeight", Math.abs(Math.sin(time)));
           // });
         });
 

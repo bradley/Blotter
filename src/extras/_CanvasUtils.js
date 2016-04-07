@@ -9,8 +9,6 @@ var blotter_CanvasUtils = {
 
     canvas.width = w;
     canvas.height = h;
-    canvas.style.width = w + "px";
-    canvas.style.height = h + "px";
 
     return canvas;
   },
@@ -36,7 +34,7 @@ var blotter_CanvasUtils = {
     // Note: `sharpness` is used to increase the legibility of our rendered content.
     //   However I suspect it probably slows things down a bit - I haven't really
     //   checked. I'm open to thoughts.
-    var sharpness = 1;//2;
+    var sharpness = 1; console.log("dont forget you did this. set back to 1");
     var ctx = document.createElement("canvas").getContext("2d"),
         dpr = window.devicePixelRatio || 1,
         bsr = ctx.backingStorePixelRatio;
@@ -54,7 +52,7 @@ var blotter_CanvasUtils = {
     var rect = canvas.getBoundingClientRect();
     return {
       x: event.clientX - rect.left,
-      y: rect.height - (event.clientY - rect.top)
+      y: event.clientY - rect.top
     };
   },
 

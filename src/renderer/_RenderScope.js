@@ -39,13 +39,16 @@ blotter_RendererScope.prototype = (function () {
   }
 
   function _render () {
+
     if (this.domElement) {
-      this.context.clearRect(0, 0, this.width, this.height);
+      this.context.clearRect(0, 0, this.size.w * this.pixelRatio, this.size.h * this.pixelRatio);
+
       this.context.putImageData(
-        this.renderer.backBufferData,
-        -1 * Math.floor(this.size.fit.x),
-        -1 * Math.floor(this.size.fit.y)
-      )
+        this.renderer.imageData,
+        this._xOffset,
+        this._yOffset
+      );
+
       this.emit("update", this.frameCount);
     }
   }
@@ -63,9 +66,10 @@ blotter_RendererScope.prototype = (function () {
       this.text = text;
       this.renderer = renderer;
 
-      this.size = this.renderer.material.mapper.sizeForText(text);
-      this.width = this.size.w;
-      this.height = this.size.w;
+      this.size = this.renderer.blotterMaterial.mapper.sizeForText(text);
+      this.pixelRatio = this.renderer.blotterMaterial.pixelRatio;
+      this._xOffset = -1 * ~~(this.size.fit.x * this.pixelRatio);
+      this._yOffset = -1 * ~~((this.renderer.blotterMaterial.mapper.height - (this.size.fit.y + this.size.h)) * this.pixelRatio);
 
       this.playing = options.autostart;
       this.timeDelta = 0;
@@ -99,7 +103,8 @@ blotter_RendererScope.prototype = (function () {
         this.domElement.remove();
         this.context = null;
       }
-      this.domElement = blotter_CanvasUtils.canvas(this.width, this.height);
+
+      this.domElement = blotter_CanvasUtils.hiDpiCanvas(this.size.w, this.size.h);
       this.context = this.domElement.getContext("2d");
 
       element.appendChild(this.domElement);
