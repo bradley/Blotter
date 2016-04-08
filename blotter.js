@@ -1473,8 +1473,8 @@ if ( typeof module === 'object' ) {
     }
     function _render() {
       if (this.domElement) {
-        this.context.clearRect(0, 0, this.size.w * this.pixelRatio, this.size.h * this.pixelRatio);
-        this.context.putImageData(this.renderer.imageData, this._xOffset, this._yOffset);
+        this.context.clearRect(0, 0, this.domElement.width, this.domElement.height);
+        this.context.putImageData(this.renderer.imageData, this.fit.x, this.fit.y);
         this.emit("update", this.frameCount);
       }
     }
@@ -1487,10 +1487,14 @@ if ( typeof module === 'object' ) {
         }
         this.text = text;
         this.renderer = renderer;
-        this.size = this.renderer.blotterMaterial.mapper.sizeForText(text);
-        this.pixelRatio = this.renderer.blotterMaterial.pixelRatio;
-        this._xOffset = -1 * ~~(this.size.fit.x * this.pixelRatio);
-        this._yOffset = -1 * ~~((this.renderer.blotterMaterial.mapper.height - (this.size.fit.y + this.size.h)) * this.pixelRatio);
+        this.pixelRatio = options.pixelRatio || blotter_CanvasUtils.pixelRatio;
+        var mappedSize = this.renderer.material.mapper.sizeForText(text);
+        this.fit = {
+          w: mappedSize.w,
+          h: mappedSize.h,
+          x: -1 * ~~(mappedSize.fit.x * this.pixelRatio),
+          y: -1 * ~~((this.renderer.material.mapper.height - (mappedSize.fit.y + mappedSize.h)) * this.pixelRatio)
+        };
         this.playing = options.autostart;
         this.timeDelta = 0;
         this.lastDrawTime;
@@ -1517,10 +1521,51 @@ if ( typeof module === 'object' ) {
           this.domElement.remove();
           this.context = null;
         }
-        this.domElement = blotter_CanvasUtils.hiDpiCanvas(this.size.w, this.size.h);
+        this.domElement = blotter_CanvasUtils.hiDpiCanvas(this.fit.w, this.fit.h);
         this.context = this.domElement.getContext("2d");
         element.appendChild(this.domElement);
         _setEventListeners.call(this);
+      }
+    };
+  }();
+  var blotter_BackBufferRenderer = function(width, height, material) {
+    this.init(width, height, material);
+  };
+  blotter_BackBufferRenderer.prototype = function() {
+    return {
+      constructor: blotter_BackBufferRenderer,
+      init: function(width, height, material) {
+        this.scene = new THREE.Scene();
+        this.renderTarget = new THREE.WebGLRenderTarget(width, height, {
+          minFilter: THREE.LinearFilter,
+          magFilter: THREE.LinearFilter,
+          format: THREE.RGBAFormat,
+          type: THREE.UnsignedByteType
+        });
+        this.renderTarget.texture.generateMipmaps = false;
+        this.renderTarget.width = width;
+        this.renderTarget.height = height;
+        this.material = material;
+        this.plane = new THREE.PlaneGeometry(width, height);
+        this.mesh = new THREE.Mesh(this.plane, this.material);
+        this.scene.add(this.mesh);
+        this.renderer = new THREE.WebGLRenderer({
+          antialias: true,
+          alpha: true,
+          premultipliedAlpha: false
+        });
+        this.camera = new THREE.OrthographicCamera(width / -2, width / 2, height / 2, height / -2, 0, 100);
+        this.viewBuffer = new ArrayBuffer(width * height * 4);
+        this.imageDataArray = new Uint8Array(this.viewBuffer);
+        this.clampedImageDataArray = new Uint8ClampedArray(this.viewBuffer);
+        this.imageData = new ImageData(this.clampedImageDataArray, width, height);
+      },
+      render: function() {
+        this.renderer.render(this.scene, this.camera, this.renderTarget);
+        this.renderer.readRenderTargetPixels(this.renderTarget, 0, 0, this.renderTarget.width, this.renderTarget.height, this.imageDataArray);
+      },
+      teardown: function() {
+        this.renderer = null;
       }
     };
   }();
@@ -1530,8 +1575,8 @@ if ( typeof module === 'object' ) {
   Blotter.Renderer.prototype = function() {
     function _loop() {
       var self = this;
-      this.backBufferRenderer.render(this.backBufferScene, this.backBufferCamera, this.backBufferTexture);
-      this.backBufferRenderer.readRenderTargetPixels(this.backBufferTexture, 0, 0, this.backBufferTexture.width, this.backBufferTexture.height, this.frameBuffer);
+      this.backBuffer.render();
+      this.imageData = this.backBuffer.imageData;
       for (var textId in this.textScopes) {
         if (this.textScopes[textId].playing) {
           this.textScopes[textId].update();
@@ -1554,34 +1599,10 @@ if ( typeof module === 'object' ) {
         if (!material.threeMaterial) {
           blotter_Messaging.throwError("Blotter.Renderer", "material does not expose property threeMaterial. Did you forget to call #load on your Blotter.Material object before instantiating Blotter.Renderer?");
         }
-        this.blotterMaterial = material;
+        this.material = material;
         this.textScopes = {};
-        var backBufferWidth = this.blotterMaterial.width, backBufferHeight = this.blotterMaterial.height;
-        this.backBufferScene = new THREE.Scene();
-        this.backBufferTexture = new THREE.WebGLRenderTarget(backBufferWidth, backBufferHeight, {
-          minFilter: THREE.LinearFilter,
-          magFilter: THREE.LinearFilter,
-          format: THREE.RGBAFormat,
-          type: THREE.UnsignedByteType
-        });
-        this.backBufferTexture.texture.generateMipmaps = false;
-        this.backBufferTexture.width = backBufferWidth;
-        this.backBufferTexture.height = backBufferHeight;
-        this.backBufferMaterial = this.blotterMaterial.threeMaterial;
-        this.backBufferPlane = new THREE.PlaneGeometry(backBufferWidth, backBufferHeight);
-        this.backBufferObject = new THREE.Mesh(this.backBufferPlane, this.backBufferMaterial);
-        this.backBufferScene.add(this.backBufferObject);
-        this.backBufferRenderer = new THREE.WebGLRenderer({
-          antialias: true,
-          alpha: true,
-          premultipliedAlpha: false
-        });
-        this.backBufferRenderer.setSize(backBufferWidth, backBufferHeight);
-        this.backBufferCamera = new THREE.OrthographicCamera(backBufferWidth / -2, backBufferWidth / 2, backBufferHeight / 2, backBufferHeight / -2, 0, 100);
-        this.sharedBuffer = new ArrayBuffer(backBufferWidth * backBufferHeight * 4);
-        this.frameBuffer = new Uint8Array(this.sharedBuffer);
-        this.imageDataBuffer = new Uint8ClampedArray(this.sharedBuffer);
-        this.imageData = new ImageData(this.imageDataBuffer, backBufferWidth, backBufferHeight);
+        this.imageData;
+        this.backBuffer = new blotter_BackBufferRenderer(this.material.width, this.material.height, this.material.threeMaterial);
         if (options.autostart) {
           this.start();
         }
@@ -1599,15 +1620,15 @@ if ( typeof module === 'object' ) {
       },
       teardown: function() {
         this.stop();
+        this.backBuffer.teardown();
         this.renderer = null;
-        this.domElement.remove();
       },
       forText: function(text, options) {
         if (!(text instanceof Blotter.Text)) {
           blotter_Messaging.logError("Blotter.Renderer", "argument must be instanceof Blotter.Text");
           return;
         }
-        if (!this.blotterMaterial.hasText(text)) {
+        if (!this.material.hasText(text)) {
           blotter_Messaging.logError("Blotter.Renderer", "Blotter.Text object not found in material");
           return;
         }
@@ -1615,6 +1636,7 @@ if ( typeof module === 'object' ) {
         if (typeof options.autostart === "undefined") {
           options.autostart = true;
         }
+        options.pixelRatio = this.material.pixelRatio;
         if (!this.textScopes[text.id]) {
           var scope = new blotter_RendererScope(text, this, options);
           this.textScopes[text.id] = scope;

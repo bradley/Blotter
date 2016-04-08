@@ -7,10 +7,6 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r74/three.js"></script>
     <script type="text/javascript" src="../blotter.js"></script>
   </head>
-  <body style="margin: 0; padding: 0;">
-    <div style="display: none; position: absolute; top: 0; left: 0; z-index: -10; width: 900px;">
-      i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this. i want to move on from this.
-    </div>
     <div style="font-size: 12px; line-height: 1.5; font-family: Charcoal, sans-serif; position: absolute; top: 24px; left: 47px; z-index: -10;">
       communicate pentagrams
     </div>
@@ -125,12 +121,12 @@
             material.updateUniformValueForText(blotterTexts[1], "uCenterPoint", [mousePosition.x, mousePosition.y]);
           });
 
-          // var startTime = new Date().getTime();
+          var startTime = new Date().getTime();
 
-          // renderer.forText(blotterTexts[1]).on("update", function (frameCount) {
-          //   var time = ((new Date()).getTime() - startTime) / 1000;
-          //   material.updateUniformValueForText(blotterTexts[0], "uLenseWeight", Math.abs(Math.sin(time)));
-          // });
+          renderer.forText(blotterTexts[23]).on("update", function (frameCount) {
+            var time = ((new Date()).getTime() - startTime) / 1000;
+            material.updateUniformValueForText(blotterTexts[23], "uLenseWeight", Math.abs(Math.sin(time)));
+          });
         });
 
       });

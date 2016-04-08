@@ -15,7 +15,6 @@ Blotter.Text.prototype = (function () {
       this.value = value;
       this.properties = blotter_TextUtils.ensurePropertyValues(properties);
     }
-
   }
 })();
 

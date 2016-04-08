@@ -4,9 +4,6 @@ import "../texture/";
 import "../cache/";
 
 
-
-
-
 Blotter.Material = function(texts, shaderSrc, options) {
   this.init(texts, shaderSrc, options);
 }

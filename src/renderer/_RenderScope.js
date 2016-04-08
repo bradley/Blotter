@@ -41,12 +41,12 @@ blotter_RendererScope.prototype = (function () {
   function _render () {
 
     if (this.domElement) {
-      this.context.clearRect(0, 0, this.size.w * this.pixelRatio, this.size.h * this.pixelRatio);
+      this.context.clearRect(0, 0, this.domElement.width, this.domElement.height);
 
       this.context.putImageData(
         this.renderer.imageData,
-        this._xOffset,
-        this._yOffset
+        this.fit.x,
+        this.fit.y
       );
 
       this.emit("update", this.frameCount);
@@ -66,10 +66,15 @@ blotter_RendererScope.prototype = (function () {
       this.text = text;
       this.renderer = renderer;
 
-      this.size = this.renderer.blotterMaterial.mapper.sizeForText(text);
-      this.pixelRatio = this.renderer.blotterMaterial.pixelRatio;
-      this._xOffset = -1 * ~~(this.size.fit.x * this.pixelRatio);
-      this._yOffset = -1 * ~~((this.renderer.blotterMaterial.mapper.height - (this.size.fit.y + this.size.h)) * this.pixelRatio);
+      this.pixelRatio = options.pixelRatio || blotter_CanvasUtils.pixelRatio;
+
+      var mappedSize = this.renderer.material.mapper.sizeForText(text);
+      this.fit = {
+        w : mappedSize.w,
+        h : mappedSize.h,
+        x : -1 * ~~(mappedSize.fit.x * this.pixelRatio),
+        y : -1 * ~~((this.renderer.material.mapper.height - (mappedSize.fit.y + mappedSize.h)) * this.pixelRatio)
+      }
 
       this.playing = options.autostart;
       this.timeDelta = 0;
@@ -104,7 +109,7 @@ blotter_RendererScope.prototype = (function () {
         this.context = null;
       }
 
-      this.domElement = blotter_CanvasUtils.hiDpiCanvas(this.size.w, this.size.h);
+      this.domElement = blotter_CanvasUtils.hiDpiCanvas(this.fit.w, this.fit.h);
       this.context = this.domElement.getContext("2d");
 
       element.appendChild(this.domElement);
