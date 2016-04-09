@@ -3,7 +3,6 @@ VENDOR_FILES = \
 	lib/packer/packer.growing.js \
 	lib/detector/Detector.js \
 	lib/event_emitter/EventEmitter.js \
-	lib/threads/threads.browser.min.js
 
 GENERATED_FILES = \
 	blotter.js \

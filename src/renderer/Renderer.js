@@ -1,8 +1,7 @@
 import "../core/";
-import "../extras/";
+import "../utils/";
 import "../text/";
 import "../material/";
-import "../cache/";
 import "_RenderScope";
 import "_BackBufferRenderer";
 

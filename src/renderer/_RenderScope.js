@@ -1,5 +1,5 @@
 import "../core/";
-import "../extras/";
+import "../utils/";
 import "../text/";
 import "../material/";
 

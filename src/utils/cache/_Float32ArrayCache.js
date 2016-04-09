@@ -1,18 +1,18 @@
-var blotter_Uint8ArrayCache = function (length, poolSize) {
+var blotter_Float32ArrayCache = function (length, poolSize) {
   this.init(length, poolSize);
 };
 
-blotter_Uint8ArrayCache.prototype = (function() {
+blotter_Float32ArrayCache.prototype = (function() {
 
   function _buildCache (length, poolSize) {
     this.cache = [];
     for(var i = 0; i < poolSize; i++) {
-      this.cache.push(new Uint8Array(length));
+      this.cache.push(new Float32Array(length));
     }
   }
 
   return {
-    constructor : blotter_Uint8ArrayCache,
+    constructor : blotter_Float32ArrayCache,
 
     init : function (length, poolSize) {
       poolSize = poolSize || 10;

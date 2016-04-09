@@ -771,6 +771,89 @@ if ( typeof module === 'object' ) {
       }
     };
   }();
+  var blotter_Float32ArrayCache = function(length, poolSize) {
+    this.init(length, poolSize);
+  };
+  blotter_Float32ArrayCache.prototype = function() {
+    function _buildCache(length, poolSize) {
+      this.cache = [];
+      for (var i = 0; i < poolSize; i++) {
+        this.cache.push(new Float32Array(length));
+      }
+    }
+    return {
+      constructor: blotter_Float32ArrayCache,
+      init: function(length, poolSize) {
+        poolSize = poolSize || 10;
+        this.index = 0;
+        _buildCache.call(this, length, poolSize);
+      },
+      next: function() {
+        this.current = this.cache[this.index];
+        this.index++;
+        if (this.index == this.cache.length) {
+          this.index = 0;
+        }
+        return this.current;
+      }
+    };
+  }();
+  var blotter_ImageDataCache = function(width, height, poolSize) {
+    this.init(width, height, poolSize);
+  };
+  blotter_ImageDataCache.prototype = function() {
+    function _buildCache(width, height, poolSize) {
+      var canvas = document.createElement("canvas"), context = canvas.getContext("2d");
+      this.cache = [];
+      for (var i = 0; i < poolSize; i++) {
+        this.cache.push(context.createImageData(width, height));
+      }
+      delete canvas;
+    }
+    return {
+      constructor: blotter_ImageDataCache,
+      init: function(width, height, poolSize) {
+        poolSize = poolSize || 10;
+        this.index = 0;
+        _buildCache.call(this, width, height, poolSize);
+      },
+      next: function() {
+        this.current = this.cache[this.index];
+        this.index++;
+        if (this.index == this.cache.length) {
+          this.index = 0;
+        }
+        return this.current;
+      }
+    };
+  }();
+  var blotter_Uint8ArrayCache = function(length, poolSize) {
+    this.init(length, poolSize);
+  };
+  blotter_Uint8ArrayCache.prototype = function() {
+    function _buildCache(length, poolSize) {
+      this.cache = [];
+      for (var i = 0; i < poolSize; i++) {
+        this.cache.push(new Uint8Array(length));
+      }
+    }
+    return {
+      constructor: blotter_Uint8ArrayCache,
+      init: function(length, poolSize) {
+        poolSize = poolSize || 10;
+        this.index = 0;
+        _buildCache.call(this, length, poolSize);
+      },
+      next: function() {
+        this.current = this.cache[this.index];
+        this.index++;
+        if (this.index == this.cache.length) {
+          this.index = 0;
+        }
+        return this.current;
+      }
+    };
+  }();
   var blotter_CanvasUtils = {
     canvas: function(w, h) {
       var canvas = document.createElement("canvas");
@@ -1155,89 +1238,6 @@ if ( typeof module === 'object' ) {
           texture.needsUpdate = true;
           callback(texture);
         });
-      }
-    };
-  }();
-  var blotter_Float32ArrayCache = function(length, poolSize) {
-    this.init(length, poolSize);
-  };
-  blotter_Float32ArrayCache.prototype = function() {
-    function _buildCache(length, poolSize) {
-      this.cache = [];
-      for (var i = 0; i < poolSize; i++) {
-        this.cache.push(new Float32Array(length));
-      }
-    }
-    return {
-      constructor: blotter_Float32ArrayCache,
-      init: function(length, poolSize) {
-        poolSize = poolSize || 10;
-        this.index = 0;
-        _buildCache.call(this, length, poolSize);
-      },
-      next: function() {
-        this.current = this.cache[this.index];
-        this.index++;
-        if (this.index == this.cache.length) {
-          this.index = 0;
-        }
-        return this.current;
-      }
-    };
-  }();
-  var blotter_ImageDataCache = function(width, height, poolSize) {
-    this.init(width, height, poolSize);
-  };
-  blotter_ImageDataCache.prototype = function() {
-    function _buildCache(width, height, poolSize) {
-      var canvas = document.createElement("canvas"), context = canvas.getContext("2d");
-      this.cache = [];
-      for (var i = 0; i < poolSize; i++) {
-        this.cache.push(context.createImageData(width, height));
-      }
-      delete canvas;
-    }
-    return {
-      constructor: blotter_ImageDataCache,
-      init: function(width, height, poolSize) {
-        poolSize = poolSize || 10;
-        this.index = 0;
-        _buildCache.call(this, width, height, poolSize);
-      },
-      next: function() {
-        this.current = this.cache[this.index];
-        this.index++;
-        if (this.index == this.cache.length) {
-          this.index = 0;
-        }
-        return this.current;
-      }
-    };
-  }();
-  var blotter_Uint8ArrayCache = function(length, poolSize) {
-    this.init(length, poolSize);
-  };
-  blotter_Uint8ArrayCache.prototype = function() {
-    function _buildCache(length, poolSize) {
-      this.cache = [];
-      for (var i = 0; i < poolSize; i++) {
-        this.cache.push(new Uint8Array(length));
-      }
-    }
-    return {
-      constructor: blotter_Uint8ArrayCache,
-      init: function(length, poolSize) {
-        poolSize = poolSize || 10;
-        this.index = 0;
-        _buildCache.call(this, length, poolSize);
-      },
-      next: function() {
-        this.current = this.cache[this.index];
-        this.index++;
-        if (this.index == this.cache.length) {
-          this.index = 0;
-        }
-        return this.current;
       }
     };
   }();

@@ -1,4 +1,4 @@
-import "../extras/";
+import "../utils/";
 
 Blotter.Text = function (value, properties) {
   this.init(value, properties);

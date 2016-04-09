@@ -1,7 +1,6 @@
 import "../core/";
-import "../extras/";
+import "../utils/";
 import "../texture/";
-import "../cache/";
 
 
 Blotter.Material = function(texts, shaderSrc, options) {
@@ -37,7 +36,6 @@ Blotter.Material.prototype = (function() {
   }
 
   function _fragmentSrc () {
-
     var privateUserDefinedUniformTextureDeclarations = [],
         publicUserDefinedUniformDeclarations = [],
         uniformDefinitionsForUserDefinedUniforms = [],
@@ -335,6 +333,32 @@ Blotter.Material.prototype = (function() {
       return !!this.textsUniformsValues[text.id];
     },
 
+    forText : function (text) {
+      if (!(text instanceof Blotter.Text)) {
+        blotter_Messaging.logError("Blotter.Material", "argument must be instanceof Blotter.Text");
+        return;
+      }
+
+      if (!this.hasText(text)) {
+        blotter_Messaging.logError("Blotter.Material", "Blotter.Text object not found");
+        return;
+      }
+
+      options = options || {};
+      if (typeof options.autostart === "undefined") {
+        options.autostart = true;
+      }
+
+      options.pixelRatio = this.material.pixelRatio;
+
+      if (!this.textScopes[text.id]) {
+        var scope = new blotter_RendererScope(text, this, options);
+        this.textScopes[text.id] = scope;
+      }
+
+      return this.textScopes[text.id];
+    }
+
     updateUniformValueForText : function (text, uniformName, value) {
       var textsUniformsObject = this.textsUniformsValues[text.id];
 
@@ -363,4 +387,3 @@ Blotter.Material.prototype = (function() {
     }
   }
 })();
-
