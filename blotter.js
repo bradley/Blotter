@@ -771,6 +771,21 @@ if ( typeof module === 'object' ) {
       }
     };
   }();
+  var blotter_Messaging = function() {
+    function _formattedMessage(domain, message) {
+      return domain + ": " + message;
+    }
+    return {
+      logError: function(domain, message) {
+        var formatted = _formattedMessage(domain, message);
+        console.error(formatted);
+      },
+      throwError: function(domain, message) {
+        var formatted = _formattedMessage(domain, message);
+        throw formatted;
+      }
+    };
+  }();
   var blotter_Float32ArrayCache = function(length, poolSize) {
     this.init(length, poolSize);
   };
@@ -897,21 +912,6 @@ if ( typeof module === 'object' ) {
       };
     }
   };
-  var blotter_Messaging = function() {
-    function _formattedMessage(domain, message) {
-      return domain + ": " + message;
-    }
-    return {
-      logError: function(domain, message) {
-        var formatted = _formattedMessage(domain, message);
-        console.error(formatted);
-      },
-      throwError: function(domain, message) {
-        var formatted = _formattedMessage(domain, message);
-        throw formatted;
-      }
-    };
-  }();
   var blotter_PropertyDefaults = {
     family: "sans-serif",
     size: 12,
@@ -1053,10 +1053,10 @@ if ( typeof module === 'object' ) {
       }
     };
   }();
-  var blotter_Mapper = function(texts) {
+  var blotter_TextMapper = function(texts) {
     this.init.apply(this, arguments);
   };
-  blotter_Mapper.prototype = function() {
+  blotter_TextMapper.prototype = function() {
     function _updateTexts(texts, eachCallback) {
       if (!(texts instanceof Array)) {
         texts = [ texts ];
@@ -1064,7 +1064,7 @@ if ( typeof module === 'object' ) {
       for (var i = 0; i < texts.length; i++) {
         var text = texts[i];
         if (texts instanceof Blotter.Text) {
-          blotter_Messaging.throwError("blotter_Mapper", "argument must be instance of Blotter.Text or array of objects that are instances of Blotter.Text");
+          blotter_Messaging.throwError("blotter_TextMapper", "argument must be instance of Blotter.Text or array of objects that are instances of Blotter.Text");
         }
         eachCallback.call(this, text);
       }
@@ -1104,7 +1104,7 @@ if ( typeof module === 'object' ) {
       return lineHeight;
     }
     return {
-      constructor: blotter_Mapper,
+      constructor: blotter_TextMapper,
       init: function(texts, options) {
         var options = options || {};
         this.pixelRatio = options.pixelRatio || 1;
@@ -1249,7 +1249,7 @@ if ( typeof module === 'object' ) {
       if (!Array.isArray(texts)) {
         texts = [ texts ];
       }
-      var mapper = new blotter_Mapper(texts, {
+      var mapper = new blotter_TextMapper(texts, {
         pixelRatio: this.pixelRatio,
         flipY: true
       });

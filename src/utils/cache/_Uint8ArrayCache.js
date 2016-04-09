@@ -28,6 +28,5 @@ blotter_Uint8ArrayCache.prototype = (function() {
       }
       return this.current;
     }
-
   }
 })();

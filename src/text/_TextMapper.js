@@ -2,11 +2,11 @@ import "../utils/";
 import "Text";
 
 
-var blotter_Mapper = function (texts) {
+var blotter_TextMapper = function (texts) {
   this.init.apply(this, arguments);
 };
 
-blotter_Mapper.prototype = (function () {
+blotter_TextMapper.prototype = (function () {
 
   function _updateTexts (texts, eachCallback) {
     if (!(texts instanceof Array)) {
@@ -17,7 +17,7 @@ blotter_Mapper.prototype = (function () {
       var text = texts[i];
 
       if (texts instanceof Blotter.Text) {
-        blotter_Messaging.throwError("blotter_Mapper", "argument must be instance of Blotter.Text or array of objects that are instances of Blotter.Text");
+        blotter_Messaging.throwError("blotter_TextMapper", "argument must be instance of Blotter.Text or array of objects that are instances of Blotter.Text");
       }
 
       eachCallback.call(this, text)
@@ -75,7 +75,7 @@ blotter_Mapper.prototype = (function () {
 
   return {
 
-    constructor : blotter_Mapper,
+    constructor : blotter_TextMapper,
 
   	init: function (texts, options) {
       var options = options || {};

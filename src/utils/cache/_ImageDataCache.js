@@ -31,6 +31,5 @@ blotter_ImageDataCache.prototype = (function() {
       }
       return this.current;
     }
-
   }
 })();

@@ -13,7 +13,7 @@ Blotter.Material.prototype = (function() {
     if (!Array.isArray(texts)) {
       texts = [texts];
     }
-    var mapper = new blotter_Mapper(texts, { pixelRatio: this.pixelRatio, flipY: true });
+    var mapper = new blotter_TextMapper(texts, { pixelRatio: this.pixelRatio, flipY: true });
     this.width = mapper.width * this.pixelRatio;
     this.height = mapper.height * this.pixelRatio;
     return mapper;
