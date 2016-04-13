@@ -2,7 +2,7 @@ import "../core/";
 import "../utils/";
 import "../text/";
 import "../material/";
-import "_RenderScope";
+import "_RendererScope";
 import "_BackBufferRenderer";
 
 
@@ -18,9 +18,9 @@ Blotter.Renderer.prototype = (function () {
     this.backBuffer.render();
     this.imageData = this.backBuffer.imageData;
 
-    for (var textId in this.textScopes) {
-      if (this.textScopes[textId].playing) {
-        this.textScopes[textId].update();
+    for (var textId in this.scopes) {
+      if (this.scopes[textId].playing) {
+        this.scopes[textId].update();
       }
     }
 
@@ -51,7 +51,7 @@ Blotter.Renderer.prototype = (function () {
 
       this.material = material;
 
-      this.textScopes = {};
+      this.scopes = {};
       this.imageData;
 
       this.backBuffer = new blotter_BackBufferRenderer(this.material.width, this.material.height, this.material.threeMaterial)
@@ -81,12 +81,9 @@ Blotter.Renderer.prototype = (function () {
     },
 
     forText : function (text, options) {
-      if (!(text instanceof Blotter.Text)) {
-        blotter_Messaging.logError("Blotter.Renderer", "argument must be instanceof Blotter.Text");
-        return;
-      }
+      blotter_Messaging.ensureInstanceOf(text, Blotter.Text, "Blotter.Text", "Blotter.Renderer");
 
-      if (!this.material.hasText(text)) {
+      if (!this.material.forText(text)) {
         blotter_Messaging.logError("Blotter.Renderer", "Blotter.Text object not found in material");
         return;
       }
@@ -98,12 +95,12 @@ Blotter.Renderer.prototype = (function () {
 
       options.pixelRatio = this.material.pixelRatio;
 
-      if (!this.textScopes[text.id]) {
+      if (!this.scopes[text.id]) {
         var scope = new blotter_RendererScope(text, this, options);
-        this.textScopes[text.id] = scope;
+        this.scopes[text.id] = scope;
       }
 
-      return this.textScopes[text.id];
+      return this.scopes[text.id];
     }
   }
 })();

@@ -1,2 +1,2 @@
 import "Text";
-import "_TextMapper";
+import "_TextsMapper";

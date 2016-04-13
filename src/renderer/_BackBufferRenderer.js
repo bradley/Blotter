@@ -2,7 +2,7 @@ import "../core/";
 import "../utils/";
 import "../text/";
 import "../material/";
-import "_RenderScope";
+import "_RendererScope";
 
 
 var blotter_BackBufferRenderer = function (width, height, material) {

@@ -87,6 +87,31 @@ var blotter_UniformUtils = {
     }
 
     return swizzleString;
+  },
+
+  extractValidUniforms : function (uniforms, domain) {
+    uniforms = uniforms || {};
+    var validUniforms = {};
+
+    for (var uniformName in uniforms) {
+      if (uniforms.hasOwnProperty(uniformName)) {
+        var uniform = uniforms[uniformName];
+        if (blotter_UniformUtils.UniformTypes.indexOf(uniform.type) == -1) {
+          blotter_Messaging.logError(domain, "uniforms must be one of type: " +
+            blotter_UniformUtils.UniformTypes.join(", "));
+          continue;
+        }
+
+        if (!blotter_UniformUtils.validValueForUniformType(uniform.type, uniform.value)) {
+          blotter_Messaging.logError(domain, "uniform value for " + uniformName + " is incorrect for type: " + uniform.type);
+          continue;
+        }
+
+        validUniforms[uniformName] = uniform;
+      }
+    }
+
+    return validUniforms;
   }
 
 }

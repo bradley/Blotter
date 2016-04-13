@@ -2,11 +2,11 @@ import "../utils/";
 import "Text";
 
 
-var blotter_TextMapper = function (texts) {
+var blotter_TextsMapper = function (texts) {
   this.init.apply(this, arguments);
 };
 
-blotter_TextMapper.prototype = (function () {
+blotter_TextsMapper.prototype = (function () {
 
   function _updateTexts (texts, eachCallback) {
     if (!(texts instanceof Array)) {
@@ -16,9 +16,7 @@ blotter_TextMapper.prototype = (function () {
     for (var i = 0; i < texts.length; i++) {
       var text = texts[i];
 
-      if (texts instanceof Blotter.Text) {
-        blotter_Messaging.throwError("blotter_TextMapper", "argument must be instance of Blotter.Text or array of objects that are instances of Blotter.Text");
-      }
+      blotter_Messaging.ensureInstanceOf(text, Blotter.Text, "Blotter.Text or an array of Blotter.Text objects", "Blotter.Material");
 
       eachCallback.call(this, text)
     }
@@ -28,25 +26,27 @@ blotter_TextMapper.prototype = (function () {
 
   function _determineTextsMapping () {
     var packer = new GrowingPacker(),
-        tempTextsSizesArray = [];
+        tempTextsBounds = [];
 
     // Build array of objects holding a Text object's id, width, and height for sorting.
-    for (var textId in this.textsSizes) {
-      var tempSizesObject = this.textsSizes[textId];
-      tempSizesObject.referenceId = textId;
-      tempTextsSizesArray.push(tempSizesObject);
+    for (var textId in this.textsBounds) {
+      if (this.textsBounds.hasOwnProperty(textId)) {
+        var tempSizesObject = this.textsBounds[textId];
+        tempSizesObject.referenceId = textId;
+        tempTextsBounds.push(tempSizesObject);
+      }
     }
 
-    // Add fit object to all objects in tempTextsSizesArray.
-    packer.fit(tempTextsSizesArray.sort(_sortTexts));
+    // Add fit object to all objects in tempTextsBounds.
+    packer.fit(tempTextsBounds.sort(_sortTexts));
 
-    // Add fit objects back into this.textsSizes for each Text id.
-    for (var i = 0; i < tempTextsSizesArray.length; i++) {
-      var packedSizesObject = tempTextsSizesArray[i];
+    // Add fit objects back into this.textsBounds for each Text id.
+    for (var i = 0; i < tempTextsBounds.length; i++) {
+      var packedSizesObject = tempTextsBounds[i];
       if (this.flipY) {
         packedSizesObject.fit.y = packer.root.h - (packedSizesObject.fit.y + packedSizesObject.h);
       }
-      this.textsSizes[packedSizesObject.referenceId].fit = packedSizesObject.fit;
+      this.textsBounds[packedSizesObject.referenceId].fit = packedSizesObject.fit;
     }
 
     this.width = packer.root.w;
@@ -75,7 +75,7 @@ blotter_TextMapper.prototype = (function () {
 
   return {
 
-    constructor : blotter_TextMapper,
+    constructor : blotter_TextsMapper,
 
   	init: function (texts, options) {
       var options = options || {};
@@ -84,7 +84,7 @@ blotter_TextMapper.prototype = (function () {
       this.flipY = options.flipY || false;
 
       this.texts = [];
-      this.textsSizes = {};
+      this.textsBounds = {};
       this.width = 0;
       this.height = 0;
 
@@ -93,7 +93,7 @@ blotter_TextMapper.prototype = (function () {
 
     addTexts: function (texts) {
     	_updateTexts.call(this, texts, function(text) {
-        var sizesObject = this.textsSizes[text.id];
+        var sizesObject = this.textsBounds[text.id];
 
       	if (this.texts.indexOf(text) == -1) {
           this.texts.push(text);
@@ -101,7 +101,7 @@ blotter_TextMapper.prototype = (function () {
 
         if (!sizesObject) {
           var size = blotter_TextUtils.sizeForText(text.value, text.properties);
-          this.textsSizes[text.id] = size;
+          this.textsBounds[text.id] = size;
         }
       });
     },
@@ -114,12 +114,12 @@ blotter_TextMapper.prototype = (function () {
           this.texts.splice(textsIndex, 1);
         }
 
-        delete this.textsSizes[text.id];
+        delete this.textsBounds[text.id];
       });
     },
 
-    sizeForText : function (text) {
-      return this.textsSizes[text.id];
+    boundsFor : function (text) {
+      return this.textsBounds[text.id];
     },
 
     toCanvas: function () {
@@ -130,16 +130,16 @@ blotter_TextMapper.prototype = (function () {
 
       for (var i = 0; i < this.texts.length; i++) {
         var text = this.texts[i],
-            size = this.textsSizes[text.id],
+            fit = this.textsBounds[text.id],
             yOffset = _getYOffset.call(this, text.properties.size, text.properties.leading) / 2, // divide yOffset by 2 to accomodate `middle` textBaseline
-            adjustedY = size.fit.y + text.properties.paddingTop + yOffset;
+            adjustedY = fit.fit.y + text.properties.paddingTop + yOffset;
 
         ctx.font = text.properties.style +
              " " + text.properties.weight +
              " " + text.properties.size + "px" +
              " " + text.properties.family;
         ctx.save();
-        ctx.translate(size.fit.x + text.properties.paddingLeft, adjustedY);
+        ctx.translate(fit.fit.x + text.properties.paddingLeft, adjustedY);
         if (this.flipY) {
           ctx.scale(1, -1);
         }
