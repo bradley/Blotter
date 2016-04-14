@@ -1329,6 +1329,7 @@ if ( typeof module === 'object' ) {
       for (var uniformName in this.material.uniforms) {
         var uniform = this.material.uniforms[uniformName];
         this.uniforms[uniformName] = {
+          _name: uniformName,
           _type: uniform.type,
           _value: uniform.value,
           get type() {
@@ -1346,9 +1347,10 @@ if ( typeof module === 'object' ) {
               return;
             }
             this._value = v;
-            _updateDataForUniformTextureData.call(self, uniformName);
+            _updateDataForUniformTextureData.call(self, this._name);
           }
         };
+        console.log("we fixed the problem with updating uniforms by adding _name to the uniform objects. however, none of these are set on creation and currently require user to update them at least once like in examples/index.html. fix thattttttt.");
       }
     }
     function _updateDataForUniformTextureData(uniformName) {
@@ -1639,12 +1641,14 @@ if ( typeof module === 'object' ) {
           premultipliedAlpha: false
         });
         this.camera = new THREE.OrthographicCamera(width / -2, width / 2, height / 2, height / -2, 0, 100);
+        document.body.appendChild(this.renderer.domElement);
         this.viewBuffer = new ArrayBuffer(width * height * 4);
         this.imageDataArray = new Uint8Array(this.viewBuffer);
         this.clampedImageDataArray = new Uint8ClampedArray(this.viewBuffer);
         this.imageData = new ImageData(this.clampedImageDataArray, width, height);
       },
       render: function() {
+        this.renderer.render(this.scene, this.camera);
         this.renderer.render(this.scene, this.camera, this.renderTarget);
         this.renderer.readRenderTargetPixels(this.renderTarget, 0, 0, this.renderTarget.width, this.renderTarget.height, this.imageDataArray);
       },

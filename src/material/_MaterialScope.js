@@ -11,6 +11,7 @@ blotter_MaterialScope.prototype = (function () {
       var uniform = this.material.uniforms[uniformName];
 
       this.uniforms[uniformName] = {
+        _name : uniformName,
         _type : uniform.type,
         _value : uniform.value,
 
@@ -33,9 +34,11 @@ blotter_MaterialScope.prototype = (function () {
           }
 
           this._value = v;
-          _updateDataForUniformTextureData.call(self, uniformName);
+          _updateDataForUniformTextureData.call(self, this._name);
         }
       }
+
+      console.log("we fixed the problem with updating uniforms by adding _name to the uniform objects. however, none of these are set on creation and currently require user to update them at least once like in examples/index.html. fix thattttttt.");
     }
   }
 
