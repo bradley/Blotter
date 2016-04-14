@@ -1195,7 +1195,7 @@ if ( typeof module === 'object' ) {
   };
   blotter_TextsIndicesTexture.prototype = function() {
     function _textsIndices(completion) {
-      var self = this, height = this.textsTexture.height * this.sampleAccuracy, width = this.textsTexture.width * this.sampleAccuracy, points = new Float32Array(height * width * 4), widthStepModifier = width % 1, indicesOffset = 1 / this.textsTexture.texts.length / 2;
+      var self = this, height = this.textsTexture.mapper.height * this.sampleAccuracy, width = this.textsTexture.mapper.width * this.sampleAccuracy, points = new Float32Array(height * width * 4), widthStepModifier = width % 1, indicesOffset = 1 / this.textsTexture.texts.length / 2;
       setTimeout(function() {
         for (var i = 1; i < points.length / 4; i++) {
           var y = Math.ceil(i / (width - widthStepModifier)), x = i - (width - widthStepModifier) * (y - 1), lookupIndex = 0, bg = 0, a = 0;
@@ -1225,7 +1225,7 @@ if ( typeof module === 'object' ) {
       build: function(callback) {
         var self = this;
         _textsIndices.call(this, function(dataPoints) {
-          var texture = new THREE.DataTexture(dataPoints, self.textsTexture.width * self.sampleAccuracy, self.textsTexture.height * self.sampleAccuracy, THREE.RGBAFormat, THREE.FloatType);
+          var texture = new THREE.DataTexture(dataPoints, self.textsTexture.mapper.width * self.sampleAccuracy, self.textsTexture.mapper.height * self.sampleAccuracy, THREE.RGBAFormat, THREE.FloatType);
           texture.flipY = true;
           texture.needsUpdate = true;
           callback(texture);
@@ -1255,8 +1255,8 @@ if ( typeof module === 'object' ) {
       init: function(textsTexture, pixelRatio) {
         this.textsTexture = textsTexture;
         this.pixelRatio = pixelRatio || 1;
-        this.width = this.textsTexture.width;
-        this.height = this.textsTexture.height;
+        this.width = this.textsTexture.mapper.width;
+        this.height = this.textsTexture.mapper.height;
       },
       build: function(callback) {
         var self = this;
@@ -1433,7 +1433,7 @@ if ( typeof module === 'object' ) {
       }
     }
     function _materialUniforms(callback) {
-      var self = this, textureUniforms = _textureUniformsForUniforms.call(this), indicesTexture = new blotter_TextsIndicesTexture(this.textsTexture, this.fidelity), boundsTexture = new blotter_TextsBoundsTexture(this.textsTexture, this.pixelRatio);
+      var self = this, textureUniforms = _textureUniformsForUniforms.call(this), indicesTexture = new blotter_TextsIndicesTexture(this.textsTexture, this.sampleAccuracy), boundsTexture = new blotter_TextsBoundsTexture(this.textsTexture, this.pixelRatio);
       this.textsTexture.load(function(texture) {
         indicesTexture.build(function(spriteIndicesTexture) {
           boundsTexture.build(function(spriteBoundsTexture) {
@@ -1499,7 +1499,7 @@ if ( typeof module === 'object' ) {
         this.width = this.textsTexture.width;
         this.height = this.textsTexture.height;
         this.mainImage = options.mainImage || _defaultMainImage.call(this);
-        this.fidelity = options.fidelity || .5;
+        this.sampleAccuracy = options.sampleAccuracy || .5;
         this.pixelRatio = options.pixelRatio || blotter_CanvasUtils.pixelRatio;
         this.uniforms = blotter_UniformUtils.extractValidUniforms(options.uniforms || {});
       },

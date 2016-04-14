@@ -31,8 +31,8 @@ blotter_TextsBoundsTexture.prototype = (function () {
     init : function (textsTexture, pixelRatio) {
       this.textsTexture = textsTexture;
       this.pixelRatio = pixelRatio || 1;
-      this.width = this.textsTexture.width;
-      this.height = this.textsTexture.height;
+      this.width = this.textsTexture.mapper.width;
+      this.height = this.textsTexture.mapper.height;
     },
 
     build : function (callback) {
@@ -41,6 +41,7 @@ blotter_TextsBoundsTexture.prototype = (function () {
       _spriteBounds.call(this, function(spriteData) {
         var texture = new THREE.DataTexture(spriteData, self.textsTexture.texts.length, 1, THREE.RGBAFormat, THREE.FloatType);
         texture.needsUpdate = true;
+
         callback(texture);
       });
     }

@@ -43,7 +43,6 @@ blotter_BackBufferRenderer.prototype = (function () {
 
       this.camera = new THREE.OrthographicCamera(width / - 2, width / 2, height / 2, height / - 2, 0, 100);
 
-
       // Prepare pixel buffers
 
       this.viewBuffer = new ArrayBuffer(width * height * 4);

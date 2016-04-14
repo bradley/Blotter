@@ -197,7 +197,7 @@ Blotter.Material.prototype = (function() {
   function _materialUniforms (callback) {
     var self = this,
         textureUniforms = _textureUniformsForUniforms.call(this),
-        indicesTexture = new blotter_TextsIndicesTexture(this.textsTexture, this.fidelity),
+        indicesTexture = new blotter_TextsIndicesTexture(this.textsTexture, this.sampleAccuracy),
         boundsTexture = new blotter_TextsBoundsTexture(this.textsTexture, this.pixelRatio);
 
     this.textsTexture.load(function(texture) {
@@ -275,12 +275,12 @@ Blotter.Material.prototype = (function() {
       this.height = this.textsTexture.height;
       this.mainImage = options.mainImage || _defaultMainImage.call(this);
 
-      // There is a negative coorelation between the fidelity value and
+      // There is a negative coorelation between the sampleAccuracy value and
       // the speed at which texture generation happens.
-      // However, the lower this value, the less fidelity you can expect
+      // However, the lower this value, the less sampleAccuracy you can expect
       // for indexing into uniforms for any given text.
       // Value must be between 0.0 and 1.0, and you are advised to keep it around 0.5.
-      this.fidelity = options.fidelity || 0.5;
+      this.sampleAccuracy = options.sampleAccuracy || 0.5;
       this.pixelRatio = options.pixelRatio || blotter_CanvasUtils.pixelRatio;
 
       // TODO: Probably dont want to clean here. User may want to set uniforms after instantiation.

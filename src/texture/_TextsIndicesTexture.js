@@ -8,8 +8,8 @@ blotter_TextsIndicesTexture.prototype = (function () {
 
   function _textsIndices (completion) {
     var self = this,
-        height = this.textsTexture.height * this.sampleAccuracy,
-        width = this.textsTexture.width * this.sampleAccuracy,
+        height = this.textsTexture.mapper.height * this.sampleAccuracy,
+        width = this.textsTexture.mapper.width * this.sampleAccuracy,
         points = new Float32Array((height * width) * 4),
         widthStepModifier = width % 1,
         indicesOffset = (1 / this.textsTexture.texts.length) / 2; // Values stored in this texture will be sampled from the 'middle' of their texel position.
@@ -66,7 +66,7 @@ blotter_TextsIndicesTexture.prototype = (function () {
       var self = this;
 
       _textsIndices.call(this, function(dataPoints) {
-        var texture = new THREE.DataTexture(dataPoints, self.textsTexture.width * self.sampleAccuracy, self.textsTexture.height * self.sampleAccuracy, THREE.RGBAFormat, THREE.FloatType);
+        var texture = new THREE.DataTexture(dataPoints, self.textsTexture.mapper.width * self.sampleAccuracy, self.textsTexture.mapper.height * self.sampleAccuracy, THREE.RGBAFormat, THREE.FloatType);
         texture.flipY = true;
         texture.needsUpdate = true;
         callback(texture);
