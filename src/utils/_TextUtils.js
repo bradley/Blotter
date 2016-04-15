@@ -26,7 +26,9 @@ var blotter_TextUtils = {
 			var k = this.Properties[i];
 
 			if (k in _properties) {
-				defaultedProperties[k] = _properties[k]
+				if (_properties.hasOwnProperty(k)) {
+					defaultedProperties[k] = _properties[k];
+				}
 			}
 		}
 

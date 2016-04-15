@@ -1,5 +1,5 @@
 import "../core/";
-import "../extras/";
+import "../utils/";
 import "../text/";
 import "../material/";
 
@@ -39,9 +39,16 @@ blotter_RendererScope.prototype = (function () {
   }
 
   function _render () {
+
     if (this.domElement) {
-      this.context.clearRect(0, 0, this.size.w, this.size.h);
-      this.context.putImageData(this.renderer.backBufferData, -1 * Math.floor(this.size.fit.x), -1 * Math.floor(this.size.fit.y));
+      this.context.clearRect(0, 0, this.domElement.width, this.domElement.height);
+
+      this.context.putImageData(
+        this.renderer.imageData,
+        this.bounds.x,
+        this.bounds.y
+      );
+
       this.emit("update", this.frameCount);
     }
   }
@@ -59,7 +66,15 @@ blotter_RendererScope.prototype = (function () {
       this.text = text;
       this.renderer = renderer;
 
-      this.size = this.renderer.material.mapper.sizeForText(text)
+      this.pixelRatio = options.pixelRatio || blotter_CanvasUtils.pixelRatio;
+
+      var mappedBounds = this.renderer.material.textsTexture.boundsFor(text);
+      this.bounds = {
+        w : mappedBounds.w,
+        h : mappedBounds.h,
+        x : -1 * Math.floor(mappedBounds.fit.x * this.pixelRatio),
+        y : -1 * Math.floor((this.renderer.material.textsTexture.mapper.height - (mappedBounds.fit.y + mappedBounds.h)) * this.pixelRatio)
+      };
 
       this.playing = options.autostart;
       this.timeDelta = 0;
@@ -93,8 +108,10 @@ blotter_RendererScope.prototype = (function () {
         this.domElement.remove();
         this.context = null;
       }
-      this.domElement = blotter_CanvasUtils.canvas(this.size.w, this.size.h);
+
+      this.domElement = blotter_CanvasUtils.hiDpiCanvas(this.bounds.w, this.bounds.h);
       this.context = this.domElement.getContext("2d");
+
       element.appendChild(this.domElement);
       _setEventListeners.call(this);
     }

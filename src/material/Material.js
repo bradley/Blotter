@@ -1,21 +1,26 @@
 import "../core/";
-import "../extras/";
+import "../utils/";
 import "../texture/";
+import "_MaterialScope"
 
-Blotter.Material = function(texts, shaderSrc, options) {
-  this.init(texts, shaderSrc, options);
+
+Blotter.Material = function(texts, mainImageSrc, options) {
+  this.init(texts, mainImageSrc, options);
 }
 
 Blotter.Material.prototype = (function() {
 
-  function _createMapperFromTexts (texts) {
-    if (!Array.isArray(texts)) {
-      texts = [texts];
-    }
-    var mapper = new blotter_Mapper(texts, this.pixelRatio);
-    this.width = mapper.width * this.pixelRatio;
-    this.height = mapper.height * this.pixelRatio;
-    return mapper;
+  function _defaultMainImage () {
+    var mainImage = [
+
+      "void mainImage( out vec4 mainImage, in vec2 fragCoord ) {",
+
+        "mainImage = textTexture(fragCoord / uResolution);",
+
+      "}"
+    ];
+
+    return mainImage.join("\n");
   }
 
   function _vertexSrc () {
@@ -29,43 +34,43 @@ Blotter.Material.prototype = (function() {
       "  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);",
 
       "}"
-
     ];
+
     return vertexSrc.join("\n");
   }
 
   function _fragmentSrc () {
+    var fragmentSrc,
+        privateUniformTextureDeclarations = [],
+        publicUniformDeclarations = [],
+        uniformDefinitionsForUniforms = [];
 
-    var privateUserDefinedUniformTextureDeclarations = [],
-        publicUserDefinedUniformDeclarations = [],
-        uniformDefinitionsForUserDefinedUniforms = [],
-        fragmentSrc;
+    for (var uniformName in this.uniforms) {
+      if (this.uniforms.hasOwnProperty(uniformName)) {
+        var self = this,
+            uniformValue = this.uniforms[uniformName];
 
+        // Create strings of sampler2D declarations for each user defined uniform texture.
+        privateUniformTextureDeclarations.push(
+          "uniform sampler2D " + _uniformTextureNameForUniformName.call(this, uniformName) + ";"
+        );
 
-    for (var uniformName in this.userDefinedUniforms) {
-      var self = this,
-          uniformValue = this.userDefinedUniforms[uniformName];
+        // Create strings of uniform declarations for each publicly facing version of each user defined uniform.
+        publicUniformDeclarations.push(
+          blotter_UniformUtils.glslDataTypeForUniformType(uniformValue.type) + " " + uniformName + ";"
+        );
 
-      // Create strings of sampler2D declarations for each user defined uniform texture.
-      privateUserDefinedUniformTextureDeclarations.push(
-        "uniform sampler2D " + _uniformTextureNameForUniformName.call(this, uniformName) + ";"
-      );
-
-      // Create strings of uniform declarations for each publicly facing version of each user defined uniform.
-      publicUserDefinedUniformDeclarations.push(
-        blotter_UniformUtils.glslDataTypeForUniformType(uniformValue.type) + " " + uniformName + ";"
-      );
-
-      // Create strings of uniform definitions for each publicly facing version of each user defined uniform.
-      uniformDefinitionsForUserDefinedUniforms.push((function () {
-        var textureName = _uniformTextureNameForUniformName.call(self, uniformName),
-            swizzle = blotter_UniformUtils.fullSwizzleStringForUniformType(uniformValue.type);
-        return uniformName + " = " + "texture2D(" + textureName + " , vec2(spriteIndex, 0.5))." + swizzle + ";";
-      })());
+        // Create strings of uniform definitions for each publicly facing version of each user defined uniform.
+        uniformDefinitionsForUniforms.push((function () {
+          var textureName = _uniformTextureNameForUniformName.call(self, uniformName),
+              swizzle = blotter_UniformUtils.fullSwizzleStringForUniformType(uniformValue.type);
+          return uniformName + " = " + "texture2D(" + textureName + " , vec2(spriteIndex, 0.5))." + swizzle + ";";
+        })());
+      }
     }
-    privateUserDefinedUniformTextureDeclarations = privateUserDefinedUniformTextureDeclarations.join("\n");
-    publicUserDefinedUniformDeclarations = publicUserDefinedUniformDeclarations.join("\n");
-    uniformDefinitionsForUserDefinedUniforms = uniformDefinitionsForUserDefinedUniforms.join("\n");
+    privateUniformTextureDeclarations = privateUniformTextureDeclarations.join("\n");
+    publicUniformDeclarations = publicUniformDeclarations.join("\n");
+    uniformDefinitionsForUniforms = uniformDefinitionsForUniforms.join("\n");
 
     fragmentSrc = [
 
@@ -85,10 +90,10 @@ Blotter.Material.prototype = (function() {
       "vec2 uResolution;",
 
       // Private versions of use user defined uniforms
-      privateUserDefinedUniformTextureDeclarations,
+      privateUniformTextureDeclarations,
 
       // Public versions of user defined uniforms.
-      publicUserDefinedUniformDeclarations,
+      publicUniformDeclarations,
 
       // Public helper function used by user programs to retrieve texel color information within the bounds of
       // any given text sprite. This is to be used instead of `texture2D`.
@@ -107,7 +112,7 @@ Blotter.Material.prototype = (function() {
 
       "void mainImage( out vec4 mainImage, in vec2 fragCoord );",
 
-      this.shaderSrc,
+      this.mainImage,
 
       "void main( void ) {",
 
@@ -121,7 +126,7 @@ Blotter.Material.prototype = (function() {
 
       //  Set "uniform" values visible to user.
       "   uResolution = _spriteBounds.zw;",
-          uniformDefinitionsForUserDefinedUniforms,
+          uniformDefinitionsForUniforms,
 
       //  Set fragment coordinate in respect to position within sprite bounds.
       "   vec2 fragCoord = gl_FragCoord.xy - _spriteBounds.xy;",
@@ -129,40 +134,59 @@ Blotter.Material.prototype = (function() {
       "   vec4 outColor;",
       "   mainImage(outColor, fragCoord);",
 
-      //  Multiply alpha by original spriteIndexData's alpha value."
+      //  Multiply alpha by original spriteIndexData's fourth value."
       //  this will be 0 for texels not within any 'sprite' area."
       "   outColor.a = outColor.a * spriteAlpha;",
-      "   gl_FragColor = outColor;",
+      "   gl_FragColor = outColor;//texture2D(_uSampler, _vTexCoord);//vec4(1.0, 0.6705882353, 0.2509803922, 0.7);//outColor;//vec4(1.0, 1.0, 0.5, 1.0);//",
       "}"
-
     ];
+
     return fragmentSrc.join("\n");
   }
 
 
-  // Create object holding the name and values of every text specific uniform, each referencable through any given text.
 
-  function _setTextsUniformsValues () {
-    for (var uniformName in this.userDefinedUniforms) {
-      if (this.userDefinedUniforms.hasOwnProperty(uniformName)) {
-        for (var i = 0; i < this.mapper.texts.length; i++) {
-          var text = this.mapper.texts[i],
-              uniform = this.userDefinedUniforms[uniformName];
 
-          if (blotter_UniformUtils.UniformTypes.indexOf(uniform.type) == -1) {
-            blotter_Messaging.logError("Blotter.Material", "user defined uniforms must be one of type: " +
-              blotter_UniformUtils.UniformTypes.join(", "));
-            return;
-          }
 
-          if (!blotter_UniformUtils.validValueForUniformType(uniform.type, uniform.value)) {
-            blotter_Messaging.logError("Blotter.Material", "user defined uniform value for " + uniformName + " is incorrect for type: " + uniform.type);
-            return;
-          }
 
-          this.textsUniformsValues[text.id] = this.textsUniformsValues[text.id] || {};
-          this.textsUniformsValues[text.id][uniformName] = JSON.parse(JSON.stringify(uniform));
-        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  function _setTexturesForUniforms () {
+    this.uniformTextures = {};
+    for (var uniformName in this.uniforms) {
+      if (this.uniforms.hasOwnProperty(uniformName)) {
+        var data = new Float32Array(this.textsTexture.texts.length * 4);
+        this.uniforms[uniformName]._textureData = data;
+        this.uniforms[uniformName]._texture = new THREE.DataTexture(data, this.textsTexture.texts.length, 1, THREE.RGBAFormat, THREE.FloatType);
       }
     }
   }
@@ -171,30 +195,25 @@ Blotter.Material.prototype = (function() {
 
   function _materialUniforms (callback) {
     var self = this,
-        uniforms,
-        loader = new THREE.TextureLoader(),
-        userDefinedUniformTextures = _uniformsForUserDefinedUniformValues.call(this),
-        indicesTexture = new blotter_TextsIndicesTexture(this.mapper, this.fidelity),
-        boundsTexture = new blotter_TextsBoundsTexture(this.mapper, this.pixelRatio);
+        textureUniforms = _textureUniformsForUniforms.call(this),
+        indicesTexture = new blotter_TextsIndicesTexture(this.textsTexture, this.sampleAccuracy),
+        boundsTexture = new blotter_TextsBoundsTexture(this.textsTexture, this.pixelRatio);
 
-    loader.load(this.mapper.getImage(), function(textsTexture) {
+    this.textsTexture.load(function(texture) {
       indicesTexture.build(function(spriteIndicesTexture) {
         boundsTexture.build(function(spriteBoundsTexture) {
 
-          // Setup texture
-          textsTexture.generateMipmaps = false;
-          textsTexture.minFilter = THREE.LinearFilter;
-          textsTexture.magFilter = THREE.LinearFilter;
-          textsTexture.needsUpdate = true;
-
-          uniforms = {
-            _uSampler              : { type: "t" , value: textsTexture },
+          var uniforms = {
+            _uSampler              : { type: "t" , value: texture },
             _uCanvasResolution     : { type: "2f", value: [self.width, self.height] },
             _uSpriteIndicesTexture : { type: "t" , value: spriteIndicesTexture },
             _uSpriteBoundsTexture  : { type: "t" , value: spriteBoundsTexture }
           };
-          for (var uniformName in userDefinedUniformTextures) {
-            uniforms[uniformName] = userDefinedUniformTextures[uniformName];
+
+          for (var uniformName in textureUniforms) {
+            if (textureUniforms.hasOwnProperty(uniformName)) {
+              uniforms[uniformName] = textureUniforms[uniformName];
+            }
           }
 
           callback(uniforms);
@@ -207,77 +226,38 @@ Blotter.Material.prototype = (function() {
     return "_" + uniformName + "Texture";
   }
 
-  function _uniformsForUserDefinedUniformValues () {
-    var uniformsAsTextures = {};
+  function _textureUniformsForUniforms () {
+    var textureUniforms = {};
 
-    for (var uniformName in this.userDefinedUniforms) {
-      uniformsAsTextures[_uniformTextureNameForUniformName.call(this, uniformName)] = {
-        value : _uniformTextureForUniformName.call(this, uniformName),
-        type : "t"
+    for (var uniformName in this.uniforms) {
+      if (this.uniforms.hasOwnProperty(uniformName)) {
+        textureUniforms[_uniformTextureNameForUniformName.call(this, uniformName)] = {
+          value : this.uniforms[uniformName]._texture,
+          type : "t"
+        }
       }
     }
-    return uniformsAsTextures;
+    return textureUniforms;
   }
 
-  // Create a Data Texture holding the values for a specified uniform name that should be available to any given texel for any given text.
 
-  function _uniformTextureForUniformName (uniformName) {
-    var uniformDescription = this.userDefinedUniforms[uniformName],
-        data = new Float32Array(this.mapper.texts.length * 4);
 
-    if (!uniformDescription)
-      blotter_Messaging.logError("Blotter.Composer", "cannot find uniformName for _uniformTextureForUniformName");
 
-    for (var i = 0; i < this.mapper.texts.length; i++) {
-      var text = this.mapper.texts[i],
-          textUniformsValues = this.textsUniformsValues[text.id];
 
-      if (textUniformsValues) {
-        var textUniform = textUniformsValues[uniformName];
 
-        if (textUniform.type == "1f") {
-          data[4*i]   = textUniform.value; // x (r)
-          data[4*i+1] = 0.0;
-          data[4*i+2] = 0.0;
-          data[4*i+3] = 0.0;
-        }
-        else if (textUniform.type == "2f") {
-          data[4*i]   = textUniform.value[0]; // x (r)
-          data[4*i+1] = textUniform.value[1]; // y (g)
-          data[4*i+2] = 0.0;
-          data[4*i+3] = 0.0;
-        }
-        else if (textUniform.type == "3f") {
-          data[4*i]   = textUniform.value[0]; // x (r)
-          data[4*i+1] = textUniform.value[1]; // y (g)
-          data[4*i+2] = textUniform.value[2]; // z (b)
-          data[4*i+3] = 0.0;
-        }
-        else if (textUniform.type == "4f") {
-          data[4*i]   = textUniform.value[0]; // x (r)
-          data[4*i+1] = textUniform.value[1]; // y (g)
-          data[4*i+2] = textUniform.value[2]; // z (b)
-          data[4*i+3] = textUniform.value[3]; // w (a)
-        }
-        else {
-          data[4*i]   = 0.0;
-          data[4*i+1] = 0.0;
-          data[4*i+2] = 0.0;
-          data[4*i+3] = 0.0;
-        }
-      }
-      else {
-        data[4*i]   = 0.0;
-        data[4*i+1] = 0.0;
-        data[4*i+2] = 0.0;
-        data[4*i+3] = 0.0;
+
+
+  function _buildTextScopes (texts) {
+    this.scopes = {};
+    for (var i = 0; i < texts.length; i++) {
+      var text = texts[i];
+
+      blotter_Messaging.ensureInstanceOf(text, Blotter.Text, "Blotter.Text", "Blotter.Material");
+
+      if (!this.scopes[text.id]) {
+        this.scopes[text.id] = new blotter_MaterialScope(text, this);
       }
     }
-
-    var texture = new THREE.DataTexture(data, this.mapper.texts.length, 1, THREE.RGBAFormat, THREE.FloatType);
-    texture.needsUpdate = true;
-
-    return texture;
   }
 
 
@@ -285,32 +265,35 @@ Blotter.Material.prototype = (function() {
 
     constructor : Blotter.Material,
 
-    init : function (texts, shaderSrc, options) {
+    init : function (texts, options) {
       options = options || {};
 
-      this.pixelRatio = options.pixelRatio || blotter_CanvasUtils.pixelRatio;
+      this.texts = texts;
+      this.textsTexture = new blotter_TextsTexture(texts);
+      this.width = this.textsTexture.width;
+      this.height = this.textsTexture.height;
+      this.mainImage = options.mainImage || _defaultMainImage.call(this);
 
-      this.mapper = _createMapperFromTexts.call(this, texts);
-      this.shaderSrc = shaderSrc;
-      this.userDefinedUniforms = options.uniforms || {};
-
-      // There is a negative coorelation between this value and
+      // There is a negative coorelation between the sampleAccuracy value and
       // the speed at which texture generation happens.
-      // However, the lower this value, the less fidelity you can expect
+      // However, the lower this value, the less sampleAccuracy you can expect
       // for indexing into uniforms for any given text.
       // Value must be between 0.0 and 1.0, and you are advised to keep it around 0.5.
-      this.fidelity = 0.5;
+      this.sampleAccuracy = options.sampleAccuracy || 0.5;
+      this.pixelRatio = options.pixelRatio || blotter_CanvasUtils.pixelRatio;
 
-      // Setup text specific uniforms immediately.
-      this.textsUniformsValues = {};
-      _setTextsUniformsValues.call(this);
+      // TODO: Probably dont want to clean here. User may want to set uniforms after instantiation.
+      this.uniforms = blotter_UniformUtils.extractValidUniforms(options.uniforms || {});
     },
 
     load : function (callback) {
       var self = this;
 
-      _materialUniforms.call(this, function(uniforms) {
+      _setTexturesForUniforms.call(this);
 
+      _buildTextScopes.call(this, this.textsTexture.texts);
+
+      _materialUniforms.call(this, function(uniforms) {
         self.threeMaterial = new THREE.ShaderMaterial({
           vertexShader: _vertexSrc.call(self),
           fragmentShader: _fragmentSrc.call(self),
@@ -324,40 +307,15 @@ Blotter.Material.prototype = (function() {
       });
     },
 
-    hasText : function (text) {
-      if (!(text instanceof Blotter.Text)) {
-        blotter_Messaging.logError("Blotter.Material", "argument must be instanceof Blotter.Text");
-      }
+    forText : function (text) {
+      blotter_Messaging.ensureInstanceOf(text, Blotter.Text, "Blotter.Text", "Blotter.Material");
 
-      return !!this.textsUniformsValues[text.id];
-    },
-
-    updateUniformValueForText : function (text, uniformName, value) {
-      var textsUniformsObject = this.textsUniformsValues[text.id];
-
-      if (!textsUniformsObject) {
-        blotter_Messaging.logError("Blotter.Material", "cannot find text for updateUniformsForText");
+      if (this.texts.indexOf(text) == -1) {
+        blotter_Messaging.logError("Blotter.Material", "Blotter.Text object not found");
         return;
       }
 
-      if (!textsUniformsObject[uniformName]) {
-        blotter_Messaging.logError("Blotter.Material", "cannot find uniformName for updateUniformsForText");
-        return;
-      }
-
-      if (!blotter_UniformUtils.validValueForUniformType(textsUniformsObject[uniformName].type, value)) {
-        blotter_Messaging.logError("Blotter.Material", "user defined uniform value for " + uniformName + " is incorrect for type: " + this.userDefinedUniforms[uniformName].type);
-        return;
-      }
-
-      textsUniformsObject[uniformName].value = value;
-
-      this.threeMaterial.uniforms[_uniformTextureNameForUniformName.call(self, uniformName)] = {
-        type : "t",
-        value : _uniformTextureForUniformName.call(this, uniformName)
-      };
-      this.threeMaterial.needsUpdate = true;
+      return this.scopes[text.id];
     }
   }
 })();
-
