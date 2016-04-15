@@ -293,10 +293,7 @@ Blotter.Material.prototype = (function() {
 
       _buildTextScopes.call(this, this.textsTexture.texts);
 
-
-
       _materialUniforms.call(this, function(uniforms) {
-
         self.threeMaterial = new THREE.ShaderMaterial({
           vertexShader: _vertexSrc.call(self),
           fragmentShader: _fragmentSrc.call(self),

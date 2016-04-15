@@ -1716,12 +1716,12 @@ if ( typeof module === 'object' ) {
           blotter_Messaging.logError("Blotter.Renderer", "Blotter.Text object not found in material");
           return;
         }
-        options = options || {};
-        if (typeof options.autostart === "undefined") {
-          options.autostart = true;
-        }
-        options.pixelRatio = this.material.pixelRatio;
         if (!this.scopes[text.id]) {
+          options = options || {};
+          if (typeof options.autostart === "undefined") {
+            options.autostart = true;
+          }
+          options.pixelRatio = this.material.pixelRatio;
           var scope = new blotter_RendererScope(text, this, options);
           this.scopes[text.id] = scope;
         }
