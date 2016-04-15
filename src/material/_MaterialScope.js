@@ -38,6 +38,7 @@ blotter_MaterialScope.prototype = (function () {
         }
       }
 
+      _updateDataForUniformTextureData.call(this, uniformName);
       console.log("we fixed the problem with updating uniforms by adding _name to the uniform objects. however, none of these are set on creation and currently require user to update them at least once like in examples/index.html. fix thattttttt.");
     }
   }

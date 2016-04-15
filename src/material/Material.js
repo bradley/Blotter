@@ -40,11 +40,10 @@ Blotter.Material.prototype = (function() {
   }
 
   function _fragmentSrc () {
-    var privateUserDefinedUniformTextureDeclarations = [],
-        publicUserDefinedUniformDeclarations = [],
-        uniformDefinitionsForuniforms = [],
-        fragmentSrc;
-
+    var fragmentSrc,
+        privateUniformTextureDeclarations = [],
+        publicUniformDeclarations = [],
+        uniformDefinitionsForUniforms = [];
 
     for (var uniformName in this.uniforms) {
       if (this.uniforms.hasOwnProperty(uniformName)) {
@@ -52,26 +51,26 @@ Blotter.Material.prototype = (function() {
             uniformValue = this.uniforms[uniformName];
 
         // Create strings of sampler2D declarations for each user defined uniform texture.
-        privateUserDefinedUniformTextureDeclarations.push(
+        privateUniformTextureDeclarations.push(
           "uniform sampler2D " + _uniformTextureNameForUniformName.call(this, uniformName) + ";"
         );
 
         // Create strings of uniform declarations for each publicly facing version of each user defined uniform.
-        publicUserDefinedUniformDeclarations.push(
+        publicUniformDeclarations.push(
           blotter_UniformUtils.glslDataTypeForUniformType(uniformValue.type) + " " + uniformName + ";"
         );
 
         // Create strings of uniform definitions for each publicly facing version of each user defined uniform.
-        uniformDefinitionsForuniforms.push((function () {
+        uniformDefinitionsForUniforms.push((function () {
           var textureName = _uniformTextureNameForUniformName.call(self, uniformName),
               swizzle = blotter_UniformUtils.fullSwizzleStringForUniformType(uniformValue.type);
           return uniformName + " = " + "texture2D(" + textureName + " , vec2(spriteIndex, 0.5))." + swizzle + ";";
         })());
       }
     }
-    privateUserDefinedUniformTextureDeclarations = privateUserDefinedUniformTextureDeclarations.join("\n");
-    publicUserDefinedUniformDeclarations = publicUserDefinedUniformDeclarations.join("\n");
-    uniformDefinitionsForuniforms = uniformDefinitionsForuniforms.join("\n");
+    privateUniformTextureDeclarations = privateUniformTextureDeclarations.join("\n");
+    publicUniformDeclarations = publicUniformDeclarations.join("\n");
+    uniformDefinitionsForUniforms = uniformDefinitionsForUniforms.join("\n");
 
     fragmentSrc = [
 
@@ -91,10 +90,10 @@ Blotter.Material.prototype = (function() {
       "vec2 uResolution;",
 
       // Private versions of use user defined uniforms
-      privateUserDefinedUniformTextureDeclarations,
+      privateUniformTextureDeclarations,
 
       // Public versions of user defined uniforms.
-      publicUserDefinedUniformDeclarations,
+      publicUniformDeclarations,
 
       // Public helper function used by user programs to retrieve texel color information within the bounds of
       // any given text sprite. This is to be used instead of `texture2D`.
@@ -127,7 +126,7 @@ Blotter.Material.prototype = (function() {
 
       //  Set "uniform" values visible to user.
       "   uResolution = _spriteBounds.zw;",
-          uniformDefinitionsForuniforms,
+          uniformDefinitionsForUniforms,
 
       //  Set fragment coordinate in respect to position within sprite bounds.
       "   vec2 fragCoord = gl_FragCoord.xy - _spriteBounds.xy;",
@@ -290,9 +289,11 @@ Blotter.Material.prototype = (function() {
     load : function (callback) {
       var self = this;
 
+      _setTexturesForUniforms.call(this);
+
       _buildTextScopes.call(this, this.textsTexture.texts);
 
-      _setTexturesForUniforms.call(this);
+
 
       _materialUniforms.call(this, function(uniforms) {
 

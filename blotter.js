@@ -1350,6 +1350,7 @@ if ( typeof module === 'object' ) {
             _updateDataForUniformTextureData.call(self, this._name);
           }
         };
+        _updateDataForUniformTextureData.call(this, uniformName);
         console.log("we fixed the problem with updating uniforms by adding _name to the uniform objects. however, none of these are set on creation and currently require user to update them at least once like in examples/index.html. fix thattttttt.");
       }
     }
@@ -1406,22 +1407,22 @@ if ( typeof module === 'object' ) {
       return vertexSrc.join("\n");
     }
     function _fragmentSrc() {
-      var privateUserDefinedUniformTextureDeclarations = [], publicUserDefinedUniformDeclarations = [], uniformDefinitionsForuniforms = [], fragmentSrc;
+      var fragmentSrc, privateUniformTextureDeclarations = [], publicUniformDeclarations = [], uniformDefinitionsForUniforms = [];
       for (var uniformName in this.uniforms) {
         if (this.uniforms.hasOwnProperty(uniformName)) {
           var self = this, uniformValue = this.uniforms[uniformName];
-          privateUserDefinedUniformTextureDeclarations.push("uniform sampler2D " + _uniformTextureNameForUniformName.call(this, uniformName) + ";");
-          publicUserDefinedUniformDeclarations.push(blotter_UniformUtils.glslDataTypeForUniformType(uniformValue.type) + " " + uniformName + ";");
-          uniformDefinitionsForuniforms.push(function() {
+          privateUniformTextureDeclarations.push("uniform sampler2D " + _uniformTextureNameForUniformName.call(this, uniformName) + ";");
+          publicUniformDeclarations.push(blotter_UniformUtils.glslDataTypeForUniformType(uniformValue.type) + " " + uniformName + ";");
+          uniformDefinitionsForUniforms.push(function() {
             var textureName = _uniformTextureNameForUniformName.call(self, uniformName), swizzle = blotter_UniformUtils.fullSwizzleStringForUniformType(uniformValue.type);
             return uniformName + " = " + "texture2D(" + textureName + " , vec2(spriteIndex, 0.5))." + swizzle + ";";
           }());
         }
       }
-      privateUserDefinedUniformTextureDeclarations = privateUserDefinedUniformTextureDeclarations.join("\n");
-      publicUserDefinedUniformDeclarations = publicUserDefinedUniformDeclarations.join("\n");
-      uniformDefinitionsForuniforms = uniformDefinitionsForuniforms.join("\n");
-      fragmentSrc = [ "precision highp float;", "uniform sampler2D _uSampler;", "uniform sampler2D _uSpriteIndicesTexture;", "uniform sampler2D _uSpriteBoundsTexture;", "uniform vec2 _uCanvasResolution;", "varying vec2 _vTexCoord;", "vec4 _spriteBounds;", "vec2 uResolution;", privateUserDefinedUniformTextureDeclarations, publicUserDefinedUniformDeclarations, "vec4 textTexture( vec2 coord ) {", "   vec2 adjustedFragCoord = _spriteBounds.xy + vec2((_spriteBounds.z * coord.x), (_spriteBounds.w * coord.y));", "   vec2 uv = adjustedFragCoord.xy / _uCanvasResolution;", "   if (adjustedFragCoord.x < _spriteBounds.x ||", "       adjustedFragCoord.x > _spriteBounds.x + _spriteBounds.z ||", "       adjustedFragCoord.y < _spriteBounds.y ||", "       adjustedFragCoord.y > _spriteBounds.y + _spriteBounds.w) {", "     return vec4(0.0);", "   }", "   return texture2D(_uSampler, uv);", "}", "void mainImage( out vec4 mainImage, in vec2 fragCoord );", this.mainImage, "void main( void ) {", "   vec4 spriteIndexData = texture2D(_uSpriteIndicesTexture, _vTexCoord);", "   float spriteIndex = spriteIndexData.r;", "   float spriteAlpha = spriteIndexData.a;", "   _spriteBounds = texture2D(_uSpriteBoundsTexture, vec2(spriteIndex, 0.5));", "   uResolution = _spriteBounds.zw;", uniformDefinitionsForuniforms, "   vec2 fragCoord = gl_FragCoord.xy - _spriteBounds.xy;", "   vec4 outColor;", "   mainImage(outColor, fragCoord);", "   outColor.a = outColor.a * spriteAlpha;", "   gl_FragColor = outColor;//texture2D(_uSampler, _vTexCoord);//vec4(1.0, 0.6705882353, 0.2509803922, 0.7);//outColor;//vec4(1.0, 1.0, 0.5, 1.0);//", "}" ];
+      privateUniformTextureDeclarations = privateUniformTextureDeclarations.join("\n");
+      publicUniformDeclarations = publicUniformDeclarations.join("\n");
+      uniformDefinitionsForUniforms = uniformDefinitionsForUniforms.join("\n");
+      fragmentSrc = [ "precision highp float;", "uniform sampler2D _uSampler;", "uniform sampler2D _uSpriteIndicesTexture;", "uniform sampler2D _uSpriteBoundsTexture;", "uniform vec2 _uCanvasResolution;", "varying vec2 _vTexCoord;", "vec4 _spriteBounds;", "vec2 uResolution;", privateUniformTextureDeclarations, publicUniformDeclarations, "vec4 textTexture( vec2 coord ) {", "   vec2 adjustedFragCoord = _spriteBounds.xy + vec2((_spriteBounds.z * coord.x), (_spriteBounds.w * coord.y));", "   vec2 uv = adjustedFragCoord.xy / _uCanvasResolution;", "   if (adjustedFragCoord.x < _spriteBounds.x ||", "       adjustedFragCoord.x > _spriteBounds.x + _spriteBounds.z ||", "       adjustedFragCoord.y < _spriteBounds.y ||", "       adjustedFragCoord.y > _spriteBounds.y + _spriteBounds.w) {", "     return vec4(0.0);", "   }", "   return texture2D(_uSampler, uv);", "}", "void mainImage( out vec4 mainImage, in vec2 fragCoord );", this.mainImage, "void main( void ) {", "   vec4 spriteIndexData = texture2D(_uSpriteIndicesTexture, _vTexCoord);", "   float spriteIndex = spriteIndexData.r;", "   float spriteAlpha = spriteIndexData.a;", "   _spriteBounds = texture2D(_uSpriteBoundsTexture, vec2(spriteIndex, 0.5));", "   uResolution = _spriteBounds.zw;", uniformDefinitionsForUniforms, "   vec2 fragCoord = gl_FragCoord.xy - _spriteBounds.xy;", "   vec4 outColor;", "   mainImage(outColor, fragCoord);", "   outColor.a = outColor.a * spriteAlpha;", "   gl_FragColor = outColor;//texture2D(_uSampler, _vTexCoord);//vec4(1.0, 0.6705882353, 0.2509803922, 0.7);//outColor;//vec4(1.0, 1.0, 0.5, 1.0);//", "}" ];
       return fragmentSrc.join("\n");
     }
     function _setTexturesForUniforms() {
@@ -1507,8 +1508,8 @@ if ( typeof module === 'object' ) {
       },
       load: function(callback) {
         var self = this;
-        _buildTextScopes.call(this, this.textsTexture.texts);
         _setTexturesForUniforms.call(this);
+        _buildTextScopes.call(this, this.textsTexture.texts);
         _materialUniforms.call(this, function(uniforms) {
           self.threeMaterial = new THREE.ShaderMaterial({
             vertexShader: _vertexSrc.call(self),
