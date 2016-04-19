@@ -20,6 +20,7 @@ blotter_MaterialScope.prototype = (function () {
         },
 
         set type (v) {
+// ### - messaging
           blotter_Messaging.logError("blotter_MaterialScope", "uniform types may not be updated");
         },
 
@@ -29,6 +30,7 @@ blotter_MaterialScope.prototype = (function () {
 
         set value (v) {
           if (!blotter_UniformUtils.validValueForUniformType(this._type, v)) {
+// ### - messaging
             blotter_Messaging.logError("blotter_MaterialScope", "uniform value not valid for uniform type: " + this._type);
             return;
           }
@@ -39,7 +41,6 @@ blotter_MaterialScope.prototype = (function () {
       }
 
       _updateDataForUniformTextureData.call(this, uniformName);
-      console.log("we fixed the problem with updating uniforms by adding _name to the uniform objects. however, none of these are set on creation and currently require user to update them at least once like in examples/index.html. fix thattttttt.");
     }
   }
 
@@ -91,6 +92,7 @@ blotter_MaterialScope.prototype = (function () {
       this.text = text;
       this.material = material;
 
+// ### - this should be passed in. not a concern of this object.
       this.textIndex = this.material.textsTexture.indexFor(this.text);
 
       _buildUniformInterface.call(this);

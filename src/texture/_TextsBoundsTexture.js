@@ -9,8 +9,8 @@ blotter_TextsBoundsTexture.prototype = (function () {
   function _spriteBounds (completion) {
     var self = this,
         data = new Float32Array(this.textsTexture.texts.length * 4);
-
-    setTimeout(function() {
+// ### - setImmediate necessary?
+    setImmediate(function() {
       for (var i = 0; i < self.textsTexture.texts.length; i++) {
         var text = self.textsTexture.texts[i],
             bounds = self.textsTexture.boundsFor(text);
@@ -21,7 +21,7 @@ blotter_TextsBoundsTexture.prototype = (function () {
         data[4*i+3] = bounds.h * self.pixelRatio;                                                      // h
       };
       completion(data);
-    }, 1);
+    });
   }
 
   return {
@@ -30,6 +30,7 @@ blotter_TextsBoundsTexture.prototype = (function () {
 
     init : function (textsTexture, pixelRatio) {
       this.textsTexture = textsTexture;
+// ### - or 1?
       this.pixelRatio = pixelRatio || 1;
       this.width = this.textsTexture.mapper.width;
       this.height = this.textsTexture.mapper.height;
@@ -37,7 +38,7 @@ blotter_TextsBoundsTexture.prototype = (function () {
 
     build : function (callback) {
       var self = this;
-
+// ### - async necessary?
       _spriteBounds.call(this, function(spriteData) {
         var texture = new THREE.DataTexture(spriteData, self.textsTexture.texts.length, 1, THREE.RGBAFormat, THREE.FloatType);
         texture.needsUpdate = true;

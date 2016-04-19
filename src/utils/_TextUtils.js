@@ -35,7 +35,7 @@ var blotter_TextUtils = {
 		return defaultedProperties;
 	},
 
-	// Normalize padding values from style properties for passing to document
+	// Format padding values from style properties for passing to document
 
 	stringifiedPadding : function(properties) {
 		var _properties = properties || this.ensurePropertyValues(),

@@ -19,8 +19,10 @@ Blotter.Renderer.prototype = (function () {
     this.imageData = this.backBuffer.imageData;
 
     for (var textId in this.scopes) {
-      if (this.scopes[textId].playing) {
-        this.scopes[textId].update();
+      if (this.scopes.hasOwnProperty(textId)) {
+        if (this.scopes[textId].playing) {
+          this.scopes[textId].update();
+        }
       }
     }
 
@@ -41,10 +43,12 @@ Blotter.Renderer.prototype = (function () {
       }
 
       if (!Detector.webgl) {
+// ### - messaging
         blotter_Messaging.throwError("Blotter.Renderer", "device does not support webgl");
       }
 
       if (!material.threeMaterial) {
+// ### - messaging
         blotter_Messaging.throwError("Blotter.Renderer",
           "material does not expose property threeMaterial. Did you forget to call #load on your Blotter.Material object before instantiating Blotter.Renderer?");
       }
@@ -84,6 +88,7 @@ Blotter.Renderer.prototype = (function () {
       blotter_Messaging.ensureInstanceOf(text, Blotter.Text, "Blotter.Text", "Blotter.Renderer");
 
       if (!this.material.forText(text)) {
+// ### - messaging
         blotter_Messaging.logError("Blotter.Renderer", "Blotter.Text object not found in material");
         return;
       }
@@ -93,6 +98,7 @@ Blotter.Renderer.prototype = (function () {
         if (typeof options.autostart === "undefined") {
           options.autostart = true;
         }
+// ### - remove pixelratio as an option. This should only need to be set once. decide where (material or renderer)
         options.pixelRatio = this.material.pixelRatio;
         var scope = new blotter_RendererScope(text, this, options);
         this.scopes[text.id] = scope;

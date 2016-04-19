@@ -69,6 +69,7 @@ blotter_RendererScope.prototype = (function () {
       this.pixelRatio = options.pixelRatio || blotter_CanvasUtils.pixelRatio;
 
       var mappedBounds = this.renderer.material.textsTexture.boundsFor(text);
+// ### - SR. move this
       this.bounds = {
         w : mappedBounds.w,
         h : mappedBounds.h,

@@ -44,7 +44,7 @@ Blotter.Material.prototype = (function() {
         privateUniformTextureDeclarations = [],
         publicUniformDeclarations = [],
         uniformDefinitionsForUniforms = [];
-
+// ### - this whole mess until 74
     for (var uniformName in this.uniforms) {
       if (this.uniforms.hasOwnProperty(uniformName)) {
         var self = this,
@@ -71,7 +71,7 @@ Blotter.Material.prototype = (function() {
     privateUniformTextureDeclarations = privateUniformTextureDeclarations.join("\n");
     publicUniformDeclarations = publicUniformDeclarations.join("\n");
     uniformDefinitionsForUniforms = uniformDefinitionsForUniforms.join("\n");
-
+// ### - inspect this in chrome to see how the formatting is output.
     fragmentSrc = [
 
       "precision highp float;",
@@ -110,6 +110,8 @@ Blotter.Material.prototype = (function() {
       "   return texture2D(_uSampler, uv);",
       "}",
 
+// ### - what other methods ought we expose?
+
       "void mainImage( out vec4 mainImage, in vec2 fragCoord );",
 
       this.mainImage,
@@ -134,10 +136,11 @@ Blotter.Material.prototype = (function() {
       "   vec4 outColor;",
       "   mainImage(outColor, fragCoord);",
 
+// ### - rethink this at least once. :)
       //  Multiply alpha by original spriteIndexData's fourth value."
       //  this will be 0 for texels not within any 'sprite' area."
       "   outColor.a = outColor.a * spriteAlpha;",
-      "   gl_FragColor = outColor;//texture2D(_uSampler, _vTexCoord);//vec4(1.0, 0.6705882353, 0.2509803922, 0.7);//outColor;//vec4(1.0, 1.0, 0.5, 1.0);//",
+      "   gl_FragColor = outColor;",
       "}"
     ];
 
@@ -180,22 +183,13 @@ Blotter.Material.prototype = (function() {
 
 
 
-  function _setTexturesForUniforms () {
-    this.uniformTextures = {};
-    for (var uniformName in this.uniforms) {
-      if (this.uniforms.hasOwnProperty(uniformName)) {
-        var data = new Float32Array(this.textsTexture.texts.length * 4);
-        this.uniforms[uniformName]._textureData = data;
-        this.uniforms[uniformName]._texture = new THREE.DataTexture(data, this.textsTexture.texts.length, 1, THREE.RGBAFormat, THREE.FloatType);
-      }
-    }
-  }
+
 
   // Build object containing all uniforms we will pass to fragment shader.
 
   function _materialUniforms (callback) {
     var self = this,
-        textureUniforms = _textureUniformsForUniforms.call(this),
+        textureUniforms = _uniformsAsTextureUniforms.call(this),
         indicesTexture = new blotter_TextsIndicesTexture(this.textsTexture, this.sampleAccuracy),
         boundsTexture = new blotter_TextsBoundsTexture(this.textsTexture, this.pixelRatio);
 
@@ -226,7 +220,20 @@ Blotter.Material.prototype = (function() {
     return "_" + uniformName + "Texture";
   }
 
-  function _textureUniformsForUniforms () {
+
+// ### - 1 time! unitl 260
+  function _setTextureUniformsForUniforms () {
+    this.uniformTextures = {};
+    for (var uniformName in this.uniforms) {
+      if (this.uniforms.hasOwnProperty(uniformName)) {
+        var data = new Float32Array(this.textsTexture.texts.length * 4);
+        this.uniforms[uniformName]._textureData = data;
+        this.uniforms[uniformName]._texture = new THREE.DataTexture(data, this.textsTexture.texts.length, 1, THREE.RGBAFormat, THREE.FloatType);
+      }
+    }
+  }
+
+  function _uniformsAsTextureUniforms () {
     var textureUniforms = {};
 
     for (var uniformName in this.uniforms) {
@@ -239,13 +246,6 @@ Blotter.Material.prototype = (function() {
     }
     return textureUniforms;
   }
-
-
-
-
-
-
-
 
   function _buildTextScopes (texts) {
     this.scopes = {};
@@ -267,6 +267,46 @@ Blotter.Material.prototype = (function() {
 
     init : function (texts, options) {
       options = options || {};
+// ### - remove this shit following documentation.
+      // There is a negative coorelation between the sampleAccuracy value and
+      // the speed at which texture generation happens.
+      // However, the lower this value, the less sampleAccuracy you can expect
+      // for indexing into uniforms for any given text.
+      // Value must be between 0.0 and 1.0, and you are advised to keep it around 0.5.
+      this.sampleAccuracy = options.sampleAccuracy || 0.5;
+// ### - is this the main spot for users to adjust pixelRatio? Seems like it should be done against the renderer. How does this effect load?
+      this.pixelRatio = options.pixelRatio || blotter_CanvasUtils.pixelRatio;
+
+      this.uniforms = options.uniforms || {};
+    },
+
+
+    // add: function(o) {
+
+    //   var objects = o;
+    //   if (!(objects instanceof Array)) {
+    //     objects = _.toArray(arguments);
+    //   }
+
+    //   this.scene.add(objects);
+    //   return this;
+    // },
+
+    // remove: function(o) {
+
+    //   var objects = o;
+    //   if (!(objects instanceof Array)) {
+    //     objects = _.toArray(arguments);
+    //   }
+
+    //   this.scene.remove(objects);
+
+    //   return this;
+    // },
+
+// ### - User should at least have full customablity up until here. line 272 through 275 are effected.
+    load : function (callback) {
+      var self = this;
 
       this.texts = texts;
       this.textsTexture = new blotter_TextsTexture(texts);
@@ -274,22 +314,9 @@ Blotter.Material.prototype = (function() {
       this.height = this.textsTexture.height;
       this.mainImage = options.mainImage || _defaultMainImage.call(this);
 
-      // There is a negative coorelation between the sampleAccuracy value and
-      // the speed at which texture generation happens.
-      // However, the lower this value, the less sampleAccuracy you can expect
-      // for indexing into uniforms for any given text.
-      // Value must be between 0.0 and 1.0, and you are advised to keep it around 0.5.
-      this.sampleAccuracy = options.sampleAccuracy || 0.5;
-      this.pixelRatio = options.pixelRatio || blotter_CanvasUtils.pixelRatio;
+      this.uniforms = blotter_UniformUtils.extractValidUniforms(this.uniforms);
 
-      // TODO: Probably dont want to clean here. User may want to set uniforms after instantiation.
-      this.uniforms = blotter_UniformUtils.extractValidUniforms(options.uniforms || {});
-    },
-
-    load : function (callback) {
-      var self = this;
-
-      _setTexturesForUniforms.call(this);
+      _setTextureUniformsForUniforms.call(this);
 
       _buildTextScopes.call(this, this.textsTexture.texts);
 
@@ -311,6 +338,7 @@ Blotter.Material.prototype = (function() {
       blotter_Messaging.ensureInstanceOf(text, Blotter.Text, "Blotter.Text", "Blotter.Material");
 
       if (this.texts.indexOf(text) == -1) {
+// ### - messaging
         blotter_Messaging.logError("Blotter.Material", "Blotter.Text object not found");
         return;
       }

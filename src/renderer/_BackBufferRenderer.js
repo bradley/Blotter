@@ -45,6 +45,7 @@ blotter_BackBufferRenderer.prototype = (function () {
 
       // Prepare pixel buffers
 
+// ### - naming here
       this.viewBuffer = new ArrayBuffer(width * height * 4);
       this.imageDataArray = new Uint8Array(this.viewBuffer);
       this.clampedImageDataArray = new Uint8ClampedArray(this.viewBuffer);

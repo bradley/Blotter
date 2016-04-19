@@ -31,10 +31,6 @@ var blotter_CanvasUtils = {
 	// Returns the device's pixel ratio
 
 	pixelRatio : (function () {
-    // Note: `sharpness` is used to increase the legibility of our rendered content.
-    //   However I suspect it probably slows things down a bit - I haven't really
-    //   checked. I'm open to thoughts.
-    var sharpness = 1; console.log("dont forget you did this. set back to 1");
     var ctx = document.createElement("canvas").getContext("2d"),
         dpr = window.devicePixelRatio || 1,
         bsr = ctx.backingStorePixelRatio;
@@ -45,8 +41,10 @@ var blotter_CanvasUtils = {
 
     bsr = bsr || 1;
 
-    return (dpr / bsr) * sharpness;
+    return (dpr / bsr);
   })(),
+
+  // Returns the mouse position within a canvas
 
   mousePosition : function (canvas, event) {
     var rect = canvas.getBoundingClientRect();
@@ -55,6 +53,8 @@ var blotter_CanvasUtils = {
       y: event.clientY - rect.top
     };
   },
+
+  // Returns the mouse position within a canvas, normalized to a value between 0 and 1
 
   normalizedMousePosition : function (canvas, event) {
     var rect = canvas.getBoundingClientRect();

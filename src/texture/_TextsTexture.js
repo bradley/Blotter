@@ -25,6 +25,7 @@ blotter_TextsTexture.prototype = (function() {
     constructor : blotter_TextsTexture,
 
     init : function (texts, pixelRatio) {
+// ### - can we please be consistent with this?
       this.pixelRatio = pixelRatio || blotter_CanvasUtils.pixelRatio;
       _createMapperFromTexts.call(this, texts);
     },
@@ -33,7 +34,9 @@ blotter_TextsTexture.prototype = (function() {
       var self = this,
           loader = new THREE.TextureLoader();
 
-      loader.load(this.mapper.getImage(), function(texture) {
+      this.imageSrc = this.mapper.getImage();
+
+      loader.load(this.imageSrc, function(texture) {
         self.texture = texture;
         self.texture.generateMipmaps = false;
         self.texture.minFilter = THREE.LinearFilter;
@@ -45,13 +48,6 @@ blotter_TextsTexture.prototype = (function() {
     },
 
     boundsFor : function (text) {
-      blotter_Messaging.ensureInstanceOf(text, Blotter.Text, "Blotter.Text", "Blotter.Renderer");
-
-      if (this.texts.indexOf(text) == -1) {
-        blotter_Messaging.logError("Blotter.Material", "Blotter.Text object not found in texture texts");
-        return;
-      }
-
       return this.mapper.boundsFor(text);
     },
 
@@ -59,6 +55,7 @@ blotter_TextsTexture.prototype = (function() {
       var index = this.texts.indexOf(text);
 
       if (index == -1) {
+// ### - messaging
         blotter_Messaging.logError("Blotter.Material", "Blotter.Text object not found in texture texts");
         return;
       }

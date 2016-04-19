@@ -1,10 +1,10 @@
 var blotter_UniformUtils = {
 
-  // Uniform type values we accept for user defined uniforms.
+  // Uniform type values we accept for user defined uniforms
 
   UniformTypes : ["1f", "2f", "3f", "4f"],
 
-  // Determine if value is valid for user defined uniform type.
+  // Determine if value is valid for user defined uniform type
 
   validValueForUniformType : function (type, value) {
     var valid = false,
@@ -89,6 +89,8 @@ var blotter_UniformUtils = {
     return swizzleString;
   },
 
+  // Given an object containing uniform descriptions, return an object containing only valid uniforms based on the uniform's type and value
+
   extractValidUniforms : function (uniforms, domain) {
     uniforms = uniforms || {};
     var validUniforms = {};
@@ -97,12 +99,14 @@ var blotter_UniformUtils = {
       if (uniforms.hasOwnProperty(uniformName)) {
         var uniform = uniforms[uniformName];
         if (blotter_UniformUtils.UniformTypes.indexOf(uniform.type) == -1) {
+// ### - messaging
           blotter_Messaging.logError(domain, "uniforms must be one of type: " +
             blotter_UniformUtils.UniformTypes.join(", "));
           continue;
         }
 
         if (!blotter_UniformUtils.validValueForUniformType(uniform.type, uniform.value)) {
+// ### - messaging
           blotter_Messaging.logError(domain, "uniform value for " + uniformName + " is incorrect for type: " + uniform.type);
           continue;
         }

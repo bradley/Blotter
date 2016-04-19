@@ -8,16 +8,17 @@ var blotter_TextsMapper = function (texts) {
 
 blotter_TextsMapper.prototype = (function () {
 
-  function _updateTexts (texts, eachCallback) {
+  function _updateTexts (o, eachCallback) {
+// ### - this shit
+    var texts = o;
     if (!(texts instanceof Array)) {
       texts = [texts];
     }
 
     for (var i = 0; i < texts.length; i++) {
       var text = texts[i];
-
+// ### - messaging
       blotter_Messaging.ensureInstanceOf(text, Blotter.Text, "Blotter.Text or an array of Blotter.Text objects", "Blotter.Material");
-
       eachCallback.call(this, text)
     }
 
@@ -53,6 +54,8 @@ blotter_TextsMapper.prototype = (function () {
     this.height = packer.root.h;
   }
 
+  // Sort texts based on area of space required for any given text, descending
+
   function _sortTexts (textA, textB) {
     var areaA = textA.w * textA.h,
         areaB = textB.w * textB.h;
@@ -80,19 +83,20 @@ blotter_TextsMapper.prototype = (function () {
   	init: function (texts, options) {
       var options = options || {};
 
+      this.width = 0;
+      this.height = 0;
+// ### - or 1?
       this.pixelRatio = options.pixelRatio || 1;
       this.flipY = options.flipY || false;
 
       this.texts = [];
       this.textsBounds = {};
-      this.width = 0;
-      this.height = 0;
 
-      this.addTexts(texts);
+      this.addText(texts);
     },
-
-    addTexts: function (texts) {
-    	_updateTexts.call(this, texts, function(text) {
+// ### - What happens if called after initialization? `textsBounds` changes. (this applies to removeTexts too).
+    addText: function (o) {
+    	_updateTexts.call(this, o, function(text) {
         var sizesObject = this.textsBounds[text.id];
 
       	if (this.texts.indexOf(text) == -1) {
@@ -106,8 +110,8 @@ blotter_TextsMapper.prototype = (function () {
       });
     },
 
-    removeTexts: function (texts) {
-      _updateTexts.call(this, texts, function(text) {
+    removeText: function (o) {
+      _updateTexts.call(this, o, function(text) {
         var textsIndex = this.texts.indexOf(text);
 
         if (textsIndex != -1) {
@@ -119,6 +123,13 @@ blotter_TextsMapper.prototype = (function () {
     },
 
     boundsFor : function (text) {
+      blotter_Messaging.ensureInstanceOf(text, Blotter.Text, "Blotter.Text", "blotter_TextsMapper");
+
+      if (this.texts.indexOf(text) == -1) {
+// ### - messaging
+        blotter_Messaging.logError("blotter_TextsMapper", "Blotter.Text object not found in texture texts");
+        return;
+      }
       return this.textsBounds[text.id];
     },
 
