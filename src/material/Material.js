@@ -353,3 +353,65 @@ Blotter.Material.prototype = (function() {
     }
   }
 })();
+
+
+
+
+/*
+
+rules
+ - a build must happen once all texts are added
+ - when any text is added or removed after the initial build, a build must happen
+ - a build must happen once all uniforms are added
+ - when any uniform is added or removed after the initial build, a build must happen
+ - a build must be asynchronous and will be at least somewhat costly.
+
+
+{
+  initialize : function (texts, options) {
+    // configure and set defaults
+  },
+
+  addTexts : function (texts) {
+    // coerce into array (copy underscore or just use underscore for this)
+    // merge with current texts array attribute
+  },
+
+  removeTexts : function (texts) {
+    // coerce into array (copy underscore or just use underscore for this)
+    // remove each from current texts array attribute
+  },
+
+  build : function () {
+    // build all textures
+    //
+    // build shader
+  }
+}
+
+
+1. initialize
+2. addTexts
+3. build (callback) -> set ready
+4. addTexts
+5. removeTexts
+6. addTexts
+7. needsUpdate = true
+  renderer checks material, sees it needsupdate, rebuilds
+  when ready, update renderscopes
+
+More rules?
+- user never calls build. user can listen for ready.
+- renderer, on start, checks the build status of material. if unbuilt, it builds it.
+
+1. user creates some texts
+2. user creates a material with texts and shader and uniforms and etc.
+3. user adds some texts or maybe changes some uniform values
+4. user sets up a renderer, passing it the material
+5. on loop (obscured from user and has nothing to do with their dom elements), renderer
+   checks if material needsUpdate (true initially) and initiates build, setting a callback.
+
+
+
+
+*/
