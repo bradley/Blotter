@@ -278,6 +278,11 @@ Blotter.Material.prototype = (function() {
       this.pixelRatio = options.pixelRatio || blotter_CanvasUtils.pixelRatio;
 
       this.uniforms = options.uniforms || {};
+
+
+
+      this.mainImage = options.mainImage || _defaultMainImage.call(this);
+      this.texts = texts;
     },
 
 
@@ -308,11 +313,11 @@ Blotter.Material.prototype = (function() {
     load : function (callback) {
       var self = this;
 
-      this.texts = texts;
-      this.textsTexture = new blotter_TextsTexture(texts);
+      
+      this.textsTexture = new blotter_TextsTexture(this.texts);
       this.width = this.textsTexture.width;
       this.height = this.textsTexture.height;
-      this.mainImage = options.mainImage || _defaultMainImage.call(this);
+      this.mainImage = this.mainImage || _defaultMainImage.call(this);
 
       this.uniforms = blotter_UniformUtils.extractValidUniforms(this.uniforms);
 

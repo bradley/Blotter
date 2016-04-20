@@ -1,5 +1,7 @@
 VENDOR_FILES = \
-	lib/objectKeys.js \
+	lib/three/three.js \
+	lib/underscore/underscore.js \
+	lib/objectKeys/objectKeys.js \
 	lib/packer/packer.growing.js \
 	lib/detector/Detector.js \
 	lib/event_emitter/EventEmitter.js \

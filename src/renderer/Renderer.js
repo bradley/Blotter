@@ -19,10 +19,8 @@ Blotter.Renderer.prototype = (function () {
     this.imageData = this.backBuffer.imageData;
 
     for (var textId in this.scopes) {
-      if (this.scopes.hasOwnProperty(textId)) {
-        if (this.scopes[textId].playing) {
-          this.scopes[textId].update();
-        }
+      if (this.scopes.hasOwnProperty(textId) && this.scopes[textId].playing) {
+        this.scopes[textId].update();
       }
     }
 
