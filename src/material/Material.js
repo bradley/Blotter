@@ -334,6 +334,7 @@ Blotter.Material.prototype = (function() {
 
         self.threeMaterial.depthTest = false;
         self.threeMaterial.depthWrite = false;
+        self.threeMaterial.premultipliedAlpha = false;
 
         callback();
       });
