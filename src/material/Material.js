@@ -10,7 +10,7 @@ Blotter.Material = function(texts, mainImageSrc, options) {
 
 Blotter.Material.prototype = (function() {
 
-  function _defaultMainImage () {
+  function _defaultMainImageSrc () {
     var mainImage = [
 
       "void mainImage( out vec4 mainImage, in vec2 fragCoord ) {",
@@ -255,7 +255,8 @@ Blotter.Material.prototype = (function() {
       blotter_Messaging.ensureInstanceOf(text, Blotter.Text, "Blotter.Text", "Blotter.Material");
 
       if (!this.scopes[text.id]) {
-        this.scopes[text.id] = new blotter_MaterialScope(text, this);
+// ### - might want to get the data index (i) from the texture here....
+        this.scopes[text.id] = new blotter_MaterialScope(text, i, this);
       }
     }
   }
@@ -281,7 +282,7 @@ Blotter.Material.prototype = (function() {
 
 
 
-      this.mainImage = options.mainImage || _defaultMainImage.call(this);
+      this.mainImage = options.mainImage || _defaultMainImageSrc.call(this);
       this.texts = texts;
     },
 
@@ -313,11 +314,10 @@ Blotter.Material.prototype = (function() {
     load : function (callback) {
       var self = this;
 
-      
       this.textsTexture = new blotter_TextsTexture(this.texts);
       this.width = this.textsTexture.width;
       this.height = this.textsTexture.height;
-      this.mainImage = this.mainImage || _defaultMainImage.call(this);
+      this.mainImage = this.mainImage || _defaultMainImageSrc.call(this);
 
       this.uniforms = blotter_UniformUtils.extractValidUniforms(this.uniforms);
 

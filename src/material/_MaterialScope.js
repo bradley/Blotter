@@ -1,12 +1,12 @@
-var blotter_MaterialScope = function (text, material) {
-  this.init(text, material);
+var blotter_MaterialScope = function (text, dataIndex, material) {
+  this.init(text, dataIndex, material);
 }
 
 blotter_MaterialScope.prototype = (function () {
 
   function _buildUniformInterface () {
     var self = this;
-    this.uniforms = {};
+    
     for (var uniformName in this.material.uniforms) {
       var uniform = this.material.uniforms[uniformName];
 
@@ -48,7 +48,7 @@ blotter_MaterialScope.prototype = (function () {
     var materialUniform = this.material.uniforms[uniformName],
         scopedUniform = this.uniforms[uniformName],
         data = materialUniform._textureData,
-        i = this.textIndex;
+        i = this.dataIndex;
 
     if (materialUniform.type == "1f") {
       data[4*i]   = scopedUniform._value; // x (r)
@@ -88,12 +88,11 @@ blotter_MaterialScope.prototype = (function () {
 
     constructor : blotter_MaterialScope,
 
-    init : function (text, material) {
+    init : function (text, dataIndex, material) {
       this.text = text;
+      this.dataIndex = dataIndex;
       this.material = material;
-
-// ### - this should be passed in. not a concern of this object.
-      this.textIndex = this.material.textsTexture.indexFor(this.text);
+      this.uniforms = {};
 
       _buildUniformInterface.call(this);
     }
