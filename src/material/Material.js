@@ -411,6 +411,74 @@ More rules?
 5. on loop (obscured from user and has nothing to do with their dom elements), renderer
    checks if material needsUpdate (true initially) and initiates build, setting a callback.
 
+TextureLoader.load(texts, function(texture) {
+  texture
+})
+
+
+
+
+
+idea: Renderer = Blotter
+
+1
+
+new Blotter(config)
+new Text(str, props)
+new Material(text, options)
+blotter.material = material
+blotter.play()
+blotter.forText(text).appendTo(el);
+
+
+2
+
+material.forText(text).uniforms.uTime = newTime
+// ok - works -fine
+material.uniforms.newUniform = { type: "1f", value: 0.0 }
+material.needsUpdate = true;
+// renderer checks material for needsUpdate and if so, calls build on material
+// any time material builds, it does the entire process of building, so it builds
+// a new mapper, all textures and compiles shaders.
+// upon build completion, material updates all existing scopes (find each text
+// in its text scopes and rebuilding them while keeping references) and creating
+// new ones or deleting unused ones where needed. renderer listens for completion
+// and does similar with its scopes - really shouldnt effect render scope els in
+// any unanticipated way.
+
+// the problem left is the callback. material has to build itself, and it's likely
+// the user will need to know of both the asynchronous nature of this build, and
+// of its end.
+//
+// note: Material uses getter and setter for its needsUpdate property and defaults
+//   it to true. On set, it called #update on itself, dispatching an event notifying
+//   listeners.
+//
+// so thinking about that:
+//   - Blotter object has no textScopes and cannot render until material is complete
+//   - when material re-builds, blotter object must update scopes
+//
+//  nnootteee: before i move on to test, this is what im thinking: if material could supply
+//    the threematerial _immediately_, the renderer could just run(?). meaning we wouldnt _have_
+//    to force the user to do anything with a callback. meaning they'd see a delay maybe but minimal
+//    weird code. we could then have a 'ready' event that user code could listen to and conditionally do
+//    whatever they want.
+//
+//    - wrenches here:
+//      - render scopes are meaningless prior to a material build.
+//        material building defines the width and height and where to find the text
+//        inside the map.
+//      - if we ask users to have a listener for `ready` on blotter, what kicks off the build?
+
+// rules
+// accurate text scopes for both materials and renderers are not available until
+// after material has been built and subsequently renderer has updated its scopes
+// e.g.; until the renderer says it's ready.
+// so, everything (Blotter, Material, Texts) can be instantiated and set up and #start
+// can be called on Botter. However if the user wants scopes (they do always), they need
+// listen for the "ready" event on their blotter instance.
+
+
 
 
 

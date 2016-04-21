@@ -6,7 +6,7 @@ blotter_MaterialScope.prototype = (function () {
 
   function _buildUniformInterface () {
     var self = this;
-    
+
     for (var uniformName in this.material.uniforms) {
       var uniform = this.material.uniforms[uniformName];
 
@@ -87,7 +87,7 @@ blotter_MaterialScope.prototype = (function () {
   return {
 
     constructor : blotter_MaterialScope,
-
+// ### - make dataIndex the last argument
     init : function (text, dataIndex, material) {
       this.text = text;
       this.dataIndex = dataIndex;

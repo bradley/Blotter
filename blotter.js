@@ -42207,7 +42207,7 @@ Timer.polifill.setTimeout = function() {
     this.init(texts, mainImageSrc, options);
   };
   Blotter.Material.prototype = function() {
-    function _defaultMainImage() {
+    function _defaultMainImageSrc() {
       var mainImage = [ "void mainImage( out vec4 mainImage, in vec2 fragCoord ) {", "mainImage = textTexture(fragCoord / uResolution);", "}" ];
       return mainImage.join("\n");
     }
@@ -42309,7 +42309,7 @@ Timer.polifill.setTimeout = function() {
         this.sampleAccuracy = options.sampleAccuracy || .5;
         this.pixelRatio = options.pixelRatio || blotter_CanvasUtils.pixelRatio;
         this.uniforms = options.uniforms || {};
-        this.mainImage = options.mainImage || _defaultMainImage.call(this);
+        this.mainImage = options.mainImage || _defaultMainImageSrc.call(this);
         this.texts = texts;
       },
       load: function(callback) {
@@ -42317,7 +42317,7 @@ Timer.polifill.setTimeout = function() {
         this.textsTexture = new blotter_TextsTexture(this.texts);
         this.width = this.textsTexture.width;
         this.height = this.textsTexture.height;
-        this.mainImage = this.mainImage || _defaultMainImage.call(this);
+        this.mainImage = this.mainImage || _defaultMainImageSrc.call(this);
         this.uniforms = blotter_UniformUtils.extractValidUniforms(this.uniforms);
         _setTextureUniformsForUniforms.call(this);
         _buildTextScopes.call(this, this.textsTexture.texts);
