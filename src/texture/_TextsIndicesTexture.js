@@ -7,50 +7,47 @@ var blotter_TextsIndicesTexture = function (textsTexture, sampleAccuracy) {
 blotter_TextsIndicesTexture.prototype = (function () {
 
   function _textsIndices (completion) {
-    var self = this,
-        height = this.textsTexture.mapper.height * this.sampleAccuracy,
-        width = this.textsTexture.mapper.width * this.sampleAccuracy,
-        points = new Float32Array((height * width) * 4),
-        widthStepModifier = width % 1,
-        indicesOffset = (1 / this.textsTexture.texts.length) / 2; // Values stored in this texture will be sampled from the 'middle' of their texel position.
-// ### - setImmediate necessary?
-    setImmediate(function() {
+    var points = new Float32Array((this.height * this.width) * 4),
+        widthStepModifier = this.width % 1,
+        indicesOffset = (1 / this.texts.length) / 2; // Values stored in this texture will be sampled from the 'middle' of their texel position.
+
+    setImmediate(_.bind(function() {
       for (var i = 1; i < points.length / 4; i++) {
 
-        var y = Math.ceil(i / (width - widthStepModifier)),
-            x = i - ((width - widthStepModifier) * (y - 1)),
-            lookupIndex = 0.0,
+        var y = Math.ceil(i / (this.width - widthStepModifier)),
+            x = i - ((this.width - widthStepModifier) * (y - 1)),
+            refIndex = 0.0,
             bg = 0.0,
             a = 0.0;
 
-        for (var ki = 0; ki < self.textsTexture.texts.length; ki++) {
-          var text = self.textsTexture.texts[ki],
-              bounds = self.textsTexture.boundsFor(text),
-              fitY = bounds.fit.y * self.sampleAccuracy,
-              fitX = bounds.fit.x * self.sampleAccuracy,
-              vH = bounds.h * self.sampleAccuracy,
-              vW = bounds.w * self.sampleAccuracy;
+        for (var ki = 0; ki < this.texts.length; ki++) {
+          var text = this.texts[ki],
+              bounds = this.textsTexture.boundsFor(text),
+              fitY = bounds.fit.y * this.sampleAccuracy,
+              fitX = bounds.fit.x * this.sampleAccuracy,
+              vH = bounds.h * this.sampleAccuracy,
+              vW = bounds.w * this.sampleAccuracy;
 
           // If x and y are within the fit bounds of the text space within our textsTexture.
           if (y >= fitY &&
               y <= fitY + vH &&
               x >= fitX &&
               x <= fitX + vW) {
-            lookupIndex = (ki / self.textsTexture.texts.length) + indicesOffset;
+            refIndex = (ki / this.texts.length) + indicesOffset;
             a = 1.0;
             break;
           }
         }
 
         var index = i - 1;
-        points[4*index+0] = lookupIndex;
+        points[4*index+0] = refIndex;
         points[4*index+1] = bg;
         points[4*index+2] = bg;
         points[4*index+3] = a;
       }
 
       completion(points);
-    });
+    }, this));
   }
 
   return {
@@ -60,17 +57,27 @@ blotter_TextsIndicesTexture.prototype = (function () {
     init : function (textsTexture, sampleAccuracy) {
       this.textsTexture = textsTexture;
       this.sampleAccuracy = sampleAccuracy || 0.5;
+
+      // Stub texture - resets on build.
+      this.texture = new THREE.DataTexture([], 0, 0, THREE.RGBAFormat, THREE.FloatType);
+
+      this.textsTexture.on("build", _.bind(this.build, this));
+
+      _.extendOwn(this, EventEmitter.prototype);
     },
 
-    build : function (callback) {
-      var self = this;
-// ### - async necessary?
-      _textsIndices.call(this, function(dataPoints) {
-        var texture = new THREE.DataTexture(dataPoints, self.textsTexture.mapper.width * self.sampleAccuracy, self.textsTexture.mapper.height * self.sampleAccuracy, THREE.RGBAFormat, THREE.FloatType);
-        texture.flipY = true;
-        texture.needsUpdate = true;
-        callback(texture);
-      });
+    build : function () {
+      this.texts = this.textsTexture.texts;
+      this.width = this.textsTexture.mapper.width * this.sampleAccuracy;
+      this.height = this.textsTexture.mapper.height * this.sampleAccuracy;
+
+      _textsIndices.call(this, _.bind(function (dataPoints) {
+        this.texture = new THREE.DataTexture(dataPoints, this.width, this.height, THREE.RGBAFormat, THREE.FloatType);
+        this.texture.flipY = true;
+        this.texture.needsUpdate = true;
+
+        this.trigger("build");
+      }, this));
     }
   }
 })();

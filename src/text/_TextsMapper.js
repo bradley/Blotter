@@ -8,11 +8,10 @@ var blotter_TextsMapper = function (texts) {
 
 blotter_TextsMapper.prototype = (function () {
 
-  function _updateTexts (o, eachCallback) {
+  function _updateTexts (texts, eachCallback) {
 // ### - this shit
-    var texts = o;
-    if (!(texts instanceof Array)) {
-      texts = [texts];
+     if (!_.isArray(texts)) {
+      texts = _.toArray(texts);
     }
 
     for (var i = 0; i < texts.length; i++) {

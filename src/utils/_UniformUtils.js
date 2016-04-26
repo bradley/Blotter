@@ -93,29 +93,23 @@ var blotter_UniformUtils = {
 
   extractValidUniforms : function (uniforms, domain) {
     uniforms = uniforms || {};
-    var validUniforms = {};
-
-    for (var uniformName in uniforms) {
-      if (uniforms.hasOwnProperty(uniformName)) {
-        var uniform = uniforms[uniformName];
-        if (blotter_UniformUtils.UniformTypes.indexOf(uniform.type) == -1) {
+    return _.reduce(uniforms, function (memo, uniformObject, uniformName) {
+      if (blotter_UniformUtils.UniformTypes.indexOf(uniformObject.type) == -1) {
 // ### - messaging
-          blotter_Messaging.logError(domain, "uniforms must be one of type: " +
-            blotter_UniformUtils.UniformTypes.join(", "));
-          continue;
-        }
-
-        if (!blotter_UniformUtils.validValueForUniformType(uniform.type, uniform.value)) {
-// ### - messaging
-          blotter_Messaging.logError(domain, "uniform value for " + uniformName + " is incorrect for type: " + uniform.type);
-          continue;
-        }
-
-        validUniforms[uniformName] = uniform;
+        blotter_Messaging.logError(domain, "uniforms must be one of type: " +
+          blotter_UniformUtils.UniformTypes.join(", "));
+        return memo;
       }
-    }
 
-    return validUniforms;
+      if (!blotter_UniformUtils.validValueForUniformType(uniformObject.type, uniformObject.value)) {
+// ### - messaging
+        blotter_Messaging.logError(domain, "uniform value for " + uniformName + " is incorrect for type: " + uniformObject.type);
+        return memo;
+      }
+
+      memo[uniformName] = uniformObject;
+      return memo;
+    }, {})
   }
 
 }

@@ -1,16 +1,16 @@
 VENDOR_FILES = \
 	lib/three/three.js \
-	lib/objectKeys/objectKeys.js \
-	lib/packer/packer.growing.js \
-	lib/detector/Detector.js \
+	lib/three/Detector.js \
+	lib/underscore/underscore.js \
 	lib/event_emitter/EventEmitter.js \
+	lib/packer/packer.growing.js \
 	lib/setImmediate/setimmediate.js \
 
 GENERATED_FILES = \
 	blotter.js \
 	blotter.min.js
 
-yui-jar =  /usr/local/bin/yuicompressor
+yui-jar = /usr/local/bin/yuicompressor
 
 all: $(GENERATED_FILES)
 

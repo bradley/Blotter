@@ -14,25 +14,14 @@ var blotter_PropertyDefaults = {
 
 var blotter_TextUtils = {
 
-	Properties : (function() { return Object.keys(blotter_PropertyDefaults) })(),
+	Properties : _.keys(blotter_PropertyDefaults),
 
 	// Recieves property values (optional) and fills in any missing values with default values
 
 	ensurePropertyValues : function(properties) {
-		var _properties = properties || {},
-				defaultedProperties = blotter_PropertyDefaults;
-
-		for(var i = 0; i < this.Properties.length; i++) {
-			var k = this.Properties[i];
-
-			if (k in _properties) {
-				if (_properties.hasOwnProperty(k)) {
-					defaultedProperties[k] = _properties[k];
-				}
-			}
-		}
-
-		return defaultedProperties;
+		properties = properties || {},
+		_.defaults(properties, blotter_PropertyDefaults)
+		return properties;
 	},
 
 	// Format padding values from style properties for passing to document

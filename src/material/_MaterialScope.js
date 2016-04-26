@@ -1,5 +1,5 @@
-var blotter_MaterialScope = function (text, dataIndex, material) {
-  this.init(text, dataIndex, material);
+var blotter_MaterialScope = function (material, dataIndex) {
+  this.init(material, dataIndex);
 }
 
 blotter_MaterialScope.prototype = (function () {
@@ -87,11 +87,16 @@ blotter_MaterialScope.prototype = (function () {
   return {
 
     constructor : blotter_MaterialScope,
-// ### - make dataIndex the last argument
-    init : function (text, dataIndex, material) {
-      this.text = text;
-      this.dataIndex = dataIndex;
+
+    set needsMaterialUpdate (value) {
+      if (value === true) {
+        _buildUniformInterface.call(this);
+      }
+    },
+
+    init : function (material, dataIndex) {
       this.material = material;
+      this.dataIndex = dataIndex;
       this.uniforms = {};
 
       _buildUniformInterface.call(this);
