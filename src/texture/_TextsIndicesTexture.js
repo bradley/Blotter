@@ -22,13 +22,13 @@ blotter_TextsIndicesTexture.prototype = (function () {
 
         for (var ki = 0; ki < this.texts.length; ki++) {
           var text = this.texts[ki],
-              bounds = this.textsTexture.boundsFor(text),
+              bounds = this.mapper.boundsFor(text),
               fitY = bounds.fit.y * this.sampleAccuracy,
               fitX = bounds.fit.x * this.sampleAccuracy,
               vH = bounds.h * this.sampleAccuracy,
               vW = bounds.w * this.sampleAccuracy;
 
-          // If x and y are within the fit bounds of the text space within our textsTexture.
+          // If x and y are within the fit bounds of the text space within our mapped texts texture.
           if (y >= fitY &&
               y <= fitY + vH &&
               x >= fitX &&
@@ -54,22 +54,20 @@ blotter_TextsIndicesTexture.prototype = (function () {
 
     constructor : blotter_TextsIndicesTexture,
 
-    init : function (textsTexture, sampleAccuracy) {
-      this.textsTexture = textsTexture;
+    init : function (mapper, sampleAccuracy) {
+      this.mapper = mapper;
+      this.texts = mapper.texts;
       this.sampleAccuracy = sampleAccuracy || 0.5;
 
       // Stub texture - resets on build.
       this.texture = new THREE.DataTexture([], 0, 0, THREE.RGBAFormat, THREE.FloatType);
 
-      this.textsTexture.on("build", _.bind(this.build, this));
-
       _.extendOwn(this, EventEmitter.prototype);
     },
 
     build : function () {
-      this.texts = this.textsTexture.texts;
-      this.width = this.textsTexture.mapper.width * this.sampleAccuracy;
-      this.height = this.textsTexture.mapper.height * this.sampleAccuracy;
+      this.width = this.mapper.width * this.sampleAccuracy;
+      this.height = this.mapper.height * this.sampleAccuracy;
 
       _textsIndices.call(this, _.bind(function (dataPoints) {
         this.texture = new THREE.DataTexture(dataPoints, this.width, this.height, THREE.RGBAFormat, THREE.FloatType);

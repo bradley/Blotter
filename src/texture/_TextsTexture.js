@@ -3,8 +3,8 @@ import "../utils/";
 import "../text/";
 
 
-var blotter_TextsTexture = function(texts) {
-  this.init(texts);
+var blotter_TextsTexture = function(mapper) {
+  this.init(mapper);
 }
 
 blotter_TextsTexture.prototype = (function() {
@@ -13,9 +13,8 @@ blotter_TextsTexture.prototype = (function() {
 
     constructor : blotter_TextsTexture,
 
-    init : function (texts, ratio) {
-      this.texts = texts;
-      this.ratio = ratio;
+    init : function (mapper) {
+      this.mapper = mapper;
 
       // Stub texture - resets on build.
       this.texture = new THREE.Texture();
@@ -26,14 +25,6 @@ blotter_TextsTexture.prototype = (function() {
     build : function () {
       var loader = new THREE.TextureLoader();
 
-      if (!_.isArray(this.texts)) {
-        this.texts = _.toArray(this.texts);
-      }
-
-      this.mapper = new blotter_TextsMapper(texts, { ratio : this.ratio, flipY : true });
-      this.width = this.mapper.width * this.ratio;
-      this.height = this.mapper.height * this.ratio;
-
       loader.load(this.mapper.getImage(), _.bind(function(texture) {
         this.texture = texture;
         this.texture.generateMipmaps = false;
@@ -43,10 +34,6 @@ blotter_TextsTexture.prototype = (function() {
 
         this.trigger("build");
       }, this));
-    },
-
-    boundsFor : function (text) {
-      return this.mapper.boundsFor(text);
     }
   }
 })();

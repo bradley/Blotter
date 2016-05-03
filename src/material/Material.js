@@ -142,15 +142,25 @@ Blotter.Material.prototype = (function() {
     return "_" + uniformName + "Texture";
   }
 
-  function _build (texts, ratio) {
-    var buildTextsTexture,
+  function _build (texts, ratio, sampleAccuracy) {
+    var buildMapper,
+        buildTextsTexture,
         buildIndicesTexture,
         buildBoundsTexture,
         buildActions;
 
-    buildTextsTexture = _.bind(function (text, ratio) {
+    buildMapper = _.bind(function (texts, options) {
       return _.bind(function (next) {
-        this._textsTexture = new blotter_TextsTexture(texts, ratio);
+        this._mapper.on("load", function () {
+          next();
+        });
+        this._mapper.build(texts, ratio);
+      }, this);
+    }, this);
+
+    buildTextsTexture = _.bind(function (texts, ratio) {
+      return _.bind(function (next) {
+        this._textsTexture = new blotter_TextsTexture(this._mapper, ratio);
         this._textsTexture.on("load", function () {
           next();
         });
@@ -160,7 +170,7 @@ Blotter.Material.prototype = (function() {
 
     buildIndicesTexture = _.bind(function (sampleAccuracy) {
       return _.bind(function (next) {
-        this._indicesTexture = new blotter_TextsIndicesTexture(this._textsTexture, sampleAccuracy);
+        this._indicesTexture = new blotter_TextsIndicesTexture(this._mapper, sampleAccuracy);
         this._indicesTexture.on("load", function () {
           next();
         });
@@ -170,7 +180,7 @@ Blotter.Material.prototype = (function() {
 
     buildBoundsTexture = _.bind(function () {
       return _.bind(function (next) {
-        this._boundsTexture = new blotter_TextsBoundsTexture(this._textsTexture);
+        this._boundsTexture = new blotter_TextsBoundsTexture(this._mapper);
         this._boundsTexture.on("load", function () {
           next();
         });
@@ -178,11 +188,15 @@ Blotter.Material.prototype = (function() {
       }, this);
     }, this);
 
-    buildActions = [buildTextsTexture(texts, ratio), buildIndicesTexture(sampleAccuracy), buildBoundsTexture()];
+    buildActions = [
+      buildTextsTexture(texts, ratio),
+      buildIndicesTexture(sampleAccuracy),
+      buildBoundsTexture()
+    ];
 
     _(buildActions).reduceRight(_.wrap, _.bind(function () {
-      this.width = this._textsTexture.width;
-      this.height = this._textsTexture.height;
+      this.width = this._mapper.width * this.ratio;
+      this.height = this._mapper.height * this.ratio;
 
       _buildMaterialUniforms.call(this);
       _buildThreeMaterial.call(this);
@@ -243,6 +257,8 @@ Blotter.Material.prototype = (function() {
       }
     },
 
+    _mapper : new blotter_TextsMapper(),
+
     init : function (mainImage, options) {
       _.defaults(this, options, {
         mainImage : _defaultMainImageSrc.call(this),
@@ -260,7 +276,8 @@ Blotter.Material.prototype = (function() {
     },
 
     boundsFor : function (text) {
-
+      blotter_Messaging.ensureInstanceOf(text, Blotter.Text, "Blotter.Text", "Blotter.Material");
+      return this._mapper.boundsFor(text, { stub : true });
     },
 
     dataIndexFor : function (text) {
