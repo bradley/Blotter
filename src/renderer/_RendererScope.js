@@ -39,31 +39,31 @@ blotter_RendererScope.prototype = (function () {
         this.bounds.y
       );
 
-      this.trigger("update", this.frameCount);
+      this.trigger("update", [this.frameCount]);
     }
   }
 
-  function _updateMaterial () {
-    this.material.material = this.renderer.material;
-    this.material.dataIndex = this.renderer.indexOf(this.text);
-    this.material.needsMaterialUpdate = true;
-
-    _updateBounds.call(this);
-  }
-
   function _updateBounds () {
-    var mappedBounds = this.renderer.material.boundsFor(text);
+    var mappedBounds = this.renderer.material.boundsFor(this.text);
+// ### - x and y and all of this should be set directly in material. this should not have to scope into _mapper
     this.bounds = {
       w : mappedBounds.w,
       h : mappedBounds.h,
       x : -1 * Math.floor(mappedBounds.fit.x * this.ratio),
-      y : -1 * Math.floor((this.renderer.material.textsTexture.mapper.height - (mappedBounds.fit.y + mappedBounds.h)) * this.ratio)
+      y : -1 * Math.floor((this.renderer.material._mapper.height - (mappedBounds.fit.y + mappedBounds.h)) * this.ratio)
     };
 
     this.domElement.width = this.bounds.w * this.ratio;
     this.domElement.height = this.bounds.h * this.ratio;
     this.domElement.style.width = this.bounds.w + "px";
     this.domElement.style.height = this.bounds.h + "px";
+  }
+
+  function _updateMaterial () {
+    this.material.material = this.renderer.material;
+    this.material.needsMaterialUpdate = true;
+
+    _updateBounds.call(this);
   }
 
   return {
@@ -89,12 +89,11 @@ blotter_RendererScope.prototype = (function () {
       this.renderer = renderer;
       this.ratio = this.renderer.ratio;
 
-      this.material = new blotter_MaterialScope(this.renderer.material, this.renderer.indexOf(text));
+      this.material = new blotter_MaterialScope(this.text, this.renderer.material);
 
       this.domElement = blotter_CanvasUtils.hiDpiCanvas(0, 0, this.ratio);
       this.context = this.domElement.getContext("2d");
 
-      _updateBounds.call(this);
       _.extendOwn(this, EventEmitter.prototype);
     },
 

@@ -24,8 +24,8 @@ blotter_TextsTexture.prototype = (function() {
 
     build : function () {
       var loader = new THREE.TextureLoader();
-
-      loader.load(this.mapper.getImage(), _.bind(function(texture) {
+      this.textureLoad = loader.load(this.mapper.getImage(), _.bind(function(texture) {
+        this.textureLoad = null;
         this.texture = texture;
         this.texture.generateMipmaps = false;
         this.texture.minFilter = THREE.LinearFilter;

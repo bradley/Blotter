@@ -5,8 +5,8 @@ import "../material/";
 import "_RendererScope";
 
 
-var blotter_BackBufferRenderer = function (width, height, material) {
-  this.init(width, height, material);
+var blotter_BackBufferRenderer = function (material) {
+  this.init(material);
 }
 
 blotter_BackBufferRenderer.prototype = (function () {
@@ -32,17 +32,10 @@ blotter_BackBufferRenderer.prototype = (function () {
       this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, premultipliedAlpha : false });
 
       this.camera = new THREE.OrthographicCamera(0.5, 0.5, 0.5, 0.5, 0, 100);
-
-      // Prepare pixel buffers
-
-// ### - naming here
-      this.viewBuffer = new ArrayBuffer(width * height * 4);
-      this.imageDataArray = new Uint8Array(this.viewBuffer);
-      this.clampedImageDataArray = new Uint8ClampedArray(this.viewBuffer);
-      this.imageData = new ImageData(this.clampedImageDataArray, width, height);
     },
 //### - naming
     update : function (width, height, material) {
+      this.renderer.setSize(width, height);
       this.renderTarget = new THREE.WebGLRenderTarget(width, height, {
         minFilter: THREE.LinearFilter,
         magFilter: THREE.LinearFilter,
@@ -50,7 +43,7 @@ blotter_BackBufferRenderer.prototype = (function () {
         type: THREE.UnsignedByteType
       });
       this.renderTarget.texture.generateMipmaps = false;
-
+      this.material = material;
       this.mesh.material = material;
       this.mesh.scale.set(width, height, 1);
 
@@ -60,6 +53,8 @@ blotter_BackBufferRenderer.prototype = (function () {
       this.camera.bottom = height / - 2;
 
       this.camera.updateProjectionMatrix();
+
+      document.body.appendChild(this.renderer.domElement);
 
       // geometry.dynamic = true; ?
 
@@ -74,6 +69,7 @@ blotter_BackBufferRenderer.prototype = (function () {
 
     render : function () {
       if (this.renderTarget) {
+        this.renderer.render(this.scene, this.camera);
         this.renderer.render(this.scene, this.camera, this.renderTarget);
 
         this.renderer.readRenderTargetPixels(

@@ -3,8 +3,8 @@ VENDOR_FILES = \
 	lib/three/Detector.js \
 	lib/underscore/underscore.js \
 	lib/event_emitter/EventEmitter.js \
-	lib/packer/packer.growing.js \
 	lib/setImmediate/setimmediate.js \
+	lib/packer/packer.growing.js \
 
 GENERATED_FILES = \
 	blotter.js \

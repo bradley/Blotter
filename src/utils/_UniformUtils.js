@@ -18,15 +18,15 @@ var blotter_UniformUtils = {
         break;
 
       case '2f':
-        valid = Array.isArray(value) && value.length == 2 && value.every(isValid);
+        valid = _.isArray(value) && value.length == 2 && value.every(isValid);
         break;
 
       case '3f':
-        valid = Array.isArray(value) && value.length == 3 && value.every(isValid);
+        valid = _.isArray(value) && value.length == 3 && value.every(isValid);
         break;
 
       case '4f':
-        valid = Array.isArray(value) && value.length == 4 && value.every(isValid);
+        valid = _.isArray(value) && value.length == 4 && value.every(isValid);
         break;
 
       default:

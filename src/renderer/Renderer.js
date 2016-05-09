@@ -6,13 +6,23 @@ import "_RendererScope";
 import "_BackBufferRenderer";
 
 
-function blotter_RendererTextItem (textObj, eventCallbacks) {
-  this.textObj = textObj;
-  this.eventCallbacks = eventCallbacks || {};
+function blotter_RendererTextItem (textObject, eventCallbacks) {
+
+  return {
+    textObject : textObject,
+
+    eventCallbacks : eventCallbacks || {},
+
+    unsetEventCallbacks : function () {
+      _.each(this.eventCallbacks, _.bind(function (callback, eventKey) {
+        this.textObject.off(eventKey, callback);
+      }, this));
+    }
+  }
 }
 
-Blotter.Renderer = function (material) {
-  this.init(material);
+Blotter.Renderer = function (material, options) {
+  this.init(material, options);
 }
 
 Blotter.Renderer.prototype = (function () {
@@ -32,13 +42,27 @@ Blotter.Renderer.prototype = (function () {
     }, this));
   }
 
-  function _triggerUpdateScopes () {
-    _.each(this._scopes, _.bind(function (scope, textId) {
-      scope.needsMaterialUpdate = true;
+  function _updateScopes () {
+    _.each(this._texts, _.bind(function (rendererText, textId) {
+      (function (self, rendererText) {
+        var scope = self._scopes[rendererText.textObject.id];
+        if (!scope) {
+          scope = self._scopes[rendererText.textObject.id] = new blotter_RendererScope(rendererText.textObject, self);
+        }
+
+        scope.needsMaterialUpdate = true;
+      })(this, rendererText);
     }, this));
   }
 
   function _filterTexts (texts) {
+    if (texts instanceof Blotter.Text) { //_.isArray(texts)) {
+      texts = [texts];
+    }
+    else {
+      texts = _.toArray(texts);
+    }
+
     return _.filter(texts, _.bind(function (text) {
       var isText = text instanceof Blotter.Text;
 
@@ -57,22 +81,56 @@ Blotter.Renderer.prototype = (function () {
       blotter_Messaging.throwError("Blotter.Renderer", "a material must be provided")
     }
     else {
-      this._material = material;
+      this.material = material;
+      this.material.on("build", _.bind(function () {
+        this._backBuffer.update(this.material.width, this.material.height, this.material.threeMaterial);
+        _updateScopes.call(this);
+        this.trigger("build");
+      }, this));
 
-      this._material.on("build", _.bind(function () {
-        this._backBuffer.update(this._material.width, this._material.height, this._material.threeMaterial);
-        _triggerUpdateScopes.call(this);
-      }, this);
-
-      this._material.on("update", _.bind(function () {
+      this.material.on("update", _.bind(function () {
         _update.call(this);
       }, this));
     }
   }
 
+  function _addPrivateTexts (textIds) {
+    _.each(textIds, _.bind(function (textId) {
+      var text = _.findWhere(this.texts, { id : textId });
+      this._texts[text.id] = new blotter_RendererTextItem(text, {
+        update : _.bind(function () {
+          _update.call(this);
+        }, this)
+      });
+      text.on("update", this._texts[textId].eventCallbacks.update);
+    }, this));
+  }
+
+  function _removePrivateTexts (textIds) {
+    _.each(textIds, _.bind(function (textId) {
+      var _text = this._texts[textId],
+          _scope = this._scopes[textId];
+
+      _text.unsetEventCallbacks();
+
+      delete _text;
+      delete _scope;
+    }, this));
+  }
+
+  function _setTexts () {
+    var currentPrivateTextIds = _.keys(this._texts),
+        currentPublicTextIds = _.pluck(this.texts, "id"),
+        newTextIds = _.difference(currentPublicTextIds, currentPrivateTextIds),
+        removedTextIds = _.difference(currentPrivateTextIds, currentPublicTextIds);
+
+    _addPrivateTexts.call(this, _.difference(currentPublicTextIds, currentPrivateTextIds));
+    _removePrivateTexts.call(this, _.difference(currentPrivateTextIds, currentPublicTextIds));
+  }
+
   function _update () {
-    var texts = _.pluck(this.texts, "textObj");
-    this._material.build(texts, this.ratio, this.sampleAccuracy);
+    _setTexts.call(this);
+    this.material.build(_.pluck(this._texts, "textObject"), this.ratio, this.sampleAccuracy);
   }
 
   return {
@@ -85,7 +143,7 @@ Blotter.Renderer.prototype = (function () {
       }
     },
 
-    _material : new blotter_RendererMaterial(),
+    texts : [],
 
     _texts : {},
 
@@ -105,15 +163,17 @@ Blotter.Renderer.prototype = (function () {
         autostart      : true,
         autobuild      : true,
         sampleAccuracy : 0.5
-      })
+      });
 
       if (!Detector.webgl) {
 // ### - messaging
         blotter_Messaging.throwError("Blotter.Renderer", "device does not support webgl");
       }
 
-      _setMaterial.call(material);
+      _setMaterial.call(this, material);
       this.addTexts(options.texts);
+
+      _.extendOwn(this, EventEmitter.prototype);
 
       if (this.autobuild) {
         this.needsUpdate = true;
@@ -144,62 +204,23 @@ Blotter.Renderer.prototype = (function () {
     },
 
     addTexts: function(texts) {
-      var currentPrivateTextIds,
-          recievedTextIds;
-
-      if (!_.isArray(texts)) {
-        texts = _.toArray(texts);
-      }
-
-      texts = _filterTexts.call(texts);
-      currentPrivateTextIds = _.keys(this._texts),
-      recievedTextIds = _.pluck(texts, "id");
-
-      _.each(_.difference(recievedTextIds, currentPrivateTextIds), _.bind(function (textId) {
-        var text = _.findWhere(this.texts, { id : textId });
-
-        this._texts[textId] = new blotter_RendererTextItem(text, {
-          update : _.bind(function () {
-            _update.call(this);
-          }, this))
-        });
-
-        text.on("update", this._texts[textId].eventCallbacks.update);
-
-        this._scopes[textId] = new blotter_RendererScope(text, this);
-      }, this));
+      this.texts = _.union(this.texts, _filterTexts.call(this, texts));
     },
 
     removeTexts: function(texts) {
-      var recievedTextIds;
-
-      if (!_.isArray(texts)) {
-        texts = _.toArray(texts);
-      }
-
-      _.each(_.pluck(texts, "id"), _.bind(function (textId) {
-        var _text = this._texts[textId],
-            scope = this._scopes[textId];
-
-        if (_text) {
-          _text.textObj.off("update", _text.eventCallbacks.update);
-          delete _text;
-        }
-
-        scope && delete scope;
-      }, this));
+      this.texts = _.difference(this.texts, _filterTexts.call(this, texts));
     },
 
     forText : function (text, options) {
       blotter_Messaging.ensureInstanceOf(text, Blotter.Text, "Blotter.Text", "Blotter.Renderer");
 
-      if (!(this._texts[text.id])) {
+      if (!(this._scopes[text.id])) {
 // ### - messaging
-        blotter_Messaging.logError("Blotter.Renderer", "Blotter.Text object not found in blotter");
+        blotter_Messaging.logError("Blotter.Renderer", "Blotter.Text object not found in blotter. Set needsUpdate to true.");
         return;
       }
-
-      _.defaults(options, {
+// ### - this is dumb. what if user calls this multiple times (autoplay config..)?
+      options = _.defaults(options, {
         autoplay : true
       })
 

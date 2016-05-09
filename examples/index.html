@@ -97,45 +97,100 @@
 
         var blotterTexts = texts.map(function(text) { return new Blotter.Text(text, styleProperties); });
 
-        var material = new Blotter.Material(blotterTexts, {
-          mainImage : mainImageSrc,
+
+        var material = new Blotter.Material(mainImageSrc, {
           uniforms : {
             uCenterPoint : { type : "2f", value : [0.5, 0.5] },
             uLenseWeight : { type : "1f", value : 0.9 }
           }
         });
 
-        material.load(function () {
-          var renderer = new Blotter.Renderer(material);
+        var testTexts = [new Blotter.Text("testing", styleProperties)];
 
-          for (var i = 0; i < blotterTexts.length; i++) {
-            var text = blotterTexts[i];
-                outputEl = document.createElement("span");
-            outputEl.style.display = "inline-block";
-            document.body.appendChild(outputEl);
-            renderer.forText(text).appendTo(outputEl);
-          }
-
-          renderer.forText(blotterTexts[1]).on("mousemove", function (mousePosition) {
-            material.forText(blotterTexts[1]).uniforms.uLenseWeight.value = 0.9;
-            material.forText(blotterTexts[1]).uniforms.uCenterPoint.value = [mousePosition.x, mousePosition.y];
-          });
-
-          renderer.forText(blotterTexts[1]).on("mouseleave", function () {
-            material.forText(blotterTexts[1]).uniforms.uCenterPoint.value = [0.5, 0.5];
-          });
-
-
-          var startTime = new Date().getTime(),
-              textRenderScope = renderer.forText(blotterTexts[23]),
-              textMaterialScope = material.forText(blotterTexts[23]);
-
-          textRenderScope.on("update", function (frameCount) {
-            var time = (new Date().getTime() - startTime) / 1000;
-            textMaterialScope.uniforms.uCenterPoint.value = [0.5, 0.5];
-            textMaterialScope.uniforms.uLenseWeight.value = Math.abs(Math.sin(time));
-          });
+        var blotter = new Blotter.Renderer(material, {
+          texts : blotterTexts,
+          autobuild : false
         });
+
+        //
+
+        blotter.on("load", function () {
+          console.log("test");
+        });
+        blotter.needsUpdate = true;
+
+        _.delay(function() {
+
+
+          // for (var i = 0; i < blotterTexts.length; i++) {
+          //   var text = blotterTexts[i];
+          //       outputEl = document.createElement("span");
+          //   outputEl.style.display = "inline-block";
+          //   document.body.appendChild(outputEl);
+          //   blotter.forText(text).appendTo(outputEl);
+          // }
+
+
+          var myScope = blotter.forText(blotterTexts[4]);
+
+          var outputEl = document.createElement("span");
+          outputEl.style.display = "inline-block";
+          document.body.appendChild(outputEl);
+
+          myScope.appendTo(outputEl);
+
+          var startTime = new Date().getTime();
+          myScope.on("update", function (frameCount) {
+            debugger;
+            var time = (new Date().getTime() - startTime) / 1000;
+            myScope.material.uniforms.uLenseWeight.value = Math.abs(Math.sin(time));
+          });
+
+        }, 7000);
+
+
+
+
+
+
+
+
+
+
+
+
+        // var material = new Blotter.Material(blotterTexts, {
+        //   mainImage : mainImageSrc,
+        //   uniforms : {
+        //     uCenterPoint : { type : "2f", value : [0.5, 0.5] },
+        //     uLenseWeight : { type : "1f", value : 0.9 }
+        //   }
+        // });
+
+        // material.load(function () {
+        //   var renderer = new Blotter.Renderer(material);
+
+
+        //   renderer.forText(blotterTexts[1]).on("mousemove", function (mousePosition) {
+        //     material.forText(blotterTexts[1]).uniforms.uLenseWeight.value = 0.9;
+        //     material.forText(blotterTexts[1]).uniforms.uCenterPoint.value = [mousePosition.x, mousePosition.y];
+        //   });
+
+        //   renderer.forText(blotterTexts[1]).on("mouseleave", function () {
+        //     material.forText(blotterTexts[1]).uniforms.uCenterPoint.value = [0.5, 0.5];
+        //   });
+
+
+        //   var startTime = new Date().getTime(),
+        //       textRenderScope = renderer.forText(blotterTexts[23]),
+        //       textMaterialScope = material.forText(blotterTexts[23]);
+
+        //   textRenderScope.on("update", function (frameCount) {
+        //     var time = (new Date().getTime() - startTime) / 1000;
+        //     textMaterialScope.uniforms.uCenterPoint.value = [0.5, 0.5];
+        //     textMaterialScope.uniforms.uLenseWeight.value = Math.abs(Math.sin(time));
+        //   });
+        // });
 
       });
     </script>

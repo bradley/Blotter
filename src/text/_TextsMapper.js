@@ -8,20 +8,20 @@ var blotter_TextsMapper = function (texts, ratio) {
 
 blotter_TextsMapper.prototype = (function () {
 
-  function _updateTexts (texts, eachCallback) {
-    if (!_.isArray(texts)) {
-      texts = _.toArray(texts);
-    }
+//   function _updateTexts (texts, eachCallback) {
+//     if (!_.isArray(texts)) {
+//       texts = _.toArray(texts);
+//     }
 
-    for (var i = 0; i < texts.length; i++) {
-      var text = texts[i];
-// ### - messaging
-      blotter_Messaging.ensureInstanceOf(text, Blotter.Text, "Blotter.Text or an array of Blotter.Text objects", "Blotter.Material");
-      eachCallback.call(this, text)
-    }
+//     for (var i = 0; i < texts.length; i++) {
+//       var text = texts[i];
+// // ### - messaging
+//       blotter_Messaging.ensureInstanceOf(text, Blotter.Text, "Blotter.Text or an array of Blotter.Text objects", "Blotter.Material");
+//       eachCallback.call(this, text)
+//     }
 
-    _determineTextsMapping.call(this);
-  }
+//     _determineTextsMapping.call(this);
+//   }
 
   function _determineTextsMapping () {
     var packer = new GrowingPacker(),
@@ -84,7 +84,7 @@ blotter_TextsMapper.prototype = (function () {
 
     constructor : blotter_TextsMapper,
 
-    this.text : {},
+    textsBounds : {},
 
   	init : function () {
       this.width = 0;
@@ -93,7 +93,7 @@ blotter_TextsMapper.prototype = (function () {
       _.extendOwn(this, EventEmitter.prototype);
     },
 
-    load : function (texts, ratio) {
+    build : function (texts, ratio) {
       this.texts = texts;
       this.ratio = ratio;
 
@@ -105,7 +105,8 @@ blotter_TextsMapper.prototype = (function () {
       }, this));
     },
 
-    boundsFor : function (text, options) {
+    boundsFor : function (text) {
+      blotter_Messaging.ensureInstanceOf(text, Blotter.Text, "Blotter.Text", "Blotter.Material");
       return this.textsBounds[text.id];
     },
 

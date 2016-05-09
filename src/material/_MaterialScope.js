@@ -1,46 +1,47 @@
-var blotter_MaterialScope = function (material, dataIndex) {
-  this.init(material, dataIndex);
+var blotter_MaterialScope = function (text, material) {
+  this.init(text, material);
 }
 
 blotter_MaterialScope.prototype = (function () {
 
   function _buildUniformInterface () {
-    var self = this;
-
     for (var uniformName in this.material.uniforms) {
-      var uniform = this.material.uniforms[uniformName];
+      (function(self, uniformName) {
+        var uniform = self.material.uniforms[uniformName];
 
-      this.uniforms[uniformName] = {
-        _name : uniformName,
-        _type : uniform.type,
-        _value : uniform.value,
+        self.uniforms[uniformName] = {
+          _text : self.text.value,
+          _name : uniformName,
+          _type : uniform.type,
+          _value : uniform.value,
 
-        get type () {
-          return this._type;
-        },
+          get type () {
+            return this._type;
+          },
 
-        set type (v) {
-// ### - messaging
-          blotter_Messaging.logError("blotter_MaterialScope", "uniform types may not be updated");
-        },
+          set type (v) {
+  // ### - messaging
+            blotter_Messaging.logError("blotter_MaterialScope", "uniform types may not be updated");
+          },
 
-        get value () {
-          return this._value;
-        },
+          get value () {
+            return this._value;
+          },
 
-        set value (v) {
-          if (!blotter_UniformUtils.validValueForUniformType(this._type, v)) {
-// ### - messaging
-            blotter_Messaging.logError("blotter_MaterialScope", "uniform value not valid for uniform type: " + this._type);
-            return;
+          set value (v) {
+            if (!blotter_UniformUtils.validValueForUniformType(this._type, v)) {
+  // ### - messaging
+              blotter_Messaging.logError("blotter_MaterialScope", "uniform value not valid for uniform type: " + this._type);
+              return;
+            }
+debugger;
+            this._value = v;
+            _updateDataForUniformTextureData.call(self, this._name);
           }
-
-          this._value = v;
-          _updateDataForUniformTextureData.call(self, this._name);
         }
-      }
 
-      _updateDataForUniformTextureData.call(this, uniformName);
+        _updateDataForUniformTextureData.call(self, uniformName);
+      })(this, uniformName);
     }
   }
 
@@ -84,22 +85,28 @@ blotter_MaterialScope.prototype = (function () {
     materialUniform._texture.needsUpdate = true;
   }
 
+  function _updateMaterial () {
+    this.dataIndex = this.material.dataIndexFor(this.text);
+    _buildUniformInterface.call(this);
+  }
+
   return {
 
     constructor : blotter_MaterialScope,
 
     set needsMaterialUpdate (value) {
       if (value === true) {
-        _buildUniformInterface.call(this);
+        _updateMaterial.call(this);
       }
     },
 
-    init : function (material, dataIndex) {
-      this.material = material;
-      this.dataIndex = dataIndex;
-      this.uniforms = {};
+    uniforms : {},
 
-      _buildUniformInterface.call(this);
+    init : function (text, material) {
+      this.text = text;
+      this.material = material;
+
+      //_updateMaterial.call(this);
     }
   }
 })();
