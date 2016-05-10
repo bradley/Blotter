@@ -76,13 +76,6 @@ blotter_RendererScope.prototype = (function () {
       }
     },
 
-    playing : false,
-
-    timeDelta : 0,
-
-    lastDrawTime : null,
-
-    frameCount : 0,
 
     init : function (text, renderer) {
       this.text = text;
@@ -90,6 +83,14 @@ blotter_RendererScope.prototype = (function () {
       this.ratio = this.renderer.ratio;
 
       this.material = new blotter_MaterialScope(this.text, this.renderer.material);
+
+      this.playing = false;
+
+      this.timeDelta = 0;
+
+      this.lastDrawTime = null;
+
+      this.frameCount = 0;
 
       this.domElement = blotter_CanvasUtils.hiDpiCanvas(0, 0, this.ratio);
       this.context = this.domElement.getContext("2d");

@@ -106,7 +106,7 @@ var blotter_UniformUtils = {
         blotter_Messaging.logError(domain, "uniform value for " + uniformName + " is incorrect for type: " + uniformObject.type);
         return memo;
       }
-
+// ### - should extract out keys from uniformObject that arent either type or value.
       memo[uniformName] = uniformObject;
       return memo;
     }, {})

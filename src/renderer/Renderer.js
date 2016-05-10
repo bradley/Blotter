@@ -143,14 +143,6 @@ Blotter.Renderer.prototype = (function () {
       }
     },
 
-    texts : [],
-
-    _texts : {},
-
-    _scopes : {},
-
-    _backBuffer : new blotter_BackBufferRenderer(),
-
     init : function (material, options) {
 // ### - remove this shit following documentation.
       // There is a negative coorelation between the sampleAccuracy value and
@@ -170,7 +162,16 @@ Blotter.Renderer.prototype = (function () {
         blotter_Messaging.throwError("Blotter.Renderer", "device does not support webgl");
       }
 
+      this.texts = [];
+
+      this._texts = {};
+
+      this._scopes = {};
+
+      this._backBuffer = new blotter_BackBufferRenderer();
+
       _setMaterial.call(this, material);
+
       this.addTexts(options.texts);
 
       _.extendOwn(this, EventEmitter.prototype);

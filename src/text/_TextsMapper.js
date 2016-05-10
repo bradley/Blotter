@@ -84,11 +84,11 @@ blotter_TextsMapper.prototype = (function () {
 
     constructor : blotter_TextsMapper,
 
-    textsBounds : {},
-
   	init : function () {
       this.width = 0;
       this.height = 0;
+
+      this.textsBounds = {};
 
       _.extendOwn(this, EventEmitter.prototype);
     },

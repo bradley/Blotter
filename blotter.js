@@ -44355,10 +44355,10 @@ GrowingPacker.prototype = {
     }
     return {
       constructor: blotter_TextsMapper,
-      textsBounds: {},
       init: function() {
         this.width = 0;
         this.height = 0;
+        this.textsBounds = {};
         _.extendOwn(this, EventEmitter.prototype);
       },
       build: function(texts, ratio) {
@@ -44510,35 +44510,31 @@ GrowingPacker.prototype = {
   };
   blotter_MaterialScope.prototype = function() {
     function _buildUniformInterface() {
+      var self = this;
       for (var uniformName in this.material.uniforms) {
-        (function(self, uniformName) {
-          var uniform = self.material.uniforms[uniformName];
-          self.uniforms[uniformName] = {
-            _text: self.text.value,
-            _name: uniformName,
-            _type: uniform.type,
-            _value: uniform.value,
-            get type() {
-              return this._type;
-            },
-            set type(v) {
-              blotter_Messaging.logError("blotter_MaterialScope", "uniform types may not be updated");
-            },
-            get value() {
-              return this._value;
-            },
-            set value(v) {
-              if (!blotter_UniformUtils.validValueForUniformType(this._type, v)) {
-                blotter_Messaging.logError("blotter_MaterialScope", "uniform value not valid for uniform type: " + this._type);
-                return;
-              }
-              debugger;
-              this._value = v;
-              _updateDataForUniformTextureData.call(self, this._name);
+        var uniform = this.material.uniforms[uniformName];
+        this.uniforms[uniformName] = {
+          _type: uniform.type,
+          _value: uniform.value,
+          get type() {
+            return this._type;
+          },
+          set type(v) {
+            blotter_Messaging.logError("blotter_MaterialScope", "uniform types may not be updated");
+          },
+          get value() {
+            return this._value;
+          },
+          set value(v) {
+            if (!blotter_UniformUtils.validValueForUniformType(this._type, v)) {
+              blotter_Messaging.logError("blotter_MaterialScope", "uniform value not valid for uniform type: " + this._type);
+              return;
             }
-          };
-          _updateDataForUniformTextureData.call(self, uniformName);
-        })(this, uniformName);
+            this._value = v;
+            _updateDataForUniformTextureData.call(self, uniformName);
+          }
+        };
+        _updateDataForUniformTextureData.call(self, uniformName);
       }
     }
     function _updateDataForUniformTextureData(uniformName) {
@@ -44582,10 +44578,10 @@ GrowingPacker.prototype = {
           _updateMaterial.call(this);
         }
       },
-      uniforms: {},
       init: function(text, material) {
         this.text = text;
         this.material = material;
+        this.uniforms = {};
       }
     };
   }();
@@ -44721,11 +44717,11 @@ GrowingPacker.prototype = {
           _update.call(this);
         }
       },
-      _mapper: new blotter_TextsMapper(),
       init: function(mainImage, options) {
         _.defaults(this, options, {
           uniforms: {}
         });
+        this._mapper = new blotter_TextsMapper();
         this.mainImage = mainImage;
         _.extendOwn(this, EventEmitter.prototype);
       },
@@ -44795,15 +44791,15 @@ GrowingPacker.prototype = {
           _updateMaterial.call(this);
         }
       },
-      playing: false,
-      timeDelta: 0,
-      lastDrawTime: null,
-      frameCount: 0,
       init: function(text, renderer) {
         this.text = text;
         this.renderer = renderer;
         this.ratio = this.renderer.ratio;
         this.material = new blotter_MaterialScope(this.text, this.renderer.material);
+        this.playing = false;
+        this.timeDelta = 0;
+        this.lastDrawTime = null;
+        this.frameCount = 0;
         this.domElement = blotter_CanvasUtils.hiDpiCanvas(0, 0, this.ratio);
         this.context = this.domElement.getContext("2d");
         _.extendOwn(this, EventEmitter.prototype);
@@ -44838,6 +44834,7 @@ GrowingPacker.prototype = {
         this.scene = new THREE.Scene();
         this.material = new THREE.Material();
         this.plane = new THREE.PlaneGeometry(1, 1);
+        this.plane.dynamic = true;
         this.mesh = new THREE.Mesh(this.plane, this.material);
         this.scene.add(this.mesh);
         this.renderer = new THREE.WebGLRenderer({
@@ -44865,6 +44862,9 @@ GrowingPacker.prototype = {
         this.camera.bottom = height / -2;
         this.camera.updateProjectionMatrix();
         document.body.appendChild(this.renderer.domElement);
+        this.testCanvas = blotter_CanvasUtils.canvas(width, height);
+        this.textContext = this.testCanvas.getContext("2d");
+        document.body.appendChild(this.testCanvas);
         this.viewBuffer = new ArrayBuffer(width * height * 4);
         this.imageDataArray = new Uint8Array(this.viewBuffer);
         this.clampedImageDataArray = new Uint8ClampedArray(this.viewBuffer);
@@ -44875,6 +44875,8 @@ GrowingPacker.prototype = {
           this.renderer.render(this.scene, this.camera);
           this.renderer.render(this.scene, this.camera, this.renderTarget);
           this.renderer.readRenderTargetPixels(this.renderTarget, 0, 0, this.renderTarget.width, this.renderTarget.height, this.imageDataArray);
+          debugger;
+          this.textContext.putImageData(this.imageData, this.testCanvas.width / 2, this.testCanvas.height / 2);
         }
       },
       teardown: function() {
@@ -44986,10 +44988,6 @@ GrowingPacker.prototype = {
           _update.call(this);
         }
       },
-      texts: [],
-      _texts: {},
-      _scopes: {},
-      _backBuffer: new blotter_BackBufferRenderer(),
       init: function(material, options) {
         _.defaults(this, options, {
           ratio: blotter_CanvasUtils.pixelRatio,
@@ -45000,6 +44998,10 @@ GrowingPacker.prototype = {
         if (!Detector.webgl) {
           blotter_Messaging.throwError("Blotter.Renderer", "device does not support webgl");
         }
+        this.texts = [];
+        this._texts = {};
+        this._scopes = {};
+        this._backBuffer = new blotter_BackBufferRenderer();
         _setMaterial.call(this, material);
         this.addTexts(options.texts);
         _.extendOwn(this, EventEmitter.prototype);

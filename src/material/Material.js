@@ -260,12 +260,12 @@ Blotter.Material.prototype = (function() {
       }
     },
 
-    _mapper : new blotter_TextsMapper(),
-
     init : function (mainImage, options) {
       _.defaults(this, options, {
-        uniforms  : {}
+        uniforms : {}
       });
+
+      this._mapper = new blotter_TextsMapper();
 
       this.mainImage = mainImage;
 

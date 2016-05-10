@@ -112,7 +112,6 @@
           autobuild : false
         });
 
-        //
 
         blotter.on("load", function () {
           console.log("test");
@@ -141,12 +140,11 @@
 
           var startTime = new Date().getTime();
           myScope.on("update", function (frameCount) {
-            debugger;
             var time = (new Date().getTime() - startTime) / 1000;
             myScope.material.uniforms.uLenseWeight.value = Math.abs(Math.sin(time));
           });
 
-        }, 7000);
+        }, 3000);
 
 
 

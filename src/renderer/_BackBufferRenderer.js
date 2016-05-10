@@ -56,6 +56,10 @@ blotter_BackBufferRenderer.prototype = (function () {
 
       document.body.appendChild(this.renderer.domElement);
 
+      this.testCanvas = blotter_CanvasUtils.canvas(width, height);
+      this.textContext = this.testCanvas.getContext("2d");
+      document.body.appendChild(this.testCanvas);
+
       // geometry.dynamic = true; ?
 
       // Reset pixel buffers
@@ -79,6 +83,12 @@ blotter_BackBufferRenderer.prototype = (function () {
           this.renderTarget.width,
           this.renderTarget.height,
           this.imageDataArray
+        );
+debugger;
+        this.textContext.putImageData(
+          this.imageData,
+          this.testCanvas.width / 2,
+          this.testCanvas.height / 2
         );
       }
     },

@@ -5,13 +5,12 @@ var blotter_MaterialScope = function (text, material) {
 blotter_MaterialScope.prototype = (function () {
 
   function _buildUniformInterface () {
+    var self = this;
     for (var uniformName in this.material.uniforms) {
-      (function(self, uniformName) {
-        var uniform = self.material.uniforms[uniformName];
+      //(function(self, uniformName) {
+        var uniform = this.material.uniforms[uniformName];
 
-        self.uniforms[uniformName] = {
-          _text : self.text.value,
-          _name : uniformName,
+        this.uniforms[uniformName] = {
           _type : uniform.type,
           _value : uniform.value,
 
@@ -34,14 +33,13 @@ blotter_MaterialScope.prototype = (function () {
               blotter_Messaging.logError("blotter_MaterialScope", "uniform value not valid for uniform type: " + this._type);
               return;
             }
-debugger;
             this._value = v;
-            _updateDataForUniformTextureData.call(self, this._name);
+            _updateDataForUniformTextureData.call(self, uniformName);
           }
         }
 
         _updateDataForUniformTextureData.call(self, uniformName);
-      })(this, uniformName);
+      //})(this, uniformName);
     }
   }
 
@@ -100,12 +98,11 @@ debugger;
       }
     },
 
-    uniforms : {},
-
     init : function (text, material) {
       this.text = text;
       this.material = material;
 
+      this.uniforms = {};
       //_updateMaterial.call(this);
     }
   }
