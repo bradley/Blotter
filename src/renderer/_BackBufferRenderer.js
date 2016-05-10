@@ -35,7 +35,7 @@ blotter_BackBufferRenderer.prototype = (function () {
     },
 //### - naming
     update : function (width, height, material) {
-      this.renderer.setSize(width, height);
+      
       this.renderTarget = new THREE.WebGLRenderTarget(width, height, {
         minFilter: THREE.LinearFilter,
         magFilter: THREE.LinearFilter,
@@ -43,6 +43,9 @@ blotter_BackBufferRenderer.prototype = (function () {
         type: THREE.UnsignedByteType
       });
       this.renderTarget.texture.generateMipmaps = false;
+      this.renderTarget.width = width;
+      this.renderTarget.height = height;
+
       this.material = material;
       this.mesh.material = material;
       this.mesh.scale.set(width, height, 1);
@@ -53,12 +56,6 @@ blotter_BackBufferRenderer.prototype = (function () {
       this.camera.bottom = height / - 2;
 
       this.camera.updateProjectionMatrix();
-
-      document.body.appendChild(this.renderer.domElement);
-
-      this.testCanvas = blotter_CanvasUtils.canvas(width, height);
-      this.textContext = this.testCanvas.getContext("2d");
-      document.body.appendChild(this.testCanvas);
 
       // geometry.dynamic = true; ?
 
@@ -73,7 +70,6 @@ blotter_BackBufferRenderer.prototype = (function () {
 
     render : function () {
       if (this.renderTarget) {
-        this.renderer.render(this.scene, this.camera);
         this.renderer.render(this.scene, this.camera, this.renderTarget);
 
         this.renderer.readRenderTargetPixels(
@@ -83,12 +79,6 @@ blotter_BackBufferRenderer.prototype = (function () {
           this.renderTarget.width,
           this.renderTarget.height,
           this.imageDataArray
-        );
-debugger;
-        this.textContext.putImageData(
-          this.imageData,
-          this.testCanvas.width / 2,
-          this.testCanvas.height / 2
         );
       }
     },

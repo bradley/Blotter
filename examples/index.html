@@ -121,23 +121,16 @@
         _.delay(function() {
 
 
-          // for (var i = 0; i < blotterTexts.length; i++) {
-          //   var text = blotterTexts[i];
-          //       outputEl = document.createElement("span");
-          //   outputEl.style.display = "inline-block";
-          //   document.body.appendChild(outputEl);
-          //   blotter.forText(text).appendTo(outputEl);
-          // }
+          for (var i = 0; i < blotterTexts.length; i++) {
+            var text = blotterTexts[i];
+                outputEl = document.createElement("span");
+            outputEl.style.display = "inline-block";
+            document.body.appendChild(outputEl);
+            blotter.forText(text).appendTo(outputEl);
+          }
 
 
           var myScope = blotter.forText(blotterTexts[4]);
-
-          var outputEl = document.createElement("span");
-          outputEl.style.display = "inline-block";
-          document.body.appendChild(outputEl);
-
-          myScope.appendTo(outputEl);
-
           var startTime = new Date().getTime();
           myScope.on("update", function (frameCount) {
             var time = (new Date().getTime() - startTime) / 1000;
