@@ -43560,60 +43560,64 @@ GrowingPacker.prototype = {
     function _buildUniformInterface() {
       var self = this;
       for (var uniformName in this.material.uniforms) {
-        var uniform = this.material.uniforms[uniformName];
-        this.uniforms[uniformName] = {
-          _type: uniform.type,
-          _value: uniform.value,
-          get type() {
-            return this._type;
-          },
-          set type(v) {
-            blotter_Messaging.logError("blotter_MaterialScope", "uniform types may not be updated");
-          },
-          get value() {
-            return this._value;
-          },
-          set value(v) {
-            if (!blotter_UniformUtils.validValueForUniformType(this._type, v)) {
-              blotter_Messaging.logError("blotter_MaterialScope", "uniform value not valid for uniform type: " + this._type);
-              return;
+        (function(self, uniformName) {
+          var uniform = self.material.uniforms[uniformName];
+          self.uniforms[uniformName] = {
+            _type: uniform.type,
+            _value: uniform.value,
+            get type() {
+              return this._type;
+            },
+            set type(v) {
+              blotter_Messaging.logError("blotter_MaterialScope", "uniform types may not be updated");
+            },
+            get value() {
+              return this._value;
+            },
+            set value(v) {
+              if (!blotter_UniformUtils.validValueForUniformType(this._type, v)) {
+                blotter_Messaging.logError("blotter_MaterialScope", "uniform value not valid for uniform type: " + this._type);
+                return;
+              }
+              this._value = v;
+              _updateDataForUniformTextureData.call(self, uniformName);
             }
-            this._value = v;
-            _updateDataForUniformTextureData.call(self, uniformName);
-          }
-        };
-        _updateDataForUniformTextureData.call(self, uniformName);
+          };
+          _updateDataForUniformTextureData.call(self, uniformName);
+        })(this, uniformName);
       }
     }
     function _updateDataForUniformTextureData(uniformName) {
       var materialUniform = this.material.uniforms[uniformName], scopedUniform = this.uniforms[uniformName], data = materialUniform._textureData, i = this.dataIndex;
-      if (materialUniform.type == "1f") {
-        data[4 * i] = scopedUniform._value;
-        data[4 * i + 1] = 0;
-        data[4 * i + 2] = 0;
-        data[4 * i + 3] = 0;
-      } else if (materialUniform.type == "2f") {
-        data[4 * i] = scopedUniform._value[0];
-        data[4 * i + 1] = scopedUniform._value[1];
-        data[4 * i + 2] = 0;
-        data[4 * i + 3] = 0;
-      } else if (materialUniform.type == "3f") {
-        data[4 * i] = scopedUniform._value[0];
-        data[4 * i + 1] = scopedUniform._value[1];
-        data[4 * i + 2] = scopedUniform._value[2];
-        data[4 * i + 3] = 0;
-      } else if (materialUniform.type == "4f") {
-        data[4 * i] = scopedUniform._value[0];
-        data[4 * i + 1] = scopedUniform._value[1];
-        data[4 * i + 2] = scopedUniform._value[2];
-        data[4 * i + 3] = scopedUniform._value[3];
-      } else {
-        data[4 * i] = 0;
-        data[4 * i + 1] = 0;
-        data[4 * i + 2] = 0;
-        data[4 * i + 3] = 0;
+      if (i >= 0) {
+        if (materialUniform.type == "1f") {
+          data[4 * i] = scopedUniform._value;
+          data[4 * i + 1] = 0;
+          data[4 * i + 2] = 0;
+          data[4 * i + 3] = 0;
+        } else if (materialUniform.type == "2f") {
+          data[4 * i] = scopedUniform._value[0];
+          data[4 * i + 1] = scopedUniform._value[1];
+          data[4 * i + 2] = 0;
+          data[4 * i + 3] = 0;
+        } else if (materialUniform.type == "3f") {
+          data[4 * i] = scopedUniform._value[0];
+          data[4 * i + 1] = scopedUniform._value[1];
+          data[4 * i + 2] = scopedUniform._value[2];
+          data[4 * i + 3] = 0;
+        } else if (materialUniform.type == "4f") {
+          data[4 * i] = scopedUniform._value[0];
+          data[4 * i + 1] = scopedUniform._value[1];
+          data[4 * i + 2] = scopedUniform._value[2];
+          data[4 * i + 3] = scopedUniform._value[3];
+        } else {
+          data[4 * i] = 0;
+          data[4 * i + 1] = 0;
+          data[4 * i + 2] = 0;
+          data[4 * i + 3] = 0;
+        }
+        materialUniform._texture.needsUpdate = true;
       }
-      materialUniform._texture.needsUpdate = true;
     }
     function _updateMaterial() {
       this.dataIndex = this.material.dataIndexFor(this.text);
@@ -43808,7 +43812,7 @@ GrowingPacker.prototype = {
       _setMouseEventListeners.call(this);
     }
     function _render() {
-      if (this.domElement) {
+      if (this.domElement && this.bounds) {
         this.context.clearRect(0, 0, this.domElement.width, this.domElement.height);
         this.context.putImageData(this.renderer.imageData, this.bounds.x, this.bounds.y);
         this.trigger("update", [ this.frameCount ]);
@@ -43816,16 +43820,18 @@ GrowingPacker.prototype = {
     }
     function _updateBounds() {
       var mappedBounds = this.renderer.material.boundsFor(this.text);
-      this.bounds = {
-        w: mappedBounds.w,
-        h: mappedBounds.h,
-        x: -1 * Math.floor(mappedBounds.fit.x * this.ratio),
-        y: -1 * Math.floor((this.renderer.material._mapper.height - (mappedBounds.fit.y + mappedBounds.h)) * this.ratio)
-      };
-      this.domElement.width = this.bounds.w * this.ratio;
-      this.domElement.height = this.bounds.h * this.ratio;
-      this.domElement.style.width = this.bounds.w + "px";
-      this.domElement.style.height = this.bounds.h + "px";
+      if (mappedBounds) {
+        this.bounds = {
+          w: mappedBounds.w,
+          h: mappedBounds.h,
+          x: -1 * Math.floor(mappedBounds.fit.x * this.ratio),
+          y: -1 * Math.floor((this.renderer.material._mapper.height - (mappedBounds.fit.y + mappedBounds.h)) * this.ratio)
+        };
+        this.domElement.width = this.bounds.w * this.ratio;
+        this.domElement.height = this.bounds.h * this.ratio;
+        this.domElement.style.width = this.bounds.w + "px";
+        this.domElement.style.height = this.bounds.h + "px";
+      }
     }
     function _updateMaterial() {
       this.material.material = this.renderer.material;
@@ -43953,14 +43959,8 @@ GrowingPacker.prototype = {
       }, this));
     }
     function _updateScopes() {
-      _.each(this._texts, _.bind(function(rendererText, textId) {
-        (function(self, rendererText) {
-          var scope = self._scopes[rendererText.textObject.id];
-          if (!scope) {
-            scope = self._scopes[rendererText.textObject.id] = new blotter_RendererScope(rendererText.textObject, self);
-          }
-          scope.needsMaterialUpdate = true;
-        })(this, rendererText);
+      _.each(this._scopes, _.bind(function(scope, textId) {
+        scope.needsMaterialUpdate = true;
       }, this));
     }
     function _filterTexts(texts) {
@@ -43992,34 +43992,26 @@ GrowingPacker.prototype = {
         }, this));
       }
     }
-    function _addPrivateTexts(textIds) {
-      _.each(textIds, _.bind(function(textId) {
-        var text = _.findWhere(this.texts, {
-          id: textId
-        });
+    function _addPrivateTexts(texts) {
+      _.each(texts, _.bind(function(text) {
         this._texts[text.id] = new blotter_RendererTextItem(text, {
           update: _.bind(function() {
             _update.call(this);
           }, this)
         });
-        text.on("update", this._texts[textId].eventCallbacks.update);
+        text.on("update", this._texts[text.id].eventCallbacks.update);
+        this._scopes[text.id] = new blotter_RendererScope(text, this);
       }, this));
     }
-    function _removePrivateTexts(textIds) {
-      _.each(textIds, _.bind(function(textId) {
-        var _text = this._texts[textId], _scope = this._scopes[textId];
+    function _removePrivateTexts(texts) {
+      _.each(texts, _.bind(function(text) {
+        var _text = this._texts[text.id], _scope = this._scopes[text.id];
         _text.unsetEventCallbacks();
         delete _text;
         delete _scope;
       }, this));
     }
-    function _setTexts() {
-      var currentPrivateTextIds = _.keys(this._texts), currentPublicTextIds = _.pluck(this.texts, "id"), newTextIds = _.difference(currentPublicTextIds, currentPrivateTextIds), removedTextIds = _.difference(currentPrivateTextIds, currentPublicTextIds);
-      _addPrivateTexts.call(this, _.difference(currentPublicTextIds, currentPrivateTextIds));
-      _removePrivateTexts.call(this, _.difference(currentPrivateTextIds, currentPublicTextIds));
-    }
     function _update() {
-      _setTexts.call(this);
       this.material.build(_.pluck(this._texts, "textObject"), this.ratio, this.sampleAccuracy);
     }
     return {
@@ -44070,10 +44062,20 @@ GrowingPacker.prototype = {
         this.renderer = null;
       },
       addTexts: function(texts) {
-        this.texts = _.union(this.texts, _filterTexts.call(this, texts));
+        var filteredTexts = _filterTexts.call(this, texts);
+        currentPrivateTextIds = _.keys(this._texts), filteredTextIds = _.pluck(filteredTexts, "id"), 
+        newTextIds = _.difference(filteredTextIds, currentPrivateTextIds), newTexts = _.filter(filteredTexts, function(text) {
+          return _.indexOf(newTextIds, text.id) > -1;
+        });
+        _addPrivateTexts.call(this, newTexts);
       },
       removeTexts: function(texts) {
-        this.texts = _.difference(this.texts, _filterTexts.call(this, texts));
+        var filteredTexts = _filterTexts.call(this, texts);
+        currentPrivateTextIds = _.keys(this._texts), filteredTextIds = _.pluck(filteredTexts, "id"), 
+        removedTextIds = _.difference(currentPrivateTextIds, filteredTextIds), removedTexts = _.filter(filteredTexts, function(text) {
+          return _.indexOf(removedTextIds, text.id) > -1;
+        });
+        _removePrivateTexts.call(this, removedTexts);
       },
       forText: function(text, options) {
         blotter_Messaging.ensureInstanceOf(text, Blotter.Text, "Blotter.Text", "Blotter.Renderer");

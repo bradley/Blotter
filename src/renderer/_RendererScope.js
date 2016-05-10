@@ -30,7 +30,7 @@ blotter_RendererScope.prototype = (function () {
   }
 
   function _render () {
-    if (this.domElement) {
+    if (this.domElement && this.bounds) {
       this.context.clearRect(0, 0, this.domElement.width, this.domElement.height);
 
       this.context.putImageData(
@@ -45,18 +45,21 @@ blotter_RendererScope.prototype = (function () {
 
   function _updateBounds () {
     var mappedBounds = this.renderer.material.boundsFor(this.text);
-// ### - x and y and all of this should be set directly in material. this should not have to scope into _mapper
-    this.bounds = {
-      w : mappedBounds.w,
-      h : mappedBounds.h,
-      x : -1 * Math.floor(mappedBounds.fit.x * this.ratio),
-      y : -1 * Math.floor((this.renderer.material._mapper.height - (mappedBounds.fit.y + mappedBounds.h)) * this.ratio)
-    };
 
-    this.domElement.width = this.bounds.w * this.ratio;
-    this.domElement.height = this.bounds.h * this.ratio;
-    this.domElement.style.width = this.bounds.w + "px";
-    this.domElement.style.height = this.bounds.h + "px";
+    if (mappedBounds) {
+      // ### - x and y and all of this should be set directly in material. this should not have to scope into _mapper
+      this.bounds = {
+        w : mappedBounds.w,
+        h : mappedBounds.h,
+        x : -1 * Math.floor(mappedBounds.fit.x * this.ratio),
+        y : -1 * Math.floor((this.renderer.material._mapper.height - (mappedBounds.fit.y + mappedBounds.h)) * this.ratio)
+      };
+
+      this.domElement.width = this.bounds.w * this.ratio;
+      this.domElement.height = this.bounds.h * this.ratio;
+      this.domElement.style.width = this.bounds.w + "px";
+      this.domElement.style.height = this.bounds.h + "px";
+    }
   }
 
   function _updateMaterial () {

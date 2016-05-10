@@ -43,15 +43,8 @@ Blotter.Renderer.prototype = (function () {
   }
 
   function _updateScopes () {
-    _.each(this._texts, _.bind(function (rendererText, textId) {
-      (function (self, rendererText) {
-        var scope = self._scopes[rendererText.textObject.id];
-        if (!scope) {
-          scope = self._scopes[rendererText.textObject.id] = new blotter_RendererScope(rendererText.textObject, self);
-        }
-
-        scope.needsMaterialUpdate = true;
-      })(this, rendererText);
+    _.each(this._scopes, _.bind(function (scope, textId) {
+      scope.needsMaterialUpdate = true;
     }, this));
   }
 
@@ -94,22 +87,25 @@ Blotter.Renderer.prototype = (function () {
     }
   }
 
-  function _addPrivateTexts (textIds) {
-    _.each(textIds, _.bind(function (textId) {
-      var text = _.findWhere(this.texts, { id : textId });
+  function _addPrivateTexts (texts) {
+    _.each(texts, _.bind(function (text) {
+
+// ### - still dont really like these. wonder if we can bind directly to the text somehow and still be able to unbind. maybe texts need a reference to renderer?
       this._texts[text.id] = new blotter_RendererTextItem(text, {
         update : _.bind(function () {
           _update.call(this);
         }, this)
       });
-      text.on("update", this._texts[textId].eventCallbacks.update);
+      text.on("update", this._texts[text.id].eventCallbacks.update);
+
+      this._scopes[text.id] = new blotter_RendererScope(text, this);
     }, this));
   }
 
-  function _removePrivateTexts (textIds) {
-    _.each(textIds, _.bind(function (textId) {
-      var _text = this._texts[textId],
-          _scope = this._scopes[textId];
+  function _removePrivateTexts (texts) {
+    _.each(texts, _.bind(function (text) {
+      var _text = this._texts[text.id],
+          _scope = this._scopes[text.id];
 
       _text.unsetEventCallbacks();
 
@@ -118,18 +114,7 @@ Blotter.Renderer.prototype = (function () {
     }, this));
   }
 
-  function _setTexts () {
-    var currentPrivateTextIds = _.keys(this._texts),
-        currentPublicTextIds = _.pluck(this.texts, "id"),
-        newTextIds = _.difference(currentPublicTextIds, currentPrivateTextIds),
-        removedTextIds = _.difference(currentPrivateTextIds, currentPublicTextIds);
-
-    _addPrivateTexts.call(this, _.difference(currentPublicTextIds, currentPrivateTextIds));
-    _removePrivateTexts.call(this, _.difference(currentPrivateTextIds, currentPublicTextIds));
-  }
-
   function _update () {
-    _setTexts.call(this);
     this.material.build(_.pluck(this._texts, "textObject"), this.ratio, this.sampleAccuracy);
   }
 
@@ -205,11 +190,27 @@ Blotter.Renderer.prototype = (function () {
     },
 
     addTexts: function(texts) {
-      this.texts = _.union(this.texts, _filterTexts.call(this, texts));
+      var filteredTexts = _filterTexts.call(this, texts);
+          currentPrivateTextIds = _.keys(this._texts),
+          filteredTextIds = _.pluck(filteredTexts, "id"),
+          newTextIds = _.difference(filteredTextIds, currentPrivateTextIds),
+          newTexts = _.filter(filteredTexts, function(text) {
+            return _.indexOf(newTextIds, text.id) > -1;
+          });
+
+      _addPrivateTexts.call(this, newTexts);
     },
 
     removeTexts: function(texts) {
-      this.texts = _.difference(this.texts, _filterTexts.call(this, texts));
+      var filteredTexts = _filterTexts.call(this, texts);
+          currentPrivateTextIds = _.keys(this._texts),
+          filteredTextIds = _.pluck(filteredTexts, "id"),
+          removedTextIds = _.difference(currentPrivateTextIds, filteredTextIds),
+          removedTexts = _.filter(filteredTexts, function(text) {
+            return _.indexOf(removedTextIds, text.id) > -1;
+          });
+
+      _removePrivateTexts.call(this, removedTexts);
     },
 
     forText : function (text, options) {

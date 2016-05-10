@@ -108,36 +108,32 @@
         var testTexts = [new Blotter.Text("testing", styleProperties)];
 
         var blotter = new Blotter.Renderer(material, {
-          texts : blotterTexts,
-          autobuild : false
+          texts : blotterTexts
         });
 
 
         blotter.on("load", function () {
           console.log("test");
         });
-        blotter.needsUpdate = true;
-
-        _.delay(function() {
 
 
-          for (var i = 0; i < blotterTexts.length; i++) {
-            var text = blotterTexts[i];
-                outputEl = document.createElement("span");
-            outputEl.style.display = "inline-block";
-            document.body.appendChild(outputEl);
-            blotter.forText(text).appendTo(outputEl);
-          }
+
+        for (var i = 0; i < blotterTexts.length; i++) {
+          var text = blotterTexts[i];
+              outputEl = document.createElement("span");
+          outputEl.style.display = "inline-block";
+          document.body.appendChild(outputEl);
+          blotter.forText(text).appendTo(outputEl);
+        }
 
 
-          var myScope = blotter.forText(blotterTexts[4]);
-          var startTime = new Date().getTime();
-          myScope.on("update", function (frameCount) {
-            var time = (new Date().getTime() - startTime) / 1000;
-            myScope.material.uniforms.uLenseWeight.value = Math.abs(Math.sin(time));
-          });
+        var myScope = blotter.forText(blotterTexts[4]);
+        var startTime = new Date().getTime();
+        myScope.on("update", function (frameCount) {
+          var time = (new Date().getTime() - startTime) / 1000;
+          myScope.material.uniforms.uLenseWeight.value = Math.abs(Math.sin(time));
+        });
 
-        }, 3000);
 
 
 

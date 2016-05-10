@@ -7,10 +7,10 @@ blotter_MaterialScope.prototype = (function () {
   function _buildUniformInterface () {
     var self = this;
     for (var uniformName in this.material.uniforms) {
-      //(function(self, uniformName) {
-        var uniform = this.material.uniforms[uniformName];
+      (function(self, uniformName) {
+        var uniform = self.material.uniforms[uniformName];
 
-        this.uniforms[uniformName] = {
+        self.uniforms[uniformName] = {
           _type : uniform.type,
           _value : uniform.value,
 
@@ -39,7 +39,7 @@ blotter_MaterialScope.prototype = (function () {
         }
 
         _updateDataForUniformTextureData.call(self, uniformName);
-      //})(this, uniformName);
+      })(this, uniformName);
     }
   }
 
@@ -49,38 +49,40 @@ blotter_MaterialScope.prototype = (function () {
         data = materialUniform._textureData,
         i = this.dataIndex;
 
-    if (materialUniform.type == "1f") {
-      data[4*i]   = scopedUniform._value; // x (r)
-      data[4*i+1] = 0.0;
-      data[4*i+2] = 0.0;
-      data[4*i+3] = 0.0;
-    }
-    else if (materialUniform.type == "2f") {
-      data[4*i]   = scopedUniform._value[0]; // x (r)
-      data[4*i+1] = scopedUniform._value[1]; // y (g)
-      data[4*i+2] = 0.0;
-      data[4*i+3] = 0.0;
-    }
-    else if (materialUniform.type == "3f") {
-      data[4*i]   = scopedUniform._value[0]; // x (r)
-      data[4*i+1] = scopedUniform._value[1]; // y (g)
-      data[4*i+2] = scopedUniform._value[2]; // z (b)
-      data[4*i+3] = 0.0;
-    }
-    else if (materialUniform.type == "4f") {
-      data[4*i]   = scopedUniform._value[0]; // x (r)
-      data[4*i+1] = scopedUniform._value[1]; // y (g)
-      data[4*i+2] = scopedUniform._value[2]; // z (b)
-      data[4*i+3] = scopedUniform._value[3]; // w (a)
-    }
-    else {
-      data[4*i]   = 0.0;
-      data[4*i+1] = 0.0;
-      data[4*i+2] = 0.0;
-      data[4*i+3] = 0.0;
-    }
+    if (i >= 0) {
+      if (materialUniform.type == "1f") {
+        data[4*i]   = scopedUniform._value; // x (r)
+        data[4*i+1] = 0.0;
+        data[4*i+2] = 0.0;
+        data[4*i+3] = 0.0;
+      }
+      else if (materialUniform.type == "2f") {
+        data[4*i]   = scopedUniform._value[0]; // x (r)
+        data[4*i+1] = scopedUniform._value[1]; // y (g)
+        data[4*i+2] = 0.0;
+        data[4*i+3] = 0.0;
+      }
+      else if (materialUniform.type == "3f") {
+        data[4*i]   = scopedUniform._value[0]; // x (r)
+        data[4*i+1] = scopedUniform._value[1]; // y (g)
+        data[4*i+2] = scopedUniform._value[2]; // z (b)
+        data[4*i+3] = 0.0;
+      }
+      else if (materialUniform.type == "4f") {
+        data[4*i]   = scopedUniform._value[0]; // x (r)
+        data[4*i+1] = scopedUniform._value[1]; // y (g)
+        data[4*i+2] = scopedUniform._value[2]; // z (b)
+        data[4*i+3] = scopedUniform._value[3]; // w (a)
+      }
+      else {
+        data[4*i]   = 0.0;
+        data[4*i+1] = 0.0;
+        data[4*i+2] = 0.0;
+        data[4*i+3] = 0.0;
+      }
 
-    materialUniform._texture.needsUpdate = true;
+      materialUniform._texture.needsUpdate = true;
+    }
   }
 
   function _updateMaterial () {
@@ -103,7 +105,6 @@ blotter_MaterialScope.prototype = (function () {
       this.material = material;
 
       this.uniforms = {};
-      //_updateMaterial.call(this);
     }
   }
 })();
