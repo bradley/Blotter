@@ -5,7 +5,16 @@ import "_MaterialScope"
 
 
 Blotter.Material = function(mainImage, options) {
-  this.init(mainImage, options);
+  this._mapper = new blotter_TextsMapper();
+  this._uniforms = {};
+
+  this._texts;
+  this._ratio;
+  this._sampleAccuracy;
+
+  this.mainImage;
+
+  this.init.apply(this, arguments);
 }
 
 Blotter.Material.prototype = (function() {
@@ -150,19 +159,21 @@ Blotter.Material.prototype = (function() {
         buildActions;
 
     this._texts = texts;
+    this._ratio = ratio;
+    this._sampleAccuracy = sampleAccuracy;
 
-    buildMapper = _.bind(function (texts, ratio) {
+    buildMapper = _.bind(function () {
       return _.bind(function (next) {
         this._mapper.on("build", function () {
           next();
         });
-        this._mapper.build(texts, ratio);
+        this._mapper.build(this._texts, this._ratio);
       }, this);
     }, this);
 
-    buildTextsTexture = _.bind(function (ratio) {
+    buildTextsTexture = _.bind(function () {
       return _.bind(function (next) {
-        this._textsTexture = new blotter_TextsTexture(this._mapper, ratio);
+        this._textsTexture = new blotter_TextsTexture(this._mapper, this._ratio);
         this._textsTexture.on("build", function () {
           next();
         });
@@ -170,9 +181,9 @@ Blotter.Material.prototype = (function() {
       }, this);
     }, this);
 
-    buildIndicesTexture = _.bind(function (sampleAccuracy) {
+    buildIndicesTexture = _.bind(function () {
       return _.bind(function (next) {
-        this._indicesTexture = new blotter_TextsIndicesTexture(this._mapper, sampleAccuracy);
+        this._indicesTexture = new blotter_TextsIndicesTexture(this._mapper, this._sampleAccuracy);
         this._indicesTexture.on("build", function () {
           next();
         });
@@ -191,15 +202,15 @@ Blotter.Material.prototype = (function() {
     }, this);
 
     buildActions = [
-      buildMapper(texts, ratio),
-      buildTextsTexture(ratio),
-      buildIndicesTexture(sampleAccuracy),
+      buildMapper(),
+      buildTextsTexture(),
+      buildIndicesTexture(),
       buildBoundsTexture()
     ];
 
     _(buildActions).reduceRight(_.wrap, _.bind(function () {
-      this.width = this._mapper.width * ratio;
-      this.height = this._mapper.height * ratio;
+      this.width = this._mapper.width * this._ratio;
+      this.height = this._mapper.height * this._ratio;
 
       _setTextureUniformsForUniforms.call(this, this._texts.length);
 
@@ -264,8 +275,6 @@ Blotter.Material.prototype = (function() {
       _.defaults(this, options, {
         uniforms : {}
       });
-
-      this._mapper = new blotter_TextsMapper();
 
       this.mainImage = mainImage;
 

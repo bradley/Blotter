@@ -1,7 +1,11 @@
 import "../utils/";
 
 Blotter.Text = function (value, properties) {
-  this.init(value, properties);
+  this.id = THREE.Math.generateUUID();
+  this.value;
+  this.properties;
+
+  this.init.apply(this, arguments);
 }
 
 Blotter.Text.prototype = (function () {
@@ -24,7 +28,6 @@ Blotter.Text.prototype = (function () {
     },
 
     init : function (value, properties) {
-      this.id = THREE.Math.generateUUID();
       this.value = value;
       this.properties = blotter_TextUtils.ensurePropertyValues(properties);
 

@@ -43189,8 +43189,7 @@ GrowingPacker.prototype = {
       };
     },
     normalizedMousePosition: function(canvas, event) {
-      var rect = canvas.getBoundingClientRect();
-      var position = this.mousePosition(canvas, event);
+      var rect = canvas.getBoundingClientRect(), position = this.mousePosition(canvas, event);
       return {
         x: position.x / rect.width,
         y: position.y / rect.height
@@ -43333,7 +43332,10 @@ GrowingPacker.prototype = {
     }
   };
   Blotter.Text = function(value, properties) {
-    this.init(value, properties);
+    this.id = THREE.Math.generateUUID();
+    this.value;
+    this.properties;
+    this.init.apply(this, arguments);
   };
   Blotter.Text.prototype = function() {
     function _setupEventEmission() {
@@ -43350,7 +43352,6 @@ GrowingPacker.prototype = {
         }
       },
       init: function(value, properties) {
-        this.id = THREE.Math.generateUUID();
         this.value = value;
         this.properties = blotter_TextUtils.ensurePropertyValues(properties);
         _setupEventEmission.call(this);
@@ -43358,6 +43359,11 @@ GrowingPacker.prototype = {
     };
   }();
   var blotter_TextsMapper = function(texts, ratio) {
+    this.width = 0;
+    this.height = 0;
+    this.textsBounds = {};
+    this.texts = [];
+    this.ratio;
     this.init.apply(this, arguments);
   };
   blotter_TextsMapper.prototype = function() {
@@ -43404,9 +43410,6 @@ GrowingPacker.prototype = {
     return {
       constructor: blotter_TextsMapper,
       init: function() {
-        this.width = 0;
-        this.height = 0;
-        this.textsBounds = {};
         _.extendOwn(this, EventEmitter.prototype);
       },
       build: function(texts, ratio) {
@@ -43445,7 +43448,13 @@ GrowingPacker.prototype = {
     };
   }();
   var blotter_TextsIndicesTexture = function(textsTexture, sampleAccuracy) {
-    this.init(textsTexture, sampleAccuracy);
+    this.mapper;
+    this.texts;
+    this.sampleAccuracy;
+    this.width;
+    this.height;
+    this.texture = new THREE.DataTexture([], 0, 0, THREE.RGBAFormat, THREE.FloatType);
+    this.init.apply(this, arguments);
   };
   blotter_TextsIndicesTexture.prototype = function() {
     function _textsIndices(completion) {
@@ -43475,8 +43484,7 @@ GrowingPacker.prototype = {
       init: function(mapper, sampleAccuracy) {
         this.mapper = mapper;
         this.texts = mapper.texts;
-        this.sampleAccuracy = sampleAccuracy || .5;
-        this.texture = new THREE.DataTexture([], 0, 0, THREE.RGBAFormat, THREE.FloatType);
+        this.sampleAccuracy = sampleAccuracy;
         _.extendOwn(this, EventEmitter.prototype);
       },
       build: function() {
@@ -43492,7 +43500,13 @@ GrowingPacker.prototype = {
     };
   }();
   var blotter_TextsBoundsTexture = function(mapper) {
-    this.init(mapper);
+    this.mapper;
+    this.texts = [];
+    this.width;
+    this.height;
+    this.ratio;
+    this.texture = new THREE.DataTexture([], 0, 0, THREE.RGBAFormat, THREE.FloatType);
+    this.init.apply(this, arguments);
   };
   blotter_TextsBoundsTexture.prototype = function() {
     function _spriteBounds(completion) {
@@ -43512,7 +43526,6 @@ GrowingPacker.prototype = {
       constructor: blotter_TextsBoundsTexture,
       init: function(mapper) {
         this.mapper = mapper;
-        this.texture = new THREE.DataTexture([], 0, 0, THREE.RGBAFormat, THREE.FloatType);
         _.extendOwn(this, EventEmitter.prototype);
       },
       build: function() {
@@ -43529,20 +43542,20 @@ GrowingPacker.prototype = {
     };
   }();
   var blotter_TextsTexture = function(mapper) {
-    this.init(mapper);
+    this.mapper;
+    this.texture = new THREE.Texture();
+    this.init.apply(this, arguments);
   };
   blotter_TextsTexture.prototype = function() {
     return {
       constructor: blotter_TextsTexture,
       init: function(mapper) {
         this.mapper = mapper;
-        this.texture = new THREE.Texture();
         _.extendOwn(this, EventEmitter.prototype);
       },
       build: function() {
         var loader = new THREE.TextureLoader();
-        this.textureLoad = loader.load(this.mapper.getImage(), _.bind(function(texture) {
-          this.textureLoad = null;
+        loader.load(this.mapper.getImage(), _.bind(function(texture) {
           this.texture = texture;
           this.texture.generateMipmaps = false;
           this.texture.minFilter = THREE.LinearFilter;
@@ -43554,7 +43567,11 @@ GrowingPacker.prototype = {
     };
   }();
   var blotter_MaterialScope = function(text, material) {
-    this.init(text, material);
+    this._dataIndex;
+    this.text;
+    this.material;
+    this.uniforms = {};
+    this.init.apply(this, arguments);
   };
   blotter_MaterialScope.prototype = function() {
     function _buildUniformInterface() {
@@ -43588,7 +43605,7 @@ GrowingPacker.prototype = {
       }
     }
     function _updateDataForUniformTextureData(uniformName) {
-      var materialUniform = this.material.uniforms[uniformName], scopedUniform = this.uniforms[uniformName], data = materialUniform._textureData, i = this.dataIndex;
+      var materialUniform = this.material.uniforms[uniformName], scopedUniform = this.uniforms[uniformName], data = materialUniform._textureData, i = this._dataIndex;
       if (i >= 0) {
         if (materialUniform.type == "1f") {
           data[4 * i] = scopedUniform._value;
@@ -43620,7 +43637,7 @@ GrowingPacker.prototype = {
       }
     }
     function _updateMaterial() {
-      this.dataIndex = this.material.dataIndexFor(this.text);
+      this._dataIndex = this.material.dataIndexFor(this.text);
       _buildUniformInterface.call(this);
     }
     return {
@@ -43633,12 +43650,17 @@ GrowingPacker.prototype = {
       init: function(text, material) {
         this.text = text;
         this.material = material;
-        this.uniforms = {};
       }
     };
   }();
   Blotter.Material = function(mainImage, options) {
-    this.init(mainImage, options);
+    this._mapper = new blotter_TextsMapper();
+    this._uniforms = {};
+    this._texts;
+    this._ratio;
+    this._sampleAccuracy;
+    this.mainImage;
+    this.init.apply(this, arguments);
   };
   Blotter.Material.prototype = function() {
     function _defaultMainImageSrc() {
@@ -43671,26 +43693,28 @@ GrowingPacker.prototype = {
     function _build(texts, ratio, sampleAccuracy) {
       var buildMapper, buildTextsTexture, buildIndicesTexture, buildBoundsTexture, buildActions;
       this._texts = texts;
-      buildMapper = _.bind(function(texts, ratio) {
+      this._ratio = ratio;
+      this._sampleAccuracy = sampleAccuracy;
+      buildMapper = _.bind(function() {
         return _.bind(function(next) {
           this._mapper.on("build", function() {
             next();
           });
-          this._mapper.build(texts, ratio);
+          this._mapper.build(this._texts, this._ratio);
         }, this);
       }, this);
-      buildTextsTexture = _.bind(function(ratio) {
+      buildTextsTexture = _.bind(function() {
         return _.bind(function(next) {
-          this._textsTexture = new blotter_TextsTexture(this._mapper, ratio);
+          this._textsTexture = new blotter_TextsTexture(this._mapper, this._ratio);
           this._textsTexture.on("build", function() {
             next();
           });
           this._textsTexture.build();
         }, this);
       }, this);
-      buildIndicesTexture = _.bind(function(sampleAccuracy) {
+      buildIndicesTexture = _.bind(function() {
         return _.bind(function(next) {
-          this._indicesTexture = new blotter_TextsIndicesTexture(this._mapper, sampleAccuracy);
+          this._indicesTexture = new blotter_TextsIndicesTexture(this._mapper, this._sampleAccuracy);
           this._indicesTexture.on("build", function() {
             next();
           });
@@ -43706,10 +43730,10 @@ GrowingPacker.prototype = {
           this._boundsTexture.build();
         }, this);
       }, this);
-      buildActions = [ buildMapper(texts, ratio), buildTextsTexture(ratio), buildIndicesTexture(sampleAccuracy), buildBoundsTexture() ];
+      buildActions = [ buildMapper(), buildTextsTexture(), buildIndicesTexture(), buildBoundsTexture() ];
       _(buildActions).reduceRight(_.wrap, _.bind(function() {
-        this.width = this._mapper.width * ratio;
-        this.height = this._mapper.height * ratio;
+        this.width = this._mapper.width * this._ratio;
+        this.height = this._mapper.height * this._ratio;
         _setTextureUniformsForUniforms.call(this, this._texts.length);
         _buildMaterialUniforms.call(this);
         _buildThreeMaterial.call(this);
@@ -43773,7 +43797,6 @@ GrowingPacker.prototype = {
         _.defaults(this, options, {
           uniforms: {}
         });
-        this._mapper = new blotter_TextsMapper();
         this.mainImage = mainImage;
         _.extendOwn(this, EventEmitter.prototype);
       },
@@ -43793,11 +43816,21 @@ GrowingPacker.prototype = {
     };
   }();
   var blotter_RendererScope = function(text, renderer) {
-    this.init(text, renderer);
+    this.text;
+    this.renderer;
+    this.ratio;
+    this.material;
+    this.playing = false;
+    this.timeDelta = 0;
+    this.lastDrawTime;
+    this.frameCount = 0;
+    this.domElement;
+    this.context;
+    this.init.apply(this, arguments);
   };
   blotter_RendererScope.prototype = function() {
     function _setMouseEventListeners() {
-      var self = this, eventNames = [ "mousedown", "mouseup", "mousemove", "mouseenter", "mouseleave" ];
+      var eventNames = [ "mousedown", "mouseup", "mousemove", "mouseenter", "mouseleave" ];
       for (var i = 0; i < eventNames.length; i++) {
         var eventName = eventNames[i];
         (function(self, name) {
@@ -43805,7 +43838,7 @@ GrowingPacker.prototype = {
             var position = blotter_CanvasUtils.normalizedMousePosition(self.domElement, e);
             self.emit(name, position);
           }, false);
-        })(self, eventName);
+        })(this, eventName);
       }
     }
     function _setEventListeners() {
@@ -43850,10 +43883,6 @@ GrowingPacker.prototype = {
         this.renderer = renderer;
         this.ratio = this.renderer.ratio;
         this.material = new blotter_MaterialScope(this.text, this.renderer.material);
-        this.playing = false;
-        this.timeDelta = 0;
-        this.lastDrawTime = null;
-        this.frameCount = 0;
         this.domElement = blotter_CanvasUtils.hiDpiCanvas(0, 0, this.ratio);
         this.context = this.domElement.getContext("2d");
         _.extendOwn(this, EventEmitter.prototype);
@@ -43879,55 +43908,77 @@ GrowingPacker.prototype = {
     };
   }();
   var blotter_BackBufferRenderer = function(material) {
-    this.init(material);
+    this._width = 1;
+    this._height = 1;
+    this._scene = new THREE.Scene();
+    this._plane = new THREE.PlaneGeometry(1, 1);
+    this._material = new THREE.MeshBasicMaterial();
+    this._mesh = new THREE.Mesh(this._plane, this._material);
+    this._scene.add(this._mesh);
+    this._renderer = new THREE.WebGLRenderer({
+      antialias: true,
+      alpha: true,
+      premultipliedAlpha: false
+    });
+    this._renderTarget;
+    this._camera = new THREE.OrthographicCamera(.5, .5, .5, .5, 0, 100);
+    this._viewBuffer;
+    this._imageDataArray;
+    this._clampedImageDataArray;
+    this.imageData;
+    this.init.apply(this, arguments);
   };
   blotter_BackBufferRenderer.prototype = function() {
+    function _updateSize() {
+      this._mesh.scale.set(this._width, this._height, 1);
+      this._renderTarget = new THREE.WebGLRenderTarget(this._width, this._height, {
+        minFilter: THREE.LinearFilter,
+        magFilter: THREE.LinearFilter,
+        format: THREE.RGBAFormat,
+        type: THREE.UnsignedByteType
+      });
+      this._renderTarget.texture.generateMipmaps = false;
+      this._renderTarget.width = this._width;
+      this._renderTarget.height = this._height;
+      this._camera.left = this._width / -2;
+      this._camera.right = this._width / 2;
+      this._camera.top = this._height / 2;
+      this._camera.bottom = this._height / -2;
+      this._camera.updateProjectionMatrix();
+      this._viewBuffer = new ArrayBuffer(this._width * this._height * 4);
+      this._imageDataArray = new Uint8Array(this._viewBuffer);
+      this._clampedImageDataArray = new Uint8ClampedArray(this._viewBuffer);
+      this.imageData = new ImageData(this._clampedImageDataArray, this._width, this._height);
+    }
     return {
       constructor: blotter_BackBufferRenderer,
-      init: function(material) {
-        this.scene = new THREE.Scene();
-        this.material = new THREE.Material();
-        this.plane = new THREE.PlaneGeometry(1, 1);
-        this.mesh = new THREE.Mesh(this.plane, this.material);
-        this.scene.add(this.mesh);
-        this.renderer = new THREE.WebGLRenderer({
-          antialias: true,
-          alpha: true,
-          premultipliedAlpha: false
-        });
-        this.camera = new THREE.OrthographicCamera(.5, .5, .5, .5, 0, 100);
+      set width(width) {
+        this._width = width;
+        _updateSize.call(this);
       },
-      update: function(width, height, material) {
-        this.renderTarget = new THREE.WebGLRenderTarget(width, height, {
-          minFilter: THREE.LinearFilter,
-          magFilter: THREE.LinearFilter,
-          format: THREE.RGBAFormat,
-          type: THREE.UnsignedByteType
-        });
-        this.renderTarget.texture.generateMipmaps = false;
-        this.renderTarget.width = width;
-        this.renderTarget.height = height;
-        this.material = material;
-        this.mesh.material = material;
-        this.mesh.scale.set(width, height, 1);
-        this.camera.left = width / -2;
-        this.camera.right = width / 2;
-        this.camera.top = height / 2;
-        this.camera.bottom = height / -2;
-        this.camera.updateProjectionMatrix();
-        this.viewBuffer = new ArrayBuffer(width * height * 4);
-        this.imageDataArray = new Uint8Array(this.viewBuffer);
-        this.clampedImageDataArray = new Uint8ClampedArray(this.viewBuffer);
-        this.imageData = new ImageData(this.clampedImageDataArray, width, height);
+      set height(height) {
+        this._height = height;
+        _updateSize.call(this);
+      },
+      set material(material) {
+        if (material instanceof THREE.Material) {
+          this._material = material;
+          this._mesh.material = material;
+        }
+      },
+      init: function(material) {
+        if (material) {
+          this._material = material;
+        }
       },
       render: function() {
-        if (this.renderTarget) {
-          this.renderer.render(this.scene, this.camera, this.renderTarget);
-          this.renderer.readRenderTargetPixels(this.renderTarget, 0, 0, this.renderTarget.width, this.renderTarget.height, this.imageDataArray);
+        if (this._renderTarget) {
+          this._renderer.render(this._scene, this._camera, this._renderTarget);
+          this._renderer.readRenderTargetPixels(this._renderTarget, 0, 0, this._renderTarget.width, this._renderTarget.height, this._imageDataArray);
         }
       },
       teardown: function() {
-        this.renderer = null;
+        this._renderer = null;
       }
     };
   }();
@@ -43943,7 +43994,19 @@ GrowingPacker.prototype = {
     };
   }
   Blotter.Renderer = function(material, options) {
-    this.init(material, options);
+    if (!Detector.webgl) {
+      blotter_Messaging.throwError("Blotter.Renderer", "device does not support webgl");
+    }
+    this._texts = {};
+    this._scopes = {};
+    this._backBuffer = new blotter_BackBufferRenderer();
+    this._currentAnimationLoop;
+    this.ratio = blotter_CanvasUtils.pixelRatio;
+    this.autostart = true;
+    this.autobuild = true;
+    this.sampleAccuracy = .5;
+    this.imageData;
+    this.init.apply(this, arguments);
   };
   Blotter.Renderer.prototype = function() {
     function _loop() {
@@ -43954,9 +44017,26 @@ GrowingPacker.prototype = {
           scope.update();
         }
       }, this));
-      this.currentAnimationLoop = blotter_Animation.requestAnimationFrame(_.bind(function() {
+      this._currentAnimationLoop = blotter_Animation.requestAnimationFrame(_.bind(function() {
         _loop.call(this);
       }, this));
+    }
+    function _setMaterial(material) {
+      if (!material || !(material instanceof Blotter.Material)) {
+        blotter_Messaging.throwError("Blotter.Renderer", "a material must be provided");
+      } else {
+        this.material = material;
+        this.material.on("build", _.bind(function() {
+          this._backBuffer.width = this.material.width;
+          this._backBuffer.height = this.material.height;
+          this._backBuffer.material = this.material.threeMaterial;
+          _updateScopes.call(this);
+          this.trigger("build");
+        }, this));
+        this.material.on("update", _.bind(function() {
+          _update.call(this);
+        }, this));
+      }
     }
     function _updateScopes() {
       _.each(this._scopes, _.bind(function(scope, textId) {
@@ -43977,22 +44057,7 @@ GrowingPacker.prototype = {
         return isText;
       }, this));
     }
-    function _setMaterial(material) {
-      if (!material || !(material instanceof Blotter.Material)) {
-        blotter_Messaging.throwError("Blotter.Renderer", "a material must be provided");
-      } else {
-        this.material = material;
-        this.material.on("build", _.bind(function() {
-          this._backBuffer.update(this.material.width, this.material.height, this.material.threeMaterial);
-          _updateScopes.call(this);
-          this.trigger("build");
-        }, this));
-        this.material.on("update", _.bind(function() {
-          _update.call(this);
-        }, this));
-      }
-    }
-    function _addPrivateTexts(texts) {
+    function _addTexts(texts) {
       _.each(texts, _.bind(function(text) {
         this._texts[text.id] = new blotter_RendererTextItem(text, {
           update: _.bind(function() {
@@ -44003,7 +44068,7 @@ GrowingPacker.prototype = {
         this._scopes[text.id] = new blotter_RendererScope(text, this);
       }, this));
     }
-    function _removePrivateTexts(texts) {
+    function _removeTexts(texts) {
       _.each(texts, _.bind(function(text) {
         var _text = this._texts[text.id], _scope = this._scopes[text.id];
         _text.unsetEventCallbacks();
@@ -44016,6 +44081,9 @@ GrowingPacker.prototype = {
     }
     return {
       constructor: Blotter.Renderer,
+      get texts() {
+        return this._texts;
+      },
       set needsUpdate(value) {
         if (value === true) {
           _update.call(this);
@@ -44028,13 +44096,6 @@ GrowingPacker.prototype = {
           autobuild: true,
           sampleAccuracy: .5
         });
-        if (!Detector.webgl) {
-          blotter_Messaging.throwError("Blotter.Renderer", "device does not support webgl");
-        }
-        this.texts = [];
-        this._texts = {};
-        this._scopes = {};
-        this._backBuffer = new blotter_BackBufferRenderer();
         _setMaterial.call(this, material);
         this.addTexts(options.texts);
         _.extendOwn(this, EventEmitter.prototype);
@@ -44046,14 +44107,14 @@ GrowingPacker.prototype = {
         }
       },
       start: function() {
-        if (!this.currentAnimationLoop) {
+        if (!this._currentAnimationLoop) {
           _loop.call(this);
         }
       },
       stop: function() {
-        if (this.currentAnimationLoop) {
-          blotter_Animation.cancelAnimationFrame(this.currentAnimationLoop);
-          this.currentAnimationLoop = undefined;
+        if (this._currentAnimationLoop) {
+          blotter_Animation.cancelAnimationFrame(this._currentAnimationLoop);
+          this._currentAnimationLoop = undefined;
         }
       },
       teardown: function() {
@@ -44061,21 +44122,23 @@ GrowingPacker.prototype = {
         this._backBuffer && this._backBuffer.teardown();
         this.renderer = null;
       },
+      addText: function(text) {
+        this.addTexts(text);
+      },
       addTexts: function(texts) {
-        var filteredTexts = _filterTexts.call(this, texts);
-        currentPrivateTextIds = _.keys(this._texts), filteredTextIds = _.pluck(filteredTexts, "id"), 
-        newTextIds = _.difference(filteredTextIds, currentPrivateTextIds), newTexts = _.filter(filteredTexts, function(text) {
+        var filteredTexts = _filterTexts.call(this, texts), currentPrivateTextIds = _.keys(this._texts), filteredTextIds = _.pluck(filteredTexts, "id"), newTextIds = _.difference(filteredTextIds, currentPrivateTextIds), newTexts = _.filter(filteredTexts, function(text) {
           return _.indexOf(newTextIds, text.id) > -1;
         });
-        _addPrivateTexts.call(this, newTexts);
+        _addTexts.call(this, newTexts);
+      },
+      removeText: function(text) {
+        this.removeTexts(text);
       },
       removeTexts: function(texts) {
-        var filteredTexts = _filterTexts.call(this, texts);
-        currentPrivateTextIds = _.keys(this._texts), filteredTextIds = _.pluck(filteredTexts, "id"), 
-        removedTextIds = _.difference(currentPrivateTextIds, filteredTextIds), removedTexts = _.filter(filteredTexts, function(text) {
+        var filteredTexts = _filterTexts.call(this, texts), currentPrivateTextIds = _.keys(this._texts), filteredTextIds = _.pluck(filteredTexts, "id"), removedTextIds = _.difference(currentPrivateTextIds, filteredTextIds), removedTexts = _.filter(filteredTexts, function(text) {
           return _.indexOf(removedTextIds, text.id) > -1;
         });
-        _removePrivateTexts.call(this, removedTexts);
+        _removeTexts.call(this, removedTexts);
       },
       forText: function(text, options) {
         blotter_Messaging.ensureInstanceOf(text, Blotter.Text, "Blotter.Text", "Blotter.Renderer");

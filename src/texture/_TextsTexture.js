@@ -4,7 +4,12 @@ import "../text/";
 
 
 var blotter_TextsTexture = function(mapper) {
-  this.init(mapper);
+  this.mapper
+
+  // Stub texture - resets on build.
+  this.texture = new THREE.Texture();
+
+  this.init.apply(this, arguments);
 }
 
 blotter_TextsTexture.prototype = (function() {
@@ -16,16 +21,12 @@ blotter_TextsTexture.prototype = (function() {
     init : function (mapper) {
       this.mapper = mapper;
 
-      // Stub texture - resets on build.
-      this.texture = new THREE.Texture();
-
       _.extendOwn(this, EventEmitter.prototype);
     },
 
     build : function () {
       var loader = new THREE.TextureLoader();
-      this.textureLoad = loader.load(this.mapper.getImage(), _.bind(function(texture) {
-        this.textureLoad = null;
+      loader.load(this.mapper.getImage(), _.bind(function(texture) {
         this.texture = texture;
         this.texture.generateMipmaps = false;
         this.texture.minFilter = THREE.LinearFilter;

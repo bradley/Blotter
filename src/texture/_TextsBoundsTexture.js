@@ -1,7 +1,16 @@
 // Create a Data Texture holding the boundaries (x/y offset and w/h) that should be available to any given texel for any given text.
 
 var blotter_TextsBoundsTexture = function (mapper) {
-  this.init(mapper);
+  this.mapper;
+  this.texts = [];
+  this.width;
+  this.height;
+  this.ratio;
+
+  // Stub texture - resets on build.
+  this.texture = new THREE.DataTexture([], 0, 0, THREE.RGBAFormat, THREE.FloatType);
+
+  this.init.apply(this, arguments);
 }
 
 blotter_TextsBoundsTexture.prototype = (function () {
@@ -30,9 +39,6 @@ blotter_TextsBoundsTexture.prototype = (function () {
 
     init : function (mapper) {
       this.mapper = mapper;
-
-      // Stub texture - resets on build.
-      this.texture = new THREE.DataTexture([], 0, 0, THREE.RGBAFormat, THREE.FloatType);
 
       _.extendOwn(this, EventEmitter.prototype);
     },

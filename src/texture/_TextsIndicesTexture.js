@@ -1,7 +1,17 @@
 // Create a Data Texture the size of our text map wherein every texel holds the index of text whose boundaries contain the given texel's position.
 
 var blotter_TextsIndicesTexture = function (textsTexture, sampleAccuracy) {
-  this.init(textsTexture, sampleAccuracy);
+  this.mapper;
+  this.texts;
+  this.sampleAccuracy;
+
+  this.width;
+  this.height;
+
+  // Stub texture - resets on build.
+  this.texture = new THREE.DataTexture([], 0, 0, THREE.RGBAFormat, THREE.FloatType);
+
+  this.init.apply(this, arguments);
 }
 
 blotter_TextsIndicesTexture.prototype = (function () {
@@ -57,10 +67,7 @@ blotter_TextsIndicesTexture.prototype = (function () {
     init : function (mapper, sampleAccuracy) {
       this.mapper = mapper;
       this.texts = mapper.texts;
-      this.sampleAccuracy = sampleAccuracy || 0.5;
-
-      // Stub texture - resets on build.
-      this.texture = new THREE.DataTexture([], 0, 0, THREE.RGBAFormat, THREE.FloatType);
+      this.sampleAccuracy = sampleAccuracy;
 
       _.extendOwn(this, EventEmitter.prototype);
     },

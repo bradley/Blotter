@@ -22,7 +22,26 @@ function blotter_RendererTextItem (textObject, eventCallbacks) {
 }
 
 Blotter.Renderer = function (material, options) {
-  this.init(material, options);
+  if (!Detector.webgl) {
+// ### - messaging
+    blotter_Messaging.throwError("Blotter.Renderer", "device does not support webgl");
+  }
+
+  this._texts = {};
+  this._scopes = {};
+
+  this._backBuffer = new blotter_BackBufferRenderer();
+
+  this._currentAnimationLoop;
+
+  this.ratio = blotter_CanvasUtils.pixelRatio;
+  this.autostart = true;
+  this.autobuild = true;
+  this.sampleAccuracy = 0.5;
+
+  this.imageData;
+
+  this.init.apply(this, arguments);
 }
 
 Blotter.Renderer.prototype = (function () {
@@ -37,9 +56,31 @@ Blotter.Renderer.prototype = (function () {
       }
     }, this));
 
-    this.currentAnimationLoop = blotter_Animation.requestAnimationFrame(_.bind(function () {
+    this._currentAnimationLoop = blotter_Animation.requestAnimationFrame(_.bind(function () {
       _loop.call(this);
     }, this));
+  }
+
+  function _setMaterial (material) {
+    if (!material || !(material instanceof Blotter.Material)) {
+// ### - messaging
+      blotter_Messaging.throwError("Blotter.Renderer", "a material must be provided")
+    }
+    else {
+      this.material = material;
+      this.material.on("build", _.bind(function () {
+        this._backBuffer.width = this.material.width;
+        this._backBuffer.height = this.material.height;
+        this._backBuffer.material = this.material.threeMaterial;
+
+        _updateScopes.call(this);
+        this.trigger("build");
+      }, this));
+
+      this.material.on("update", _.bind(function () {
+        _update.call(this);
+      }, this));
+    }
   }
 
   function _updateScopes () {
@@ -49,7 +90,7 @@ Blotter.Renderer.prototype = (function () {
   }
 
   function _filterTexts (texts) {
-    if (texts instanceof Blotter.Text) { //_.isArray(texts)) {
+    if (texts instanceof Blotter.Text) {
       texts = [texts];
     }
     else {
@@ -68,26 +109,7 @@ Blotter.Renderer.prototype = (function () {
     }, this));
   }
 
-  function _setMaterial (material) {
-    if (!material || !(material instanceof Blotter.Material)) {
-// ### - messaging
-      blotter_Messaging.throwError("Blotter.Renderer", "a material must be provided")
-    }
-    else {
-      this.material = material;
-      this.material.on("build", _.bind(function () {
-        this._backBuffer.update(this.material.width, this.material.height, this.material.threeMaterial);
-        _updateScopes.call(this);
-        this.trigger("build");
-      }, this));
-
-      this.material.on("update", _.bind(function () {
-        _update.call(this);
-      }, this));
-    }
-  }
-
-  function _addPrivateTexts (texts) {
+  function _addTexts (texts) {
     _.each(texts, _.bind(function (text) {
 
 // ### - still dont really like these. wonder if we can bind directly to the text somehow and still be able to unbind. maybe texts need a reference to renderer?
@@ -102,7 +124,7 @@ Blotter.Renderer.prototype = (function () {
     }, this));
   }
 
-  function _removePrivateTexts (texts) {
+  function _removeTexts (texts) {
     _.each(texts, _.bind(function (text) {
       var _text = this._texts[text.id],
           _scope = this._scopes[text.id];
@@ -121,6 +143,10 @@ Blotter.Renderer.prototype = (function () {
   return {
 
     constructor : Blotter.Renderer,
+
+    get texts () {
+      return this._texts;
+    },
 
     set needsUpdate (value) {
       if (value === true) {
@@ -142,19 +168,6 @@ Blotter.Renderer.prototype = (function () {
         sampleAccuracy : 0.5
       });
 
-      if (!Detector.webgl) {
-// ### - messaging
-        blotter_Messaging.throwError("Blotter.Renderer", "device does not support webgl");
-      }
-
-      this.texts = [];
-
-      this._texts = {};
-
-      this._scopes = {};
-
-      this._backBuffer = new blotter_BackBufferRenderer();
-
       _setMaterial.call(this, material);
 
       this.addTexts(options.texts);
@@ -171,15 +184,15 @@ Blotter.Renderer.prototype = (function () {
     },
 
     start : function () {
-      if (!this.currentAnimationLoop) {
+      if (!this._currentAnimationLoop) {
         _loop.call(this);
       }
     },
 
     stop : function () {
-      if (this.currentAnimationLoop) {
-        blotter_Animation.cancelAnimationFrame(this.currentAnimationLoop);
-        this.currentAnimationLoop = undefined;
+      if (this._currentAnimationLoop) {
+        blotter_Animation.cancelAnimationFrame(this._currentAnimationLoop);
+        this._currentAnimationLoop = undefined;
       }
     },
 
@@ -189,8 +202,12 @@ Blotter.Renderer.prototype = (function () {
       this.renderer = null;
     },
 
-    addTexts: function(texts) {
-      var filteredTexts = _filterTexts.call(this, texts);
+    addText : function (text) {
+      this.addTexts(text);
+    },
+
+    addTexts : function (texts) {
+      var filteredTexts = _filterTexts.call(this, texts),
           currentPrivateTextIds = _.keys(this._texts),
           filteredTextIds = _.pluck(filteredTexts, "id"),
           newTextIds = _.difference(filteredTextIds, currentPrivateTextIds),
@@ -198,11 +215,15 @@ Blotter.Renderer.prototype = (function () {
             return _.indexOf(newTextIds, text.id) > -1;
           });
 
-      _addPrivateTexts.call(this, newTexts);
+      _addTexts.call(this, newTexts);
     },
 
-    removeTexts: function(texts) {
-      var filteredTexts = _filterTexts.call(this, texts);
+    removeText : function (text) {
+      this.removeTexts(text);
+    },
+
+    removeTexts : function (texts) {
+      var filteredTexts = _filterTexts.call(this, texts),
           currentPrivateTextIds = _.keys(this._texts),
           filteredTextIds = _.pluck(filteredTexts, "id"),
           removedTextIds = _.difference(currentPrivateTextIds, filteredTextIds),
@@ -210,7 +231,7 @@ Blotter.Renderer.prototype = (function () {
             return _.indexOf(removedTextIds, text.id) > -1;
           });
 
-      _removePrivateTexts.call(this, removedTexts);
+      _removeTexts.call(this, removedTexts);
     },
 
     forText : function (text, options) {

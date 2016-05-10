@@ -1,11 +1,18 @@
 var blotter_MaterialScope = function (text, material) {
-  this.init(text, material);
+  this._dataIndex;
+
+  this.text;
+  this.material;
+  this.uniforms = {};
+
+  this.init.apply(this, arguments);
 }
 
 blotter_MaterialScope.prototype = (function () {
 
   function _buildUniformInterface () {
     var self = this;
+
     for (var uniformName in this.material.uniforms) {
       (function(self, uniformName) {
         var uniform = self.material.uniforms[uniformName];
@@ -47,11 +54,11 @@ blotter_MaterialScope.prototype = (function () {
     var materialUniform = this.material.uniforms[uniformName],
         scopedUniform = this.uniforms[uniformName],
         data = materialUniform._textureData,
-        i = this.dataIndex;
+        i = this._dataIndex;
 
     if (i >= 0) {
       if (materialUniform.type == "1f") {
-        data[4*i]   = scopedUniform._value; // x (r)
+        data[4*i]   = scopedUniform._value;    // x (r)
         data[4*i+1] = 0.0;
         data[4*i+2] = 0.0;
         data[4*i+3] = 0.0;
@@ -86,7 +93,7 @@ blotter_MaterialScope.prototype = (function () {
   }
 
   function _updateMaterial () {
-    this.dataIndex = this.material.dataIndexFor(this.text);
+    this._dataIndex = this.material.dataIndexFor(this.text);
     _buildUniformInterface.call(this);
   }
 
@@ -103,8 +110,6 @@ blotter_MaterialScope.prototype = (function () {
     init : function (text, material) {
       this.text = text;
       this.material = material;
-
-      this.uniforms = {};
     }
   }
 })();

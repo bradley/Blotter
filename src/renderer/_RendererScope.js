@@ -5,23 +5,34 @@ import "../material/";
 
 
 var blotter_RendererScope = function (text, renderer) {
-  this.init(text, renderer);
+  this.text;
+  this.renderer;
+  this.ratio;
+  this.material;
+
+  this.playing = false;
+  this.timeDelta = 0;
+  this.lastDrawTime;
+  this.frameCount = 0;
+
+  this.domElement;
+  this.context;
+
+  this.init.apply(this, arguments);
 }
 
 blotter_RendererScope.prototype = (function () {
 
   function _setMouseEventListeners () {
-    var self = this,
-        eventNames = ["mousedown", "mouseup", "mousemove", "mouseenter", "mouseleave"];
+    var eventNames = ["mousedown", "mouseup", "mousemove", "mouseenter", "mouseleave"];
     for (var i = 0; i < eventNames.length; i++) {
       var eventName = eventNames[i];
-      // Wrap listener assignment in closure
       (function (self, name) {
         self.domElement.addEventListener(name, function(e) {
           var position = blotter_CanvasUtils.normalizedMousePosition(self.domElement, e);
           self.emit(name, position)
         }, false);
-      })(self, eventName);
+      })(this, eventName);
     }
   }
 
@@ -79,21 +90,12 @@ blotter_RendererScope.prototype = (function () {
       }
     },
 
-
     init : function (text, renderer) {
       this.text = text;
       this.renderer = renderer;
       this.ratio = this.renderer.ratio;
 
       this.material = new blotter_MaterialScope(this.text, this.renderer.material);
-
-      this.playing = false;
-
-      this.timeDelta = 0;
-
-      this.lastDrawTime = null;
-
-      this.frameCount = 0;
 
       this.domElement = blotter_CanvasUtils.hiDpiCanvas(0, 0, this.ratio);
       this.context = this.domElement.getContext("2d");

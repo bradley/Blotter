@@ -6,85 +6,109 @@ import "_RendererScope";
 
 
 var blotter_BackBufferRenderer = function (material) {
-  this.init(material);
+  this._width = 1;
+  this._height = 1;
+
+  // Prepare back buffer scene
+
+  this._scene = new THREE.Scene();
+
+  this._plane = new THREE.PlaneGeometry(1, 1);
+
+  this._material = new THREE.MeshBasicMaterial(); // Stub material.
+
+  this._mesh = new THREE.Mesh(this._plane, this._material);
+
+  this._scene.add(this._mesh);
+
+  this._renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, premultipliedAlpha : false });
+
+  this._renderTarget;
+
+  this._camera = new THREE.OrthographicCamera(0.5, 0.5, 0.5, 0.5, 0, 100);
+
+  this._viewBuffer;
+  this._imageDataArray;;
+  this._clampedImageDataArray;
+
+  this.imageData;
+
+  this.init.apply(this, arguments);
 }
 
 blotter_BackBufferRenderer.prototype = (function () {
+
+  function _updateSize () {
+    this._mesh.scale.set(this._width, this._height, 1);
+
+    this._renderTarget = new THREE.WebGLRenderTarget(this._width, this._height, {
+      minFilter: THREE.LinearFilter,
+      magFilter: THREE.LinearFilter,
+      format: THREE.RGBAFormat,
+      type: THREE.UnsignedByteType
+    });
+    this._renderTarget.texture.generateMipmaps = false;
+    this._renderTarget.width = this._width;
+    this._renderTarget.height = this._height;
+
+    this._camera.left = this._width / - 2;
+    this._camera.right = this._width / 2;
+    this._camera.top = this._height / 2;
+    this._camera.bottom = this._height / - 2;
+
+    this._camera.updateProjectionMatrix();
+
+    this._viewBuffer = new ArrayBuffer(this._width * this._height * 4);
+    this._imageDataArray = new Uint8Array(this._viewBuffer);
+    this._clampedImageDataArray = new Uint8ClampedArray(this._viewBuffer);
+
+    this.imageData = new ImageData(this._clampedImageDataArray, this._width, this._height);
+  }
 
   return {
 
     constructor : blotter_BackBufferRenderer,
 
-    init : function (material) {
-
-      // Prepare back buffer scene
-
-      this.scene = new THREE.Scene();
-
-      this.material = new THREE.Material(); // Stub material on init.
-
-      this.plane = new THREE.PlaneGeometry(1, 1);
-
-      this.mesh = new THREE.Mesh(this.plane, this.material);
-
-      this.scene.add(this.mesh);
-
-      this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, premultipliedAlpha : false });
-
-      this.camera = new THREE.OrthographicCamera(0.5, 0.5, 0.5, 0.5, 0, 100);
+    set width (width) {
+      this._width = width;
+      _updateSize.call(this);
     },
-//### - naming
-    update : function (width, height, material) {
-      
-      this.renderTarget = new THREE.WebGLRenderTarget(width, height, {
-        minFilter: THREE.LinearFilter,
-        magFilter: THREE.LinearFilter,
-        format: THREE.RGBAFormat,
-        type: THREE.UnsignedByteType
-      });
-      this.renderTarget.texture.generateMipmaps = false;
-      this.renderTarget.width = width;
-      this.renderTarget.height = height;
 
-      this.material = material;
-      this.mesh.material = material;
-      this.mesh.scale.set(width, height, 1);
+    set height (height) {
+      this._height = height;
+      _updateSize.call(this);
+    },
 
-      this.camera.left = width / - 2;
-      this.camera.right = width / 2;
-      this.camera.top = height / 2;
-      this.camera.bottom = height / - 2;
+    set material (material) {
+      if (material instanceof THREE.Material) {
+        this._material = material;
+        this._mesh.material = material;
+      }
+    },
 
-      this.camera.updateProjectionMatrix();
-
-      // geometry.dynamic = true; ?
-
-      // Reset pixel buffers
-
-// ### - naming here
-      this.viewBuffer = new ArrayBuffer(width * height * 4);
-      this.imageDataArray = new Uint8Array(this.viewBuffer);
-      this.clampedImageDataArray = new Uint8ClampedArray(this.viewBuffer);
-      this.imageData = new ImageData(this.clampedImageDataArray, width, height);
+    init : function (material) {
+      if (material) {
+        this._material = material;
+      }
     },
 
     render : function () {
-      if (this.renderTarget) {
-        this.renderer.render(this.scene, this.camera, this.renderTarget);
+      if (this._renderTarget) {
+        this._renderer.render(this._scene, this._camera, this._renderTarget);
 
-        this.renderer.readRenderTargetPixels(
-          this.renderTarget,
+        this._renderer.readRenderTargetPixels(
+          this._renderTarget,
           0,
           0,
-          this.renderTarget.width,
-          this.renderTarget.height,
-          this.imageDataArray
+          this._renderTarget.width,
+          this._renderTarget.height,
+          this._imageDataArray
         );
       }
     },
 
     teardown : function () {
-      this.renderer = null;
+      this._renderer = null;
     }
   }
 })();

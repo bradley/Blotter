@@ -3,25 +3,17 @@ import "Text";
 
 
 var blotter_TextsMapper = function (texts, ratio) {
+  this.width = 0;
+  this.height = 0;
+
+  this.textsBounds = {};
+  this.texts = [];
+  this.ratio;
+
   this.init.apply(this, arguments);
 };
 
 blotter_TextsMapper.prototype = (function () {
-
-//   function _updateTexts (texts, eachCallback) {
-//     if (!_.isArray(texts)) {
-//       texts = _.toArray(texts);
-//     }
-
-//     for (var i = 0; i < texts.length; i++) {
-//       var text = texts[i];
-// // ### - messaging
-//       blotter_Messaging.ensureInstanceOf(text, Blotter.Text, "Blotter.Text or an array of Blotter.Text objects", "Blotter.Material");
-//       eachCallback.call(this, text)
-//     }
-
-//     _determineTextsMapping.call(this);
-//   }
 
   function _determineTextsMapping () {
     var packer = new GrowingPacker(),
@@ -85,11 +77,6 @@ blotter_TextsMapper.prototype = (function () {
     constructor : blotter_TextsMapper,
 
   	init : function () {
-      this.width = 0;
-      this.height = 0;
-
-      this.textsBounds = {};
-
       _.extendOwn(this, EventEmitter.prototype);
     },
 

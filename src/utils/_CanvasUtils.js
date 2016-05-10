@@ -57,8 +57,8 @@ var blotter_CanvasUtils = {
   // Returns the mouse position within a canvas, normalized to a value between 0 and 1
 
   normalizedMousePosition : function (canvas, event) {
-    var rect = canvas.getBoundingClientRect();
-    var position = this.mousePosition(canvas, event);
+    var rect = canvas.getBoundingClientRect(),
+        position = this.mousePosition(canvas, event);
 
     return {
       x: position.x / rect.width,
