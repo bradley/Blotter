@@ -2,27 +2,18 @@ import "../utils/";
 import "Text";
 
 
-var blotter_TextsMapper = function (texts) {
+var blotter_TextsMapper = function (texts, ratio) {
+  this.width = 0;
+  this.height = 0;
+
+  this.textsBounds = {};
+  this.texts = [];
+  this.ratio;
+
   this.init.apply(this, arguments);
 };
 
 blotter_TextsMapper.prototype = (function () {
-
-  function _updateTexts (texts, eachCallback) {
-    if (!(texts instanceof Array)) {
-      texts = [texts];
-    }
-
-    for (var i = 0; i < texts.length; i++) {
-      var text = texts[i];
-
-      blotter_Messaging.ensureInstanceOf(text, Blotter.Text, "Blotter.Text or an array of Blotter.Text objects", "Blotter.Material");
-
-      eachCallback.call(this, text)
-    }
-
-    _determineTextsMapping.call(this);
-  }
 
   function _determineTextsMapping () {
     var packer = new GrowingPacker(),
@@ -43,15 +34,15 @@ blotter_TextsMapper.prototype = (function () {
     // Add fit objects back into this.textsBounds for each Text id.
     for (var i = 0; i < tempTextsBounds.length; i++) {
       var packedSizesObject = tempTextsBounds[i];
-      if (this.flipY) {
-        packedSizesObject.fit.y = packer.root.h - (packedSizesObject.fit.y + packedSizesObject.h);
-      }
+      packedSizesObject.fit.y = packer.root.h - (packedSizesObject.fit.y + packedSizesObject.h);
       this.textsBounds[packedSizesObject.referenceId].fit = packedSizesObject.fit;
     }
 
     this.width = packer.root.w;
     this.height = packer.root.h;
   }
+
+  // Sort texts based on area of space required for any given text, descending
 
   function _sortTexts (textA, textB) {
     var areaA = textA.w * textA.h,
@@ -73,57 +64,41 @@ blotter_TextsMapper.prototype = (function () {
     return lineHeight;
   }
 
+  function _setBaseTextsBounds () {
+    _.reduce(this.texts, _.bind(function (textsBounds, text) {
+      var size = blotter_TextUtils.sizeForText(text.value, text.properties);
+      textsBounds[text.id] = size;
+      return textsBounds;
+    }, this), this.textsBounds);
+  }
+
   return {
 
     constructor : blotter_TextsMapper,
 
-  	init: function (texts, options) {
-      var options = options || {};
-
-      this.pixelRatio = options.pixelRatio || 1;
-      this.flipY = options.flipY || false;
-
-      this.texts = [];
-      this.textsBounds = {};
-      this.width = 0;
-      this.height = 0;
-
-      this.addTexts(texts);
+  	init : function () {
+      _.extendOwn(this, EventEmitter.prototype);
     },
 
-    addTexts: function (texts) {
-    	_updateTexts.call(this, texts, function(text) {
-        var sizesObject = this.textsBounds[text.id];
+    build : function (texts, ratio) {
+      this.texts = texts;
+      this.ratio = ratio;
 
-      	if (this.texts.indexOf(text) == -1) {
-          this.texts.push(text);
-        }
+      setImmediate(_.bind(function() {
+        _setBaseTextsBounds.call(this);
+        _determineTextsMapping.call(this);
 
-        if (!sizesObject) {
-          var size = blotter_TextUtils.sizeForText(text.value, text.properties);
-          this.textsBounds[text.id] = size;
-        }
-      });
-    },
-
-    removeTexts: function (texts) {
-      _updateTexts.call(this, texts, function(text) {
-        var textsIndex = this.texts.indexOf(text);
-
-        if (textsIndex != -1) {
-          this.texts.splice(textsIndex, 1);
-        }
-
-        delete this.textsBounds[text.id];
-      });
+        this.trigger("build");
+      }, this));
     },
 
     boundsFor : function (text) {
+      blotter_Messaging.ensureInstanceOf(text, Blotter.Text, "Blotter.Text", "Blotter.Material");
       return this.textsBounds[text.id];
     },
 
-    toCanvas: function () {
-      var canvas = blotter_CanvasUtils.hiDpiCanvas(this.width, this.height, this.pixelRatio),
+    toCanvas : function () {
+      var canvas = blotter_CanvasUtils.hiDpiCanvas(this.width, this.height, this.ratio),
           ctx = canvas.getContext("2d", { alpha: false });
 
       ctx.textBaseline = "middle";
@@ -140,9 +115,8 @@ blotter_TextsMapper.prototype = (function () {
              " " + text.properties.family;
         ctx.save();
         ctx.translate(fit.fit.x + text.properties.paddingLeft, adjustedY);
-        if (this.flipY) {
-          ctx.scale(1, -1);
-        }
+        // Flip Y. Ultimately, webgl context will be output flipped vertically onto 2d contexts.
+        ctx.scale(1, -1);
         ctx.fillStyle = text.properties.fill;
         ctx.fillText(
           text.value,
@@ -155,7 +129,7 @@ blotter_TextsMapper.prototype = (function () {
       return canvas;
     },
 
-    getImage: function () {
+    getImage : function () {
     	return this.toCanvas().toDataURL();
     }
   }

@@ -2,14 +2,26 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
+
+    <style type="text/css">
+      body {
+        padding: 20px;
+        font-family: Charcoal, sans-serif;
+        font-size: 22px;
+        line-height: 1.5;
+        color: #0d0f17;
+      }
+      canvas {
+        padding: 0;
+        margin: 0;
+        vertical-align: middle;
+      }
+    </style>
+
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-beta1/jquery.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r74/three.js"></script>
-    <script type="text/javascript" src="blotter.min.js"></script>
+    <script type="text/javascript" src="../blotter.js"></script>
   </head>
-    <div style="display: none; font-size: 22px; line-height: 1.5; font-family: Charcoal, sans-serif; position: absolute; top: 24px; left: 47px; z-index: -10;">
-      communicate pentagrams
-    </div>
+    <p>An <span id="glitch-target"></span> is a set of limitations.</p>
     <script>
       $(document).ready(function() {
 
@@ -87,22 +99,20 @@
         ].join("\n");
 
 
-        var texts = ['To', 'communicate', 'Mars', 'converse', 'spirits', 'report', 'the', 'behaviour', 'of', 'sea', 'monster', 'Describe', 'horoscope', 'haruspicate', 'or', 'scry', 'Observe', 'disease', 'in', 'signatures', 'evoke', 'Biography', 'from', 'wrinkles', 'palm', 'And', 'tragedy', 'fingers', 'release', 'omens'];
-
         var styleProperties = {
           family: "Charcoal, sans-serif",
           size: 22,
-          paddingTop: 12,
-          paddingRight: 17,
-          paddingBottom: 12,
-          paddingLeft: 17,
+          paddingTop: 0,
+          paddingRight: 1,
+          paddingBottom: 0,
+          paddingLeft: 1,
           leading: 1.5,
           fill: "#0d0f17"
         };
 
-        var blotterTexts = texts.map(function(text) { return new Blotter.Text(text, styleProperties); });
+        var text = new Blotter.Text("observation", styleProperties);
 
-        var material = new Blotter.Material(blotterTexts, {
+        var material = new Blotter.Material([text], {
           mainImage : mainImageSrc,
           uniforms : {
             uTime : { type : "1f", value : 0.0 },
@@ -115,17 +125,11 @@
         material.load(function () {
           var renderer = new Blotter.Renderer(material);
 
-          for (var i = 0; i < blotterTexts.length; i++) {
-            var text = blotterTexts[i];
-                outputEl = document.createElement("span");
-            outputEl.style.display = "inline-block";
-            document.body.appendChild(outputEl);
-            renderer.forText(text).appendTo(outputEl);
-          }
+          renderer.forText(text).appendTo(document.getElementById("glitch-target"));
 
           var startTime = new Date().getTime(),
-              textRenderScope = renderer.forText(blotterTexts[12]),
-              textMaterialScope = material.forText(blotterTexts[12]);
+              textRenderScope = renderer.forText(text),
+              textMaterialScope = material.forText(text);
 
           textMaterialScope.uniforms.uDistortion.value = 3.0;
           textMaterialScope.uniforms.uDistortion2.value = 5.0;

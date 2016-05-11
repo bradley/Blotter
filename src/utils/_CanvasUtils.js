@@ -15,15 +15,15 @@ var blotter_CanvasUtils = {
 
 	// Creates and returns a high DPI canvas based on a device specific pixel ratio
 
-	hiDpiCanvas : function (w, h, pixelRatio) {
-	  pixelRatio = pixelRatio || this.pixelRatio;
+	hiDpiCanvas : function (w, h, ratio) {
+	  ratio = ratio || this.pixelRatio;
 	  var canvas = document.createElement("canvas");
 
-	  canvas.width = w * pixelRatio;
-	  canvas.height = h * pixelRatio;
+	  canvas.width = w * ratio;
+	  canvas.height = h * ratio;
 	  canvas.style.width = w + "px";
 	  canvas.style.height = h + "px";
-	  canvas.getContext("2d").setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+	  canvas.getContext("2d").setTransform(ratio, 0, 0, ratio, 0, 0);
 
 	  return canvas;
 	},
@@ -31,10 +31,6 @@ var blotter_CanvasUtils = {
 	// Returns the device's pixel ratio
 
 	pixelRatio : (function () {
-    // Note: `sharpness` is used to increase the legibility of our rendered content.
-    //   However I suspect it probably slows things down a bit - I haven't really
-    //   checked. I'm open to thoughts.
-    var sharpness = 1; console.log("dont forget you did this. set back to 1");
     var ctx = document.createElement("canvas").getContext("2d"),
         dpr = window.devicePixelRatio || 1,
         bsr = ctx.backingStorePixelRatio;
@@ -45,8 +41,10 @@ var blotter_CanvasUtils = {
 
     bsr = bsr || 1;
 
-    return (dpr / bsr) * sharpness;
+    return (dpr / bsr);
   })(),
+
+  // Returns the mouse position within a canvas
 
   mousePosition : function (canvas, event) {
     var rect = canvas.getBoundingClientRect();
@@ -56,9 +54,11 @@ var blotter_CanvasUtils = {
     };
   },
 
+  // Returns the mouse position within a canvas, normalized to a value between 0 and 1
+
   normalizedMousePosition : function (canvas, event) {
-    var rect = canvas.getBoundingClientRect();
-    var position = this.mousePosition(canvas, event);
+    var rect = canvas.getBoundingClientRect(),
+        position = this.mousePosition(canvas, event);
 
     return {
       x: position.x / rect.width,

@@ -1,10 +1,10 @@
 var blotter_UniformUtils = {
 
-  // Uniform type values we accept for user defined uniforms.
+  // Uniform type values we accept for user defined uniforms
 
   UniformTypes : ["1f", "2f", "3f", "4f"],
 
-  // Determine if value is valid for user defined uniform type.
+  // Determine if value is valid for user defined uniform type
 
   validValueForUniformType : function (type, value) {
     var valid = false,
@@ -18,15 +18,15 @@ var blotter_UniformUtils = {
         break;
 
       case '2f':
-        valid = Array.isArray(value) && value.length == 2 && value.every(isValid);
+        valid = _.isArray(value) && value.length == 2 && value.every(isValid);
         break;
 
       case '3f':
-        valid = Array.isArray(value) && value.length == 3 && value.every(isValid);
+        valid = _.isArray(value) && value.length == 3 && value.every(isValid);
         break;
 
       case '4f':
-        valid = Array.isArray(value) && value.length == 4 && value.every(isValid);
+        valid = _.isArray(value) && value.length == 4 && value.every(isValid);
         break;
 
       default:
@@ -89,29 +89,27 @@ var blotter_UniformUtils = {
     return swizzleString;
   },
 
+  // Given an object containing uniform descriptions, return an object containing only valid uniforms based on the uniform's type and value
+
   extractValidUniforms : function (uniforms, domain) {
     uniforms = uniforms || {};
-    var validUniforms = {};
-
-    for (var uniformName in uniforms) {
-      if (uniforms.hasOwnProperty(uniformName)) {
-        var uniform = uniforms[uniformName];
-        if (blotter_UniformUtils.UniformTypes.indexOf(uniform.type) == -1) {
-          blotter_Messaging.logError(domain, "uniforms must be one of type: " +
-            blotter_UniformUtils.UniformTypes.join(", "));
-          continue;
-        }
-
-        if (!blotter_UniformUtils.validValueForUniformType(uniform.type, uniform.value)) {
-          blotter_Messaging.logError(domain, "uniform value for " + uniformName + " is incorrect for type: " + uniform.type);
-          continue;
-        }
-
-        validUniforms[uniformName] = uniform;
+    return _.reduce(uniforms, function (memo, uniformObject, uniformName) {
+      if (blotter_UniformUtils.UniformTypes.indexOf(uniformObject.type) == -1) {
+// ### - messaging
+        blotter_Messaging.logError(domain, "uniforms must be one of type: " +
+          blotter_UniformUtils.UniformTypes.join(", "));
+        return memo;
       }
-    }
 
-    return validUniforms;
+      if (!blotter_UniformUtils.validValueForUniformType(uniformObject.type, uniformObject.value)) {
+// ### - messaging
+        blotter_Messaging.logError(domain, "uniform value for " + uniformName + " is incorrect for type: " + uniformObject.type);
+        return memo;
+      }
+// ### - should extract out keys from uniformObject that arent either type or value.
+      memo[uniformName] = uniformObject;
+      return memo;
+    }, {})
   }
 
 }

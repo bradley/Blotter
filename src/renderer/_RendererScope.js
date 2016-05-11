@@ -4,25 +4,27 @@ import "../text/";
 import "../material/";
 
 
-var blotter_RendererScope = function (text, renderer, options) {
-  this.init(text, renderer, options);
+var blotter_RendererScope = function (text, renderer) {
+  this.text;
+  this.renderer;
+  this.ratio;
+  this.material;
+
+  this.playing = false;
+  this.timeDelta = 0;
+  this.lastDrawTime;
+  this.frameCount = 0;
+
+  this.domElement;
+  this.context;
+
+  this.init.apply(this, arguments);
 }
 
 blotter_RendererScope.prototype = (function () {
 
-  function _setupEventEmission () {
-    var emitter = EventEmitter.prototype;
-
-    for (var prop in emitter) {
-      if (emitter.hasOwnProperty(prop)) {
-        this[prop] = emitter[prop];
-      }
-    }
-  }
-
   function _setMouseEventListeners () {
-    var self = this,
-        eventNames = ["mousedown", "mouseup", "mousemove", "mouseenter", "mouseleave"];
+    var eventNames = ["mousedown", "mouseup", "mousemove", "mouseenter", "mouseleave"];
     for (var i = 0; i < eventNames.length; i++) {
       var eventName = eventNames[i];
       (function (self, name) {
@@ -30,7 +32,7 @@ blotter_RendererScope.prototype = (function () {
           var position = blotter_CanvasUtils.normalizedMousePosition(self.domElement, e);
           self.emit(name, position)
         }, false);
-      })(self, eventName);
+      })(this, eventName);
     }
   }
 
@@ -39,8 +41,7 @@ blotter_RendererScope.prototype = (function () {
   }
 
   function _render () {
-
-    if (this.domElement) {
+    if (this.domElement && this.bounds) {
       this.context.clearRect(0, 0, this.domElement.width, this.domElement.height);
 
       this.context.putImageData(
@@ -49,42 +50,57 @@ blotter_RendererScope.prototype = (function () {
         this.bounds.y
       );
 
-      this.emit("update", this.frameCount);
+      this.trigger("update", [this.frameCount]);
     }
+  }
+
+  function _updateBounds () {
+    var mappedBounds = this.renderer.material.boundsFor(this.text);
+
+    if (mappedBounds) {
+      // ### - x and y and all of this should be set directly in material. this should not have to scope into _mapper
+      this.bounds = {
+        w : mappedBounds.w,
+        h : mappedBounds.h,
+        x : -1 * Math.floor(mappedBounds.fit.x * this.ratio),
+        y : -1 * Math.floor((this.renderer.material._mapper.height - (mappedBounds.fit.y + mappedBounds.h)) * this.ratio)
+      };
+
+      this.domElement.width = this.bounds.w * this.ratio;
+      this.domElement.height = this.bounds.h * this.ratio;
+      this.domElement.style.width = this.bounds.w + "px";
+      this.domElement.style.height = this.bounds.h + "px";
+    }
+  }
+
+  function _updateMaterial () {
+    this.material.material = this.renderer.material;
+    this.material.needsMaterialUpdate = true;
+
+    _updateBounds.call(this);
   }
 
   return {
 
     constructor : blotter_RendererScope,
 
-    init : function (text, renderer, options) {
-      options = options || {};
-      if (typeof options.autostart === "undefined") {
-        options.autostart = true;
+    set needsMaterialUpdate (value) {
+      if (value === true) {
+        _updateMaterial.call(this);
       }
+    },
 
+    init : function (text, renderer) {
       this.text = text;
       this.renderer = renderer;
+      this.ratio = this.renderer.ratio;
 
-      this.pixelRatio = options.pixelRatio || blotter_CanvasUtils.pixelRatio;
+      this.material = new blotter_MaterialScope(this.text, this.renderer.material);
 
-      var mappedBounds = this.renderer.material.textsTexture.boundsFor(text);
-      this.bounds = {
-        w : mappedBounds.w,
-        h : mappedBounds.h,
-        x : -1 * Math.floor(mappedBounds.fit.x * this.pixelRatio),
-        y : -1 * Math.floor((this.renderer.material.textsTexture.mapper.height - (mappedBounds.fit.y + mappedBounds.h)) * this.pixelRatio)
-      };
+      this.domElement = blotter_CanvasUtils.hiDpiCanvas(0, 0, this.ratio);
+      this.context = this.domElement.getContext("2d");
 
-      this.playing = options.autostart;
-      this.timeDelta = 0;
-      this.lastDrawTime;
-      this.frameCount = 0;
-
-      this.domElement;
-      this.context;
-
-      _setupEventEmission.call(this);
+      _.extendOwn(this, EventEmitter.prototype);
     },
 
     play : function () {
@@ -104,16 +120,10 @@ blotter_RendererScope.prototype = (function () {
     },
 
     appendTo : function (element) {
-      if (this.domElement) {
-        this.domElement.remove();
-        this.context = null;
-      }
-
-      this.domElement = blotter_CanvasUtils.hiDpiCanvas(this.bounds.w, this.bounds.h);
-      this.context = this.domElement.getContext("2d");
-
       element.appendChild(this.domElement);
       _setEventListeners.call(this);
+
+      return this;
     }
   }
 })();

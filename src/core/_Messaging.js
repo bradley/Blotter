@@ -6,6 +6,7 @@ var blotter_Messaging = (function () {
 
   return {
 
+// ### - messaging. is this really necessary?
     ensureInstanceOf : function (object, constructor, constructorStr, domain) {
       if (!(object instanceof constructor)) {
         this.logError(domain, "argument must be instanceof " + constructorStr);
