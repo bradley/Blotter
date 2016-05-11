@@ -2,8 +2,8 @@
 
   Blotter.Text = function (value, properties) {
     this.id = THREE.Math.generateUUID();
-    this.value;
-    this.properties;
+    this.value = value;
+    this.properties = Blotter._TextUtils.ensurePropertyValues(properties);
 
     this.init.apply(this, arguments);
   };
@@ -27,10 +27,9 @@
         }
       },
 
-      init : function (value, properties) {
-        this.value = value;
-        this.properties = Blotter._TextUtils.ensurePropertyValues(properties);
+      get needsUpdate () { }, // jshint
 
+      init : function (value, properties) {
         _setupEventEmission.call(this);
       }
     };

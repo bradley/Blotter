@@ -1,12 +1,12 @@
 (function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
 
   Blotter._TextsTexture = function(mapper) {
-    this.mapper;
+    this._mapper = mapper;
 
     // Stub texture - resets on build.
     this.texture = new THREE.Texture();
 
-    this.init.apply(this, arguments);
+    _.extendOwn(this, EventEmitter.prototype);
   };
 
   Blotter._TextsTexture.prototype = (function() {
@@ -15,15 +15,9 @@
 
       constructor : Blotter._TextsTexture,
 
-      init : function (mapper) {
-        this.mapper = mapper;
-
-        _.extendOwn(this, EventEmitter.prototype);
-      },
-
       build : function () {
         var loader = new THREE.TextureLoader();
-        loader.load(this.mapper.getImage(), _.bind(function(texture) {
+        loader.load(this._mapper.getImage(), _.bind(function(texture) {
           this.texture = texture;
           this.texture.generateMipmaps = false;
           this.texture.minFilter = THREE.LinearFilter;
@@ -35,7 +29,7 @@
       }
     };
   })();
-  
+
 })(
   this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
 );

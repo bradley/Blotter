@@ -1,14 +1,15 @@
 (function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
 
-  Blotter._TextsMapper = function (texts, ratio) {
+  Blotter._TextsMapper = function () {
     this.width = 0;
     this.height = 0;
 
-    this.textsBounds = {};
     this.texts = [];
-    this.ratio;
+    this.ratio = Blotter._CanvasUtils.pixelRatio;
 
-    this.init.apply(this, arguments);
+    this._textsBounds = {};
+
+    _.extendOwn(this, EventEmitter.prototype);
   };
 
   Blotter._TextsMapper.prototype = (function () {
@@ -18,9 +19,9 @@
           tempTextsBounds = [];
 
       // Build array of objects holding a Text object's id, width, and height for sorting.
-      for (var textId in this.textsBounds) {
-        if (this.textsBounds.hasOwnProperty(textId)) {
-          var tempSizesObject = this.textsBounds[textId];
+      for (var textId in this._textsBounds) {
+        if (this._textsBounds.hasOwnProperty(textId)) {
+          var tempSizesObject = this._textsBounds[textId];
           tempSizesObject.referenceId = textId;
           tempTextsBounds.push(tempSizesObject);
         }
@@ -29,11 +30,11 @@
       // Add fit object to all objects in tempTextsBounds.
       packer.fit(tempTextsBounds.sort(_sortTexts));
 
-      // Add fit objects back into this.textsBounds for each Text id.
+      // Add fit objects back into this._textsBounds for each Text id.
       for (var i = 0; i < tempTextsBounds.length; i++) {
         var packedSizesObject = tempTextsBounds[i];
         packedSizesObject.fit.y = packer.root.h - (packedSizesObject.fit.y + packedSizesObject.h);
-        this.textsBounds[packedSizesObject.referenceId].fit = packedSizesObject.fit;
+        this._textsBounds[packedSizesObject.referenceId].fit = packedSizesObject.fit;
       }
 
       this.width = packer.root.w;
@@ -67,16 +68,12 @@
         var size = Blotter._TextUtils.sizeForText(text.value, text.properties);
         textsBounds[text.id] = size;
         return textsBounds;
-      }, this), this.textsBounds);
+      }, this), this._textsBounds);
     }
 
     return {
 
       constructor : Blotter._TextsMapper,
-
-    	init : function () {
-        _.extendOwn(this, EventEmitter.prototype);
-      },
 
       build : function (texts, ratio) {
         this.texts = texts;
@@ -92,7 +89,7 @@
 
       boundsFor : function (text) {
         Blotter._Messaging.ensureInstanceOf(text, Blotter.Text, "Blotter.Text", "Blotter.Material");
-        return this.textsBounds[text.id];
+        return this._textsBounds[text.id];
       },
 
       toCanvas : function () {
@@ -103,7 +100,7 @@
 
         for (var i = 0; i < this.texts.length; i++) {
           var text = this.texts[i],
-              fit = this.textsBounds[text.id],
+              fit = this._textsBounds[text.id],
               yOffset = _getYOffset.call(this, text.properties.size, text.properties.leading) / 2, // divide yOffset by 2 to accomodate `middle` textBaseline
               adjustedY = fit.fit.y + text.properties.paddingTop + yOffset;
 

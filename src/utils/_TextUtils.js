@@ -21,8 +21,7 @@
 		// Recieves property values (optional) and fills in any missing values with default values
 
 		ensurePropertyValues : function(properties) {
-			properties = properties || {},
-			_.defaults(properties, Blotter._PropertyDefaults);
+			properties = _.defaults(properties || {}, Blotter._PropertyDefaults);
 			return properties;
 		},
 
@@ -68,7 +67,7 @@
 		  return size;
 		}
 	};
-  
+
 })(
   this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
 );

@@ -1,16 +1,17 @@
 (function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
 
   Blotter.Material = function(mainImage, options) {
+    _.defaults(this, options, {
+      uniforms : {}
+    });
+
     this._mapper = new Blotter._TextsMapper();
-    this._uniforms = {};
 
     this._texts = [];
-    this._ratio;
-    this._sampleAccuracy;
 
-    this.mainImage;
+    this.mainImage = mainImage;
 
-    this.init.apply(this, arguments);
+    _.extendOwn(this, EventEmitter.prototype);
   };
 
   Blotter.Material.prototype = (function() {
@@ -155,21 +156,19 @@
           buildActions;
 
       this._texts = texts;
-      this._ratio = ratio;
-      this._sampleAccuracy = sampleAccuracy;
 
-      buildMapper = _.bind(function () {
+      buildMapper = _.bind(function (ratio) {
         return _.bind(function (next) {
           this._mapper.on("build", function () {
             next();
           });
-          this._mapper.build(this._texts, this._ratio);
+          this._mapper.build(this._texts, ratio);
         }, this);
       }, this);
 
-      buildTextsTexture = _.bind(function () {
+      buildTextsTexture = _.bind(function (ratio) {
         return _.bind(function (next) {
-          this._textsTexture = new Blotter._TextsTexture(this._mapper, this._ratio);
+          this._textsTexture = new Blotter._TextsTexture(this._mapper, ratio);
           this._textsTexture.on("build", function () {
             next();
           });
@@ -177,9 +176,9 @@
         }, this);
       }, this);
 
-      buildIndicesTexture = _.bind(function () {
+      buildIndicesTexture = _.bind(function (sampleAccuracy) {
         return _.bind(function (next) {
-          this._indicesTexture = new Blotter._TextsIndicesTexture(this._mapper, this._sampleAccuracy);
+          this._indicesTexture = new Blotter._TextsIndicesTexture(this._mapper, sampleAccuracy);
           this._indicesTexture.on("build", function () {
             next();
           });
@@ -198,15 +197,15 @@
       }, this);
 
       buildActions = [
-        buildMapper(),
-        buildTextsTexture(),
-        buildIndicesTexture(),
+        buildMapper(ratio),
+        buildTextsTexture(ratio),
+        buildIndicesTexture(sampleAccuracy),
         buildBoundsTexture()
       ];
 
       _(buildActions).reduceRight(_.wrap, _.bind(function () {
-        this.width = this._mapper.width * this._ratio;
-        this.height = this._mapper.height * this._ratio;
+        this.width = this._mapper.width * ratio;
+        this.height = this._mapper.height * ratio;
 
         _setTextureUniformsForUniforms.call(this, this._texts.length);
 
@@ -267,15 +266,7 @@
         }
       },
 
-      init : function (mainImage, options) {
-        _.defaults(this, options, {
-          uniforms : {}
-        });
-
-        this.mainImage = mainImage;
-
-        _.extendOwn(this, EventEmitter.prototype);
-      },
+      get needsUpdate () { }, // jshint
 
       build : function (texts, ratio, sampleAccuracy) {
         this.mainImage = this.mainImage || _defaultMainImageSrc.call(this);

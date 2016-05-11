@@ -10,7 +10,7 @@
 
     this._plane = new THREE.PlaneGeometry(1, 1);
 
-    this._material = new THREE.MeshBasicMaterial(); // Stub material.
+    this._material = material ||new THREE.MeshBasicMaterial(); // Stub material.
 
     this._mesh = new THREE.Mesh(this._plane, this._material);
 
@@ -18,15 +18,7 @@
 
     this._renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, premultipliedAlpha : false });
 
-    this._renderTarget = null;
-
     this._camera = new THREE.OrthographicCamera(0.5, 0.5, 0.5, 0.5, 0, 100);
-
-    this._viewBuffer = null;
-    this._imageDataArray = null;
-    this._clampedImageDataArray = null;
-
-    this.imageData = null;
 
     this.init.apply(this, arguments);
   };
@@ -69,10 +61,14 @@
         _updateSize.call(this);
       },
 
+      get width () { }, // jshint
+
       set height (height) {
         this._height = height;
         _updateSize.call(this);
       },
+
+      get height () { }, // jshint
 
       set material (material) {
         if (material instanceof THREE.Material) {
@@ -81,25 +77,23 @@
         }
       },
 
+      get material () { }, // jshint
+
       init : function (material) {
-        if (material) {
-          this._material = material;
-        }
+        _updateSize.call(this);
       },
 
       render : function () {
-        if (this._renderTarget) {
-          this._renderer.render(this._scene, this._camera, this._renderTarget);
+        this._renderer.render(this._scene, this._camera, this._renderTarget);
 
-          this._renderer.readRenderTargetPixels(
-            this._renderTarget,
-            0,
-            0,
-            this._renderTarget.width,
-            this._renderTarget.height,
-            this._imageDataArray
-          );
-        }
+        this._renderer.readRenderTargetPixels(
+          this._renderTarget,
+          0,
+          0,
+          this._renderTarget.width,
+          this._renderTarget.height,
+          this._imageDataArray
+        );
       },
 
       teardown : function () {

@@ -10,13 +10,13 @@ module.exports = function(grunt) {
       licenseFile : 'license.txt',
 
       depFiles : [
-        'third-party/underscore/underscore.js',
-        'third-party/three/three.js',
-        'third-party/three/Detector.js',
-        'third-party/set_immediate/setimmediate.js',
-        'third-party/event_emitter/EventEmitter.js',
-        'third-party/packer/packer.growing.js',
-        'third-party/request_animation_frame/requestAnimationFrame.js'
+        'third_party/underscore/underscore.js',
+        'third_party/three/three.js',
+        'third_party/three/Detector.js',
+        'third_party/set_immediate/setimmediate.js',
+        'third_party/event_emitter/EventEmitter.js',
+        'third_party/packer/packer.growing.js',
+        'third_party/request_animation_frame/requestAnimationFrame.js'
       ],
 
       srcFiles : [

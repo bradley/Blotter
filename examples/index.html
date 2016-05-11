@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-beta1/jquery.js"></script>
-    <script type="text/javascript" src="../blotter.js"></script>
+    <script type="text/javascript" src="../build/blotter.js"></script>
   </head>
     <div style="display: none; font-size: 12px; line-height: 1.5; font-family: Charcoal, sans-serif; position: absolute; top: 24px; left: 47px; z-index: -10;">
       communicate pentagrams
@@ -105,9 +105,7 @@
           }
         });
 
-        var testTexts = [new Blotter.Text("testing", styleProperties)];
-
-        var blotter = new Blotter.Renderer(material, {
+        var blotter = new Blotter(material, {
           texts : blotterTexts
         });
 
@@ -115,7 +113,6 @@
         blotter.on("load", function () {
           console.log("test");
         });
-
 
 
         for (var i = 0; i < blotterTexts.length; i++) {
@@ -135,6 +132,15 @@
         });
 
 
+        var myScope2 = blotter.forText(blotterTexts[1]);
+        myScope2.on("mousemove", function (mousePosition) {
+          myScope2.material.uniforms.uLenseWeight.value = 0.9;
+          myScope2.material.uniforms.uCenterPoint.value = [mousePosition.x, mousePosition.y];
+        });
+
+        myScope2.on("mouseleave", function () {
+          myScope2.material.uniforms.uCenterPoint.value = [0.5, 0.5];
+        });
 
         _.delay(function() {
           var text = new Blotter.Text("hello world", styleProperties);

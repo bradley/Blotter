@@ -144,4 +144,4 @@ GrowingPacker.prototype = {
       return null;
   }
 
-}
+};

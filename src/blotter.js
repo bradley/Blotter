@@ -1,5 +1,5 @@
 (function(previousBlotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
-  
+
   var root = this;
 
   var RendererTextItem = function (textObject, eventCallbacks) {
@@ -19,27 +19,36 @@
 
 
   var Blotter = root.Blotter = previousBlotter = function (material, options) {
+// ### - remove this shit following documentation.
+    // There is a negative coorelation between the sampleAccuracy value and
+    // the speed at which texture generation happens.
+    // However, the lower this value, the less sampleAccuracy you can expect
+    // for indexing into uniforms for any given text.
+    // Value must be between 0.0 and 1.0, and you are advised to keep it around 0.5.
+    _.defaults(this, options, {
+      ratio          : Blotter._CanvasUtils.pixelRatio,
+      autostart      : true,
+      autobuild      : true,
+      sampleAccuracy : 0.5
+    });
+
     if (!Detector.webgl) {
   // ### - messaging
       Blotter._Messaging.throwError("Blotter", "device does not support webgl");
     }
 
-    this.Version = "v0.1.0"; 
+    this.Version = "v0.1.0";
 
     this._texts = {};
     this._scopes = {};
 
     this._backBuffer = new Blotter._BackBufferRenderer();
 
-    this._currentAnimationLoop;
+    this._currentAnimationLoop = false;
 
-    this.ratio = Blotter._CanvasUtils.pixelRatio;
-    this.autostart = true;
-    this.autobuild = true;
-    this.sampleAccuracy = 0.5;
+    this.imageData = false;
 
-    this.imageData;
-
+    _.extendOwn(this, EventEmitter.prototype);
     this.init.apply(this, arguments);
   };
 
@@ -140,6 +149,11 @@
 
       constructor : Blotter,
 
+      //set texts (v) {
+  // ### - messaging
+        //Blotter._Messaging.logError("Blotter", "Please use #addTexts or #removeTexts to manipulate Blotter.Text objects in your Blotter instance.");
+      //},
+
       get texts () {
         return this._texts;
       },
@@ -150,25 +164,12 @@
         }
       },
 
-      init : function (material, options) {
-  // ### - remove this shit following documentation.
-        // There is a negative coorelation between the sampleAccuracy value and
-        // the speed at which texture generation happens.
-        // However, the lower this value, the less sampleAccuracy you can expect
-        // for indexing into uniforms for any given text.
-        // Value must be between 0.0 and 1.0, and you are advised to keep it around 0.5.
-        _.defaults(this, options, {
-          ratio          : Blotter._CanvasUtils.pixelRatio,
-          autostart      : true,
-          autobuild      : true,
-          sampleAccuracy : 0.5
-        });
+      get needsUpdate () { }, // jshint
 
+      init : function (material, options) {
         _setMaterial.call(this, material);
 
         this.addTexts(options.texts);
-
-        _.extendOwn(this, EventEmitter.prototype);
 
         if (this.autobuild) {
           this.needsUpdate = true;
@@ -194,7 +195,7 @@
 
       teardown : function () {
         this.stop();
-        this._backBuffer && this._backBuffer.teardown();
+        if (this._backBuffer) this._backBuffer.teardown();
         this.renderer = null;
       },
 

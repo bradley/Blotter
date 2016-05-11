@@ -1,13 +1,11 @@
 (function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
-  
+
   Blotter._MaterialScope = function (text, material) {
     this._dataIndex = -1;
 
-    this.text;
-    this.material;
+    this.text = text;
+    this.material = material;
     this.uniforms = {};
-
-    this.init.apply(this, arguments);
   };
 
   Blotter._MaterialScope.prototype = (function () {
@@ -111,10 +109,7 @@
         }
       },
 
-      init : function (text, material) {
-        this.text = text;
-        this.material = material;
-      }
+      get needsMaterialUpdate () { }, // jshint
     };
   })();
 
