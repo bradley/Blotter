@@ -1,115 +1,121 @@
-var blotter_UniformUtils = {
+(function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
 
-  // Uniform type values we accept for user defined uniforms
+  Blotter._UniformUtils = {
 
-  UniformTypes : ["1f", "2f", "3f", "4f"],
+    // Uniform type values we accept for user defined uniforms
 
-  // Determine if value is valid for user defined uniform type
+    UniformTypes : ["1f", "2f", "3f", "4f"],
 
-  validValueForUniformType : function (type, value) {
-    var valid = false,
-        isValid = function (element, index, array) {
-          return !isNaN(element);
-        };
+    // Determine if value is valid for user defined uniform type
 
-    switch (type) {
-      case '1f':
-        valid = !isNaN(value) && [value].every(isValid);
-        break;
+    validValueForUniformType : function (type, value) {
+      var valid = false,
+          isValid = function (element, index, array) {
+            return !isNaN(element);
+          };
 
-      case '2f':
-        valid = _.isArray(value) && value.length == 2 && value.every(isValid);
-        break;
+      switch (type) {
+        case '1f':
+          valid = !isNaN(value) && [value].every(isValid);
+          break;
 
-      case '3f':
-        valid = _.isArray(value) && value.length == 3 && value.every(isValid);
-        break;
+        case '2f':
+          valid = _.isArray(value) && value.length == 2 && value.every(isValid);
+          break;
 
-      case '4f':
-        valid = _.isArray(value) && value.length == 4 && value.every(isValid);
-        break;
+        case '3f':
+          valid = _.isArray(value) && value.length == 3 && value.every(isValid);
+          break;
 
-      default:
-        break;
-    }
+        case '4f':
+          valid = _.isArray(value) && value.length == 4 && value.every(isValid);
+          break;
 
-    return valid;
-  },
-
-  glslDataTypeForUniformType : function (type) {
-    var dataType;
-    switch (type) {
-      case '1f':
-        dataType = "float";
-        break;
-
-      case '2f':
-        dataType = "vec2";
-        break;
-
-      case '3f':
-        dataType = "vec3";
-        break;
-
-      case '4f':
-        dataType = "vec4";
-        break;
-
-      default:
-        break;
-    }
-
-    return dataType;
-  },
-
-  fullSwizzleStringForUniformType : function (type) {
-    var swizzleString;
-
-    switch (type) {
-      case '1f':
-        swizzleString = "x";
-        break;
-
-      case '2f':
-        swizzleString = "xy";
-        break;
-
-      case '3f':
-        swizzleString = "xyz";
-        break;
-
-      case '4f':
-        swizzleString = "xyzw";
-        break;
-
-      default:
-        break;
-    }
-
-    return swizzleString;
-  },
-
-  // Given an object containing uniform descriptions, return an object containing only valid uniforms based on the uniform's type and value
-
-  extractValidUniforms : function (uniforms, domain) {
-    uniforms = uniforms || {};
-    return _.reduce(uniforms, function (memo, uniformObject, uniformName) {
-      if (blotter_UniformUtils.UniformTypes.indexOf(uniformObject.type) == -1) {
-// ### - messaging
-        blotter_Messaging.logError(domain, "uniforms must be one of type: " +
-          blotter_UniformUtils.UniformTypes.join(", "));
-        return memo;
+        default:
+          break;
       }
 
-      if (!blotter_UniformUtils.validValueForUniformType(uniformObject.type, uniformObject.value)) {
-// ### - messaging
-        blotter_Messaging.logError(domain, "uniform value for " + uniformName + " is incorrect for type: " + uniformObject.type);
-        return memo;
-      }
-// ### - should extract out keys from uniformObject that arent either type or value.
-      memo[uniformName] = uniformObject;
-      return memo;
-    }, {})
-  }
+      return valid;
+    },
 
-}
+    glslDataTypeForUniformType : function (type) {
+      var dataType;
+      switch (type) {
+        case '1f':
+          dataType = "float";
+          break;
+
+        case '2f':
+          dataType = "vec2";
+          break;
+
+        case '3f':
+          dataType = "vec3";
+          break;
+
+        case '4f':
+          dataType = "vec4";
+          break;
+
+        default:
+          break;
+      }
+
+      return dataType;
+    },
+
+    fullSwizzleStringForUniformType : function (type) {
+      var swizzleString;
+
+      switch (type) {
+        case '1f':
+          swizzleString = "x";
+          break;
+
+        case '2f':
+          swizzleString = "xy";
+          break;
+
+        case '3f':
+          swizzleString = "xyz";
+          break;
+
+        case '4f':
+          swizzleString = "xyzw";
+          break;
+
+        default:
+          break;
+      }
+
+      return swizzleString;
+    },
+
+    // Given an object containing uniform descriptions, return an object containing only valid uniforms based on the uniform's type and value
+
+    extractValidUniforms : function (uniforms, domain) {
+      uniforms = uniforms || {};
+      return _.reduce(uniforms, function (memo, uniformObject, uniformName) {
+        if (Blotter._UniformUtils.UniformTypes.indexOf(uniformObject.type) == -1) {
+  // ### - messaging
+          Blotter._Messaging.logError(domain, "uniforms must be one of type: " +
+            Blotter._UniformUtils.UniformTypes.join(", "));
+          return memo;
+        }
+
+        if (!Blotter._UniformUtils.validValueForUniformType(uniformObject.type, uniformObject.value)) {
+  // ### - messaging
+          Blotter._Messaging.logError(domain, "uniform value for " + uniformName + " is incorrect for type: " + uniformObject.type);
+          return memo;
+        }
+  // ### - should extract out keys from uniformObject that arent either type or value.
+        memo[uniformName] = uniformObject;
+        return memo;
+      }, {});
+    }
+
+  };
+  
+})(
+  this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
+);

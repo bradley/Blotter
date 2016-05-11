@@ -1,3 +1,0 @@
-#!/usr/bin/env node
-
-console.log("!function(){\n  var blotter = {version: " + JSON.stringify(require("../package.json").version) + "}; // semver");
