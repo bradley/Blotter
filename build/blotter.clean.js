@@ -388,7 +388,7 @@
       };
     }
   };
-  
+
 })(
   this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
 );
@@ -584,7 +584,7 @@
     }
 
   };
-  
+
 })(
   this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
 );
