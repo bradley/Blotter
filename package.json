@@ -5,10 +5,13 @@
   "keywords": [
     "lsd",
     "acid",
+    "dom",
     "webgl",
     "tripping",
     "canvas",
     "animation",
+    "text",
+    "typography",
     "substances"
   ],
   "homepage": "",
@@ -16,14 +19,32 @@
     "name": "Bradley Griffith",
     "url": "http://bradley.computer"
   },
+  "main": "build/blotter.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/bradley/blotter.git"
+    "url": "https://github.com/bradley/blotter"
   },
-  "main": "blotter.js",
+  "bugs": {
+    "url": "https://github.com/bradley/blotter/issues"
+  },
+  "license" : "MIT",
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/bradley/blotter/blob/master/license.txt"
+    }
+  ],
+  "dependencies" : {
+    "three": "~0.74.0",
+    "underscore": "1.8.3",
+    "requestanimationframe": ">= 0.0.22"
+  },
   "devDependencies": {
-    "smash": "0.0",
-    "uglify-js": "2.6.1"
-  },
-  "license": "BSD-3-Clause"
+    "grunt": "^0.4.0",
+    "grunt-contrib-jshint": "^0.10.0",
+    "grunt-contrib-watch": "^0.6.0",
+    "grunt-contrib-concat": "^0.4.0",
+    "grunt-closure-tools": "^0.9.0",
+    "grunt-contrib-uglify": "^0.4.0"
+  }
 }

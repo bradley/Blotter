@@ -1,60 +1,66 @@
-// Create a Data Texture holding the boundaries (x/y offset and w/h) that should be available to any given texel for any given text.
+(function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
 
-var blotter_TextsBoundsTexture = function (mapper) {
-  this.mapper;
-  this.texts = [];
-  this.width;
-  this.height;
-  this.ratio;
+  // Create a Data Texture holding the boundaries (x/y offset and w/h) that should be available to any given texel for any given text.
 
-  // Stub texture - resets on build.
-  this.texture = new THREE.DataTexture([], 0, 0, THREE.RGBAFormat, THREE.FloatType);
+  Blotter._TextsBoundsTexture = function (mapper) {
+    this.mapper;
+    this.texts = [];
+    this.width;
+    this.height;
+    this.ratio;
 
-  this.init.apply(this, arguments);
-}
+    // Stub texture - resets on build.
+    this.texture = new THREE.DataTexture([], 0, 0, THREE.RGBAFormat, THREE.FloatType);
 
-blotter_TextsBoundsTexture.prototype = (function () {
+    this.init.apply(this, arguments);
+  };
 
-  function _spriteBounds (completion) {
-    var data = new Float32Array(this.texts.length * 4);
+  Blotter._TextsBoundsTexture.prototype = (function () {
 
-    setImmediate(_.bind(function() {
-      for (var i = 0; i < this.texts.length; i++) {
-        var text = this.texts[i],
-            bounds = this.mapper.boundsFor(text);
+    function _spriteBounds (completion) {
+      var data = new Float32Array(this.texts.length * 4);
 
-        data[4*i]   = bounds.fit.x * this.ratio;                                             // x
-        data[4*i+1] = (this.height * this.ratio) - ((bounds.fit.y + bounds.h) * this.ratio); // y
-        data[4*i+2] = bounds.w * this.ratio;                                                 // w
-        data[4*i+3] = bounds.h * this.ratio;                                                 // h
-      };
+      setImmediate(_.bind(function() {
+        for (var i = 0; i < this.texts.length; i++) {
+          var text = this.texts[i],
+              bounds = this.mapper.boundsFor(text);
 
-      completion(data);
-    }, this));
-  }
+          data[4*i]   = bounds.fit.x * this.ratio;                                             // x
+          data[4*i+1] = (this.height * this.ratio) - ((bounds.fit.y + bounds.h) * this.ratio); // y
+          data[4*i+2] = bounds.w * this.ratio;                                                 // w
+          data[4*i+3] = bounds.h * this.ratio;                                                 // h
+        }
 
-  return {
-
-    constructor : blotter_TextsBoundsTexture,
-
-    init : function (mapper) {
-      this.mapper = mapper;
-
-      _.extendOwn(this, EventEmitter.prototype);
-    },
-
-    build : function () {
-      this.texts = this.mapper.texts;
-      this.width = this.mapper.width;
-      this.height = this.mapper.height;
-      this.ratio = this.mapper.ratio;
-
-      _spriteBounds.call(this, _.bind(function(spriteData) {
-        this.texture = new THREE.DataTexture(spriteData, this.texts.length, 1, THREE.RGBAFormat, THREE.FloatType);
-        this.texture.needsUpdate = true;
-
-        this.trigger("build");
+        completion(data);
       }, this));
     }
-  }
-})();
+
+    return {
+
+      constructor : Blotter._TextsBoundsTexture,
+
+      init : function (mapper) {
+        this.mapper = mapper;
+
+        _.extendOwn(this, EventEmitter.prototype);
+      },
+
+      build : function () {
+        this.texts = this.mapper.texts;
+        this.width = this.mapper.width;
+        this.height = this.mapper.height;
+        this.ratio = this.mapper.ratio;
+
+        _spriteBounds.call(this, _.bind(function(spriteData) {
+          this.texture = new THREE.DataTexture(spriteData, this.texts.length, 1, THREE.RGBAFormat, THREE.FloatType);
+          this.texture.needsUpdate = true;
+
+          this.trigger("build");
+        }, this));
+      }
+    };
+  })();
+
+})(
+  this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
+);

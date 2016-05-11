@@ -1,67 +1,74 @@
-var blotter_PropertyDefaults = {
-	family       : 'sans-serif',
-	size         : 12,
-	leading      : 1.5,
-	fill         : '#000',
-	style        : 'normal',
-	weight       : 500,
-	padding      : 0,
-	paddingTop   : 0,
-	paddingRight : 0,
-	paddingBottom: 0,
-	paddingLeft  : 0
-};
+(function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
 
-var blotter_TextUtils = {
+	Blotter._PropertyDefaults = {
+		family       : 'sans-serif',
+		size         : 12,
+		leading      : 1.5,
+		fill         : '#000',
+		style        : 'normal',
+		weight       : 500,
+		padding      : 0,
+		paddingTop   : 0,
+		paddingRight : 0,
+		paddingBottom: 0,
+		paddingLeft  : 0
+	};
 
-	Properties : _.keys(blotter_PropertyDefaults),
+	Blotter._TextUtils = {
 
-	// Recieves property values (optional) and fills in any missing values with default values
+		Properties : _.keys(Blotter._PropertyDefaults),
 
-	ensurePropertyValues : function(properties) {
-		properties = properties || {},
-		_.defaults(properties, blotter_PropertyDefaults)
-		return properties;
-	},
+		// Recieves property values (optional) and fills in any missing values with default values
 
-	// Format padding values from style properties for passing to document
+		ensurePropertyValues : function(properties) {
+			properties = properties || {},
+			_.defaults(properties, Blotter._PropertyDefaults);
+			return properties;
+		},
 
-	stringifiedPadding : function(properties) {
-		var _properties = properties || this.ensurePropertyValues(),
-				pTop = properties.paddingTop || _properties.padding,
-				pRight = _properties.paddingRight || _properties.padding,
-				pBottom = _properties.paddingBottom || _properties.padding,
-				pLeft = _properties.paddingLeft || _properties.padding;
+		// Format padding values from style properties for passing to document
 
-		return pTop + "px " + pRight + "px " + pBottom + "px " + pLeft + "px";
-	},
+		stringifiedPadding : function(properties) {
+			var _properties = properties || this.ensurePropertyValues(),
+					pTop = properties.paddingTop || _properties.padding,
+					pRight = _properties.paddingRight || _properties.padding,
+					pBottom = _properties.paddingBottom || _properties.padding,
+					pLeft = _properties.paddingLeft || _properties.padding;
 
-	// Determines size of text within the document given certain style properties
+			return pTop + "px " + pRight + "px " + pBottom + "px " + pLeft + "px";
+		},
 
-	sizeForText : function(textValue, properties) {
-		var el = document.createElement('p'),
-				properties = this.ensurePropertyValues(properties),
-	  		size;
+		// Determines size of text within the document given certain style properties
 
-	  el.innerHTML = textValue;
-	  el.style.fontFamily = properties.family;
-	  el.style.fontSize = properties.size + "px";
-	  el.style.fontWeight = properties.weight;
-	  el.style.fontStyle = properties.style;
-	  el.style.padding = this.stringifiedPadding(properties);
-	  el.style.lineHeight = properties.leading;
-	  el.style.visibility = "hidden";
-	  el.style.display = "inline-block";
+		sizeForText : function(textValue, properties) {
+			var el = document.createElement('p'),
+		  		size;
 
-	  document.body.appendChild(el);
+		  properties = this.ensurePropertyValues(properties);
 
-	  size = {
-	  	w: el.offsetWidth,
-	    h: el.offsetHeight
-	  }
+		  el.innerHTML = textValue;
+		  el.style.fontFamily = properties.family;
+		  el.style.fontSize = properties.size + "px";
+		  el.style.fontWeight = properties.weight;
+		  el.style.fontStyle = properties.style;
+		  el.style.padding = this.stringifiedPadding(properties);
+		  el.style.lineHeight = properties.leading;
+		  el.style.visibility = "hidden";
+		  el.style.display = "inline-block";
 
-	  document.body.removeChild(el);
+		  document.body.appendChild(el);
 
-	  return size;
-	}
-}
+		  size = {
+		  	w: el.offsetWidth,
+		    h: el.offsetHeight
+		  };
+
+		  document.body.removeChild(el);
+
+		  return size;
+		}
+	};
+  
+})(
+  this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
+);
