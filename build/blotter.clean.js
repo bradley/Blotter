@@ -63,7 +63,7 @@
     this._texts = {};
     this._scopes = {};
 
-    this._backBuffer = new Blotter._BackBufferRenderer();
+    this._renderer = new Blotter._Renderer();
 
     this._currentAnimationLoop = false;
 
@@ -76,8 +76,8 @@
   Blotter.prototype = (function () {
 
     function _loop () {
-      this._backBuffer.render();
-      this.imageData = this._backBuffer.imageData;
+      this._renderer.render();
+      this.imageData = this._renderer.imageData;
 
       _.each(this._scopes, _.bind(function (scope) {
         if (scope.playing) {
@@ -98,9 +98,9 @@
       else {
         this.material = material;
         this.material.on("build", _.bind(function () {
-          this._backBuffer.width = this.material.width;
-          this._backBuffer.height = this.material.height;
-          this._backBuffer.material = this.material.threeMaterial;
+          this._renderer.width = this.material.width;
+          this._renderer.height = this.material.height;
+          this._renderer.material = this.material.threeMaterial;
 
           _updateScopes.call(this);
           this.trigger("build");
@@ -149,7 +149,7 @@
         });
         text.on("update", this._texts[text.id].eventCallbacks.update);
 
-        this._scopes[text.id] = new Blotter._RendererScope(text, this);
+        this._scopes[text.id] = new Blotter._RenderScope(text, this);
       }, this));
     }
 
@@ -216,7 +216,7 @@
 
       teardown : function () {
         this.stop();
-        if (this._backBuffer) this._backBuffer.teardown();
+        if (this._renderer) this._renderer.teardown();
         this.renderer = null;
       },
 
@@ -341,14 +341,20 @@
   	  ratio = ratio || this.pixelRatio;
   	  var canvas = document.createElement("canvas");
 
-  	  canvas.width = w * ratio;
-  	  canvas.height = h * ratio;
-  	  canvas.style.width = w + "px";
-  	  canvas.style.height = h + "px";
-  	  canvas.getContext("2d").setTransform(ratio, 0, 0, ratio, 0, 0);
+      this.updateCanvasSize(canvas, w, h, ratio);
 
   	  return canvas;
   	},
+
+    updateCanvasSize : function (canvas, w, h, ratio) {
+      ratio = ratio || 1;
+
+      canvas.width = w * ratio;
+      canvas.height = h * ratio;
+      canvas.style.width = w + "px";
+      canvas.style.height = h + "px";
+      canvas.getContext("2d").setTransform(ratio, 0, 0, ratio, 0, 0);
+    },
 
   	// Returns the device's pixel ratio
 
@@ -590,7 +596,7 @@
 );
 (function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
 
-  Blotter._TextsMapper = function () {
+  Blotter._Mapper = function () {
     this.width = 0;
     this.height = 0;
 
@@ -602,7 +608,7 @@
     _.extendOwn(this, EventEmitter.prototype);
   };
 
-  Blotter._TextsMapper.prototype = (function () {
+  Blotter._Mapper.prototype = (function () {
 
     function _determineTextsMapping () {
       var packer = new GrowingPacker(),
@@ -663,7 +669,7 @@
 
     return {
 
-      constructor : Blotter._TextsMapper,
+      constructor : Blotter._Mapper,
 
       build : function (texts, ratio) {
         this.texts = texts;
@@ -677,9 +683,21 @@
         }, this));
       },
 
-      boundsFor : function (text) {
+      boundsFor : function (text, useRatio) {
         Blotter._Messaging.ensureInstanceOf(text, Blotter.Text, "Blotter.Text", "Blotter.Material");
-        return this._textsBounds[text.id];
+
+        var bounds = this._textsBounds[text.id];
+
+        if (bounds) {
+          bounds = {
+            w : bounds.w * (useRatio ? this.ratio : 1),
+            h : bounds.h * (useRatio ? this.ratio : 1),
+            x : bounds.fit.x * (useRatio ? this.ratio : 1),
+            y : bounds.fit.y * (useRatio ? this.ratio : 1)
+          };
+        }
+
+        return bounds;
       },
 
       toCanvas : function () {
@@ -715,7 +733,7 @@
       },
 
       getImage : function () {
-      	return this.toCanvas().toDataURL();
+        return this.toCanvas().toDataURL();
       }
     };
   })();
@@ -726,48 +744,7 @@
 
 (function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
 
-  Blotter.Text = function (value, properties) {
-    this.id = THREE.Math.generateUUID();
-    this.value = value;
-    this.properties = Blotter._TextUtils.ensurePropertyValues(properties);
-
-    this.init.apply(this, arguments);
-  };
-
-  Blotter.Text.prototype = (function () {
-    function _setupEventEmission () {
-      _.extendOwn(this, EventEmitter.prototype);
-    }
-
-    function _update () {
-      this.trigger("update");
-    }
-
-    return {
-
-      constructor : Blotter.Text,
-
-      set needsUpdate (value) {
-        if (value === true) {
-          _update.call(this);
-        }
-      },
-
-      get needsUpdate () { }, // jshint
-
-      init : function (value, properties) {
-        _setupEventEmission.call(this);
-      }
-    };
-  })();
-
-})(
-  this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
-);
-
-(function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
-
-  Blotter._TextsTexture = function(mapper) {
+  Blotter._TextsTextureProvider = function(mapper) {
     this._mapper = mapper;
 
     // Stub texture - resets on build.
@@ -776,11 +753,11 @@
     _.extendOwn(this, EventEmitter.prototype);
   };
 
-  Blotter._TextsTexture.prototype = (function() {
+  Blotter._TextsTextureProvider.prototype = (function() {
 
     return {
 
-      constructor : Blotter._TextsTexture,
+      constructor : Blotter._TextsTextureProvider,
 
       build : function () {
         var loader = new THREE.TextureLoader();
@@ -805,7 +782,7 @@
 
   // Create a Data Texture the size of our text map wherein every texel holds the index of text whose boundaries contain the given texel's position.
 
-  Blotter._TextsIndicesTexture = function (mapper, sampleAccuracy) {
+  Blotter._IndicesDataTextureProvider = function (mapper, sampleAccuracy) {
     this._mapper = mapper;
     this._texts = mapper.texts;
     this._sampleAccuracy = sampleAccuracy;
@@ -819,7 +796,7 @@
     _.extendOwn(this, EventEmitter.prototype);
   };
 
-  Blotter._TextsIndicesTexture.prototype = (function () {
+  Blotter._IndicesDataTextureProvider.prototype = (function () {
 
     function _textsIndices (completion) {
       var points = new Float32Array((this._height * this._width) * 4),
@@ -838,8 +815,8 @@
           for (var ki = 0; ki < this._texts.length; ki++) {
             var text = this._texts[ki],
                 bounds = this._mapper.boundsFor(text),
-                fitY = bounds.fit.y * this._sampleAccuracy,
-                fitX = bounds.fit.x * this._sampleAccuracy,
+                fitY = bounds.y * this._sampleAccuracy,
+                fitX = bounds.x * this._sampleAccuracy,
                 vH = bounds.h * this._sampleAccuracy,
                 vW = bounds.w * this._sampleAccuracy;
 
@@ -867,7 +844,7 @@
 
     return {
 
-      constructor : Blotter._TextsIndicesTexture,
+      constructor : Blotter._IndicesDataTextureProvider,
 
       build : function () {
         _textsIndices.call(this, _.bind(function (dataPoints) {
@@ -890,12 +867,11 @@
 
   // Create a Data Texture holding the boundaries (x/y offset and w/h) that should be available to any given texel for any given text.
 
-  Blotter._TextsBoundsTexture = function (mapper) {
+  Blotter._BoundsDataTextureProvider = function (mapper) {
     this._mapper = mapper;
     this._texts = this._mapper.texts;
     this._width = this._mapper.width;
     this._height = this._mapper.height;
-    this._ratio = this._mapper.ratio;
 
     // Stub texture - resets on build.
     this.texture = new THREE.DataTexture([], 0, 0, THREE.RGBAFormat, THREE.FloatType);
@@ -903,7 +879,7 @@
     _.extendOwn(this, EventEmitter.prototype);
   };
 
-  Blotter._TextsBoundsTexture.prototype = (function () {
+  Blotter._BoundsDataTextureProvider.prototype = (function () {
 
     function _spriteBounds (completion) {
       var data = new Float32Array(this._texts.length * 4);
@@ -911,12 +887,12 @@
       setImmediate(_.bind(function() {
         for (var i = 0; i < this._texts.length; i++) {
           var text = this._texts[i],
-              bounds = this._mapper.boundsFor(text);
+              bounds = this._mapper.boundsFor(text, true);
 
-          data[4*i]   = bounds.fit.x * this._ratio;                                             // x
-          data[4*i+1] = (this._height * this._ratio) - ((bounds.fit.y + bounds.h) * this._ratio); // y
-          data[4*i+2] = bounds.w * this._ratio;                                                 // w
-          data[4*i+3] = bounds.h * this._ratio;                                                 // h
+          data[4*i]   = bounds.x;                             // x
+          data[4*i+1] = this._height - (bounds.y + bounds.h); // y
+          data[4*i+2] = bounds.w;                             // w
+          data[4*i+3] = bounds.h;                             // h
         }
 
         completion(data);
@@ -925,7 +901,7 @@
 
     return {
 
-      constructor : Blotter._TextsBoundsTexture,
+      constructor : Blotter._BoundsDataTextureProvider,
 
       build : function () {
         _spriteBounds.call(this, _.bind(function(spriteData) {
@@ -1063,12 +1039,286 @@
 
 (function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
 
+  Blotter._RenderScope = function (text, renderer) {
+    this.text = text;
+    this.renderer = renderer;
+
+    this.material = new Blotter._MaterialScope(this.text, this.renderer.material);
+
+    this.playing = false;
+    this.timeDelta = 0;
+    this.lastDrawTime = false;
+    this.frameCount = 0;
+
+    this.domElement = Blotter._CanvasUtils.hiDpiCanvas(0, 0, this.renderer.ratio);
+    this.context = this.domElement.getContext("2d");
+
+    _.extendOwn(this, EventEmitter.prototype);
+  };
+
+  Blotter._RenderScope.prototype = (function () {
+
+    function _setMouseEventListeners () {
+      var self = this,
+          eventNames = ["mousedown", "mouseup", "mousemove", "mouseenter", "mouseleave"];
+
+      function setMouseListener (eventName) {
+        self.domElement.addEventListener(eventName, function(e) {
+          var position = Blotter._CanvasUtils.normalizedMousePosition(self.domElement, e);
+          self.emit(eventName, position);
+        }, false);
+      }
+
+      for (var i = 0; i < eventNames.length; i++) {
+        var eventName = eventNames[i];
+        setMouseListener(eventName);
+      }
+    }
+
+    function _setEventListeners () {
+      _setMouseEventListeners.call(this);
+    }
+
+    function _render () {
+      if (this.domElement && this.bounds) {
+        this.context.clearRect(0, 0, this.domElement.width, this.domElement.height);
+
+        this.context.putImageData(
+          this.renderer.imageData,
+          this.bounds.x,
+          this.bounds.y
+        );
+
+        this.trigger("update", [this.frameCount]);
+      }
+    }
+
+    function _updateBounds () {
+      var bounds = this.renderer.material.boundsFor(this.text);
+
+      if (bounds) {
+        // ### - x and y and all of this should be set directly in material. this should not have to scope into _mapper
+        this.bounds = {
+          w : bounds.w,
+          h : bounds.h,
+          x : -1 * Math.floor(bounds.x),
+          y : -1 * Math.floor(this.renderer.material.height - (bounds.y + bounds.h))
+        };
+
+        Blotter._CanvasUtils.updateCanvasSize(
+          this.domElement,
+          this.bounds.w / this.renderer.ratio,
+          this.bounds.h / this.renderer.ratio,
+          this.renderer.ratio
+        );
+      }
+    }
+
+    function _updateMaterial () {
+      this.material.material = this.renderer.material;
+      this.material.needsMaterialUpdate = true;
+
+      _updateBounds.call(this);
+    }
+
+    return {
+
+      constructor : Blotter._RenderScope,
+
+      set needsMaterialUpdate (value) {
+        if (value === true) {
+          _updateMaterial.call(this);
+        }
+      },
+
+      get needsMaterialUpdate () { }, // jshint
+
+      play : function () {
+        this.playing = true;
+      },
+
+      pause : function () {
+        this.playing = false;
+      },
+
+      update : function () {
+        var now = Date.now();
+        this.frameCount += 1;
+        this.timeDelta = (now - (this.lastDrawTime || now)) / 1000;
+        this.lastDrawTime = now;
+        _render.call(this);
+      },
+
+      appendTo : function (element) {
+        element.appendChild(this.domElement);
+        _setEventListeners.call(this);
+
+        return this;
+      }
+    };
+  })();
+
+})(
+  this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
+);
+
+(function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
+
+  Blotter._Renderer = function (material) {
+    this._width = 1;
+    this._height = 1;
+
+    // Prepare back buffer scene
+
+    this._scene = new THREE.Scene();
+
+    this._plane = new THREE.PlaneGeometry(1, 1);
+
+    this._material = material ||new THREE.MeshBasicMaterial(); // Stub material.
+
+    this._mesh = new THREE.Mesh(this._plane, this._material);
+
+    this._scene.add(this._mesh);
+
+    this._renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, premultipliedAlpha : false });
+
+    this._camera = new THREE.OrthographicCamera(0.5, 0.5, 0.5, 0.5, 0, 100);
+
+    this.init.apply(this, arguments);
+  };
+
+  Blotter._Renderer.prototype = (function () {
+
+    function _updateSize () {
+      this._mesh.scale.set(this._width, this._height, 1);
+
+      this._renderTarget = new THREE.WebGLRenderTarget(this._width, this._height, {
+        minFilter: THREE.LinearFilter,
+        magFilter: THREE.LinearFilter,
+        format: THREE.RGBAFormat,
+        type: THREE.UnsignedByteType
+      });
+      this._renderTarget.texture.generateMipmaps = false;
+      this._renderTarget.width = this._width;
+      this._renderTarget.height = this._height;
+
+      this._camera.left = this._width / - 2;
+      this._camera.right = this._width / 2;
+      this._camera.top = this._height / 2;
+      this._camera.bottom = this._height / - 2;
+
+      this._camera.updateProjectionMatrix();
+
+      this._viewBuffer = new ArrayBuffer(this._width * this._height * 4);
+      this._imageDataArray = new Uint8Array(this._viewBuffer);
+      this._clampedImageDataArray = new Uint8ClampedArray(this._viewBuffer);
+
+      this.imageData = new ImageData(this._clampedImageDataArray, this._width, this._height);
+    }
+
+    return {
+
+      constructor : Blotter._Renderer,
+
+      set width (width) {
+        this._width = width;
+        _updateSize.call(this);
+      },
+
+      get width () { }, // jshint
+
+      set height (height) {
+        this._height = height;
+        _updateSize.call(this);
+      },
+
+      get height () { }, // jshint
+
+      set material (material) {
+        if (material instanceof THREE.Material) {
+          this._material = material;
+          this._mesh.material = material;
+        }
+      },
+
+      get material () { }, // jshint
+
+      init : function (material) {
+        _updateSize.call(this);
+      },
+
+      render : function () {
+        this._renderer.render(this._scene, this._camera, this._renderTarget);
+
+        this._renderer.readRenderTargetPixels(
+          this._renderTarget,
+          0,
+          0,
+          this._renderTarget.width,
+          this._renderTarget.height,
+          this._imageDataArray
+        );
+      },
+
+      teardown : function () {
+        this._renderer = null;
+      }
+    };
+  })();
+
+})(
+  this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
+);
+
+(function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
+
+  Blotter.Text = function (value, properties) {
+    this.id = THREE.Math.generateUUID();
+    this.value = value;
+    this.properties = Blotter._TextUtils.ensurePropertyValues(properties);
+
+    this.init.apply(this, arguments);
+  };
+
+  Blotter.Text.prototype = (function () {
+    function _setupEventEmission () {
+      _.extendOwn(this, EventEmitter.prototype);
+    }
+
+    function _update () {
+      this.trigger("update");
+    }
+
+    return {
+
+      constructor : Blotter.Text,
+
+      set needsUpdate (value) {
+        if (value === true) {
+          _update.call(this);
+        }
+      },
+
+      get needsUpdate () { }, // jshint
+
+      init : function (value, properties) {
+        _setupEventEmission.call(this);
+      }
+    };
+  })();
+
+})(
+  this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
+);
+
+(function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
+
   Blotter.Material = function(mainImage, options) {
     _.defaults(this, options, {
       uniforms : {}
     });
 
-    this._mapper = new Blotter._TextsMapper();
+    this._mapper = new Blotter._Mapper();
 
     this._texts = [];
 
@@ -1231,7 +1481,7 @@
 
       buildTextsTexture = _.bind(function (ratio) {
         return _.bind(function (next) {
-          this._textsTexture = new Blotter._TextsTexture(this._mapper, ratio);
+          this._textsTexture = new Blotter._TextsTextureProvider(this._mapper, ratio);
           this._textsTexture.on("build", function () {
             next();
           });
@@ -1241,7 +1491,7 @@
 
       buildIndicesTexture = _.bind(function (sampleAccuracy) {
         return _.bind(function (next) {
-          this._indicesTexture = new Blotter._TextsIndicesTexture(this._mapper, sampleAccuracy);
+          this._indicesTexture = new Blotter._IndicesDataTextureProvider(this._mapper, sampleAccuracy);
           this._indicesTexture.on("build", function () {
             next();
           });
@@ -1251,7 +1501,7 @@
 
       buildBoundsTexture = _.bind(function () {
         return _.bind(function (next) {
-          this._boundsTexture = new Blotter._TextsBoundsTexture(this._mapper);
+          this._boundsTexture = new Blotter._BoundsDataTextureProvider(this._mapper);
           this._boundsTexture.on("build", function () {
             next();
           });
@@ -1340,244 +1590,12 @@
 
       boundsFor : function (text) {
         Blotter._Messaging.ensureInstanceOf(text, Blotter.Text, "Blotter.Text", "Blotter.Material");
-        return this._mapper.boundsFor(text);
+        return this._mapper.boundsFor(text, true);
       },
 
       dataIndexFor : function (text) {
         Blotter._Messaging.ensureInstanceOf(text, Blotter.Text, "Blotter.Text", "Blotter.Material");
         return _.indexOf(this._texts, text);
-      }
-    };
-  })();
-
-})(
-  this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
-);
-
-(function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
-
-  Blotter._BackBufferRenderer = function (material) {
-    this._width = 1;
-    this._height = 1;
-
-    // Prepare back buffer scene
-
-    this._scene = new THREE.Scene();
-
-    this._plane = new THREE.PlaneGeometry(1, 1);
-
-    this._material = material ||new THREE.MeshBasicMaterial(); // Stub material.
-
-    this._mesh = new THREE.Mesh(this._plane, this._material);
-
-    this._scene.add(this._mesh);
-
-    this._renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, premultipliedAlpha : false });
-
-    this._camera = new THREE.OrthographicCamera(0.5, 0.5, 0.5, 0.5, 0, 100);
-
-    this.init.apply(this, arguments);
-  };
-
-  Blotter._BackBufferRenderer.prototype = (function () {
-
-    function _updateSize () {
-      this._mesh.scale.set(this._width, this._height, 1);
-
-      this._renderTarget = new THREE.WebGLRenderTarget(this._width, this._height, {
-        minFilter: THREE.LinearFilter,
-        magFilter: THREE.LinearFilter,
-        format: THREE.RGBAFormat,
-        type: THREE.UnsignedByteType
-      });
-      this._renderTarget.texture.generateMipmaps = false;
-      this._renderTarget.width = this._width;
-      this._renderTarget.height = this._height;
-
-      this._camera.left = this._width / - 2;
-      this._camera.right = this._width / 2;
-      this._camera.top = this._height / 2;
-      this._camera.bottom = this._height / - 2;
-
-      this._camera.updateProjectionMatrix();
-
-      this._viewBuffer = new ArrayBuffer(this._width * this._height * 4);
-      this._imageDataArray = new Uint8Array(this._viewBuffer);
-      this._clampedImageDataArray = new Uint8ClampedArray(this._viewBuffer);
-
-      this.imageData = new ImageData(this._clampedImageDataArray, this._width, this._height);
-    }
-
-    return {
-
-      constructor : Blotter._BackBufferRenderer,
-
-      set width (width) {
-        this._width = width;
-        _updateSize.call(this);
-      },
-
-      get width () { }, // jshint
-
-      set height (height) {
-        this._height = height;
-        _updateSize.call(this);
-      },
-
-      get height () { }, // jshint
-
-      set material (material) {
-        if (material instanceof THREE.Material) {
-          this._material = material;
-          this._mesh.material = material;
-        }
-      },
-
-      get material () { }, // jshint
-
-      init : function (material) {
-        _updateSize.call(this);
-      },
-
-      render : function () {
-        this._renderer.render(this._scene, this._camera, this._renderTarget);
-
-        this._renderer.readRenderTargetPixels(
-          this._renderTarget,
-          0,
-          0,
-          this._renderTarget.width,
-          this._renderTarget.height,
-          this._imageDataArray
-        );
-      },
-
-      teardown : function () {
-        this._renderer = null;
-      }
-    };
-  })();
-
-})(
-  this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
-);
-
-(function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
-
-  Blotter._RendererScope = function (text, renderer) {
-    this.text = text;
-    this.renderer = renderer;
-    this.ratio = this.renderer.ratio;
-
-    this.material = new Blotter._MaterialScope(this.text, this.renderer.material);
-
-    this.playing = false;
-    this.timeDelta = 0;
-    this.lastDrawTime = false;
-    this.frameCount = 0;
-
-    this.domElement = Blotter._CanvasUtils.hiDpiCanvas(0, 0, this.ratio);
-    this.context = this.domElement.getContext("2d");
-
-    _.extendOwn(this, EventEmitter.prototype);
-  };
-
-  Blotter._RendererScope.prototype = (function () {
-
-    function _setMouseEventListeners () {
-      var self = this,
-          eventNames = ["mousedown", "mouseup", "mousemove", "mouseenter", "mouseleave"];
-
-      function setMouseListener (eventName) {
-        self.domElement.addEventListener(eventName, function(e) {
-          var position = Blotter._CanvasUtils.normalizedMousePosition(self.domElement, e);
-          self.emit(eventName, position);
-        }, false);
-      }
-
-      for (var i = 0; i < eventNames.length; i++) {
-        var eventName = eventNames[i];
-        setMouseListener(eventName);
-      }
-    }
-
-    function _setEventListeners () {
-      _setMouseEventListeners.call(this);
-    }
-
-    function _render () {
-      if (this.domElement && this.bounds) {
-        this.context.clearRect(0, 0, this.domElement.width, this.domElement.height);
-
-        this.context.putImageData(
-          this.renderer.imageData,
-          this.bounds.x,
-          this.bounds.y
-        );
-
-        this.trigger("update", [this.frameCount]);
-      }
-    }
-
-    function _updateBounds () {
-      var mappedBounds = this.renderer.material.boundsFor(this.text);
-
-      if (mappedBounds) {
-        // ### - x and y and all of this should be set directly in material. this should not have to scope into _mapper
-        this.bounds = {
-          w : mappedBounds.w,
-          h : mappedBounds.h,
-          x : -1 * Math.floor(mappedBounds.fit.x * this.ratio),
-          y : -1 * Math.floor((this.renderer.material._mapper.height - (mappedBounds.fit.y + mappedBounds.h)) * this.ratio)
-        };
-
-        this.domElement.width = this.bounds.w * this.ratio;
-        this.domElement.height = this.bounds.h * this.ratio;
-        this.domElement.style.width = this.bounds.w + "px";
-        this.domElement.style.height = this.bounds.h + "px";
-      }
-    }
-
-    function _updateMaterial () {
-      this.material.material = this.renderer.material;
-      this.material.needsMaterialUpdate = true;
-
-      _updateBounds.call(this);
-    }
-
-    return {
-
-      constructor : Blotter._RendererScope,
-
-      set needsMaterialUpdate (value) {
-        if (value === true) {
-          _updateMaterial.call(this);
-        }
-      },
-
-      get needsMaterialUpdate () { }, // jshint
-
-      play : function () {
-        this.playing = true;
-      },
-
-      pause : function () {
-        this.playing = false;
-      },
-
-      update : function () {
-        var now = Date.now();
-        this.frameCount += 1;
-        this.timeDelta = (now - (this.lastDrawTime || now)) / 1000;
-        this.lastDrawTime = now;
-        _render.call(this);
-      },
-
-      appendTo : function (element) {
-        element.appendChild(this.domElement);
-        _setEventListeners.call(this);
-
-        return this;
       }
     };
   })();

@@ -19,14 +19,20 @@
   	  ratio = ratio || this.pixelRatio;
   	  var canvas = document.createElement("canvas");
 
-  	  canvas.width = w * ratio;
-  	  canvas.height = h * ratio;
-  	  canvas.style.width = w + "px";
-  	  canvas.style.height = h + "px";
-  	  canvas.getContext("2d").setTransform(ratio, 0, 0, ratio, 0, 0);
+      this.updateCanvasSize(canvas, w, h, ratio);
 
   	  return canvas;
   	},
+
+    updateCanvasSize : function (canvas, w, h, ratio) {
+      ratio = ratio || 1;
+
+      canvas.width = w * ratio;
+      canvas.height = h * ratio;
+      canvas.style.width = w + "px";
+      canvas.style.height = h + "px";
+      canvas.getContext("2d").setTransform(ratio, 0, 0, ratio, 0, 0);
+    },
 
   	// Returns the device's pixel ratio
 

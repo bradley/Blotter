@@ -2,7 +2,7 @@
 
   // Create a Data Texture the size of our text map wherein every texel holds the index of text whose boundaries contain the given texel's position.
 
-  Blotter._TextsIndicesTexture = function (mapper, sampleAccuracy) {
+  Blotter._IndicesDataTextureProvider = function (mapper, sampleAccuracy) {
     this._mapper = mapper;
     this._texts = mapper.texts;
     this._sampleAccuracy = sampleAccuracy;
@@ -16,7 +16,7 @@
     _.extendOwn(this, EventEmitter.prototype);
   };
 
-  Blotter._TextsIndicesTexture.prototype = (function () {
+  Blotter._IndicesDataTextureProvider.prototype = (function () {
 
     function _textsIndices (completion) {
       var points = new Float32Array((this._height * this._width) * 4),
@@ -35,8 +35,8 @@
           for (var ki = 0; ki < this._texts.length; ki++) {
             var text = this._texts[ki],
                 bounds = this._mapper.boundsFor(text),
-                fitY = bounds.fit.y * this._sampleAccuracy,
-                fitX = bounds.fit.x * this._sampleAccuracy,
+                fitY = bounds.y * this._sampleAccuracy,
+                fitX = bounds.x * this._sampleAccuracy,
                 vH = bounds.h * this._sampleAccuracy,
                 vW = bounds.w * this._sampleAccuracy;
 
@@ -64,7 +64,7 @@
 
     return {
 
-      constructor : Blotter._TextsIndicesTexture,
+      constructor : Blotter._IndicesDataTextureProvider,
 
       build : function () {
         _textsIndices.call(this, _.bind(function (dataPoints) {

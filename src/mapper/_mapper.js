@@ -1,6 +1,6 @@
 (function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
 
-  Blotter._TextsMapper = function () {
+  Blotter._Mapper = function () {
     this.width = 0;
     this.height = 0;
 
@@ -12,7 +12,7 @@
     _.extendOwn(this, EventEmitter.prototype);
   };
 
-  Blotter._TextsMapper.prototype = (function () {
+  Blotter._Mapper.prototype = (function () {
 
     function _determineTextsMapping () {
       var packer = new GrowingPacker(),
@@ -73,7 +73,7 @@
 
     return {
 
-      constructor : Blotter._TextsMapper,
+      constructor : Blotter._Mapper,
 
       build : function (texts, ratio) {
         this.texts = texts;
@@ -87,9 +87,21 @@
         }, this));
       },
 
-      boundsFor : function (text) {
+      boundsFor : function (text, useRatio) {
         Blotter._Messaging.ensureInstanceOf(text, Blotter.Text, "Blotter.Text", "Blotter.Material");
-        return this._textsBounds[text.id];
+
+        var bounds = this._textsBounds[text.id];
+
+        if (bounds) {
+          bounds = {
+            w : bounds.w * (useRatio ? this.ratio : 1),
+            h : bounds.h * (useRatio ? this.ratio : 1),
+            x : bounds.fit.x * (useRatio ? this.ratio : 1),
+            y : bounds.fit.y * (useRatio ? this.ratio : 1)
+          };
+        }
+
+        return bounds;
       },
 
       toCanvas : function () {
@@ -125,7 +137,7 @@
       },
 
       getImage : function () {
-      	return this.toCanvas().toDataURL();
+        return this.toCanvas().toDataURL();
       }
     };
   })();

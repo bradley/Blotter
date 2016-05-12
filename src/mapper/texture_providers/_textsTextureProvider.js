@@ -1,6 +1,6 @@
 (function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
 
-  Blotter._TextsTexture = function(mapper) {
+  Blotter._TextsTextureProvider = function(mapper) {
     this._mapper = mapper;
 
     // Stub texture - resets on build.
@@ -9,11 +9,11 @@
     _.extendOwn(this, EventEmitter.prototype);
   };
 
-  Blotter._TextsTexture.prototype = (function() {
+  Blotter._TextsTextureProvider.prototype = (function() {
 
     return {
 
-      constructor : Blotter._TextsTexture,
+      constructor : Blotter._TextsTextureProvider,
 
       build : function () {
         var loader = new THREE.TextureLoader();

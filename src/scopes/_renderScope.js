@@ -1,9 +1,8 @@
 (function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
 
-  Blotter._RendererScope = function (text, renderer) {
+  Blotter._RenderScope = function (text, renderer) {
     this.text = text;
     this.renderer = renderer;
-    this.ratio = this.renderer.ratio;
 
     this.material = new Blotter._MaterialScope(this.text, this.renderer.material);
 
@@ -12,13 +11,13 @@
     this.lastDrawTime = false;
     this.frameCount = 0;
 
-    this.domElement = Blotter._CanvasUtils.hiDpiCanvas(0, 0, this.ratio);
+    this.domElement = Blotter._CanvasUtils.hiDpiCanvas(0, 0, this.renderer.ratio);
     this.context = this.domElement.getContext("2d");
 
     _.extendOwn(this, EventEmitter.prototype);
   };
 
-  Blotter._RendererScope.prototype = (function () {
+  Blotter._RenderScope.prototype = (function () {
 
     function _setMouseEventListeners () {
       var self = this,
@@ -56,21 +55,23 @@
     }
 
     function _updateBounds () {
-      var mappedBounds = this.renderer.material.boundsFor(this.text);
+      var bounds = this.renderer.material.boundsFor(this.text);
 
-      if (mappedBounds) {
+      if (bounds) {
         // ### - x and y and all of this should be set directly in material. this should not have to scope into _mapper
         this.bounds = {
-          w : mappedBounds.w,
-          h : mappedBounds.h,
-          x : -1 * Math.floor(mappedBounds.fit.x * this.ratio),
-          y : -1 * Math.floor((this.renderer.material._mapper.height - (mappedBounds.fit.y + mappedBounds.h)) * this.ratio)
+          w : bounds.w,
+          h : bounds.h,
+          x : -1 * Math.floor(bounds.x),
+          y : -1 * Math.floor(this.renderer.material.height - (bounds.y + bounds.h))
         };
 
-        this.domElement.width = this.bounds.w * this.ratio;
-        this.domElement.height = this.bounds.h * this.ratio;
-        this.domElement.style.width = this.bounds.w + "px";
-        this.domElement.style.height = this.bounds.h + "px";
+        Blotter._CanvasUtils.updateCanvasSize(
+          this.domElement,
+          this.bounds.w / this.renderer.ratio,
+          this.bounds.h / this.renderer.ratio,
+          this.renderer.ratio
+        );
       }
     }
 
@@ -83,7 +84,7 @@
 
     return {
 
-      constructor : Blotter._RendererScope,
+      constructor : Blotter._RenderScope,
 
       set needsMaterialUpdate (value) {
         if (value === true) {

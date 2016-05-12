@@ -26,15 +26,15 @@ module.exports = function(grunt) {
         'src/utils/_canvasUtils.js',
         'src/utils/_textUtils.js',
         'src/utils/_uniformUtils.js',
-        'src/text/_textsMapper.js',
-        'src/text/text.js',
-        'src/texture/_textsTexture.js',
-        'src/texture/_textsIndicesTexture.js',
-        'src/texture/_textsBoundsTexture.js',
-        'src/material/_materialScope.js',
-        'src/material/material.js',
-        'src/renderer/_backBufferRenderer.js',
-        'src/renderer/_rendererScope.js'
+        'src/mapper/_mapper.js',
+        'src/mapper/texture_providers/_textsTextureProvider.js',
+        'src/mapper/texture_providers/_indicesDataTextureProvider.js',
+        'src/mapper/texture_providers/_boundsDataTextureProvider.js',
+        'src/scopes/_materialScope.js',
+        'src/scopes/_renderScope.js',
+        'src/renderer/_renderer.js',
+        'src/text.js',
+        'src/material.js'
       ]
     },
 

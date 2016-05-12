@@ -1,6 +1,6 @@
 (function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
 
-  Blotter._BackBufferRenderer = function (material) {
+  Blotter._Renderer = function (material) {
     this._width = 1;
     this._height = 1;
 
@@ -23,7 +23,7 @@
     this.init.apply(this, arguments);
   };
 
-  Blotter._BackBufferRenderer.prototype = (function () {
+  Blotter._Renderer.prototype = (function () {
 
     function _updateSize () {
       this._mesh.scale.set(this._width, this._height, 1);
@@ -54,7 +54,7 @@
 
     return {
 
-      constructor : Blotter._BackBufferRenderer,
+      constructor : Blotter._Renderer,
 
       set width (width) {
         this._width = width;

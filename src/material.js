@@ -5,7 +5,7 @@
       uniforms : {}
     });
 
-    this._mapper = new Blotter._TextsMapper();
+    this._mapper = new Blotter._Mapper();
 
     this._texts = [];
 
@@ -168,7 +168,7 @@
 
       buildTextsTexture = _.bind(function (ratio) {
         return _.bind(function (next) {
-          this._textsTexture = new Blotter._TextsTexture(this._mapper, ratio);
+          this._textsTexture = new Blotter._TextsTextureProvider(this._mapper, ratio);
           this._textsTexture.on("build", function () {
             next();
           });
@@ -178,7 +178,7 @@
 
       buildIndicesTexture = _.bind(function (sampleAccuracy) {
         return _.bind(function (next) {
-          this._indicesTexture = new Blotter._TextsIndicesTexture(this._mapper, sampleAccuracy);
+          this._indicesTexture = new Blotter._IndicesDataTextureProvider(this._mapper, sampleAccuracy);
           this._indicesTexture.on("build", function () {
             next();
           });
@@ -188,7 +188,7 @@
 
       buildBoundsTexture = _.bind(function () {
         return _.bind(function (next) {
-          this._boundsTexture = new Blotter._TextsBoundsTexture(this._mapper);
+          this._boundsTexture = new Blotter._BoundsDataTextureProvider(this._mapper);
           this._boundsTexture.on("build", function () {
             next();
           });
@@ -277,7 +277,7 @@
 
       boundsFor : function (text) {
         Blotter._Messaging.ensureInstanceOf(text, Blotter.Text, "Blotter.Text", "Blotter.Material");
-        return this._mapper.boundsFor(text);
+        return this._mapper.boundsFor(text, true);
       },
 
       dataIndexFor : function (text) {

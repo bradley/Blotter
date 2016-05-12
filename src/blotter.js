@@ -42,7 +42,7 @@
     this._texts = {};
     this._scopes = {};
 
-    this._backBuffer = new Blotter._BackBufferRenderer();
+    this._renderer = new Blotter._Renderer();
 
     this._currentAnimationLoop = false;
 
@@ -55,8 +55,8 @@
   Blotter.prototype = (function () {
 
     function _loop () {
-      this._backBuffer.render();
-      this.imageData = this._backBuffer.imageData;
+      this._renderer.render();
+      this.imageData = this._renderer.imageData;
 
       _.each(this._scopes, _.bind(function (scope) {
         if (scope.playing) {
@@ -77,9 +77,9 @@
       else {
         this.material = material;
         this.material.on("build", _.bind(function () {
-          this._backBuffer.width = this.material.width;
-          this._backBuffer.height = this.material.height;
-          this._backBuffer.material = this.material.threeMaterial;
+          this._renderer.width = this.material.width;
+          this._renderer.height = this.material.height;
+          this._renderer.material = this.material.threeMaterial;
 
           _updateScopes.call(this);
           this.trigger("build");
@@ -128,7 +128,7 @@
         });
         text.on("update", this._texts[text.id].eventCallbacks.update);
 
-        this._scopes[text.id] = new Blotter._RendererScope(text, this);
+        this._scopes[text.id] = new Blotter._RenderScope(text, this);
       }, this));
     }
 
@@ -195,7 +195,7 @@
 
       teardown : function () {
         this.stop();
-        if (this._backBuffer) this._backBuffer.teardown();
+        if (this._renderer) this._renderer.teardown();
         this.renderer = null;
       },
 
