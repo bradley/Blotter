@@ -25,6 +25,26 @@
 			return properties;
 		},
 
+		filterTexts : function(texts) {
+			if (texts instanceof Blotter.Text) {
+        texts = [texts];
+      }
+      else {
+        texts = _.toArray(texts);
+      }
+
+      return _.filter(texts, _.bind(function (text) {
+        var isText = text instanceof Blotter.Text;
+
+        if (!isText) {
+  // ### - messaging
+          Blotter._Messaging.logError("Blotter.Renderer", "object not instance of Blotter.Text");
+        }
+
+        return isText;
+      }, this));
+		},
+
 		// Format padding values from style properties for passing to document
 
 		stringifiedPadding : function(properties) {

@@ -1,20 +1,18 @@
 (function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
 
-  Blotter._RenderScope = function (text, renderer) {
+  Blotter._RenderScope = function (text, blotter) {
     this.text = text;
-    this.renderer = renderer;
+    this.blotter = blotter;
 
-    this.material = new Blotter._MaterialScope(this.text, this.renderer.material);
-
-    this.playing = false;
+    this.playing = this.blotter.autoplay;
     this.timeDelta = 0;
     this.lastDrawTime = false;
     this.frameCount = 0;
 
-    this.domElement = Blotter._CanvasUtils.hiDpiCanvas(0, 0, this.renderer.ratio);
+    this.domElement = Blotter._CanvasUtils.hiDpiCanvas(0, 0, this.blotter.ratio);
     this.context = this.domElement.getContext("2d");
 
-    _.extendOwn(this, EventEmitter.prototype);
+    this._materialScope = new Blotter._MaterialScope(this.text, this.blotter.material);
   };
 
   Blotter._RenderScope.prototype = (function () {
@@ -36,16 +34,12 @@
       }
     }
 
-    function _setEventListeners () {
-      _setMouseEventListeners.call(this);
-    }
-
     function _render () {
       if (this.domElement && this.bounds) {
         this.context.clearRect(0, 0, this.domElement.width, this.domElement.height);
 
         this.context.putImageData(
-          this.renderer.imageData,
+          this.blotter.imageData,
           this.bounds.x,
           this.bounds.y
         );
@@ -55,7 +49,7 @@
     }
 
     function _updateBounds () {
-      var bounds = this.renderer.material.boundsFor(this.text);
+      var bounds = this.blotter.boundsForText(this.text);
 
       if (bounds) {
         // ### - x and y and all of this should be set directly in material. this should not have to scope into _mapper
@@ -63,21 +57,22 @@
           w : bounds.w,
           h : bounds.h,
           x : -1 * Math.floor(bounds.x),
-          y : -1 * Math.floor(this.renderer.material.height - (bounds.y + bounds.h))
+        // ### --- !
+          y : -1 * Math.floor(this.blotter.material.height - (bounds.y + bounds.h))
         };
 
         Blotter._CanvasUtils.updateCanvasSize(
           this.domElement,
-          this.bounds.w / this.renderer.ratio,
-          this.bounds.h / this.renderer.ratio,
-          this.renderer.ratio
+          this.bounds.w / this.blotter.ratio,
+          this.bounds.h / this.blotter.ratio,
+          this.blotter.ratio
         );
       }
     }
 
-    function _updateMaterial () {
-      this.material.material = this.renderer.material;
-      this.material.needsMaterialUpdate = true;
+    function _update () {
+      this._materialScope.material = this.blotter.material;
+      this._materialScope.needsUpdate = true;
 
       _updateBounds.call(this);
     }
@@ -86,13 +81,17 @@
 
       constructor : Blotter._RenderScope,
 
-      set needsMaterialUpdate (value) {
+      get needsUpdate () { }, // jshint
+
+      set needsUpdate (value) {
         if (value === true) {
-          _updateMaterial.call(this);
+          _update.call(this);
         }
       },
 
-      get needsMaterialUpdate () { }, // jshint
+      get material () {
+        return this._materialScope;
+      },
 
       play : function () {
         this.playing = true;
@@ -112,12 +111,14 @@
 
       appendTo : function (element) {
         element.appendChild(this.domElement);
-        _setEventListeners.call(this);
+        _setMouseEventListeners.call(this);
 
         return this;
       }
     };
   })();
+
+  EventEmitter.prototype.apply(Blotter._RenderScope.prototype);
 
 })(
   this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate

@@ -21,6 +21,12 @@
         console.error(formatted);
       },
 
+// ### - use this more
+      logWarning : function (domain, message) {
+        var formatted = _formattedMessage(domain, message);
+        console.warn(formatted);
+      },
+
       throwError : function (domain, message) {
         var formatted = _formattedMessage(domain, message);
         throw formatted;

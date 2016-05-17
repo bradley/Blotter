@@ -1,17 +1,20 @@
 (function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
 
   Blotter._MaterialScope = function (text, material) {
-    this._dataIndex = -1;
-
     this.text = text;
     this.material = material;
     this.uniforms = {};
+
+    this.needsUpdate = true;
   };
 
   Blotter._MaterialScope.prototype = (function () {
 
     function _buildUniformInterface () {
       var self = this;
+
+      // Reset uniforms for this scope
+      self.uniforms = {};
 
       function buildUniformInterface (uniformName) {
         var uniform = self.material.uniforms[uniformName];
@@ -40,11 +43,11 @@
               return;
             }
             this._value = v;
-            _updateDataForUniformTextureData.call(self, uniformName);
+            _updateTextureDataForUniformName.call(self, uniformName);
           }
         };
 
-        _updateDataForUniformTextureData.call(self, uniformName);
+        _updateTextureDataForUniformName.call(self, uniformName);
       }
 
       for (var uniformName in this.material.uniforms) {
@@ -52,36 +55,35 @@
       }
     }
 
-    function _updateDataForUniformTextureData (uniformName) {
-      var materialUniform = this.material.uniforms[uniformName],
-          scopedUniform = this.uniforms[uniformName],
-          data = materialUniform._textureData,
-          i = this._dataIndex;
+    function _updateTextureDataForUniformName (uniformName) {
+      var uniform = this.uniforms[uniformName],
+          data = this.material.dataTextureDataForUniformName(uniformName),
+          i = this.material.textureDataIndexForText(this.text);
 
       if (i >= 0) {
-        if (materialUniform.type == "1f") {
-          data[4*i]   = scopedUniform._value;    // x (r)
+        if (uniform.type == "1f") {
+          data[4*i]   = uniform.value;    // x (r)
           data[4*i+1] = 0.0;
           data[4*i+2] = 0.0;
           data[4*i+3] = 0.0;
         }
-        else if (materialUniform.type == "2f") {
-          data[4*i]   = scopedUniform._value[0]; // x (r)
-          data[4*i+1] = scopedUniform._value[1]; // y (g)
+        else if (uniform.type == "2f") {
+          data[4*i]   = uniform.value[0]; // x (r)
+          data[4*i+1] = uniform.value[1]; // y (g)
           data[4*i+2] = 0.0;
           data[4*i+3] = 0.0;
         }
-        else if (materialUniform.type == "3f") {
-          data[4*i]   = scopedUniform._value[0]; // x (r)
-          data[4*i+1] = scopedUniform._value[1]; // y (g)
-          data[4*i+2] = scopedUniform._value[2]; // z (b)
+        else if (uniform.type == "3f") {
+          data[4*i]   = uniform.value[0]; // x (r)
+          data[4*i+1] = uniform.value[1]; // y (g)
+          data[4*i+2] = uniform.value[2]; // z (b)
           data[4*i+3] = 0.0;
         }
-        else if (materialUniform.type == "4f") {
-          data[4*i]   = scopedUniform._value[0]; // x (r)
-          data[4*i+1] = scopedUniform._value[1]; // y (g)
-          data[4*i+2] = scopedUniform._value[2]; // z (b)
-          data[4*i+3] = scopedUniform._value[3]; // w (a)
+        else if (uniform.type == "4f") {
+          data[4*i]   = uniform.value[0]; // x (r)
+          data[4*i+1] = uniform.value[1]; // y (g)
+          data[4*i+2] = uniform.value[2]; // z (b)
+          data[4*i+3] = uniform.value[3]; // w (a)
         }
         else {
           data[4*i]   = 0.0;
@@ -90,12 +92,11 @@
           data[4*i+3] = 0.0;
         }
 
-        materialUniform._texture.needsUpdate = true;
+        materialUniform.dataTextureForUniformName().needsUpdate = true;
       }
     }
 
-    function _updateMaterial () {
-      this._dataIndex = this.material.dataIndexFor(this.text);
+    function _update () {
       _buildUniformInterface.call(this);
     }
 
@@ -103,13 +104,13 @@
 
       constructor : Blotter._MaterialScope,
 
-      set needsMaterialUpdate (value) {
-        if (value === true) {
-          _updateMaterial.call(this);
-        }
-      },
+      get needsUpdate () { }, // jshint
 
-      get needsMaterialUpdate () { }, // jshint
+      set needsUpdate (value) {
+        if (value === true) {
+          _update.call(this);
+        }
+      }
     };
   })();
 

@@ -3,37 +3,30 @@
   Blotter.Text = function (value, properties) {
     this.id = THREE.Math.generateUUID();
     this.value = value;
-    this.properties = Blotter._TextUtils.ensurePropertyValues(properties);
-
-    this.init.apply(this, arguments);
+    this.properties = properties;
   };
 
-  Blotter.Text.prototype = (function () {
-    function _setupEventEmission () {
-      _.extendOwn(this, EventEmitter.prototype);
-    }
+  Blotter.Text.prototype = {
+    constructor : Blotter.Text,
 
-    function _update () {
-      this.trigger("update");
-    }
+    get needsUpdate () { }, // jshint
 
-    return {
-
-      constructor : Blotter.Text,
-
-      set needsUpdate (value) {
-        if (value === true) {
-          _update.call(this);
-        }
-      },
-
-      get needsUpdate () { }, // jshint
-
-      init : function (value, properties) {
-        _setupEventEmission.call(this);
+    set needsUpdate (value) {
+      if (value === true) {
+        this.trigger("update");
       }
-    };
-  })();
+    },
+
+    get properties () {
+      return this._properties;
+    },
+
+    set properties (properties) {
+      this._properties = Blotter._TextUtils.ensurePropertyValues(properties);
+    }
+  };
+
+  EventEmitter.prototype.apply(Blotter.Text.prototype);
 
 })(
   this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate

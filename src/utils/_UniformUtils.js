@@ -10,7 +10,7 @@
 
     validValueForUniformType : function (type, value) {
       var valid = false,
-          isValid = function (element, index, array) {
+          isValid = function (element, _, _) {
             return !isNaN(element);
           };
 
@@ -108,8 +108,8 @@
           Blotter._Messaging.logError(domain, "uniform value for " + uniformName + " is incorrect for type: " + uniformObject.type);
           return memo;
         }
-  // ### - should extract out keys from uniformObject that arent either type or value.
-        memo[uniformName] = uniformObject;
+
+        memo[uniformName] = _.pick(uniformObject, "type", "value");;
         return memo;
       }, {});
     }
