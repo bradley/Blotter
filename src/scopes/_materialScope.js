@@ -1,8 +1,10 @@
 (function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
 
-  Blotter._MaterialScope = function (text) {
+  Blotter._MaterialScope = function (text, mappingMaterial) {
     this.text = text;
-    
+
+    this.mappingMaterial = mappingMaterial;
+
     this.uniforms = {};
 
     this.needsUpdate = true;
@@ -14,44 +16,46 @@
       var self = this;
 
       // Reset uniforms for this scope
-      self.uniforms = {};
+      this.uniforms = {};
 
-      function buildUniformInterface (uniformName) {
-        var uniform = self.material.uniforms[uniformName];
+      if (this.mappingMaterial) {
+        function buildUniformInterface (uniformName) {
+          var uniform = self.material.uniforms[uniformName];
 
-        self.uniforms[uniformName] = {
-          _type : uniform.type,
-          _value : uniform.value,
+          self.uniforms[uniformName] = {
+            _type : uniform.type,
+            _value : uniform.value,
 
-          get type () {
-            return this._type;
-          },
+            get type () {
+              return this._type;
+            },
 
-          set type (v) {
-  // ### - messaging
-            Blotter._Messaging.logError("Blotter._MaterialScope", "uniform types may not be updated");
-          },
+            set type (v) {
+    // ### - messaging
+              Blotter._Messaging.logError("Blotter._MaterialScope", "uniform types may not be updated");
+            },
 
-          get value () {
-            return this._value;
-          },
+            get value () {
+              return this._value;
+            },
 
-          set value (v) {
-            if (!Blotter._UniformUtils.validValueForUniformType(this._type, v)) {
-  // ### - messaging
-              Blotter._Messaging.logError("Blotter._MaterialScope", "uniform value not valid for uniform type: " + this._type);
-              return;
+            set value (v) {
+              if (!Blotter._UniformUtils.validValueForUniformType(this._type, v)) {
+    // ### - messaging
+                Blotter._Messaging.logError("Blotter._MaterialScope", "uniform value not valid for uniform type: " + this._type);
+                return;
+              }
+              this._value = v;
+              _updateTextureDataForUniformName.call(self, uniformName);
             }
-            this._value = v;
-            _updateTextureDataForUniformName.call(self, uniformName);
-          }
-        };
+          };
 
-        _updateTextureDataForUniformName.call(self, uniformName);
-      }
+          _updateTextureDataForUniformName.call(self, uniformName);
+        }
 
-      for (var uniformName in this.material.uniforms) {
-        buildUniformInterface(uniformName);
+        for (var uniformName in this.material.uniforms) {
+          buildUniformInterface(uniformName);
+        }
       }
     }
 
@@ -92,7 +96,7 @@
           data[4*i+3] = 0.0;
         }
 
-        materialUniform.dataTextureForUniformName().needsUpdate = true;
+        materialUniform.dataTextureForUniformName(uniformName).needsUpdate = true;
       }
     }
 

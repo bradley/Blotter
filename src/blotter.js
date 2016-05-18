@@ -33,6 +33,7 @@
 
     function _updateScopes () {
       _.each(this._scopes, _.bind(function (scope, textId) {
+        scope.mappingMaterial = this.
         scope.needsUpdate = true;
       }, this));
     }
@@ -49,7 +50,7 @@
             this._mapping.ratio = this.ratio;
             this._renderer.width = this._mapping.width;
             this._renderer.height = this._mapping.height;
-            
+
             next();
           }, this));
         };
@@ -57,10 +58,10 @@
 
       buildMappingMaterial = function () {
         return function (next) {
-          Blotter._MappingMaterialBuilder.build(this._mapping, this.material, _.bind(function (mappingMaterial) {
+          Blotter._MappingMaterialBuilder.build(this._mapping, this._material, _.bind(function (mappingMaterial) {
             this.mappingMaterial = mappingMaterial;
             this._renderer.material = this.mappingMaterial.shaderMaterial;
-            
+
             next();
           }, this));
         };
@@ -73,7 +74,7 @@
 
       _(buildStages).reduceRight(_.wrap, _.bind(function () {
         _updateScopes.call(this);
-        
+
         this.trigger("build");
       }, this))();
     }
@@ -145,6 +146,23 @@
         this._renderer.teardown();
       },
 
+      setMaterial : function (material) {
+        Blotter._Messaging.ensureInstanceOf(material, Blotter.Material, "Blotter.Material", "Blotter.Renderer");
+
+        this._material = material;
+
+        if (this._materialEventBinding) {
+          this._materialEventBinding.unsetEventCallbacks();
+        }
+
+        this._materialEventBinding = new Blotter._ModelEventBinding(material, {
+          update : _.bind(function () {
+            _update.call(this);
+          }, this)
+        });
+        material.on("update", this._materialEventBinding.eventCallbacks.update);
+      },
+
       addText : function (text) {
         this.addTexts(text);
       },
@@ -173,7 +191,7 @@
 
       removeTexts : function (texts) {
         var filteredTexts = Blotter._TextUtils.filterTexts(texts),
-            removedTexts = _.intersection(this._texts, filteredTexts) 
+            removedTexts = _.intersection(this._texts, filteredTexts)
 
         _.each(removedTexts, _.bind(function (text) {
           this._texts = _.without(this._texts, text);
@@ -183,23 +201,6 @@
           delete this._textEventBindings[text.id];
           delete this._scopes[text.id];
         }, this));
-      },
-
-      setMaterial : function (material) {
-        Blotter._Messaging.ensureInstanceOf(material, Blotter.Material, "Blotter.Material", "Blotter.Renderer");
-        
-        this._material = material;
-
-        if (this._materialEventBinding) {
-          this._materialEventBinding.unsetEventCallbacks();
-        }
-
-        this._materialEventBinding = new Blotter._ModelEventBinding(material, {
-          update : _.bind(function () {
-            _update.call(this);
-          }, this)
-        });
-        material.on("update", this._materialEventBinding.eventCallbacks.update);
       },
 
       forText : function (text) {
