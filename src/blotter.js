@@ -2,22 +2,6 @@
 
   var root = this;
 
-  var RendererTextItem = function (textObject, eventCallbacks) {
-
-    return {
-      textObject : textObject,
-
-      eventCallbacks : eventCallbacks || {},
-
-      unsetEventCallbacks : function () {
-        _.each(this.eventCallbacks, _.bind(function (callback, eventKey) {
-          this.textObject.off(eventKey, callback);
-        }, this));
-      }
-    };
-  };
-
-
   var Blotter = root.Blotter = previousBlotter = function (material, options) {
     if (!Detector.webgl) {
     // ### - messaging
@@ -26,7 +10,9 @@
 
     this.Version = "v0.1.0";
 
-    this._texts = {};
+    this._texts = [];
+
+    this._textEventBindings = {};
 
     this._scopes = {};
 
@@ -38,37 +24,11 @@
   Blotter.prototype = (function () {
 
     function _rendererUpdated () {
-      this.imageData = this._renderer.imageData;
-
       _.each(this._scopes, _.bind(function (scope) {
         if (scope.playing) {
           scope.update();
         }
       }, this));
-    }
-
-    function _materialBuilt () {
-      this._renderer.width = this.material.width;
-      this._renderer.height = this.material.height;
-      this._renderer.material = this.material.shaderMaterial;
-
-      _updateScopes.call(this);
-      this.trigger("build");
-    },
-
-    function _setMaterial (material) {
-      if (!material || !(material instanceof Blotter.Material)) {
-  // ### - messaging
-        Blotter._Messaging.throwError("Blotter.Renderer", "a material must be provided");
-      }
-      else {
-        this.material = material;
-        this.material.on("build", _.bind(this._materialBuilt, this));
-// ### - see if we can inline this like above. think that works anyway.
-        this.material.on("update", _.bind(function () {
-          _update.call(this);
-        }, this));
-      }
     }
 
     function _updateScopes () {
@@ -78,30 +38,49 @@
     }
 
     function _update () {
-      Blotter._MappingBuilder.build(this._texts, _.bind(function (mapping) {
-        this._mapping = mapping;
-        this._mapping.ratio = this.ratio;
+      var buildMapping,
+          buildMappingMaterial,
+          buildStages;
 
-        Blotter._MappingMaterialBuilder.build(this._mapping, this.material, _.bind(function (mappingMaterial) {
-          this._mappingMaterial = mappingMaterial;
-          this._renderer.width = this._mapping.width;
-          this._renderer.height = this._mapping.height;
-          this._renderer.material = this._mappingMaterial.threeMaterial;
+      buildMapping = function () {
+        return function (next) {
+          Blotter._MappingBuilder.build(this._texts, _.bind(function (mapping) {
+            this._mapping = mapping;
+            this._mapping.ratio = this.ratio;
+            this._renderer.width = this._mapping.width;
+            this._renderer.height = this._mapping.height;
+            
+            next();
+          }, this));
+        };
+      };
 
-          _updateScopes.call(this);
-          this.trigger("build");
-        }, this));
-      }, this));
+      buildMappingMaterial = function () {
+        return function (next) {
+          Blotter._MappingMaterialBuilder.build(this._mapping, this.material, _.bind(function (mappingMaterial) {
+            this.mappingMaterial = mappingMaterial;
+            this._renderer.material = this.mappingMaterial.shaderMaterial;
+            
+            next();
+          }, this));
+        };
+      };
+
+      buildStages = [
+        buildMapping(),
+        buildMappingMaterial()
+      ];
+
+      _(buildStages).reduceRight(_.wrap, _.bind(function () {
+        _updateScopes.call(this);
+        
+        this.trigger("build");
+      }, this))();
     }
 
     return {
 
       constructor : Blotter,
-
-      //set texts (v) {
-  // ### - messaging
-        //Blotter._Messaging.logError("Blotter", "Please use #addTexts or #removeTexts to manipulate Blotter.Text objects in your Blotter instance.");
-      //},
 
       get needsUpdate () { }, // jshint
 
@@ -111,8 +90,21 @@
         }
       },
 
+      get material () {
+        return this._material;
+      },
+
+      set material (material) {
+        this.setMaterial(material);
+      },
+
       get texts () {
         return this._texts;
+      },
+
+      set texts (texts) {
+        this.removeTexts(this._texts);
+        this.addTexts(texts);
       },
 
       get imageData () {
@@ -127,8 +119,7 @@
           autoplay : true
         });
 
-        _setMaterial.call(this, material);
-
+        this.setMaterial(material);
         this.addTexts(options.texts);
 
         this._renderer.on("update", _.bind(_rendererUpdated, this));
@@ -143,75 +134,80 @@
       },
 
       start : function () {
-
         this._renderer.start();
       },
 
       stop : function () {
-
         this._renderer.stop();
       },
 
       teardown : function () {
-
         this._renderer.teardown();
       },
 
       addText : function (text) {
-
         this.addTexts(text);
       },
 
       addTexts : function (texts) {
         var filteredTexts = Blotter._TextUtils.filterTexts(texts),
-            currentPrivateTextIds = _.keys(this._texts),
-            filteredTextIds = _.pluck(filteredTexts, "id"),
-            newTextIds = _.difference(filteredTextIds, currentPrivateTextIds),
-            newTexts = _.filter(filteredTexts, function(text) {
-              return _.indexOf(newTextIds, text.id) > -1;
-            });
+            newTexts = _.difference(filteredTexts, this._texts);
 
         _.each(newTexts, _.bind(function (text) {
+          this._texts.push(text);
 
-          // ### - still dont really like these. wonder if we can bind directly to the text somehow and still be able to unbind. maybe texts need a reference to renderer?
-          this._texts[text.id] = new RendererTextItem(text, {
+          this._textEventBindings[text.id] = new Blotter._ModelEventBinding(text, {
             update : _.bind(function () {
               _update.call(this);
             }, this)
           });
-          text.on("update", this._texts[text.id].eventCallbacks.update);
+          text.on("update", this._textEventBindings[text.id].eventCallbacks.update);
 
           this._scopes[text.id] = new Blotter._RenderScope(text, this);
         }, this));
       },
 
       removeText : function (text) {
-
         this.removeTexts(text);
       },
 
       removeTexts : function (texts) {
         var filteredTexts = Blotter._TextUtils.filterTexts(texts),
-            currentPrivateTextIds = _.keys(this._texts),
-            filteredTextIds = _.pluck(filteredTexts, "id"),
-            removedTextIds = _.difference(currentPrivateTextIds, filteredTextIds),
-            removedTexts = _.filter(filteredTexts, function(text) {
-              return _.indexOf(removedTextIds, text.id) > -1;
-            });
+            removedTexts = _.intersection(this._texts, filteredTexts) 
 
         _.each(removedTexts, _.bind(function (text) {
-          text.unsetEventCallbacks();
+          this._texts = _.without(this._texts, text);
 
-          delete this._texts[text.id];
+          this._textEventBindings[text.id].unsetEventCallbacks();
+
+          delete this._textEventBindings[text.id];
           delete this._scopes[text.id];
         }, this));
       },
 
+      setMaterial : function (material) {
+        Blotter._Messaging.ensureInstanceOf(material, Blotter.Material, "Blotter.Material", "Blotter.Renderer");
+        
+        this._material = material;
+
+        if (this._materialEventBinding) {
+          this._materialEventBinding.unsetEventCallbacks();
+        }
+
+        this._materialEventBinding = new Blotter._ModelEventBinding(material, {
+          update : _.bind(function () {
+            _update.call(this);
+          }, this)
+        });
+        material.on("update", this._materialEventBinding.eventCallbacks.update);
+      },
+
       forText : function (text) {
+        // ### - messaging
         Blotter._Messaging.ensureInstanceOf(text, Blotter.Text, "Blotter.Text", "Blotter.Renderer");
 
         if (!(this._scopes[text.id])) {
-  // ### - messaging
+          // ### - messaging
           Blotter._Messaging.logError("Blotter.Renderer", "Blotter.Text object not found in blotter. Set needsUpdate to true.");
           return;
         }
@@ -220,7 +216,15 @@
       },
 
       boundsForText : function (text) {
-        Blotter._Messaging.ensureInstanceOf(text, Blotter.Text, "Blotter.Text", "Blotter.Material");
+        // ### - messaging
+        Blotter._Messaging.ensureInstanceOf(text, Blotter.Text, "Blotter.Text", "Blotter.Renderer");
+
+        if (!(this._scopes[text.id])) {
+          // ### - messaging
+          Blotter._Messaging.logError("Blotter.Renderer", "Blotter.Text object not found in blotter. Set needsUpdate to true.");
+          return;
+        }
+
         return this._mapping.boundsForText(text);
       }
     };

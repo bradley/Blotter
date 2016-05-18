@@ -1,8 +1,8 @@
 (function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
 
-  Blotter._MaterialScope = function (text, material) {
+  Blotter._MaterialScope = function (text) {
     this.text = text;
-    this.material = material;
+    
     this.uniforms = {};
 
     this.needsUpdate = true;

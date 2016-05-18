@@ -39,8 +39,6 @@
       return renderTarget;
     }
 
-    // ### - note: let's not be fanatics. im ok with requiring this method be called with apply. it's purely
-//   for the purpose of encapsulation and concealing an internal method.
     function _loop () {
       this._renderer.render(this._scene, this._camera, this._renderTarget);
 

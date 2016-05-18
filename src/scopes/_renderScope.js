@@ -12,7 +12,7 @@
     this.domElement = Blotter._CanvasUtils.hiDpiCanvas(0, 0, this.blotter.ratio);
     this.context = this.domElement.getContext("2d");
 
-    this._materialScope = new Blotter._MaterialScope(this.text, this.blotter.material);
+    this._materialScope = new Blotter._MaterialScope(this.text);
   };
 
   Blotter._RenderScope.prototype = (function () {
@@ -35,7 +35,7 @@
     }
 
     function _render () {
-      if (this.domElement && this.bounds) {
+      if (this.bounds) {
         this.context.clearRect(0, 0, this.domElement.width, this.domElement.height);
 
         this.context.putImageData(
@@ -71,7 +71,7 @@
     }
 
     function _update () {
-      this._materialScope.material = this.blotter.material;
+      this._materialScope.mappingMaterial = this.blotter.mappingMaterial;
       this._materialScope.needsUpdate = true;
 
       _updateBounds.call(this);
@@ -103,14 +103,17 @@
 
       update : function () {
         var now = Date.now();
+
         this.frameCount += 1;
         this.timeDelta = (now - (this.lastDrawTime || now)) / 1000;
         this.lastDrawTime = now;
+
         _render.call(this);
       },
 
       appendTo : function (element) {
         element.appendChild(this.domElement);
+        
         _setMouseEventListeners.call(this);
 
         return this;
