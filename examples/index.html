@@ -110,8 +110,10 @@
         });
 
 
-        blotter.on("load", function () {
+        blotter.on("ready", function () {
           console.log("test");
+          var myScope3 = blotter.forText(blotterTexts[12]);
+          myScope3.material.uniforms.uLenseWeight.value = 0.25;
         });
 
 
@@ -126,7 +128,7 @@
 
         var myScope = blotter.forText(blotterTexts[4]);
         var startTime = new Date().getTime();
-        myScope.on("update", function (frameCount) {
+        myScope.on("render", function (frameCount) {
           var time = (new Date().getTime() - startTime) / 1000;
           myScope.material.uniforms.uLenseWeight.value = Math.abs(Math.sin(time));
         });
@@ -142,6 +144,9 @@
           myScope2.material.uniforms.uCenterPoint.value = [0.5, 0.5];
         });
 
+
+
+
         _.delay(function() {
           var text = new Blotter.Text("hello world", styleProperties);
 
@@ -155,7 +160,7 @@
           newScope.appendTo(container);
 
           blotter.needsUpdate = true;
-        }, 4000)
+        }, 8000)
 
 
 

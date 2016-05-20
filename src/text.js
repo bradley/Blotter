@@ -4,6 +4,8 @@
     this.id = THREE.Math.generateUUID();
     this.value = value;
     this.properties = properties;
+
+    _.extendOwn(this, EventEmitter.prototype);
   };
 
   Blotter.Text.prototype = {
@@ -26,7 +28,8 @@
     }
   };
 
-  EventEmitter.prototype.apply(Blotter.Text.prototype);
+  //EventEmitter.prototype.apply(Blotter.Text.prototype);
+  //_.extend(Blotter.Text.prototype, EventEmitter.prototype);
 
 })(
   this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate

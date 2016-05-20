@@ -28,8 +28,7 @@
 		filterTexts : function(texts) {
 			if (texts instanceof Blotter.Text) {
         texts = [texts];
-      }
-      else {
+      } else {
         texts = _.toArray(texts);
       }
 

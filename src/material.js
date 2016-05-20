@@ -7,6 +7,8 @@
 
     this.mainImage = mainImage;
     this.uniforms = options.uniforms;
+
+    _.extendOwn(this, EventEmitter.prototype);
   };
 
   Blotter.Material.prototype = (function() {
@@ -35,7 +37,7 @@
         if (value === true) {
           this.trigger("update");
         }
-      }
+      },
 
       get mainImage () {
         return this._mainImage;
@@ -55,7 +57,8 @@
     };
   })();
 
-  EventEmitter.prototype.apply(Blotter.Material.prototype);
+  //EventEmitter.prototype.apply(Blotter.Material.prototype);
+  //_.extend(Blotter.Material.prototype, EventEmitter.prototype);
 
 })(
   this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate

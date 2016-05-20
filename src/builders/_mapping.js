@@ -67,7 +67,14 @@
         var canvas = Blotter._CanvasUtils.hiDpiCanvas(this._width, this._height, this._ratio),
             ctx = canvas.getContext("2d", { alpha: false });
 
-        ctx.textBaseline = "middle";_
+        ctx.textBaseline = "middle";
+
+        for (var i = 0; i < this.texts.length; i++) {
+          var text = this.texts[i],
+              bounds = this.boundsForText(text),
+              yOffset = _getYOffset.call(this, text.properties.size, text.properties.leading) / 2, // divide yOffset by 2 to accomodate `middle` textBaseline
+              adjustedY = bounds.y + text.properties.paddingTop + yOffset;
+
           ctx.font = text.properties.style +
                " " + text.properties.weight +
                " " + text.properties.size + "px" +
@@ -82,6 +89,7 @@
             0,
             0
           );
+
           ctx.restore();
         }
 

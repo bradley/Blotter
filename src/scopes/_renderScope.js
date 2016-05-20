@@ -4,6 +4,12 @@
     this.text = text;
     this.blotter = blotter;
 
+    this.material = {
+      mainImage : this.blotter.material.mainImage
+    };
+
+    this._mappingMaterial = blotter.mappingMaterial;
+
     this.playing = this.blotter.autoplay;
     this.timeDelta = 0;
     this.lastDrawTime = false;
@@ -12,7 +18,7 @@
     this.domElement = Blotter._CanvasUtils.hiDpiCanvas(0, 0, this.blotter.ratio);
     this.context = this.domElement.getContext("2d");
 
-    this._materialScope = new Blotter._MaterialScope(this.text);
+    _.extendOwn(this, EventEmitter.prototype);
   };
 
   Blotter._RenderScope.prototype = (function () {
@@ -34,47 +40,39 @@
       }
     }
 
-    function _render () {
-      if (this.bounds) {
-        this.context.clearRect(0, 0, this.domElement.width, this.domElement.height);
-
-        this.context.putImageData(
-          this.blotter.imageData,
-          this.bounds.x,
-          this.bounds.y
-        );
-
-        this.trigger("update", [this.frameCount]);
-      }
-    }
-
-    function _updateBounds () {
-      var bounds = this.blotter.boundsForText(this.text);
+    function _getBoundsForMappingMaterialAndText (mappingMaterial, text) {
+      var bounds = mappingMaterial.boundsForText(text);
 
       if (bounds) {
-        // ### - x and y and all of this should be set directly in material. this should not have to scope into _mapper
-        this.bounds = {
+        return {
           w : bounds.w,
           h : bounds.h,
           x : -1 * Math.floor(bounds.x),
-        // ### --- !
-          y : -1 * Math.floor(this.blotter.material.height - (bounds.y + bounds.h))
+          // ### --- !
+          y : -1 * Math.floor(mappingMaterial.height - (bounds.y + bounds.h))
         };
-
-        Blotter._CanvasUtils.updateCanvasSize(
-          this.domElement,
-          this.bounds.w / this.blotter.ratio,
-          this.bounds.h / this.blotter.ratio,
-          this.blotter.ratio
-        );
       }
     }
 
     function _update () {
-      this._materialScope.mappingMaterial = this.blotter.mappingMaterial;
-      this._materialScope.needsUpdate = true;
+      var mappingMaterial = this._mappingMaterial,
+          bounds = mappingMaterial && _getBoundsForMappingMaterialAndText(mappingMaterial, this.text);
 
-      _updateBounds.call(this);
+      if (mappingMaterial && bounds) {
+        Blotter._CanvasUtils.updateCanvasSize(
+          this.domElement,
+          bounds.w / this.blotter.ratio,
+          bounds.h / this.blotter.ratio,
+          this.blotter.ratio
+        );
+
+        // TODO: Update uniform values using old mappingMaterial uniform values if it exists.
+        this.material.uniforms = mappingMaterial.uniformsInterfaceForText(this.text);
+        this.material.mainImage = mappingMaterial.mainImage;
+
+        this.trigger(this.bounds ? "update" : "ready");
+        this.bounds = bounds;
+      }
     }
 
     return {
@@ -89,8 +87,10 @@
         }
       },
 
-      get material () {
-        return this._materialScope;
+      get mappingMaterial () { },
+
+      set mappingMaterial (mappingMaterial) {
+        this._mappingMaterial = mappingMaterial;
       },
 
       play : function () {
@@ -101,19 +101,29 @@
         this.playing = false;
       },
 
-      update : function () {
-        var now = Date.now();
+      render : function () {
+        if (this.bounds) {
+          var now = Date.now();
 
-        this.frameCount += 1;
-        this.timeDelta = (now - (this.lastDrawTime || now)) / 1000;
-        this.lastDrawTime = now;
+          this.frameCount += 1;
+          this.timeDelta = (now - (this.lastDrawTime || now)) / 1000;
+          this.lastDrawTime = now;
 
-        _render.call(this);
+          this.context.clearRect(0, 0, this.domElement.width, this.domElement.height);
+
+          this.context.putImageData(
+            this.blotter.imageData,
+            this.bounds.x,
+            this.bounds.y
+          );
+
+          this.trigger("render", [this.frameCount]);
+        }
       },
 
       appendTo : function (element) {
         element.appendChild(this.domElement);
-        
+
         _setMouseEventListeners.call(this);
 
         return this;
@@ -121,7 +131,8 @@
     };
   })();
 
-  EventEmitter.prototype.apply(Blotter._RenderScope.prototype);
+  //EventEmitter.prototype.apply(Blotter._RenderScope.prototype);
+  //_.extend(Blotter._RenderScope.prototype, EventEmitter.prototype);
 
 })(
   this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate

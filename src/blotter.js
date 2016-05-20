@@ -18,33 +18,28 @@
 
     this._renderer = new Blotter._Renderer();
 
+    _.extendOwn(this, EventEmitter.prototype);
     this.init.apply(this, arguments);
   };
 
   Blotter.prototype = (function () {
 
-    function _rendererUpdated () {
+    function _renderScopes () {
       _.each(this._scopes, _.bind(function (scope) {
         if (scope.playing) {
-          scope.update();
+          scope.render();
         }
-      }, this));
-    }
-
-    function _updateScopes () {
-      _.each(this._scopes, _.bind(function (scope, textId) {
-        scope.mappingMaterial = this.
-        scope.needsUpdate = true;
       }, this));
     }
 
     function _update () {
       var buildMapping,
           buildMappingMaterial,
+          mappingMaterial,
           buildStages;
 
-      buildMapping = function () {
-        return function (next) {
+      buildMapping = _.bind(function () {
+        return _.bind(function (next) {
           Blotter._MappingBuilder.build(this._texts, _.bind(function (mapping) {
             this._mapping = mapping;
             this._mapping.ratio = this.ratio;
@@ -53,19 +48,17 @@
 
             next();
           }, this));
-        };
-      };
+        }, this);
+      }, this);
 
-      buildMappingMaterial = function () {
-        return function (next) {
-          Blotter._MappingMaterialBuilder.build(this._mapping, this._material, _.bind(function (mappingMaterial) {
-            this.mappingMaterial = mappingMaterial;
-            this._renderer.material = this.mappingMaterial.shaderMaterial;
-
+      buildMappingMaterial = _.bind(function () {
+        return _.bind(function (next) {
+          Blotter._MappingMaterialBuilder.build(this._mapping, this._material, _.bind(function (newMappingMaterial) {
+            mappingMaterial = newMappingMaterial;
             next();
           }, this));
-        };
-      };
+        }, this);
+      }, this);
 
       buildStages = [
         buildMapping(),
@@ -73,9 +66,18 @@
       ];
 
       _(buildStages).reduceRight(_.wrap, _.bind(function () {
-        _updateScopes.call(this);
+        this._renderer.stop();
 
-        this.trigger("build");
+        _.each(this._scopes, function (scope, textId) {
+          scope.mappingMaterial = mappingMaterial;
+          scope.needsUpdate = true;
+        });
+
+        this._renderer.material = mappingMaterial.shaderMaterial;
+        this._renderer.start();
+
+        this.trigger(this.mappingMaterial ? "update" : "ready");
+        this.mappingMaterial = mappingMaterial;
       }, this))();
     }
 
@@ -123,7 +125,7 @@
         this.setMaterial(material);
         this.addTexts(options.texts);
 
-        this._renderer.on("update", _.bind(_rendererUpdated, this));
+        this._renderer.on("render", _.bind(_renderScopes, this));
 
         if (this.autobuild) {
           this.needsUpdate = true;
@@ -191,7 +193,7 @@
 
       removeTexts : function (texts) {
         var filteredTexts = Blotter._TextUtils.filterTexts(texts),
-            removedTexts = _.intersection(this._texts, filteredTexts)
+            removedTexts = _.intersection(this._texts, filteredTexts);
 
         _.each(removedTexts, _.bind(function (text) {
           this._texts = _.without(this._texts, text);
@@ -222,17 +224,19 @@
 
         if (!(this._scopes[text.id])) {
           // ### - messaging
-          Blotter._Messaging.logError("Blotter.Renderer", "Blotter.Text object not found in blotter. Set needsUpdate to true.");
+          Blotter._Messaging.logError("Blotter.Renderer", "Blotter.Text object not found in blotter.");
           return;
         }
 
-        return this._mapping.boundsForText(text);
+        if (this._mapping) {
+          return this.mappingMaterial.boundsForText(text);
+        }
       }
     };
   })();
 
-  EventEmitter.prototype.apply(Blotter.prototype);
-
+  //EventEmitter.prototype.apply(Blotter.prototype);
+  //_.extend(Blotter.prototype, EventEmitter.prototype);
 })(
   this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
 );

@@ -3,10 +3,10 @@
   Blotter._ModelEventBinding = function (model, eventCallbacks) {
     this.model = model;
     this.eventCallbacks = eventCallbacks || {};
-  }
+  };
 
   Blotter._ModelEventBinding.prototype = {
-    
+
     constructor : Blotter._ModelEventBinding,
 
     unsetEventCallbacks : function () {

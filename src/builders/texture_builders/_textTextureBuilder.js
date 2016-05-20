@@ -1,6 +1,6 @@
 (function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
 
-  Blotter._TextTextureFactory = (function() {
+  Blotter._TextTextureBuilder = (function() {
 
     return {
 

@@ -108,8 +108,8 @@
           Blotter._Messaging.logError(domain, "uniform value for " + uniformName + " is incorrect for type: " + uniformObject.type);
           return memo;
         }
-        
-        memo[uniformName] = _.pick(uniformObject, "type", "value");;
+
+        memo[uniformName] = _.pick(uniformObject, "type", "value");
         return memo;
       }, {});
     }

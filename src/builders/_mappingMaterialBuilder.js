@@ -31,9 +31,9 @@
           };
 
       _.reduce(uniforms, function (userDefinedUniforms, uniformObject, uniformName) {
-        var uniformTextureName = _dataTextureNameForUniformName(uniformName),
-            glslSwizzle = Blotter._UniformUtils.fullSwizzleStringForUniformType(uniformObject.type),
-            glslDataType = Blotter._UniformUtils.glslDataTypeForUniformType(uniformObject.type);
+        var uniformTextureName = _userUniformDataTextureNameForUniformName(uniformName),
+            glslSwizzle = Blotter._UniformUtils.fullSwizzleStringForUniformType(uniformObject.userUniform.type),
+            glslDataType = Blotter._UniformUtils.glslDataTypeForUniformType(uniformObject.userUniform.type);
 
         userDefinedUniforms.privateUniformTextureDeclarations += "uniform sampler2D " + uniformTextureName + ";\n";
         userDefinedUniforms.publicUniformDeclarations += glslDataType + " " + uniformName + ";\n";
@@ -127,7 +127,7 @@
     function _buildMappedTextsTexture (mapping, completion) {
       Blotter._TextTextureBuilder.build(mapping, function (texture) {
         completion(texture);
-      }));
+      });
     }
 
     function _buildMappingDataTextureObjects (mapping, completion) {
@@ -173,7 +173,7 @@
     function _buildUserUniformDataTextureObjects (userUniforms, dataLength, completion) {
       userUniforms = Blotter._UniformUtils.extractValidUniforms(userUniforms);
 
-      return _.reduce(userUniforms, function (memo, userUniform, uniformName) {
+      var userUniformDataTextureObjects = _.reduce(userUniforms, function (memo, userUniform, uniformName) {
         var data = new Float32Array(dataLength * 4);
         memo[uniformName] = {
           userUniform : userUniform,
@@ -182,6 +182,8 @@
         };
         return memo;
       }, {});
+
+      completion(userUniformDataTextureObjects);
     }
 
     function _getUniformsForMappingDataTextureObjects (mappingDataTextureObjects) {
@@ -265,7 +267,7 @@
               userUniformDataTextureObjects = objects;
               next();
             });
-          }
+          };
         };
 
         buildStages = [
@@ -282,9 +284,10 @@
                 mappingDataTextureObjects,
                 userUniformDataTextureObjects
               ),
-              threeMaterial = _getThreeMaterial(_vertexSrc(), _fragmentSrc(), uniforms);
+              userUniforms = _.omit(uniforms, "_uCanvasResolution", "_uSampler", "_uTextBoundsTexture", "_uTextIndicesTexture"),
+              threeMaterial = _getThreeMaterial(_vertexSrc(), _fragmentSrc(userUniformDataTextureObjects, material.mainImage), uniforms);
 
-          completion(new Blotter._MappingMaterial(mapping, material, threeMaterial, userUniformDataTextureObjects);
+          completion(new Blotter._MappingMaterial(mapping, material, threeMaterial, userUniformDataTextureObjects));
         })();
       }
     };

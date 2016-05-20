@@ -20,6 +20,7 @@
 
     this._camera = new THREE.OrthographicCamera(0.5, 0.5, 0.5, 0.5, 0, 100);
 
+    _.extendOwn(this, EventEmitter.prototype);
     this.init.apply(this, arguments);
   };
 
@@ -51,7 +52,7 @@
         this._imageDataArray
       );
 
-      this.trigger("update");
+      this.trigger("render");
 
       this._currentAnimationLoop = root.requestAnimationFrame(_.bind(_loop, this));
     }

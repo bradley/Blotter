@@ -4,30 +4,26 @@
 
   Blotter._IndicesDataTextureBuilder = (function () {
 
-    function _indicesDataForMapping (mapping) {
-// ### - remove this shit following documentation.
-    // There is a negative coorelation between the sampleAccuracy value and
-    // the speed at which texture generation happens.
-    // However, the lower this value, the less sampleAccuracy you can expect
-    // for indexing into uniforms for any given text.
-    // Value must be between 0.0 and 1.0, and you are advised to keep it around 0.5.
-      var data = new Float32Array((mapping.height * mapping.width) * 4),
-          widthStepModifier = mapping.width % 1,
+    function _indicesDataForMapping (mapping, sampleAccuracy) {
+
+      var width = mapping.width * sampleAccuracy,
+          height = mapping.height * sampleAccuracy,
+          data = new Float32Array((height * width) * 4),
+          widthStepModifier = width % 1,
           indicesOffset = (1 / mapping.texts.length) / 2, // Values stored in this texture will be sampled from the 'middle' of their texel position.
-          sampleAccuracy = 0.5,
           ratio = mapping.ratio;
 
       for (var i = 1; i < data.length / 4; i++) {
 
-        var x = i - (((mapping.width / ratio) - widthStepModifier) * (y - 1)),
-            y = Math.ceil(i / (mapping.width - widthStepModifier)),
+        var x = i - (((width / ratio) - widthStepModifier) * (y - 1)),
+            y = Math.ceil(i / (width - widthStepModifier)),
             refIndex = 0.0,
             bg = 0.0,
             a = 0.0;
 
         for (var ki = 0; ki < mapping.texts.length; ki++) {
           var text = mapping.texts[ki],
-              bounds = mapper.boundsForText(text),
+              bounds = mapping.boundsForText(text),
               bW = (bounds.w / ratio) * sampleAccuracy,
               bH = (bounds.h / ratio) * sampleAccuracy,
               bX = (bounds.x / ratio) * sampleAccuracy,
@@ -50,16 +46,23 @@
         data[4*index+2] = bg;
         data[4*index+3] = a;
       }
-
       return data;
     }
 
     return {
 
       build : function (mapping, completion) {
+        // ### - remove this shit following documentation.
+    // There is a negative coorelation between the sampleAccuracy value and
+    // the speed at which texture generation happens.
+    // However, the lower this value, the less sampleAccuracy you can expect
+    // for indexing into uniforms for any given text.
+    // Value must be between 0.0 and 1.0, and you are advised to keep it around 0.5.
+        var sampleAccuracy = 0.5;
+
         setImmediate(function() {
-          var data = _indicesDataForMapping(mapping),
-              texture = new THREE.DataTexture(datadata, mapping.width, mapping.height, THREE.RGBAFormat, THREE.FloatType);
+          var data = _indicesDataForMapping(mapping, sampleAccuracy),
+              texture = new THREE.DataTexture(data, mapping.width * sampleAccuracy, mapping.height * sampleAccuracy, THREE.RGBAFormat, THREE.FloatType);
 
           texture.flipY = true;
           texture.needsUpdate = true;

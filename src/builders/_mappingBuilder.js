@@ -55,7 +55,7 @@
             };
           }
 
-          completion(new Blotter._Mapping(filteredTexts, textBounds, packer.root.w, packer.root.h);
+          completion(new Blotter._Mapping(filteredTexts, textBounds, packer.root.w, packer.root.h));
         });
       }
     };
