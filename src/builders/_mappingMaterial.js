@@ -1,9 +1,10 @@
 (function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
 
   Blotter._MappingMaterial = function(mapping, material, shaderMaterial, userUniformDataTextureObjects) {
-    this._mapping = mapping;
-    this._material = material;
-    this._shaderMaterial = shaderMaterial;
+    this.mapping = mapping;
+    this.material = material;
+    this.shaderMaterial = shaderMaterial;
+
     this._userUniformDataTextureObjects = userUniformDataTextureObjects;
 
     this.init.apply(this, arguments);
@@ -98,23 +99,23 @@
       constructor : Blotter._MappingMaterial,
 
       get mainImage () {
-        return this._material.mainImage;
+        return this.material.mainImage;
       },
 
       get width () {
-        return this._mapping.width;
+        return this.mapping.width;
       },
 
       get height () {
-        return this._mapping.height;
+        return this.mapping.height;
       },
 
-      get shaderMaterial () {
-        return this._shaderMaterial;
+      get ratio () {
+        return this.mapping.ratio;
       },
 
       init : function (mapping, material, shaderMaterial, userUniformDataTextureObjects) {
-        this._uniforms = _getUniformInterface(this._mapping, this._userUniformDataTextureObjects);
+        this._uniforms = _getUniformInterface(this.mapping, this._userUniformDataTextureObjects);
       },
 
       uniformsInterfaceForText : function (text) {
@@ -124,7 +125,7 @@
       boundsForText : function (text) {
         // ### - messaging
         Blotter._Messaging.ensureInstanceOf(text, Blotter.Text, "Blotter.Text", "Blotter._MappingMaterial");
-        return this._mapping.boundsForText(text);
+        return this.mapping.boundsForText(text);
       }
     };
   })();

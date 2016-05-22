@@ -71,7 +71,7 @@
 
         for (var i = 0; i < this.texts.length; i++) {
           var text = this.texts[i],
-              bounds = this.boundsForText(text),
+              bounds = this._textBounds[text.id],
               yOffset = _getYOffset.call(this, text.properties.size, text.properties.leading) / 2, // divide yOffset by 2 to accomodate `middle` textBaseline
               adjustedY = bounds.y + text.properties.paddingTop + yOffset;
 

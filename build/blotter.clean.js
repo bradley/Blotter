@@ -656,19 +656,17 @@
 
   Blotter._IndicesDataTextureBuilder = (function () {
 
-    function _indicesDataForMapping (mapping, sampleAccuracy) {
+    function _indicesDataForMapping (mapping, width, height, sampleAccuracy) {
 
-      var width = mapping.width * sampleAccuracy,
-          height = mapping.height * sampleAccuracy,
-          data = new Float32Array((height * width) * 4),
+      var ratio = mapping.ratio,
+          points = new Float32Array((height * width) * 4),
           widthStepModifier = width % 1,
-          indicesOffset = (1 / mapping.texts.length) / 2, // Values stored in this texture will be sampled from the 'middle' of their texel position.
-          ratio = mapping.ratio;
+          indicesOffset = (1 / mapping.texts.length) / 2; // Values stored in this texture will be sampled from the 'middle' of their texel position.
 
-      for (var i = 1; i < data.length / 4; i++) {
+      for (var i = 1; i < points.length / 4; i++) {
 
-        var x = i - (((width / ratio) - widthStepModifier) * (y - 1)),
-            y = Math.ceil(i / (width - widthStepModifier)),
+        var y = Math.ceil(i / (width - widthStepModifier)),
+            x = i - ((width - widthStepModifier) * (y - 1)),
             refIndex = 0.0,
             bg = 0.0,
             a = 0.0;
@@ -693,28 +691,30 @@
         }
 
         var index = i - 1;
-        data[4*index+0] = refIndex;
-        data[4*index+1] = bg;
-        data[4*index+2] = bg;
-        data[4*index+3] = a;
+        points[4*index+0] = refIndex;
+        points[4*index+1] = bg;
+        points[4*index+2] = bg;
+        points[4*index+3] = a;
       }
-      return data;
+      return points;
     }
 
     return {
 
       build : function (mapping, completion) {
         // ### - remove this shit following documentation.
-    // There is a negative coorelation between the sampleAccuracy value and
-    // the speed at which texture generation happens.
-    // However, the lower this value, the less sampleAccuracy you can expect
-    // for indexing into uniforms for any given text.
-    // Value must be between 0.0 and 1.0, and you are advised to keep it around 0.5.
+        // There is a negative coorelation between the sampleAccuracy value and
+        // the speed at which texture generation happens.
+        // However, the lower this value, the less sampleAccuracy you can expect
+        // for indexing into uniforms for any given text.
+        // Value must be between 0.0 and 1.0, and you are advised to keep it around 0.5.
         var sampleAccuracy = 0.5;
 
         setImmediate(function() {
-          var data = _indicesDataForMapping(mapping, sampleAccuracy),
-              texture = new THREE.DataTexture(data, mapping.width * sampleAccuracy, mapping.height * sampleAccuracy, THREE.RGBAFormat, THREE.FloatType);
+          var width = (mapping.width / mapping.ratio) * sampleAccuracy,
+              height = (mapping.height / mapping.ratio) * sampleAccuracy,
+              data = _indicesDataForMapping(mapping, width, height, sampleAccuracy),
+              texture = new THREE.DataTexture(data, width, height, THREE.RGBAFormat, THREE.FloatType);
 
           texture.flipY = true;
           texture.needsUpdate = true;
@@ -913,7 +913,7 @@
 
         for (var i = 0; i < this.texts.length; i++) {
           var text = this.texts[i],
-              bounds = this.boundsForText(text),
+              bounds = this._textBounds[text.id],
               yOffset = _getYOffset.call(this, text.properties.size, text.properties.leading) / 2, // divide yOffset by 2 to accomodate `middle` textBaseline
               adjustedY = bounds.y + text.properties.paddingTop + yOffset;
 
@@ -951,9 +951,10 @@
 (function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
 
   Blotter._MappingMaterial = function(mapping, material, shaderMaterial, userUniformDataTextureObjects) {
-    this._mapping = mapping;
-    this._material = material;
-    this._shaderMaterial = shaderMaterial;
+    this.mapping = mapping;
+    this.material = material;
+    this.shaderMaterial = shaderMaterial;
+
     this._userUniformDataTextureObjects = userUniformDataTextureObjects;
 
     this.init.apply(this, arguments);
@@ -1048,23 +1049,23 @@
       constructor : Blotter._MappingMaterial,
 
       get mainImage () {
-        return this._material.mainImage;
+        return this.material.mainImage;
       },
 
       get width () {
-        return this._mapping.width;
+        return this.mapping.width;
       },
 
       get height () {
-        return this._mapping.height;
+        return this.mapping.height;
       },
 
-      get shaderMaterial () {
-        return this._shaderMaterial;
+      get ratio () {
+        return this.mapping.ratio;
       },
 
       init : function (mapping, material, shaderMaterial, userUniformDataTextureObjects) {
-        this._uniforms = _getUniformInterface(this._mapping, this._userUniformDataTextureObjects);
+        this._uniforms = _getUniformInterface(this.mapping, this._userUniformDataTextureObjects);
       },
 
       uniformsInterfaceForText : function (text) {
@@ -1074,7 +1075,7 @@
       boundsForText : function (text) {
         // ### - messaging
         Blotter._Messaging.ensureInstanceOf(text, Blotter.Text, "Blotter.Text", "Blotter._MappingMaterial");
-        return this._mapping.boundsForText(text);
+        return this.mapping.boundsForText(text);
       }
     };
   })();
@@ -1630,6 +1631,8 @@
       setSize : function (width, height) {
         this._width = width || 1;
         this._height = height || 1;
+
+        this._renderer.setSize(this._width, this._height);
 
         this._mesh.scale.set(this._width, this._height, 1);
 
