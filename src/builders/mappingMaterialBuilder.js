@@ -1,6 +1,6 @@
 (function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
 
-  Blotter._MappingMaterialBuilder = (function() {
+  Blotter.MappingMaterialBuilder = (function() {
 
     function _vertexSrc () {
       var vertexSrc = [
@@ -32,8 +32,8 @@
 
       _.reduce(uniforms, function (userDefinedUniforms, uniformObject, uniformName) {
         var uniformTextureName = _userUniformDataTextureNameForUniformName(uniformName),
-            glslSwizzle = Blotter._UniformUtils.fullSwizzleStringForUniformType(uniformObject.userUniform.type),
-            glslDataType = Blotter._UniformUtils.glslDataTypeForUniformType(uniformObject.userUniform.type);
+            glslSwizzle = Blotter.UniformUtils.fullSwizzleStringForUniformType(uniformObject.userUniform.type),
+            glslDataType = Blotter.UniformUtils.glslDataTypeForUniformType(uniformObject.userUniform.type);
 
         userDefinedUniforms.privateUniformTextureDeclarations += "uniform sampler2D " + uniformTextureName + ";\n";
         userDefinedUniforms.publicUniformDeclarations += glslDataType + " " + uniformName + ";\n";
@@ -125,7 +125,7 @@
     }
 
     function _buildMappedTextsTexture (mapping, completion) {
-      Blotter._TextTextureBuilder.build(mapping, function (texture) {
+      Blotter.TextTextureBuilder.build(mapping, function (texture) {
         completion(texture);
       });
     }
@@ -138,7 +138,7 @@
 
       buildIndicesTexture = function () {
         return function (next) {
-          Blotter._IndicesDataTextureBuilder.build(mapping, function (texture) {
+          Blotter.IndicesDataTextureBuilder.build(mapping, function (texture) {
             mappingDataTextureObjects.push({
               uniformName : "_uTextIndicesTexture",
               texture : texture
@@ -150,7 +150,7 @@
 
       buildBoundsTexture = function () {
         return function (next) {
-          Blotter._BoundsDataTextureBuilder.build(mapping, function (texture) {
+          Blotter.BoundsDataTextureBuilder.build(mapping, function (texture) {
             mappingDataTextureObjects.push({
               uniformName : "_uTextBoundsTexture",
               texture : texture
@@ -171,7 +171,7 @@
     }
 
     function _buildUserUniformDataTextureObjects (userUniforms, dataLength, completion) {
-      userUniforms = Blotter._UniformUtils.extractValidUniforms(userUniforms);
+      userUniforms = Blotter.UniformUtils.extractValidUniforms(userUniforms);
 
       var userUniformDataTextureObjects = _.reduce(userUniforms, function (memo, userUniform, uniformName) {
         var data = new Float32Array(dataLength * 4);
@@ -287,7 +287,7 @@
               userUniforms = _.omit(uniforms, "_uCanvasResolution", "_uSampler", "_uTextBoundsTexture", "_uTextIndicesTexture"),
               threeMaterial = _getThreeMaterial(_vertexSrc(), _fragmentSrc(userUniformDataTextureObjects, material.mainImage), uniforms);
 
-          completion(new Blotter._MappingMaterial(mapping, material, threeMaterial, userUniformDataTextureObjects));
+          completion(new Blotter.MappingMaterial(mapping, material, threeMaterial, userUniformDataTextureObjects));
         })();
       }
     };

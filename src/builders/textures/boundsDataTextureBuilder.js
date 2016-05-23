@@ -2,7 +2,7 @@
 
   // Create a Data Texture holding the boundaries (x/y offset and w/h) that should be available to any given texel for any given text.
 
-  Blotter._BoundsDataTextureBuilder = (function () {
+  Blotter.BoundsDataTextureBuilder = (function () {
 
     function _boundsDataForMapping (mapping) {
       var texts = mapping.texts,

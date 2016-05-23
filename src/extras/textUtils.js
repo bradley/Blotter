@@ -1,6 +1,6 @@
 (function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
 
-	Blotter._PropertyDefaults = {
+	Blotter.PropertyDefaults = {
 		family       : 'sans-serif',
 		size         : 12,
 		leading      : 1.5,
@@ -14,14 +14,14 @@
 		paddingLeft  : 0
 	};
 
-	Blotter._TextUtils = {
+	Blotter.TextUtils = {
 
-		Properties : _.keys(Blotter._PropertyDefaults),
+		Properties : _.keys(Blotter.PropertyDefaults),
 
 		// Recieves property values (optional) and fills in any missing values with default values
 
 		ensurePropertyValues : function(properties) {
-			properties = _.defaults(properties || {}, Blotter._PropertyDefaults);
+			properties = _.defaults(properties || {}, Blotter.PropertyDefaults);
 			return properties;
 		},
 
@@ -37,7 +37,7 @@
 
         if (!isText) {
   // ### - messaging
-          Blotter._Messaging.logError("Blotter.Renderer", "object not instance of Blotter.Text");
+          Blotter.Messaging.logError("Blotter.Renderer", "object not instance of Blotter.Text");
         }
 
         return isText;

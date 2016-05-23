@@ -1,6 +1,6 @@
 (function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
 
-  Blotter._Mapping = function (texts, textBounds, width, height) {
+  Blotter.Mapping = function (texts, textBounds, width, height) {
     this.texts = texts;
 
     this._textBounds = textBounds;
@@ -11,10 +11,10 @@
     this._ratio = 1;
   };
 
-  Blotter._Mapping.prototype = (function () {
+  Blotter.Mapping.prototype = (function () {
 
     function _getYOffset (size, lineHeight) {
-      lineHeight = lineHeight || Blotter._TextUtils.ensurePropertyValues().leading;
+      lineHeight = lineHeight || Blotter.TextUtils.ensurePropertyValues().leading;
       if (!isNaN(lineHeight)) {
         lineHeight = size * lineHeight;
       } else if (lineHeight.toString().indexOf('px') !== -1) {
@@ -28,7 +28,7 @@
 
     return {
 
-      constructor : Blotter._Mapping,
+      constructor : Blotter.Mapping,
 
       get ratio () {
         return this._ratio;
@@ -47,7 +47,7 @@
       },
 
       boundsForText : function (text) {
-        Blotter._Messaging.ensureInstanceOf(text, Blotter.Text, "Blotter.Text", "Blotter.Material");
+        Blotter.Messaging.ensureInstanceOf(text, Blotter.Text, "Blotter.Text", "Blotter.Material");
 
         var bounds = this._textBounds[text.id];
 
@@ -64,7 +64,7 @@
       },
 
       toCanvas : function () {
-        var canvas = Blotter._CanvasUtils.hiDpiCanvas(this._width, this._height, this._ratio),
+        var canvas = Blotter.CanvasUtils.hiDpiCanvas(this._width, this._height, this._ratio),
             ctx = canvas.getContext("2d", { alpha: false });
 
         ctx.textBaseline = "middle";

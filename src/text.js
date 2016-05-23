@@ -24,7 +24,7 @@
     },
 
     set properties (properties) {
-      this._properties = Blotter._TextUtils.ensurePropertyValues(properties);
+      this._properties = Blotter.TextUtils.ensurePropertyValues(properties);
     }
   };
 

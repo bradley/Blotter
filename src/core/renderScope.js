@@ -1,6 +1,6 @@
 (function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
 
-  Blotter._RenderScope = function (text, blotter) {
+  Blotter.RenderScope = function (text, blotter) {
     this.text = text;
     this.blotter = blotter;
 
@@ -15,13 +15,13 @@
     this.lastDrawTime = false;
     this.frameCount = 0;
 
-    this.domElement = Blotter._CanvasUtils.hiDpiCanvas(0, 0, this.blotter.ratio);
+    this.domElement = Blotter.CanvasUtils.hiDpiCanvas(0, 0, this.blotter.ratio);
     this.context = this.domElement.getContext("2d");
 
     _.extendOwn(this, EventEmitter.prototype);
   };
 
-  Blotter._RenderScope.prototype = (function () {
+  Blotter.RenderScope.prototype = (function () {
 
     function _setMouseEventListeners () {
       var self = this,
@@ -29,7 +29,7 @@
 
       function setMouseListener (eventName) {
         self.domElement.addEventListener(eventName, function(e) {
-          var position = Blotter._CanvasUtils.normalizedMousePosition(self.domElement, e);
+          var position = Blotter.CanvasUtils.normalizedMousePosition(self.domElement, e);
           self.emit(eventName, position);
         }, false);
       }
@@ -59,7 +59,7 @@
           bounds = mappingMaterial && _getBoundsForMappingMaterialAndText(mappingMaterial, this.text);
 
       if (mappingMaterial && bounds) {
-        Blotter._CanvasUtils.updateCanvasSize(
+        Blotter.CanvasUtils.updateCanvasSize(
           this.domElement,
           bounds.w / this.blotter.ratio,
           bounds.h / this.blotter.ratio,
@@ -77,7 +77,7 @@
 
     return {
 
-      constructor : Blotter._RenderScope,
+      constructor : Blotter.RenderScope,
 
       get needsUpdate () { }, // jshint
 
@@ -131,8 +131,8 @@
     };
   })();
 
-  //EventEmitter.prototype.apply(Blotter._RenderScope.prototype);
-  //_.extend(Blotter._RenderScope.prototype, EventEmitter.prototype);
+  //EventEmitter.prototype.apply(Blotter.RenderScope.prototype);
+  //_.extend(Blotter.RenderScope.prototype, EventEmitter.prototype);
 
 })(
   this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate

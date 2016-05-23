@@ -2,7 +2,7 @@
 
   var root = this;
 
-  Blotter._Renderer = function () {
+  Blotter.Renderer = function () {
     this._currentAnimationLoop = false;
 
     // Prepare back buffer scene
@@ -24,7 +24,7 @@
     this.init.apply(this, arguments);
   };
 
-  Blotter._Renderer.prototype = (function () {
+  Blotter.Renderer.prototype = (function () {
 
     function _getRenderTargetWithSize (width, height) {
       var renderTarget = new THREE.WebGLRenderTarget(width, height, {
@@ -59,7 +59,7 @@
 
     return {
 
-      constructor : Blotter._Renderer,
+      constructor : Blotter.Renderer,
 
       get material () { }, // jshint
 

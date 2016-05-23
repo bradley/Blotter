@@ -5,7 +5,7 @@
   var Blotter = root.Blotter = previousBlotter = function (material, options) {
     if (!Detector.webgl) {
     // ### - messaging
-      Blotter._Messaging.throwError("Blotter", "device does not support webgl");
+      Blotter.Messaging.throwError("Blotter", "device does not support webgl");
     }
 
     this.Version = "v0.1.0";
@@ -16,7 +16,7 @@
 
     this._scopes = {};
 
-    this._renderer = new Blotter._Renderer();
+    this._renderer = new Blotter.Renderer();
 
     _.extendOwn(this, EventEmitter.prototype);
     this.init.apply(this, arguments);
@@ -40,7 +40,7 @@
 
       buildMapping = _.bind(function () {
         return _.bind(function (next) {
-          Blotter._MappingBuilder.build(this._texts, _.bind(function (mapping) {
+          Blotter.MappingBuilder.build(this._texts, _.bind(function (mapping) {
             this._mapping = mapping;
             this._mapping.ratio = this.ratio;
             this._renderer.width = this._mapping.width;
@@ -53,7 +53,7 @@
 
       buildMappingMaterial = _.bind(function () {
         return _.bind(function (next) {
-          Blotter._MappingMaterialBuilder.build(this._mapping, this._material, _.bind(function (newMappingMaterial) {
+          Blotter.MappingMaterialBuilder.build(this._mapping, this._material, _.bind(function (newMappingMaterial) {
             mappingMaterial = newMappingMaterial;
             next();
           }, this));
@@ -116,7 +116,7 @@
 
       init : function (material, options) {
         _.defaults(this, options, {
-          ratio  : Blotter._CanvasUtils.pixelRatio,
+          ratio  : Blotter.CanvasUtils.pixelRatio,
           autobuild : true,
           autostart : true,
           autoplay : true
@@ -149,7 +149,7 @@
       },
 
       setMaterial : function (material) {
-        Blotter._Messaging.ensureInstanceOf(material, Blotter.Material, "Blotter.Material", "Blotter.Renderer");
+        Blotter.Messaging.ensureInstanceOf(material, Blotter.Material, "Blotter.Material", "Blotter.Renderer");
 
         this._material = material;
 
@@ -157,7 +157,7 @@
           this._materialEventBinding.unsetEventCallbacks();
         }
 
-        this._materialEventBinding = new Blotter._ModelEventBinding(material, {
+        this._materialEventBinding = new Blotter.ModelEventBinding(material, {
           update : _.bind(function () {
             _update.call(this);
           }, this)
@@ -170,20 +170,20 @@
       },
 
       addTexts : function (texts) {
-        var filteredTexts = Blotter._TextUtils.filterTexts(texts),
+        var filteredTexts = Blotter.TextUtils.filterTexts(texts),
             newTexts = _.difference(filteredTexts, this._texts);
 
         _.each(newTexts, _.bind(function (text) {
           this._texts.push(text);
 
-          this._textEventBindings[text.id] = new Blotter._ModelEventBinding(text, {
+          this._textEventBindings[text.id] = new Blotter.ModelEventBinding(text, {
             update : _.bind(function () {
               _update.call(this);
             }, this)
           });
           text.on("update", this._textEventBindings[text.id].eventCallbacks.update);
 
-          this._scopes[text.id] = new Blotter._RenderScope(text, this);
+          this._scopes[text.id] = new Blotter.RenderScope(text, this);
         }, this));
       },
 
@@ -192,7 +192,7 @@
       },
 
       removeTexts : function (texts) {
-        var filteredTexts = Blotter._TextUtils.filterTexts(texts),
+        var filteredTexts = Blotter.TextUtils.filterTexts(texts),
             removedTexts = _.intersection(this._texts, filteredTexts);
 
         _.each(removedTexts, _.bind(function (text) {
@@ -207,11 +207,11 @@
 
       forText : function (text) {
         // ### - messaging
-        Blotter._Messaging.ensureInstanceOf(text, Blotter.Text, "Blotter.Text", "Blotter.Renderer");
+        Blotter.Messaging.ensureInstanceOf(text, Blotter.Text, "Blotter.Text", "Blotter.Renderer");
 
         if (!(this._scopes[text.id])) {
           // ### - messaging
-          Blotter._Messaging.logError("Blotter.Renderer", "Blotter.Text object not found in blotter. Set needsUpdate to true.");
+          Blotter.Messaging.logError("Blotter.Renderer", "Blotter.Text object not found in blotter. Set needsUpdate to true.");
           return;
         }
 
@@ -220,11 +220,11 @@
 
       boundsForText : function (text) {
         // ### - messaging
-        Blotter._Messaging.ensureInstanceOf(text, Blotter.Text, "Blotter.Text", "Blotter.Renderer");
+        Blotter.Messaging.ensureInstanceOf(text, Blotter.Text, "Blotter.Text", "Blotter.Renderer");
 
         if (!(this._scopes[text.id])) {
           // ### - messaging
-          Blotter._Messaging.logError("Blotter.Renderer", "Blotter.Text object not found in blotter.");
+          Blotter.Messaging.logError("Blotter.Renderer", "Blotter.Text object not found in blotter.");
           return;
         }
 

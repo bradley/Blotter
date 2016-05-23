@@ -1,6 +1,6 @@
 (function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
 
-  Blotter._MappingMaterial = function(mapping, material, shaderMaterial, userUniformDataTextureObjects) {
+  Blotter.MappingMaterial = function(mapping, material, shaderMaterial, userUniformDataTextureObjects) {
     this.mapping = mapping;
     this.material = material;
     this.shaderMaterial = shaderMaterial;
@@ -10,15 +10,15 @@
     this.init.apply(this, arguments);
   };
 
-  Blotter._MappingMaterial.prototype = (function() {
+  Blotter.MappingMaterial.prototype = (function() {
 
     function _setValueAtIndexInDataTextureObject (value, i, dataTextureObject) {
         var type = dataTextureObject.userUniform.type,
             data = dataTextureObject.data;
 
-        if (!Blotter._UniformUtils.validValueForUniformType(type, value)) {
+        if (!Blotter.UniformUtils.validValueForUniformType(type, value)) {
           // ### - messaging
-          Blotter._Messaging.logError("Blotter._MappingMaterial", "uniform value not valid for uniform type: " + this._type);
+          Blotter.Messaging.logError("Blotter.MappingMaterial", "uniform value not valid for uniform type: " + this._type);
           return;
         }
 
@@ -63,7 +63,7 @@
 
         set type (v) {
           // ### - messaging
-          Blotter._Messaging.logError("Blotter._MaterialScope", "uniform types may not be updated");
+          Blotter.Messaging.logError("Blotter.MaterialScope", "uniform types may not be updated");
         },
 
         get value () {
@@ -71,9 +71,9 @@
         },
 
         set value (v) {
-          if (!Blotter._UniformUtils.validValueForUniformType(this._type, v)) {
+          if (!Blotter.UniformUtils.validValueForUniformType(this._type, v)) {
             // ### - messaging
-            Blotter._Messaging.logError("Blotter._MaterialScope", "uniform value not valid for uniform type: " + this._type);
+            Blotter.Messaging.logError("Blotter.MaterialScope", "uniform value not valid for uniform type: " + this._type);
             return;
           }
           this._value = v;
@@ -96,7 +96,7 @@
 
     return {
 
-      constructor : Blotter._MappingMaterial,
+      constructor : Blotter.MappingMaterial,
 
       get mainImage () {
         return this.material.mainImage;
@@ -124,7 +124,7 @@
 
       boundsForText : function (text) {
         // ### - messaging
-        Blotter._Messaging.ensureInstanceOf(text, Blotter.Text, "Blotter.Text", "Blotter._MappingMaterial");
+        Blotter.Messaging.ensureInstanceOf(text, Blotter.Text, "Blotter.Text", "Blotter.MappingMaterial");
         return this.mapping.boundsForText(text);
       }
     };

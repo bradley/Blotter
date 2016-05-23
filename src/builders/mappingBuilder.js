@@ -1,6 +1,6 @@
 (function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
 
-  Blotter._MappingBuilder = (function () {
+  Blotter.MappingBuilder = (function () {
 
     // Sort texts based on area of space required for any given text, descending
 
@@ -13,7 +13,7 @@
 
     function _getTextSizes (texts) {
       return _.reduce(texts, function (textSizes, text) {
-        var size = Blotter._TextUtils.sizeForText(text.value, text.properties);
+        var size = Blotter.TextUtils.sizeForText(text.value, text.properties);
         textSizes[text.id] = size;
         return textSizes;
       }, []);
@@ -24,7 +24,7 @@
 // ### - does this work with no texts? It should return an empty mapping
       build : function (texts, completion) {
         setImmediate(function() {
-          var filteredTexts = Blotter._TextUtils.filterTexts(texts),
+          var filteredTexts = Blotter.TextUtils.filterTexts(texts),
               textSizes = _getTextSizes(filteredTexts),
               packer = new GrowingPacker(),
               tempTextBounds = [],
@@ -55,7 +55,7 @@
             };
           }
 
-          completion(new Blotter._Mapping(filteredTexts, textBounds, packer.root.w, packer.root.h));
+          completion(new Blotter.Mapping(filteredTexts, textBounds, packer.root.w, packer.root.h));
         });
       }
     };

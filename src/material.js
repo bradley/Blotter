@@ -52,7 +52,7 @@
       },
 
       set uniforms (uniforms) {
-        this._uniforms = Blotter._UniformUtils.extractValidUniforms(uniforms);
+        this._uniforms = Blotter.UniformUtils.extractValidUniforms(uniforms);
       }
     };
   })();

@@ -26,7 +26,7 @@
   var Blotter = root.Blotter = previousBlotter = function (material, options) {
     if (!Detector.webgl) {
     // ### - messaging
-      Blotter._Messaging.throwError("Blotter", "device does not support webgl");
+      Blotter.Messaging.throwError("Blotter", "device does not support webgl");
     }
 
     this.Version = "v0.1.0";
@@ -37,7 +37,7 @@
 
     this._scopes = {};
 
-    this._renderer = new Blotter._Renderer();
+    this._renderer = new Blotter.Renderer();
 
     _.extendOwn(this, EventEmitter.prototype);
     this.init.apply(this, arguments);
@@ -61,7 +61,7 @@
 
       buildMapping = _.bind(function () {
         return _.bind(function (next) {
-          Blotter._MappingBuilder.build(this._texts, _.bind(function (mapping) {
+          Blotter.MappingBuilder.build(this._texts, _.bind(function (mapping) {
             this._mapping = mapping;
             this._mapping.ratio = this.ratio;
             this._renderer.width = this._mapping.width;
@@ -74,7 +74,7 @@
 
       buildMappingMaterial = _.bind(function () {
         return _.bind(function (next) {
-          Blotter._MappingMaterialBuilder.build(this._mapping, this._material, _.bind(function (newMappingMaterial) {
+          Blotter.MappingMaterialBuilder.build(this._mapping, this._material, _.bind(function (newMappingMaterial) {
             mappingMaterial = newMappingMaterial;
             next();
           }, this));
@@ -137,7 +137,7 @@
 
       init : function (material, options) {
         _.defaults(this, options, {
-          ratio  : Blotter._CanvasUtils.pixelRatio,
+          ratio  : Blotter.CanvasUtils.pixelRatio,
           autobuild : true,
           autostart : true,
           autoplay : true
@@ -170,7 +170,7 @@
       },
 
       setMaterial : function (material) {
-        Blotter._Messaging.ensureInstanceOf(material, Blotter.Material, "Blotter.Material", "Blotter.Renderer");
+        Blotter.Messaging.ensureInstanceOf(material, Blotter.Material, "Blotter.Material", "Blotter.Renderer");
 
         this._material = material;
 
@@ -178,7 +178,7 @@
           this._materialEventBinding.unsetEventCallbacks();
         }
 
-        this._materialEventBinding = new Blotter._ModelEventBinding(material, {
+        this._materialEventBinding = new Blotter.ModelEventBinding(material, {
           update : _.bind(function () {
             _update.call(this);
           }, this)
@@ -191,20 +191,20 @@
       },
 
       addTexts : function (texts) {
-        var filteredTexts = Blotter._TextUtils.filterTexts(texts),
+        var filteredTexts = Blotter.TextUtils.filterTexts(texts),
             newTexts = _.difference(filteredTexts, this._texts);
 
         _.each(newTexts, _.bind(function (text) {
           this._texts.push(text);
 
-          this._textEventBindings[text.id] = new Blotter._ModelEventBinding(text, {
+          this._textEventBindings[text.id] = new Blotter.ModelEventBinding(text, {
             update : _.bind(function () {
               _update.call(this);
             }, this)
           });
           text.on("update", this._textEventBindings[text.id].eventCallbacks.update);
 
-          this._scopes[text.id] = new Blotter._RenderScope(text, this);
+          this._scopes[text.id] = new Blotter.RenderScope(text, this);
         }, this));
       },
 
@@ -213,7 +213,7 @@
       },
 
       removeTexts : function (texts) {
-        var filteredTexts = Blotter._TextUtils.filterTexts(texts),
+        var filteredTexts = Blotter.TextUtils.filterTexts(texts),
             removedTexts = _.intersection(this._texts, filteredTexts);
 
         _.each(removedTexts, _.bind(function (text) {
@@ -228,11 +228,11 @@
 
       forText : function (text) {
         // ### - messaging
-        Blotter._Messaging.ensureInstanceOf(text, Blotter.Text, "Blotter.Text", "Blotter.Renderer");
+        Blotter.Messaging.ensureInstanceOf(text, Blotter.Text, "Blotter.Text", "Blotter.Renderer");
 
         if (!(this._scopes[text.id])) {
           // ### - messaging
-          Blotter._Messaging.logError("Blotter.Renderer", "Blotter.Text object not found in blotter. Set needsUpdate to true.");
+          Blotter.Messaging.logError("Blotter.Renderer", "Blotter.Text object not found in blotter. Set needsUpdate to true.");
           return;
         }
 
@@ -241,11 +241,11 @@
 
       boundsForText : function (text) {
         // ### - messaging
-        Blotter._Messaging.ensureInstanceOf(text, Blotter.Text, "Blotter.Text", "Blotter.Renderer");
+        Blotter.Messaging.ensureInstanceOf(text, Blotter.Text, "Blotter.Text", "Blotter.Renderer");
 
         if (!(this._scopes[text.id])) {
           // ### - messaging
-          Blotter._Messaging.logError("Blotter.Renderer", "Blotter.Text object not found in blotter.");
+          Blotter.Messaging.logError("Blotter.Renderer", "Blotter.Text object not found in blotter.");
           return;
         }
 
@@ -262,23 +262,67 @@
   this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
 );
 
-  (function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
+(function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
 
-  Blotter._ModelEventBinding = function (model, eventCallbacks) {
-    this.model = model;
-    this.eventCallbacks = eventCallbacks || {};
+  Blotter.Material = function(mainImage, options) {
+    _.defaults(options, {
+      uniforms : {}
+    });
+
+    this.mainImage = mainImage;
+    this.uniforms = options.uniforms;
+
+    _.extendOwn(this, EventEmitter.prototype);
   };
 
-  Blotter._ModelEventBinding.prototype = {
+  Blotter.Material.prototype = (function() {
 
-    constructor : Blotter._ModelEventBinding,
+    function _defaultMainImageSrc () {
+      var mainImage = [
 
-    unsetEventCallbacks : function () {
-      _.each(this.eventCallbacks, _.bind(function (callback, eventKey) {
-        this.model.off(eventKey, callback);
-      }, this));
+        "void mainImage( out vec4 mainImage, in vec2 fragCoord ) {",
+
+          "mainImage = textTexture(fragCoord / uResolution);",
+
+        "}"
+
+      ];
+
+      return mainImage.join("\n");
     }
-  };
+
+    return {
+
+      constructor : Blotter.Material,
+
+      get needsUpdate () { }, // jshint
+
+      set needsUpdate (value) {
+        if (value === true) {
+          this.trigger("update");
+        }
+      },
+
+      get mainImage () {
+        return this._mainImage;
+      },
+
+      set mainImage (mainImage) {
+        this._mainImage = mainImage || _defaultMainImageSrc();
+      },
+
+      get uniforms () {
+        return this._uniforms;
+      },
+
+      set uniforms (uniforms) {
+        this._uniforms = Blotter.UniformUtils.extractValidUniforms(uniforms);
+      }
+    };
+  })();
+
+  //EventEmitter.prototype.apply(Blotter.Material.prototype);
+  //_.extend(Blotter.Material.prototype, EventEmitter.prototype);
 
 })(
   this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
@@ -286,7 +330,44 @@
 
 (function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
 
-  Blotter._Messaging = (function () {
+  Blotter.Text = function (value, properties) {
+    this.id = THREE.Math.generateUUID();
+    this.value = value;
+    this.properties = properties;
+
+    _.extendOwn(this, EventEmitter.prototype);
+  };
+
+  Blotter.Text.prototype = {
+    constructor : Blotter.Text,
+
+    get needsUpdate () { }, // jshint
+
+    set needsUpdate (value) {
+      if (value === true) {
+        this.trigger("update");
+      }
+    },
+
+    get properties () {
+      return this._properties;
+    },
+
+    set properties (properties) {
+      this._properties = Blotter.TextUtils.ensurePropertyValues(properties);
+    }
+  };
+
+  //EventEmitter.prototype.apply(Blotter.Text.prototype);
+  //_.extend(Blotter.Text.prototype, EventEmitter.prototype);
+
+})(
+  this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
+);
+
+(function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
+
+  Blotter.Messaging = (function () {
 
     function _formattedMessage (domain, message) {
       return domain + ": " + message;
@@ -326,7 +407,29 @@
 
 (function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
 
-  Blotter._VendorPrefixes = ["ms", "moz", "webkit", "o"];
+  Blotter.VendorPrefixes = ["ms", "moz", "webkit", "o"];
+
+})(
+  this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
+);
+
+  (function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
+
+  Blotter.ModelEventBinding = function (model, eventCallbacks) {
+    this.model = model;
+    this.eventCallbacks = eventCallbacks || {};
+  };
+
+  Blotter.ModelEventBinding.prototype = {
+
+    constructor : Blotter.ModelEventBinding,
+
+    unsetEventCallbacks : function () {
+      _.each(this.eventCallbacks, _.bind(function (callback, eventKey) {
+        this.model.off(eventKey, callback);
+      }, this));
+    }
+  };
 
 })(
   this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
@@ -334,7 +437,7 @@
 
 (function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
 
-  Blotter._CanvasUtils = {
+  Blotter.CanvasUtils = {
 
     // Creates and returns a high a canvas
 
@@ -375,8 +478,8 @@
           dpr = window.devicePixelRatio || 1,
           bsr = ctx.backingStorePixelRatio;
 
-      for(var x = 0; x < Blotter._VendorPrefixes.length && !bsr; ++x) {
-        bsr = ctx[Blotter._VendorPrefixes[x]+"BackingStorePixelRatio"];
+      for(var x = 0; x < Blotter.VendorPrefixes.length && !bsr; ++x) {
+        bsr = ctx[Blotter.VendorPrefixes[x]+"BackingStorePixelRatio"];
       }
 
       bsr = bsr || 1;
@@ -413,7 +516,7 @@
 
 (function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
 
-	Blotter._PropertyDefaults = {
+	Blotter.PropertyDefaults = {
 		family       : 'sans-serif',
 		size         : 12,
 		leading      : 1.5,
@@ -427,14 +530,14 @@
 		paddingLeft  : 0
 	};
 
-	Blotter._TextUtils = {
+	Blotter.TextUtils = {
 
-		Properties : _.keys(Blotter._PropertyDefaults),
+		Properties : _.keys(Blotter.PropertyDefaults),
 
 		// Recieves property values (optional) and fills in any missing values with default values
 
 		ensurePropertyValues : function(properties) {
-			properties = _.defaults(properties || {}, Blotter._PropertyDefaults);
+			properties = _.defaults(properties || {}, Blotter.PropertyDefaults);
 			return properties;
 		},
 
@@ -450,7 +553,7 @@
 
         if (!isText) {
   // ### - messaging
-          Blotter._Messaging.logError("Blotter.Renderer", "object not instance of Blotter.Text");
+          Blotter.Messaging.logError("Blotter.Renderer", "object not instance of Blotter.Text");
         }
 
         return isText;
@@ -506,7 +609,7 @@
 
 (function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
 
-  Blotter._UniformUtils = {
+  Blotter.UniformUtils = {
 
     // Uniform type values we accept for user defined uniforms
 
@@ -602,16 +705,16 @@
     extractValidUniforms : function (uniforms, domain) {
       uniforms = uniforms || {};
       return _.reduce(uniforms, function (memo, uniformObject, uniformName) {
-        if (Blotter._UniformUtils.UniformTypes.indexOf(uniformObject.type) == -1) {
+        if (Blotter.UniformUtils.UniformTypes.indexOf(uniformObject.type) == -1) {
   // ### - messaging
-          Blotter._Messaging.logError(domain, "uniforms must be one of type: " +
-            Blotter._UniformUtils.UniformTypes.join(", "));
+          Blotter.Messaging.logError(domain, "uniforms must be one of type: " +
+            Blotter.UniformUtils.UniformTypes.join(", "));
           return memo;
         }
 
-        if (!Blotter._UniformUtils.validValueForUniformType(uniformObject.type, uniformObject.value)) {
+        if (!Blotter.UniformUtils.validValueForUniformType(uniformObject.type, uniformObject.value)) {
   // ### - messaging
-          Blotter._Messaging.logError(domain, "uniform value for " + uniformName + " is incorrect for type: " + uniformObject.type);
+          Blotter.Messaging.logError(domain, "uniform value for " + uniformName + " is incorrect for type: " + uniformObject.type);
           return memo;
         }
 
@@ -627,21 +730,562 @@
 );
 (function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
 
-  Blotter._TextTextureBuilder = (function() {
+  Blotter.Mapping = function (texts, textBounds, width, height) {
+    this.texts = texts;
+
+    this._textBounds = textBounds;
+
+    this._width = width;
+    this._height = height;
+
+    this._ratio = 1;
+  };
+
+  Blotter.Mapping.prototype = (function () {
+
+    function _getYOffset (size, lineHeight) {
+      lineHeight = lineHeight || Blotter.TextUtils.ensurePropertyValues().leading;
+      if (!isNaN(lineHeight)) {
+        lineHeight = size * lineHeight;
+      } else if (lineHeight.toString().indexOf('px') !== -1) {
+        lineHeight = parseInt(lineHeight);
+      } else if (lineHeight.toString().indexOf('%') !== -1) {
+        lineHeight = (parseInt(lineHeight) / 100) * size;
+      }
+
+      return lineHeight;
+    }
 
     return {
 
-      build : function (mapping, completion) {
-        var loader = new THREE.TextureLoader();
+      constructor : Blotter.Mapping,
 
-        loader.load(mapping.toDataURL(), _.bind(function(texture) {
-          texture.generateMipmaps = false;
-          texture.minFilter = THREE.LinearFilter;
-          texture.magFilter = THREE.LinearFilter;
+      get ratio () {
+        return this._ratio;
+      },
+
+      set ratio (ratio) {
+        this._ratio = ratio || 1;
+      },
+
+      get width () {
+        return this._width * this._ratio;
+      },
+
+      get height () {
+        return this._height * this._ratio;
+      },
+
+      boundsForText : function (text) {
+        Blotter.Messaging.ensureInstanceOf(text, Blotter.Text, "Blotter.Text", "Blotter.Material");
+
+        var bounds = this._textBounds[text.id];
+
+        if (bounds) {
+          bounds = {
+            w : bounds.w * this._ratio,
+            h : bounds.h * this._ratio,
+            x : bounds.x * this._ratio,
+            y : bounds.y * this._ratio
+          };
+        }
+
+        return bounds;
+      },
+
+      toCanvas : function () {
+        var canvas = Blotter.CanvasUtils.hiDpiCanvas(this._width, this._height, this._ratio),
+            ctx = canvas.getContext("2d", { alpha: false });
+
+        ctx.textBaseline = "middle";
+
+        for (var i = 0; i < this.texts.length; i++) {
+          var text = this.texts[i],
+              bounds = this._textBounds[text.id],
+              yOffset = _getYOffset.call(this, text.properties.size, text.properties.leading) / 2, // divide yOffset by 2 to accomodate `middle` textBaseline
+              adjustedY = bounds.y + text.properties.paddingTop + yOffset;
+
+          ctx.font = text.properties.style +
+               " " + text.properties.weight +
+               " " + text.properties.size + "px" +
+               " " + text.properties.family;
+          ctx.save();
+          ctx.translate(bounds.x + text.properties.paddingLeft, adjustedY);
+          // Flip Y. Ultimately, webgl context will be output flipped vertically onto 2d contexts.
+          ctx.scale(1, -1);
+          ctx.fillStyle = text.properties.fill;
+          ctx.fillText(
+            text.value,
+            0,
+            0
+          );
+
+          ctx.restore();
+        }
+
+        return canvas;
+      },
+
+      toDataURL : function () {
+        return this.toCanvas().toDataURL();
+      }
+    };
+  })();
+
+})(
+  this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
+);
+
+(function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
+
+  Blotter.MappingMaterial = function(mapping, material, shaderMaterial, userUniformDataTextureObjects) {
+    this.mapping = mapping;
+    this.material = material;
+    this.shaderMaterial = shaderMaterial;
+
+    this._userUniformDataTextureObjects = userUniformDataTextureObjects;
+
+    this.init.apply(this, arguments);
+  };
+
+  Blotter.MappingMaterial.prototype = (function() {
+
+    function _setValueAtIndexInDataTextureObject (value, i, dataTextureObject) {
+        var type = dataTextureObject.userUniform.type,
+            data = dataTextureObject.data;
+
+        if (!Blotter.UniformUtils.validValueForUniformType(type, value)) {
+          // ### - messaging
+          Blotter.Messaging.logError("Blotter.MappingMaterial", "uniform value not valid for uniform type: " + this._type);
+          return;
+        }
+
+        if (type == "1f") {
+          data[4*i]   = value;    // x (r)
+          data[4*i+1] = 0.0;
+          data[4*i+2] = 0.0;
+          data[4*i+3] = 0.0;
+        } else if (type == "2f") {
+          data[4*i]   = value[0]; // x (r)
+          data[4*i+1] = value[1]; // y (g)
+          data[4*i+2] = 0.0;
+          data[4*i+3] = 0.0;
+        } else if (type == "3f") {
+          data[4*i]   = value[0]; // x (r)
+          data[4*i+1] = value[1]; // y (g)
+          data[4*i+2] = value[2]; // z (b)
+          data[4*i+3] = 0.0;
+        } else if (type == "4f") {
+          data[4*i]   = value[0]; // x (r)
+          data[4*i+1] = value[1]; // y (g)
+          data[4*i+2] = value[2]; // z (b)
+          data[4*i+3] = value[3]; // w (a)
+        } else {
+          data[4*i]   = 0.0;
+          data[4*i+1] = 0.0;
+          data[4*i+2] = 0.0;
+          data[4*i+3] = 0.0;
+        }
+
+        dataTextureObject.texture.needsUpdate = true;
+    }
+
+    function _getUniformInterfaceForIndexAndDataTextureObject (index, dataTextureObject) {
+      return {
+        _type : dataTextureObject.userUniform.type,
+        _value : dataTextureObject.userUniform.value,
+
+        get type () {
+          return this._type;
+        },
+
+        set type (v) {
+          // ### - messaging
+          Blotter.Messaging.logError("Blotter.MaterialScope", "uniform types may not be updated");
+        },
+
+        get value () {
+          return this._value;
+        },
+
+        set value (v) {
+          if (!Blotter.UniformUtils.validValueForUniformType(this._type, v)) {
+            // ### - messaging
+            Blotter.Messaging.logError("Blotter.MaterialScope", "uniform value not valid for uniform type: " + this._type);
+            return;
+          }
+          this._value = v;
+
+          _setValueAtIndexInDataTextureObject(v, index, dataTextureObject);
+        }
+      };
+    }
+
+    function _getUniformInterface (mapping, userUniformDataTextureObjects) {
+      return _.reduce(mapping.texts, function (memo, text, i) {
+        memo[text.id] = _.reduce(userUniformDataTextureObjects, function (memo, dataTextureObject, uniformName) {
+          memo[uniformName] = _getUniformInterfaceForIndexAndDataTextureObject(i, dataTextureObject);
+          _setValueAtIndexInDataTextureObject(dataTextureObject.userUniform.value, i, dataTextureObject);
+          return memo;
+        }, {});
+        return memo;
+      }, {});
+    }
+
+    return {
+
+      constructor : Blotter.MappingMaterial,
+
+      get mainImage () {
+        return this.material.mainImage;
+      },
+
+      get width () {
+        return this.mapping.width;
+      },
+
+      get height () {
+        return this.mapping.height;
+      },
+
+      get ratio () {
+        return this.mapping.ratio;
+      },
+
+      init : function (mapping, material, shaderMaterial, userUniformDataTextureObjects) {
+        this._uniforms = _getUniformInterface(this.mapping, this._userUniformDataTextureObjects);
+      },
+
+      uniformsInterfaceForText : function (text) {
+        return this._uniforms[text.id];
+      },
+
+      boundsForText : function (text) {
+        // ### - messaging
+        Blotter.Messaging.ensureInstanceOf(text, Blotter.Text, "Blotter.Text", "Blotter.MappingMaterial");
+        return this.mapping.boundsForText(text);
+      }
+    };
+  })();
+
+})(
+  this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
+);
+
+(function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
+
+  var root = this;
+
+  Blotter.Renderer = function () {
+    this._currentAnimationLoop = false;
+
+    // Prepare back buffer scene
+
+    this._scene = new THREE.Scene();
+
+    this._plane = new THREE.PlaneGeometry(1, 1);
+
+    this._material = new THREE.MeshBasicMaterial(); // Stub material.
+
+    this._mesh = new THREE.Mesh(this._plane, this._material);
+    this._scene.add(this._mesh);
+
+    this._renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, premultipliedAlpha : false });
+
+    this._camera = new THREE.OrthographicCamera(0.5, 0.5, 0.5, 0.5, 0, 100);
+
+    _.extendOwn(this, EventEmitter.prototype);
+    this.init.apply(this, arguments);
+  };
+
+  Blotter.Renderer.prototype = (function () {
+
+    function _getRenderTargetWithSize (width, height) {
+      var renderTarget = new THREE.WebGLRenderTarget(width, height, {
+        minFilter: THREE.LinearFilter,
+        magFilter: THREE.LinearFilter,
+        format: THREE.RGBAFormat,
+        type: THREE.UnsignedByteType
+      });
+      renderTarget.texture.generateMipmaps = false;
+      renderTarget.width = width;
+      renderTarget.height = height;
+
+      return renderTarget;
+    }
+
+    function _loop () {
+      this._renderer.render(this._scene, this._camera, this._renderTarget);
+
+      this._renderer.readRenderTargetPixels(
+        this._renderTarget,
+        0,
+        0,
+        this._renderTarget.width,
+        this._renderTarget.height,
+        this._imageDataArray
+      );
+
+      this.trigger("render");
+
+      this._currentAnimationLoop = root.requestAnimationFrame(_.bind(_loop, this));
+    }
+
+    return {
+
+      constructor : Blotter.Renderer,
+
+      get material () { }, // jshint
+
+      set material (material) {
+        if (material instanceof THREE.Material) {
+          this._material = material;
+          this._mesh.material = material;
+        }
+      },
+
+      get width () {
+        return this._width;
+      },
+
+      set width (width) {
+        this.setSize(width, this._height);
+      },
+
+      get height () {
+        return this._height;
+      },
+
+      set height (height) {
+        this.setSize(this._width, height);
+      },
+
+      init : function () {
+        this.setSize(1, 1);
+      },
+
+      start : function () {
+        if (!this._currentAnimationLoop) {
+          _loop.call(this);
+        }
+      },
+
+      stop : function () {
+        if (this._currentAnimationLoop) {
+          root.cancelAnimationFrame(this._currentAnimationLoop);
+          this._currentAnimationLoop = undefined;
+        }
+      },
+
+      setSize : function (width, height) {
+        this._width = width || 1;
+        this._height = height || 1;
+
+        this._renderer.setSize(this._width, this._height);
+
+        this._mesh.scale.set(this._width, this._height, 1);
+
+        this._camera.left = this._width / - 2;
+        this._camera.right = this._width / 2;
+        this._camera.top = this._height / 2;
+        this._camera.bottom = this._height / - 2;
+        this._camera.updateProjectionMatrix();
+
+        this._renderTarget = _getRenderTargetWithSize(this._width, this._height);
+
+        this._viewBuffer = new ArrayBuffer(this._width * this._height * 4);
+        this._imageDataArray = new Uint8Array(this._viewBuffer);
+        this._clampedImageDataArray = new Uint8ClampedArray(this._viewBuffer);
+
+        this.imageData = new ImageData(this._clampedImageDataArray, this._width, this._height);
+      },
+
+      teardown : function () {
+        this.stop();
+        this._renderer = null;
+      }
+    };
+  })();
+
+})(
+  this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
+);
+
+(function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
+
+  Blotter.RenderScope = function (text, blotter) {
+    this.text = text;
+    this.blotter = blotter;
+
+    this.material = {
+      mainImage : this.blotter.material.mainImage
+    };
+
+    this._mappingMaterial = blotter.mappingMaterial;
+
+    this.playing = this.blotter.autoplay;
+    this.timeDelta = 0;
+    this.lastDrawTime = false;
+    this.frameCount = 0;
+
+    this.domElement = Blotter.CanvasUtils.hiDpiCanvas(0, 0, this.blotter.ratio);
+    this.context = this.domElement.getContext("2d");
+
+    _.extendOwn(this, EventEmitter.prototype);
+  };
+
+  Blotter.RenderScope.prototype = (function () {
+
+    function _setMouseEventListeners () {
+      var self = this,
+          eventNames = ["mousedown", "mouseup", "mousemove", "mouseenter", "mouseleave"];
+
+      function setMouseListener (eventName) {
+        self.domElement.addEventListener(eventName, function(e) {
+          var position = Blotter.CanvasUtils.normalizedMousePosition(self.domElement, e);
+          self.emit(eventName, position);
+        }, false);
+      }
+
+      for (var i = 0; i < eventNames.length; i++) {
+        var eventName = eventNames[i];
+        setMouseListener(eventName);
+      }
+    }
+
+    function _getBoundsForMappingMaterialAndText (mappingMaterial, text) {
+      var bounds = mappingMaterial.boundsForText(text);
+
+      if (bounds) {
+        return {
+          w : bounds.w,
+          h : bounds.h,
+          x : -1 * Math.floor(bounds.x),
+          // ### --- !
+          y : -1 * Math.floor(mappingMaterial.height - (bounds.y + bounds.h))
+        };
+      }
+    }
+
+    function _update () {
+      var mappingMaterial = this._mappingMaterial,
+          bounds = mappingMaterial && _getBoundsForMappingMaterialAndText(mappingMaterial, this.text);
+
+      if (mappingMaterial && bounds) {
+        Blotter.CanvasUtils.updateCanvasSize(
+          this.domElement,
+          bounds.w / this.blotter.ratio,
+          bounds.h / this.blotter.ratio,
+          this.blotter.ratio
+        );
+
+        // TODO: Update uniform values using old mappingMaterial uniform values if it exists.
+        this.material.uniforms = mappingMaterial.uniformsInterfaceForText(this.text);
+        this.material.mainImage = mappingMaterial.mainImage;
+
+        this.trigger(this.bounds ? "update" : "ready");
+        this.bounds = bounds;
+      }
+    }
+
+    return {
+
+      constructor : Blotter.RenderScope,
+
+      get needsUpdate () { }, // jshint
+
+      set needsUpdate (value) {
+        if (value === true) {
+          _update.call(this);
+        }
+      },
+
+      get mappingMaterial () { },
+
+      set mappingMaterial (mappingMaterial) {
+        this._mappingMaterial = mappingMaterial;
+      },
+
+      play : function () {
+        this.playing = true;
+      },
+
+      pause : function () {
+        this.playing = false;
+      },
+
+      render : function () {
+        if (this.bounds) {
+          var now = Date.now();
+
+          this.frameCount += 1;
+          this.timeDelta = (now - (this.lastDrawTime || now)) / 1000;
+          this.lastDrawTime = now;
+
+          this.context.clearRect(0, 0, this.domElement.width, this.domElement.height);
+
+          this.context.putImageData(
+            this.blotter.imageData,
+            this.bounds.x,
+            this.bounds.y
+          );
+
+          this.trigger("render", [this.frameCount]);
+        }
+      },
+
+      appendTo : function (element) {
+        element.appendChild(this.domElement);
+
+        _setMouseEventListeners.call(this);
+
+        return this;
+      }
+    };
+  })();
+
+  //EventEmitter.prototype.apply(Blotter.RenderScope.prototype);
+  //_.extend(Blotter.RenderScope.prototype, EventEmitter.prototype);
+
+})(
+  this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
+);
+
+(function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
+
+  // Create a Data Texture holding the boundaries (x/y offset and w/h) that should be available to any given texel for any given text.
+
+  Blotter.BoundsDataTextureBuilder = (function () {
+
+    function _boundsDataForMapping (mapping) {
+      var texts = mapping.texts,
+          data = new Float32Array(texts.length * 4);
+
+      for (var i = 0; i < texts.length; i++) {
+        var text = texts[i],
+            bounds = mapping.boundsForText(text);
+
+        data[4*i]   = bounds.x;                               // x
+        data[4*i+1] = mapping.height - (bounds.y + bounds.h); // y
+        data[4*i+2] = bounds.w;                               // w
+        data[4*i+3] = bounds.h;                               // h
+      }
+
+      return data;
+    }
+
+    return {
+
+// ### - does this need to use ratio too? seems like we may lose some fidelity since we dont. unsure how this even works. GLSL magic i guess.
+      build : function (mapping, completion) {
+        setImmediate(function() {
+          var data = _boundsDataForMapping(mapping),
+              texture = new THREE.DataTexture(data, mapping.texts.length, 1, THREE.RGBAFormat, THREE.FloatType);
+
           texture.needsUpdate = true;
 
           completion(texture);
-        }, this));
+        });
       }
     };
   })();
@@ -654,7 +1298,7 @@
 
   // Create a Data Texture the size of our text map wherein every texel holds the index of text whose boundaries contain the given texel's position.
 
-  Blotter._IndicesDataTextureBuilder = (function () {
+  Blotter.IndicesDataTextureBuilder = (function () {
 
     function _indicesDataForMapping (mapping, width, height, sampleAccuracy) {
 
@@ -732,39 +1376,21 @@
 
 (function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
 
-  // Create a Data Texture holding the boundaries (x/y offset and w/h) that should be available to any given texel for any given text.
-
-  Blotter._BoundsDataTextureBuilder = (function () {
-
-    function _boundsDataForMapping (mapping) {
-      var texts = mapping.texts,
-          data = new Float32Array(texts.length * 4);
-
-      for (var i = 0; i < texts.length; i++) {
-        var text = texts[i],
-            bounds = mapping.boundsForText(text);
-
-        data[4*i]   = bounds.x;                               // x
-        data[4*i+1] = mapping.height - (bounds.y + bounds.h); // y
-        data[4*i+2] = bounds.w;                               // w
-        data[4*i+3] = bounds.h;                               // h
-      }
-
-      return data;
-    }
+  Blotter.TextTextureBuilder = (function() {
 
     return {
 
-// ### - does this need to use ratio too? seems like we may lose some fidelity since we dont. unsure how this even works. GLSL magic i guess.
       build : function (mapping, completion) {
-        setImmediate(function() {
-          var data = _boundsDataForMapping(mapping),
-              texture = new THREE.DataTexture(data, mapping.texts.length, 1, THREE.RGBAFormat, THREE.FloatType);
+        var loader = new THREE.TextureLoader();
 
+        loader.load(mapping.toDataURL(), _.bind(function(texture) {
+          texture.generateMipmaps = false;
+          texture.minFilter = THREE.LinearFilter;
+          texture.magFilter = THREE.LinearFilter;
           texture.needsUpdate = true;
 
           completion(texture);
-        });
+        }, this));
       }
     };
   })();
@@ -775,7 +1401,7 @@
 
 (function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
 
-  Blotter._MappingBuilder = (function () {
+  Blotter.MappingBuilder = (function () {
 
     // Sort texts based on area of space required for any given text, descending
 
@@ -788,7 +1414,7 @@
 
     function _getTextSizes (texts) {
       return _.reduce(texts, function (textSizes, text) {
-        var size = Blotter._TextUtils.sizeForText(text.value, text.properties);
+        var size = Blotter.TextUtils.sizeForText(text.value, text.properties);
         textSizes[text.id] = size;
         return textSizes;
       }, []);
@@ -799,7 +1425,7 @@
 // ### - does this work with no texts? It should return an empty mapping
       build : function (texts, completion) {
         setImmediate(function() {
-          var filteredTexts = Blotter._TextUtils.filterTexts(texts),
+          var filteredTexts = Blotter.TextUtils.filterTexts(texts),
               textSizes = _getTextSizes(filteredTexts),
               packer = new GrowingPacker(),
               tempTextBounds = [],
@@ -830,7 +1456,7 @@
             };
           }
 
-          completion(new Blotter._Mapping(filteredTexts, textBounds, packer.root.w, packer.root.h));
+          completion(new Blotter.Mapping(filteredTexts, textBounds, packer.root.w, packer.root.h));
         });
       }
     };
@@ -842,251 +1468,7 @@
 
 (function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
 
-  Blotter._Mapping = function (texts, textBounds, width, height) {
-    this.texts = texts;
-
-    this._textBounds = textBounds;
-
-    this._width = width;
-    this._height = height;
-
-    this._ratio = 1;
-  };
-
-  Blotter._Mapping.prototype = (function () {
-
-    function _getYOffset (size, lineHeight) {
-      lineHeight = lineHeight || Blotter._TextUtils.ensurePropertyValues().leading;
-      if (!isNaN(lineHeight)) {
-        lineHeight = size * lineHeight;
-      } else if (lineHeight.toString().indexOf('px') !== -1) {
-        lineHeight = parseInt(lineHeight);
-      } else if (lineHeight.toString().indexOf('%') !== -1) {
-        lineHeight = (parseInt(lineHeight) / 100) * size;
-      }
-
-      return lineHeight;
-    }
-
-    return {
-
-      constructor : Blotter._Mapping,
-
-      get ratio () {
-        return this._ratio;
-      },
-
-      set ratio (ratio) {
-        this._ratio = ratio || 1;
-      },
-
-      get width () {
-        return this._width * this._ratio;
-      },
-
-      get height () {
-        return this._height * this._ratio;
-      },
-
-      boundsForText : function (text) {
-        Blotter._Messaging.ensureInstanceOf(text, Blotter.Text, "Blotter.Text", "Blotter.Material");
-
-        var bounds = this._textBounds[text.id];
-
-        if (bounds) {
-          bounds = {
-            w : bounds.w * this._ratio,
-            h : bounds.h * this._ratio,
-            x : bounds.x * this._ratio,
-            y : bounds.y * this._ratio
-          };
-        }
-
-        return bounds;
-      },
-
-      toCanvas : function () {
-        var canvas = Blotter._CanvasUtils.hiDpiCanvas(this._width, this._height, this._ratio),
-            ctx = canvas.getContext("2d", { alpha: false });
-
-        ctx.textBaseline = "middle";
-
-        for (var i = 0; i < this.texts.length; i++) {
-          var text = this.texts[i],
-              bounds = this._textBounds[text.id],
-              yOffset = _getYOffset.call(this, text.properties.size, text.properties.leading) / 2, // divide yOffset by 2 to accomodate `middle` textBaseline
-              adjustedY = bounds.y + text.properties.paddingTop + yOffset;
-
-          ctx.font = text.properties.style +
-               " " + text.properties.weight +
-               " " + text.properties.size + "px" +
-               " " + text.properties.family;
-          ctx.save();
-          ctx.translate(bounds.x + text.properties.paddingLeft, adjustedY);
-          // Flip Y. Ultimately, webgl context will be output flipped vertically onto 2d contexts.
-          ctx.scale(1, -1);
-          ctx.fillStyle = text.properties.fill;
-          ctx.fillText(
-            text.value,
-            0,
-            0
-          );
-
-          ctx.restore();
-        }
-
-        return canvas;
-      },
-
-      toDataURL : function () {
-        return this.toCanvas().toDataURL();
-      }
-    };
-  })();
-
-})(
-  this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
-);
-
-(function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
-
-  Blotter._MappingMaterial = function(mapping, material, shaderMaterial, userUniformDataTextureObjects) {
-    this.mapping = mapping;
-    this.material = material;
-    this.shaderMaterial = shaderMaterial;
-
-    this._userUniformDataTextureObjects = userUniformDataTextureObjects;
-
-    this.init.apply(this, arguments);
-  };
-
-  Blotter._MappingMaterial.prototype = (function() {
-
-    function _setValueAtIndexInDataTextureObject (value, i, dataTextureObject) {
-        var type = dataTextureObject.userUniform.type,
-            data = dataTextureObject.data;
-
-        if (!Blotter._UniformUtils.validValueForUniformType(type, value)) {
-          // ### - messaging
-          Blotter._Messaging.logError("Blotter._MappingMaterial", "uniform value not valid for uniform type: " + this._type);
-          return;
-        }
-
-        if (type == "1f") {
-          data[4*i]   = value;    // x (r)
-          data[4*i+1] = 0.0;
-          data[4*i+2] = 0.0;
-          data[4*i+3] = 0.0;
-        } else if (type == "2f") {
-          data[4*i]   = value[0]; // x (r)
-          data[4*i+1] = value[1]; // y (g)
-          data[4*i+2] = 0.0;
-          data[4*i+3] = 0.0;
-        } else if (type == "3f") {
-          data[4*i]   = value[0]; // x (r)
-          data[4*i+1] = value[1]; // y (g)
-          data[4*i+2] = value[2]; // z (b)
-          data[4*i+3] = 0.0;
-        } else if (type == "4f") {
-          data[4*i]   = value[0]; // x (r)
-          data[4*i+1] = value[1]; // y (g)
-          data[4*i+2] = value[2]; // z (b)
-          data[4*i+3] = value[3]; // w (a)
-        } else {
-          data[4*i]   = 0.0;
-          data[4*i+1] = 0.0;
-          data[4*i+2] = 0.0;
-          data[4*i+3] = 0.0;
-        }
-
-        dataTextureObject.texture.needsUpdate = true;
-    }
-
-    function _getUniformInterfaceForIndexAndDataTextureObject (index, dataTextureObject) {
-      return {
-        _type : dataTextureObject.userUniform.type,
-        _value : dataTextureObject.userUniform.value,
-
-        get type () {
-          return this._type;
-        },
-
-        set type (v) {
-          // ### - messaging
-          Blotter._Messaging.logError("Blotter._MaterialScope", "uniform types may not be updated");
-        },
-
-        get value () {
-          return this._value;
-        },
-
-        set value (v) {
-          if (!Blotter._UniformUtils.validValueForUniformType(this._type, v)) {
-            // ### - messaging
-            Blotter._Messaging.logError("Blotter._MaterialScope", "uniform value not valid for uniform type: " + this._type);
-            return;
-          }
-          this._value = v;
-
-          _setValueAtIndexInDataTextureObject(v, index, dataTextureObject);
-        }
-      };
-    }
-
-    function _getUniformInterface (mapping, userUniformDataTextureObjects) {
-      return _.reduce(mapping.texts, function (memo, text, i) {
-        memo[text.id] = _.reduce(userUniformDataTextureObjects, function (memo, dataTextureObject, uniformName) {
-          memo[uniformName] = _getUniformInterfaceForIndexAndDataTextureObject(i, dataTextureObject);
-          _setValueAtIndexInDataTextureObject(dataTextureObject.userUniform.value, i, dataTextureObject);
-          return memo;
-        }, {});
-        return memo;
-      }, {});
-    }
-
-    return {
-
-      constructor : Blotter._MappingMaterial,
-
-      get mainImage () {
-        return this.material.mainImage;
-      },
-
-      get width () {
-        return this.mapping.width;
-      },
-
-      get height () {
-        return this.mapping.height;
-      },
-
-      get ratio () {
-        return this.mapping.ratio;
-      },
-
-      init : function (mapping, material, shaderMaterial, userUniformDataTextureObjects) {
-        this._uniforms = _getUniformInterface(this.mapping, this._userUniformDataTextureObjects);
-      },
-
-      uniformsInterfaceForText : function (text) {
-        return this._uniforms[text.id];
-      },
-
-      boundsForText : function (text) {
-        // ### - messaging
-        Blotter._Messaging.ensureInstanceOf(text, Blotter.Text, "Blotter.Text", "Blotter._MappingMaterial");
-        return this.mapping.boundsForText(text);
-      }
-    };
-  })();
-
-})(
-  this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
-);
-
-(function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
-
-  Blotter._MappingMaterialBuilder = (function() {
+  Blotter.MappingMaterialBuilder = (function() {
 
     function _vertexSrc () {
       var vertexSrc = [
@@ -1118,8 +1500,8 @@
 
       _.reduce(uniforms, function (userDefinedUniforms, uniformObject, uniformName) {
         var uniformTextureName = _userUniformDataTextureNameForUniformName(uniformName),
-            glslSwizzle = Blotter._UniformUtils.fullSwizzleStringForUniformType(uniformObject.userUniform.type),
-            glslDataType = Blotter._UniformUtils.glslDataTypeForUniformType(uniformObject.userUniform.type);
+            glslSwizzle = Blotter.UniformUtils.fullSwizzleStringForUniformType(uniformObject.userUniform.type),
+            glslDataType = Blotter.UniformUtils.glslDataTypeForUniformType(uniformObject.userUniform.type);
 
         userDefinedUniforms.privateUniformTextureDeclarations += "uniform sampler2D " + uniformTextureName + ";\n";
         userDefinedUniforms.publicUniformDeclarations += glslDataType + " " + uniformName + ";\n";
@@ -1211,7 +1593,7 @@
     }
 
     function _buildMappedTextsTexture (mapping, completion) {
-      Blotter._TextTextureBuilder.build(mapping, function (texture) {
+      Blotter.TextTextureBuilder.build(mapping, function (texture) {
         completion(texture);
       });
     }
@@ -1224,7 +1606,7 @@
 
       buildIndicesTexture = function () {
         return function (next) {
-          Blotter._IndicesDataTextureBuilder.build(mapping, function (texture) {
+          Blotter.IndicesDataTextureBuilder.build(mapping, function (texture) {
             mappingDataTextureObjects.push({
               uniformName : "_uTextIndicesTexture",
               texture : texture
@@ -1236,7 +1618,7 @@
 
       buildBoundsTexture = function () {
         return function (next) {
-          Blotter._BoundsDataTextureBuilder.build(mapping, function (texture) {
+          Blotter.BoundsDataTextureBuilder.build(mapping, function (texture) {
             mappingDataTextureObjects.push({
               uniformName : "_uTextBoundsTexture",
               texture : texture
@@ -1257,7 +1639,7 @@
     }
 
     function _buildUserUniformDataTextureObjects (userUniforms, dataLength, completion) {
-      userUniforms = Blotter._UniformUtils.extractValidUniforms(userUniforms);
+      userUniforms = Blotter.UniformUtils.extractValidUniforms(userUniforms);
 
       var userUniformDataTextureObjects = _.reduce(userUniforms, function (memo, userUniform, uniformName) {
         var data = new Float32Array(dataLength * 4);
@@ -1373,393 +1755,11 @@
               userUniforms = _.omit(uniforms, "_uCanvasResolution", "_uSampler", "_uTextBoundsTexture", "_uTextIndicesTexture"),
               threeMaterial = _getThreeMaterial(_vertexSrc(), _fragmentSrc(userUniformDataTextureObjects, material.mainImage), uniforms);
 
-          completion(new Blotter._MappingMaterial(mapping, material, threeMaterial, userUniformDataTextureObjects));
+          completion(new Blotter.MappingMaterial(mapping, material, threeMaterial, userUniformDataTextureObjects));
         })();
       }
     };
   })();
-
-})(
-  this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
-);
-
-(function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
-
-  Blotter._RenderScope = function (text, blotter) {
-    this.text = text;
-    this.blotter = blotter;
-
-    this.material = {
-      mainImage : this.blotter.material.mainImage
-    };
-
-    this._mappingMaterial = blotter.mappingMaterial;
-
-    this.playing = this.blotter.autoplay;
-    this.timeDelta = 0;
-    this.lastDrawTime = false;
-    this.frameCount = 0;
-
-    this.domElement = Blotter._CanvasUtils.hiDpiCanvas(0, 0, this.blotter.ratio);
-    this.context = this.domElement.getContext("2d");
-
-    _.extendOwn(this, EventEmitter.prototype);
-  };
-
-  Blotter._RenderScope.prototype = (function () {
-
-    function _setMouseEventListeners () {
-      var self = this,
-          eventNames = ["mousedown", "mouseup", "mousemove", "mouseenter", "mouseleave"];
-
-      function setMouseListener (eventName) {
-        self.domElement.addEventListener(eventName, function(e) {
-          var position = Blotter._CanvasUtils.normalizedMousePosition(self.domElement, e);
-          self.emit(eventName, position);
-        }, false);
-      }
-
-      for (var i = 0; i < eventNames.length; i++) {
-        var eventName = eventNames[i];
-        setMouseListener(eventName);
-      }
-    }
-
-    function _getBoundsForMappingMaterialAndText (mappingMaterial, text) {
-      var bounds = mappingMaterial.boundsForText(text);
-
-      if (bounds) {
-        return {
-          w : bounds.w,
-          h : bounds.h,
-          x : -1 * Math.floor(bounds.x),
-          // ### --- !
-          y : -1 * Math.floor(mappingMaterial.height - (bounds.y + bounds.h))
-        };
-      }
-    }
-
-    function _update () {
-      var mappingMaterial = this._mappingMaterial,
-          bounds = mappingMaterial && _getBoundsForMappingMaterialAndText(mappingMaterial, this.text);
-
-      if (mappingMaterial && bounds) {
-        Blotter._CanvasUtils.updateCanvasSize(
-          this.domElement,
-          bounds.w / this.blotter.ratio,
-          bounds.h / this.blotter.ratio,
-          this.blotter.ratio
-        );
-
-        // TODO: Update uniform values using old mappingMaterial uniform values if it exists.
-        this.material.uniforms = mappingMaterial.uniformsInterfaceForText(this.text);
-        this.material.mainImage = mappingMaterial.mainImage;
-
-        this.trigger(this.bounds ? "update" : "ready");
-        this.bounds = bounds;
-      }
-    }
-
-    return {
-
-      constructor : Blotter._RenderScope,
-
-      get needsUpdate () { }, // jshint
-
-      set needsUpdate (value) {
-        if (value === true) {
-          _update.call(this);
-        }
-      },
-
-      get mappingMaterial () { },
-
-      set mappingMaterial (mappingMaterial) {
-        this._mappingMaterial = mappingMaterial;
-      },
-
-      play : function () {
-        this.playing = true;
-      },
-
-      pause : function () {
-        this.playing = false;
-      },
-
-      render : function () {
-        if (this.bounds) {
-          var now = Date.now();
-
-          this.frameCount += 1;
-          this.timeDelta = (now - (this.lastDrawTime || now)) / 1000;
-          this.lastDrawTime = now;
-
-          this.context.clearRect(0, 0, this.domElement.width, this.domElement.height);
-
-          this.context.putImageData(
-            this.blotter.imageData,
-            this.bounds.x,
-            this.bounds.y
-          );
-
-          this.trigger("render", [this.frameCount]);
-        }
-      },
-
-      appendTo : function (element) {
-        element.appendChild(this.domElement);
-
-        _setMouseEventListeners.call(this);
-
-        return this;
-      }
-    };
-  })();
-
-  //EventEmitter.prototype.apply(Blotter._RenderScope.prototype);
-  //_.extend(Blotter._RenderScope.prototype, EventEmitter.prototype);
-
-})(
-  this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
-);
-
-(function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
-
-  var root = this;
-
-  Blotter._Renderer = function () {
-    this._currentAnimationLoop = false;
-
-    // Prepare back buffer scene
-
-    this._scene = new THREE.Scene();
-
-    this._plane = new THREE.PlaneGeometry(1, 1);
-
-    this._material = new THREE.MeshBasicMaterial(); // Stub material.
-
-    this._mesh = new THREE.Mesh(this._plane, this._material);
-    this._scene.add(this._mesh);
-
-    this._renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, premultipliedAlpha : false });
-
-    this._camera = new THREE.OrthographicCamera(0.5, 0.5, 0.5, 0.5, 0, 100);
-
-    _.extendOwn(this, EventEmitter.prototype);
-    this.init.apply(this, arguments);
-  };
-
-  Blotter._Renderer.prototype = (function () {
-
-    function _getRenderTargetWithSize (width, height) {
-      var renderTarget = new THREE.WebGLRenderTarget(width, height, {
-        minFilter: THREE.LinearFilter,
-        magFilter: THREE.LinearFilter,
-        format: THREE.RGBAFormat,
-        type: THREE.UnsignedByteType
-      });
-      renderTarget.texture.generateMipmaps = false;
-      renderTarget.width = width;
-      renderTarget.height = height;
-
-      return renderTarget;
-    }
-
-    function _loop () {
-      this._renderer.render(this._scene, this._camera, this._renderTarget);
-
-      this._renderer.readRenderTargetPixels(
-        this._renderTarget,
-        0,
-        0,
-        this._renderTarget.width,
-        this._renderTarget.height,
-        this._imageDataArray
-      );
-
-      this.trigger("render");
-
-      this._currentAnimationLoop = root.requestAnimationFrame(_.bind(_loop, this));
-    }
-
-    return {
-
-      constructor : Blotter._Renderer,
-
-      get material () { }, // jshint
-
-      set material (material) {
-        if (material instanceof THREE.Material) {
-          this._material = material;
-          this._mesh.material = material;
-        }
-      },
-
-      get width () {
-        return this._width;
-      },
-
-      set width (width) {
-        this.setSize(width, this._height);
-      },
-
-      get height () {
-        return this._height;
-      },
-
-      set height (height) {
-        this.setSize(this._width, height);
-      },
-
-      init : function () {
-        this.setSize(1, 1);
-      },
-
-      start : function () {
-        if (!this._currentAnimationLoop) {
-          _loop.call(this);
-        }
-      },
-
-      stop : function () {
-        if (this._currentAnimationLoop) {
-          root.cancelAnimationFrame(this._currentAnimationLoop);
-          this._currentAnimationLoop = undefined;
-        }
-      },
-
-      setSize : function (width, height) {
-        this._width = width || 1;
-        this._height = height || 1;
-
-        this._renderer.setSize(this._width, this._height);
-
-        this._mesh.scale.set(this._width, this._height, 1);
-
-        this._camera.left = this._width / - 2;
-        this._camera.right = this._width / 2;
-        this._camera.top = this._height / 2;
-        this._camera.bottom = this._height / - 2;
-        this._camera.updateProjectionMatrix();
-
-        this._renderTarget = _getRenderTargetWithSize(this._width, this._height);
-
-        this._viewBuffer = new ArrayBuffer(this._width * this._height * 4);
-        this._imageDataArray = new Uint8Array(this._viewBuffer);
-        this._clampedImageDataArray = new Uint8ClampedArray(this._viewBuffer);
-
-        this.imageData = new ImageData(this._clampedImageDataArray, this._width, this._height);
-      },
-
-      teardown : function () {
-        this.stop();
-        this._renderer = null;
-      }
-    };
-  })();
-
-})(
-  this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
-);
-
-(function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
-
-  Blotter.Text = function (value, properties) {
-    this.id = THREE.Math.generateUUID();
-    this.value = value;
-    this.properties = properties;
-
-    _.extendOwn(this, EventEmitter.prototype);
-  };
-
-  Blotter.Text.prototype = {
-    constructor : Blotter.Text,
-
-    get needsUpdate () { }, // jshint
-
-    set needsUpdate (value) {
-      if (value === true) {
-        this.trigger("update");
-      }
-    },
-
-    get properties () {
-      return this._properties;
-    },
-
-    set properties (properties) {
-      this._properties = Blotter._TextUtils.ensurePropertyValues(properties);
-    }
-  };
-
-  //EventEmitter.prototype.apply(Blotter.Text.prototype);
-  //_.extend(Blotter.Text.prototype, EventEmitter.prototype);
-
-})(
-  this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
-);
-
-(function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
-
-  Blotter.Material = function(mainImage, options) {
-    _.defaults(options, {
-      uniforms : {}
-    });
-
-    this.mainImage = mainImage;
-    this.uniforms = options.uniforms;
-
-    _.extendOwn(this, EventEmitter.prototype);
-  };
-
-  Blotter.Material.prototype = (function() {
-
-    function _defaultMainImageSrc () {
-      var mainImage = [
-
-        "void mainImage( out vec4 mainImage, in vec2 fragCoord ) {",
-
-          "mainImage = textTexture(fragCoord / uResolution);",
-
-        "}"
-
-      ];
-
-      return mainImage.join("\n");
-    }
-
-    return {
-
-      constructor : Blotter.Material,
-
-      get needsUpdate () { }, // jshint
-
-      set needsUpdate (value) {
-        if (value === true) {
-          this.trigger("update");
-        }
-      },
-
-      get mainImage () {
-        return this._mainImage;
-      },
-
-      set mainImage (mainImage) {
-        this._mainImage = mainImage || _defaultMainImageSrc();
-      },
-
-      get uniforms () {
-        return this._uniforms;
-      },
-
-      set uniforms (uniforms) {
-        this._uniforms = Blotter._UniformUtils.extractValidUniforms(uniforms);
-      }
-    };
-  })();
-
-  //EventEmitter.prototype.apply(Blotter.Material.prototype);
-  //_.extend(Blotter.Material.prototype, EventEmitter.prototype);
 
 })(
   this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate

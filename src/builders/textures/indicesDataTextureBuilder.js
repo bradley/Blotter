@@ -2,7 +2,7 @@
 
   // Create a Data Texture the size of our text map wherein every texel holds the index of text whose boundaries contain the given texel's position.
 
-  Blotter._IndicesDataTextureBuilder = (function () {
+  Blotter.IndicesDataTextureBuilder = (function () {
 
     function _indicesDataForMapping (mapping, width, height, sampleAccuracy) {
 

@@ -1,6 +1,6 @@
 (function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
 
-  Blotter._Messaging = (function () {
+  Blotter.Messaging = (function () {
 
     function _formattedMessage (domain, message) {
       return domain + ": " + message;

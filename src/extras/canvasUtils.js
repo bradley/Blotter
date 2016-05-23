@@ -1,6 +1,6 @@
 (function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
 
-  Blotter._CanvasUtils = {
+  Blotter.CanvasUtils = {
 
     // Creates and returns a high a canvas
 
@@ -41,8 +41,8 @@
           dpr = window.devicePixelRatio || 1,
           bsr = ctx.backingStorePixelRatio;
 
-      for(var x = 0; x < Blotter._VendorPrefixes.length && !bsr; ++x) {
-        bsr = ctx[Blotter._VendorPrefixes[x]+"BackingStorePixelRatio"];
+      for(var x = 0; x < Blotter.VendorPrefixes.length && !bsr; ++x) {
+        bsr = ctx[Blotter.VendorPrefixes[x]+"BackingStorePixelRatio"];
       }
 
       bsr = bsr || 1;

@@ -1,6 +1,6 @@
 (function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
 
-  Blotter._UniformUtils = {
+  Blotter.UniformUtils = {
 
     // Uniform type values we accept for user defined uniforms
 
@@ -96,16 +96,16 @@
     extractValidUniforms : function (uniforms, domain) {
       uniforms = uniforms || {};
       return _.reduce(uniforms, function (memo, uniformObject, uniformName) {
-        if (Blotter._UniformUtils.UniformTypes.indexOf(uniformObject.type) == -1) {
+        if (Blotter.UniformUtils.UniformTypes.indexOf(uniformObject.type) == -1) {
   // ### - messaging
-          Blotter._Messaging.logError(domain, "uniforms must be one of type: " +
-            Blotter._UniformUtils.UniformTypes.join(", "));
+          Blotter.Messaging.logError(domain, "uniforms must be one of type: " +
+            Blotter.UniformUtils.UniformTypes.join(", "));
           return memo;
         }
 
-        if (!Blotter._UniformUtils.validValueForUniformType(uniformObject.type, uniformObject.value)) {
+        if (!Blotter.UniformUtils.validValueForUniformType(uniformObject.type, uniformObject.value)) {
   // ### - messaging
-          Blotter._Messaging.logError(domain, "uniform value for " + uniformName + " is incorrect for type: " + uniformObject.type);
+          Blotter.Messaging.logError(domain, "uniform value for " + uniformName + " is incorrect for type: " + uniformObject.type);
           return memo;
         }
 
