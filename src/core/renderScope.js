@@ -54,6 +54,15 @@
       }
     }
 
+    function _transferInferfaceValues (oldInterface, newInterface) {
+      _.each(oldInterface, function(interfaceObject, uniformName) {
+        var newInterfaceObject = newInterface[uniformName];
+        if (newInterfaceObject && newInterfaceObject.type == interfaceObject.type) {
+          newInterfaceObject.value = interfaceObject.value;
+        }
+      });
+    }
+
     function _update () {
       var mappingMaterial = this._mappingMaterial,
           bounds = mappingMaterial && _getBoundsForMappingMaterialAndText(mappingMaterial, this.text);
@@ -66,9 +75,14 @@
           this.blotter.ratio
         );
 
-        // TODO: Update uniform values using old mappingMaterial uniform values if it exists.
+        var previousUniforms = this.material.uniforms;
+
         this.material.uniforms = mappingMaterial.uniformsInterfaceForText(this.text);
         this.material.mainImage = mappingMaterial.mainImage;
+
+        if (previousUniforms) {
+          _transferInferfaceValues(previousUniforms, this.material.uniforms);
+        }
 
         this.trigger(this.bounds ? "update" : "ready");
         this.bounds = bounds;

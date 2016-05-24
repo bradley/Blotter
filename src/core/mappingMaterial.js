@@ -87,7 +87,7 @@
       return _.reduce(mapping.texts, function (memo, text, i) {
         memo[text.id] = _.reduce(userUniformDataTextureObjects, function (memo, dataTextureObject, uniformName) {
           memo[uniformName] = _getUniformInterfaceForIndexAndDataTextureObject(i, dataTextureObject);
-          _setValueAtIndexInDataTextureObject(dataTextureObject.userUniform.value, i, dataTextureObject);
+          memo[uniformName].value = dataTextureObject.userUniform.value;
           return memo;
         }, {});
         return memo;

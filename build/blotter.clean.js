@@ -925,7 +925,7 @@
       return _.reduce(mapping.texts, function (memo, text, i) {
         memo[text.id] = _.reduce(userUniformDataTextureObjects, function (memo, dataTextureObject, uniformName) {
           memo[uniformName] = _getUniformInterfaceForIndexAndDataTextureObject(i, dataTextureObject);
-          _setValueAtIndexInDataTextureObject(dataTextureObject.userUniform.value, i, dataTextureObject);
+          memo[uniformName].value = dataTextureObject.userUniform.value;
           return memo;
         }, {});
         return memo;
@@ -1167,6 +1167,15 @@
       }
     }
 
+    function _transferInferfaceValues (oldInterface, newInterface) {
+      _.each(oldInterface, function(interfaceObject, uniformName) {
+        var newInterfaceObject = newInterface[uniformName];
+        if (newInterfaceObject && newInterfaceObject.type == interfaceObject.type) {
+          newInterfaceObject.value = interfaceObject.value;
+        }
+      });
+    }
+
     function _update () {
       var mappingMaterial = this._mappingMaterial,
           bounds = mappingMaterial && _getBoundsForMappingMaterialAndText(mappingMaterial, this.text);
@@ -1179,9 +1188,14 @@
           this.blotter.ratio
         );
 
-        // TODO: Update uniform values using old mappingMaterial uniform values if it exists.
+        var previousUniforms = this.material.uniforms;
+
         this.material.uniforms = mappingMaterial.uniformsInterfaceForText(this.text);
         this.material.mainImage = mappingMaterial.mainImage;
+
+        if (previousUniforms) {
+          _transferInferfaceValues(previousUniforms, this.material.uniforms);
+        }
 
         this.trigger(this.bounds ? "update" : "ready");
         this.bounds = bounds;
