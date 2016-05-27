@@ -22,12 +22,13 @@
 
   Blotter.prototype = (function () {
 
-    function _renderScopes () {
+    function _rendererRendered () {
       _.each(this._scopes, _.bind(function (scope) {
         if (scope.playing) {
           scope.render();
         }
       }, this));
+      this.trigger("render");
     }
 
     function _update () {
@@ -125,7 +126,7 @@
         this.setMaterial(material);
         this.addTexts(options.texts);
 
-        this._renderer.on("render", _.bind(_renderScopes, this));
+        this._renderer.on("render", _.bind(_rendererRendered, this));
 
         if (this.autobuild) {
           this.needsUpdate = true;

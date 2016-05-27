@@ -62,7 +62,8 @@
 
     function _update () {
       var mappingMaterial = this._mappingMaterial,
-          bounds = mappingMaterial && _getBoundsForMappingMaterialAndText(mappingMaterial, this.text);
+          bounds = mappingMaterial && _getBoundsForMappingMaterialAndText(mappingMaterial, this.text),
+          previousUniforms = this.material.uniforms;
 
       if (mappingMaterial && bounds) {
         Blotter.CanvasUtils.updateCanvasSize(
@@ -71,8 +72,6 @@
           bounds.h / this.blotter.ratio,
           this.blotter.ratio
         );
-
-        var previousUniforms = this.material.uniforms;
 
         this.material.uniforms = mappingMaterial.uniformsInterfaceForText(this.text);
         this.material.mainImage = mappingMaterial.mainImage;

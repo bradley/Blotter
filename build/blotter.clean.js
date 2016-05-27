@@ -43,12 +43,13 @@
 
   Blotter.prototype = (function () {
 
-    function _renderScopes () {
+    function _rendererRendered () {
       _.each(this._scopes, _.bind(function (scope) {
         if (scope.playing) {
           scope.render();
         }
       }, this));
+      this.trigger("render");
     }
 
     function _update () {
@@ -146,7 +147,7 @@
         this.setMaterial(material);
         this.addTexts(options.texts);
 
-        this._renderer.on("render", _.bind(_renderScopes, this));
+        this._renderer.on("render", _.bind(_rendererRendered, this));
 
         if (this.autobuild) {
           this.needsUpdate = true;
@@ -654,6 +655,246 @@
 
 (function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
 
+  Blotter.Mapping = function (texts, textBounds, width, height) {
+    this.texts = texts;
+
+    this._textBounds = textBounds;
+
+    this._width = width;
+    this._height = height;
+
+    this._ratio = 1;
+  };
+
+  Blotter.Mapping.prototype = (function () {
+
+    function _getYOffset (size, lineHeight) {
+      lineHeight = lineHeight || Blotter.TextUtils.ensurePropertyValues().leading;
+      if (!isNaN(lineHeight)) {
+        lineHeight = size * lineHeight;
+      } else if (lineHeight.toString().indexOf('px') !== -1) {
+        lineHeight = parseInt(lineHeight);
+      } else if (lineHeight.toString().indexOf('%') !== -1) {
+        lineHeight = (parseInt(lineHeight) / 100) * size;
+      }
+
+      return lineHeight;
+    }
+
+    return {
+
+      constructor : Blotter.Mapping,
+
+      get ratio () {
+        return this._ratio;
+      },
+
+      set ratio (ratio) {
+        this._ratio = ratio || 1;
+      },
+
+      get width () {
+        return this._width * this._ratio;
+      },
+
+      get height () {
+        return this._height * this._ratio;
+      },
+
+      boundsForText : function (text) {
+        Blotter.Messaging.ensureInstanceOf(text, Blotter.Text, "Blotter.Text", "Blotter.Mapping", "boundsForText");
+
+        var bounds = this._textBounds[text.id];
+
+        if (bounds) {
+          bounds = {
+            w : bounds.w * this._ratio,
+            h : bounds.h * this._ratio,
+            x : bounds.x * this._ratio,
+            y : bounds.y * this._ratio
+          };
+        }
+
+        return bounds;
+      },
+
+      toCanvas : function () {
+        var canvas = Blotter.CanvasUtils.hiDpiCanvas(this._width, this._height, this._ratio),
+            ctx = canvas.getContext("2d", { alpha: false });
+
+        ctx.textBaseline = "middle";
+
+        for (var i = 0; i < this.texts.length; i++) {
+          var text = this.texts[i],
+              bounds = this._textBounds[text.id],
+              yOffset = _getYOffset.call(this, text.properties.size, text.properties.leading) / 2, // divide yOffset by 2 to accomodate `middle` textBaseline
+              adjustedY = bounds.y + text.properties.paddingTop + yOffset;
+
+          ctx.font = text.properties.style +
+               " " + text.properties.weight +
+               " " + text.properties.size + "px" +
+               " " + text.properties.family;
+          ctx.save();
+          ctx.translate(bounds.x + text.properties.paddingLeft, adjustedY);
+          // Flip Y. Ultimately, webgl context will be output flipped vertically onto 2d contexts.
+          ctx.scale(1, -1);
+          ctx.fillStyle = text.properties.fill;
+          ctx.fillText(
+            text.value,
+            0,
+            0
+          );
+
+          ctx.restore();
+        }
+
+        return canvas;
+      },
+
+      toDataURL : function () {
+        return this.toCanvas().toDataURL();
+      }
+    };
+  })();
+
+})(
+  this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
+);
+
+(function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
+
+  Blotter.MappingMaterial = function(mapping, material, shaderMaterial, userUniformDataTextureObjects) {
+    this.mapping = mapping;
+    this.material = material;
+    this.shaderMaterial = shaderMaterial;
+
+    this._userUniformDataTextureObjects = userUniformDataTextureObjects;
+
+    this.init.apply(this, arguments);
+  };
+
+  Blotter.MappingMaterial.prototype = (function() {
+
+    function _setValueAtIndexInDataTextureObject (value, i, dataTextureObject) {
+        var type = dataTextureObject.userUniform.type,
+            data = dataTextureObject.data;
+
+        if (!Blotter.UniformUtils.validValueForUniformType(type, value)) {
+          Blotter.Messaging.logError("Blotter.MappingMaterial", "uniform value not valid for uniform type: " + this._type);
+          return;
+        }
+
+        if (type == "1f") {
+          data[4*i]   = value;    // x (r)
+          data[4*i+1] = 0.0;
+          data[4*i+2] = 0.0;
+          data[4*i+3] = 0.0;
+        } else if (type == "2f") {
+          data[4*i]   = value[0]; // x (r)
+          data[4*i+1] = value[1]; // y (g)
+          data[4*i+2] = 0.0;
+          data[4*i+3] = 0.0;
+        } else if (type == "3f") {
+          data[4*i]   = value[0]; // x (r)
+          data[4*i+1] = value[1]; // y (g)
+          data[4*i+2] = value[2]; // z (b)
+          data[4*i+3] = 0.0;
+        } else if (type == "4f") {
+          data[4*i]   = value[0]; // x (r)
+          data[4*i+1] = value[1]; // y (g)
+          data[4*i+2] = value[2]; // z (b)
+          data[4*i+3] = value[3]; // w (a)
+        } else {
+          data[4*i]   = 0.0;
+          data[4*i+1] = 0.0;
+          data[4*i+2] = 0.0;
+          data[4*i+3] = 0.0;
+        }
+
+        dataTextureObject.texture.needsUpdate = true;
+    }
+
+    function _getUniformInterfaceForIndexAndDataTextureObject (index, dataTextureObject) {
+      return {
+        _type : dataTextureObject.userUniform.type,
+        _value : dataTextureObject.userUniform.value,
+
+        get type () {
+          return this._type;
+        },
+
+        set type (v) {
+          Blotter.Messaging.logError("Blotter.MappingMaterial", false, "uniform types may not be updated");
+        },
+
+        get value () {
+          return this._value;
+        },
+
+        set value (v) {
+          if (!Blotter.UniformUtils.validValueForUniformType(this._type, v)) {
+            Blotter.Messaging.logError("Blotter.MappingMaterial", false, "uniform value not valid for uniform type: " + this._type);
+            return;
+          }
+          this._value = v;
+
+          _setValueAtIndexInDataTextureObject(v, index, dataTextureObject);
+        }
+      };
+    }
+
+    function _getUniformInterface (mapping, userUniformDataTextureObjects) {
+      return _.reduce(mapping.texts, function (memo, text, i) {
+        memo[text.id] = _.reduce(userUniformDataTextureObjects, function (memo, dataTextureObject, uniformName) {
+          memo[uniformName] = _getUniformInterfaceForIndexAndDataTextureObject(i, dataTextureObject);
+          memo[uniformName].value = dataTextureObject.userUniform.value;
+          return memo;
+        }, {});
+        return memo;
+      }, {});
+    }
+
+    return {
+
+      constructor : Blotter.MappingMaterial,
+
+      get mainImage () {
+        return this.material.mainImage;
+      },
+
+      get width () {
+        return this.mapping.width;
+      },
+
+      get height () {
+        return this.mapping.height;
+      },
+
+      get ratio () {
+        return this.mapping.ratio;
+      },
+
+      init : function (mapping, material, shaderMaterial, userUniformDataTextureObjects) {
+        this._uniforms = _getUniformInterface(this.mapping, this._userUniformDataTextureObjects);
+      },
+
+      uniformsInterfaceForText : function (text) {
+        return this._uniforms[text.id];
+      },
+
+      boundsForText : function (text) {
+        Blotter.Messaging.ensureInstanceOf(text, Blotter.Text, "Blotter.Text", "Blotter.MappingMaterial", "boundsForText");
+        return this.mapping.boundsForText(text);
+      }
+    };
+  })();
+
+})(
+  this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
+);
+
+(function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
+
   Blotter.Material = function () {
     this.init.apply(this, arguments);
   };
@@ -730,83 +971,6 @@
 
   Blotter.ShaderMaterial.prototype = Object.create(Blotter.Material.prototype);
   Blotter.ShaderMaterial.prototype.constructor = Blotter.ShaderMaterial;
-
-})(
-  this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
-);
-
-(function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
-
-  Blotter.BubbleShiftMaterial = function() {
-    Blotter.Material.apply(this, arguments);
-  };
-
-  Blotter.BubbleShiftMaterial.prototype = Object.create(Blotter.Material.prototype);
-
-  _.extend(Blotter.BubbleShiftMaterial.prototype, (function () {
-
-    function _mainImageSrc () {
-      var mainImageSrc = [
-
-        "void mainImage( out vec4 mainImage, in vec2 fragCoord ) {",
-
-        "   // p = x, y percentage for texel position within total resolution.",
-        "   vec2 p = fragCoord / uResolution;",
-        "   // d = x, y percentage for texel position within total resolution relative to center point.",
-        "   vec2 d = p - uCenterPoint;",
-
-        "   // The dot function returns the dot product of the two",
-        "   // input parameters, i.e. the sum of the component-wise",
-        "   // products. If x and y are the same the square root of",
-        "   // the dot product is equivalent to the length of the vector.",
-        "   // Therefore, r = length of vector represented by d (the ",
-        "   // distance of the texel from center position).",
-        "   // ",
-        "   // In order to apply weights here, we add our weight to this distance",
-        "   // (pushing it closer to 1 - essentially giving no effect at all) and",
-        "   // find the min between our weighted distance and 1.0",
-        "   float inverseLenseWeight = 1.0 - uLenseWeight;",
-        "   float r = min(sqrt(dot(d, d)) + inverseLenseWeight, 1.0);",
-
-        "   vec2 offsetUV = uCenterPoint + (d * r);",
-
-        "   // RGB shift",
-        "   vec2 offset = vec2(0.0);",
-        "   if (r < 1.0) {",
-        "     float amount = 0.012;",
-        "     float angle = 0.45;",
-        "     offset = (amount * (1.0 - r)) * vec2(cos(angle), sin(angle));",
-        "   }",
-
-        "   vec4 cr = textTexture(offsetUV + offset);",
-        "   vec4 cga = textTexture(offsetUV);",
-        "   vec4 cb = textTexture(offsetUV - offset);",
-
-        "   combineColors(cr, vec4(1.0, 1.0, 1.0, 1.0), cr);",
-        "   combineColors(cga, vec4(1.0, 1.0, 1.0, 1.0), cga);",
-        "   combineColors(cb, vec4(1.0, 1.0, 1.0, 1.0), cb);",
-
-        "   rgbaFromRgb(mainImage, vec3(cr.r, cga.g, cb.b));",
-        "}"
-      ].join("\n");
-
-      return mainImageSrc;
-    }
-
-    return {
-
-      constructor : Blotter.BubbleShiftMaterial,
-
-      init : function () {
-        this.mainImage = _mainImageSrc();
-        this.uniforms = {
-          uCenterPoint : { type : "2f", value : [0.5, 0.5] },
-          uLenseWeight : { type : "1f", value : 0.9 }
-        };
-      }
-    };
-
-  })());
 
 })(
   this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
@@ -1014,7 +1178,8 @@
 
     function _update () {
       var mappingMaterial = this._mappingMaterial,
-          bounds = mappingMaterial && _getBoundsForMappingMaterialAndText(mappingMaterial, this.text);
+          bounds = mappingMaterial && _getBoundsForMappingMaterialAndText(mappingMaterial, this.text),
+          previousUniforms = this.material.uniforms;
 
       if (mappingMaterial && bounds) {
         Blotter.CanvasUtils.updateCanvasSize(
@@ -1023,8 +1188,6 @@
           bounds.h / this.blotter.ratio,
           this.blotter.ratio
         );
-
-        var previousUniforms = this.material.uniforms;
 
         this.material.uniforms = mappingMaterial.uniformsInterfaceForText(this.text);
         this.material.mainImage = mappingMaterial.mainImage;
@@ -1622,6 +1785,185 @@
       }
     };
   })();
+
+})(
+  this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
+);
+
+(function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
+
+  Blotter.BubbleShiftMaterial = function() {
+    Blotter.Material.apply(this, arguments);
+  };
+
+  Blotter.BubbleShiftMaterial.prototype = Object.create(Blotter.Material.prototype);
+
+  _.extend(Blotter.BubbleShiftMaterial.prototype, (function () {
+
+    function _mainImageSrc () {
+      var mainImageSrc = [
+
+        "void mainImage( out vec4 mainImage, in vec2 fragCoord ) {",
+
+        "   // p = x, y percentage for texel position within total resolution.",
+        "   vec2 p = fragCoord / uResolution;",
+        "   // d = x, y percentage for texel position within total resolution relative to center point.",
+        "   vec2 d = p - uCenterPoint;",
+
+        "   // The dot function returns the dot product of the two",
+        "   // input parameters, i.e. the sum of the component-wise",
+        "   // products. If x and y are the same the square root of",
+        "   // the dot product is equivalent to the length of the vector.",
+        "   // Therefore, r = length of vector represented by d (the ",
+        "   // distance of the texel from center position).",
+        "   // ",
+        "   // In order to apply weights here, we add our weight to this distance",
+        "   // (pushing it closer to 1 - essentially giving no effect at all) and",
+        "   // find the min between our weighted distance and 1.0",
+        "   float inverseLenseWeight = 1.0 - uLenseWeight;",
+        "   float r = min(sqrt(dot(d, d)) + inverseLenseWeight, 1.0);",
+
+        "   vec2 offsetUV = uCenterPoint + (d * r);",
+
+        "   // RGB shift",
+        "   vec2 offset = vec2(0.0);",
+        "   if (r < 1.0) {",
+        "     float amount = 0.012;",
+        "     float angle = 0.45;",
+        "     offset = (amount * (1.0 - r)) * vec2(cos(angle), sin(angle));",
+        "   }",
+
+        "   vec4 cr = textTexture(offsetUV + offset);",
+        "   vec4 cga = textTexture(offsetUV);",
+        "   vec4 cb = textTexture(offsetUV - offset);",
+
+        "   combineColors(cr, vec4(1.0, 1.0, 1.0, 1.0), cr);",
+        "   combineColors(cga, vec4(1.0, 1.0, 1.0, 1.0), cga);",
+        "   combineColors(cb, vec4(1.0, 1.0, 1.0, 1.0), cb);",
+
+        "   rgbaFromRgb(mainImage, vec3(cr.r, cga.g, cb.b));",
+        "}"
+      ].join("\n");
+
+      return mainImageSrc;
+    }
+
+    return {
+
+      constructor : Blotter.BubbleShiftMaterial,
+
+      init : function () {
+        this.mainImage = _mainImageSrc();
+        this.uniforms = {
+          uCenterPoint : { type : "2f", value : [0.5, 0.5] },
+          uLenseWeight : { type : "1f", value : 0.9 }
+        };
+      }
+    };
+
+  })());
+
+})(
+  this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
+);
+
+(function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
+
+  Blotter.RollDistortMaterial = function() {
+    Blotter.Material.apply(this, arguments);
+  };
+
+  Blotter.RollDistortMaterial.prototype = Object.create(Blotter.Material.prototype);
+
+  _.extend(Blotter.RollDistortMaterial.prototype, (function () {
+
+    function _mainImageSrc () {
+      var mainImageSrc = [
+
+        "vec3 mod289(vec3 x) {",
+        "  return x - floor(x * (1.0 / 289.0)) * 289.0;",
+        "}",
+
+        "vec2 mod289(vec2 x) {",
+        "  return x - floor(x * (1.0 / 289.0)) * 289.0;",
+        "}",
+
+        "vec3 permute(vec3 x) {",
+        "  return mod289(((x*34.0)+1.0)*x);",
+        "}",
+
+        "float snoise(vec2 v) {",
+        "  const vec4 C = vec4(0.211324865405187,  // (3.0-sqrt(3.0))/6.0",
+        "                      0.366025403784439,  // 0.5*(sqrt(3.0)-1.0)",
+        "                     -0.577350269189626,  // -1.0 + 2.0 * C.x",
+        "                      0.024390243902439); // 1.0 / 41.0",
+        "  vec2 i  = floor(v + dot(v, C.yy) );",
+        "  vec2 x0 = v -   i + dot(i, C.xx);",
+
+        "  vec2 i1;",
+        "  i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);",
+        "  vec4 x12 = x0.xyxy + C.xxzz;",
+        "  x12.xy -= i1;",
+
+        "  i = mod289(i); // Avoid truncation effects in permutation",
+        "  vec3 p = permute( permute( i.y + vec3(0.0, i1.y, 1.0 )) + i.x + vec3(0.0, i1.x, 1.0 ));",
+
+        "  vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy), dot(x12.zw,x12.zw)), 0.0);",
+        "  m = m*m ;",
+        "  m = m*m ;",
+
+        "  vec3 x = 2.0 * fract(p * C.www) - 1.0;",
+        "  vec3 h = abs(x) - 0.5;",
+        "  vec3 ox = floor(x + 0.5);",
+        "  vec3 a0 = x - ox;",
+
+        "  m *= 1.79284291400159 - 0.85373472095314 * ( a0*a0 + h*h );",
+
+        "  vec3 g;",
+        "  g.x  = a0.x  * x0.x  + h.x  * x0.y;",
+        "  g.yz = a0.yz * x12.xz + h.yz * x12.yw;",
+        "  return 130.0 * dot(m, g);",
+        "}",
+
+        // End Ashima 2D Simplex Noise
+
+        "void mainImage( out vec4 mainImage, in vec2 fragCoord ) {",
+
+        "  vec2 p = fragCoord / uResolution;",
+        "  float ty = uTime * uSpeed;",
+        "  float yt = p.y - ty;",
+
+           //smooth distortion
+        "  float offset = snoise(vec2(yt * 3.0, 0.0)) * 0.2;",
+           // boost distortion
+        "  offset = offset * uDistortion * offset * uDistortion * offset;",
+           //add fine grain distortion
+        "  offset += snoise(vec2(yt * 50.0, 0.0)) * uDistortion2 * 0.001;",
+           //combine distortion on X with roll on Y
+        "  mainImage = textTexture(vec2(fract(p.x + offset), fract(p.y)));",
+
+        "}"
+      ].join("\n");
+
+      return mainImageSrc;
+    }
+
+    return {
+
+      constructor : Blotter.RollDistortMaterial,
+
+      init : function () {
+        this.mainImage = _mainImageSrc();
+        this.uniforms = {
+          uTime : { type : "1f", value : 0.0 },
+          uDistortion : { type : "1f", value : 0.0 },
+          uDistortion2 : { type : "1f", value : 0.0 },
+          uSpeed : { type : "1f", value : 0.1 }
+        };
+      }
+    };
+
+  })());
 
 })(
   this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate

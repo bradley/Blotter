@@ -28,18 +28,20 @@ module.exports = function(grunt) {
         'src/extras/textUtils.js',
         'src/extras/uniformUtils.js',
         'src/texts/text.js',
-        'src/materials/mapping/mapping.js',
-        'src/materials/mapping/mappingMaterial.js',
+        'src/mapping/mapping.js',
+        'src/mapping/mappingMaterial.js',
         'src/materials/material.js',
         'src/materials/shaderMaterial.js',
-        'src/materials/effects/bubbleShiftMaterial.js',
         'src/rendering/renderer.js',
         'src/rendering/renderScope.js',
         'src/builders/textures/boundsDataTextureBuilder.js',
         'src/builders/textures/indicesDataTextureBuilder.js',
         'src/builders/textures/textTextureBuilder.js',
         'src/builders/mappingBuilder.js',
-        'src/builders/mappingMaterialBuilder.js'
+        'src/builders/mappingMaterialBuilder.js',
+
+        'src/materials/effects/bubbleShiftMaterial.js',
+        'src/materials/effects/rollDistortMaterial.js',
       ]
     },
 
