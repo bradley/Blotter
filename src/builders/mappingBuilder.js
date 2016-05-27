@@ -21,7 +21,6 @@
 
     return {
 
-// ### - does this work with no texts? It should return an empty mapping
       build : function (texts, completion) {
         setImmediate(function() {
           var filteredTexts = Blotter.TextUtils.filterTexts(texts),
@@ -50,7 +49,6 @@
               w : packedSizesObject.w,
               h : packedSizesObject.h,
               x : packedSizesObject.fit.x,
-// ### -- hmmmmm....
               y : packer.root.h - (packedSizesObject.fit.y + packedSizesObject.h)
             };
           }

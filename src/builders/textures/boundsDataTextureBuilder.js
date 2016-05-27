@@ -23,7 +23,6 @@
 
     return {
 
-// ### - does this need to use ratio too? seems like we may lose some fidelity since we dont. unsure how this even works. GLSL magic i guess.
       build : function (mapping, completion) {
         setImmediate(function() {
           var data = _boundsDataForMapping(mapping),

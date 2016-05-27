@@ -4,8 +4,7 @@
 
   var Blotter = root.Blotter = previousBlotter = function (material, options) {
     if (!Detector.webgl) {
-    // ### - messaging
-      Blotter.Messaging.throwError("Blotter", "device does not support webgl");
+      Blotter.Messaging.throwError("Blotter", false, "device does not support webgl");
     }
 
     this.Version = "v0.1.0";
@@ -18,7 +17,6 @@
 
     this._renderer = new Blotter.Renderer();
 
-    _.extendOwn(this, EventEmitter.prototype);
     this.init.apply(this, arguments);
   };
 
@@ -74,8 +72,10 @@
         });
 
         this._renderer.material = mappingMaterial.shaderMaterial;
-        this._renderer.start();
-
+        if (this.autostart) {
+          this._renderer.start();
+        }
+        
         this.trigger(this.mappingMaterial ? "update" : "ready");
         this.mappingMaterial = mappingMaterial;
       }, this))();
@@ -137,10 +137,12 @@
       },
 
       start : function () {
+        this.autostart = true;
         this._renderer.start();
       },
 
       stop : function () {
+        this.autostart = false;
         this._renderer.stop();
       },
 
@@ -149,7 +151,7 @@
       },
 
       setMaterial : function (material) {
-        Blotter.Messaging.ensureInstanceOf(material, Blotter.Material, "Blotter.Material", "Blotter.Renderer");
+        Blotter.Messaging.ensureInstanceOf(material, Blotter.Material, "Blotter.Material", "Blotter", "setMaterial");
 
         this._material = material;
 
@@ -206,12 +208,10 @@
       },
 
       forText : function (text) {
-        // ### - messaging
-        Blotter.Messaging.ensureInstanceOf(text, Blotter.Text, "Blotter.Text", "Blotter.Renderer");
+        Blotter.Messaging.ensureInstanceOf(text, Blotter.Text, "Blotter.Text", "Blotter", "forText");
 
         if (!(this._scopes[text.id])) {
-          // ### - messaging
-          Blotter.Messaging.logError("Blotter.Renderer", "Blotter.Text object not found in blotter. Set needsUpdate to true.");
+          Blotter.Messaging.logError("Blotter", "forText", "Blotter.Text object not found in blotter");
           return;
         }
 
@@ -219,12 +219,10 @@
       },
 
       boundsForText : function (text) {
-        // ### - messaging
-        Blotter.Messaging.ensureInstanceOf(text, Blotter.Text, "Blotter.Text", "Blotter.Renderer");
+        Blotter.Messaging.ensureInstanceOf(text, Blotter.Text, "Blotter.Text", "Blotter", "boundsForText");
 
         if (!(this._scopes[text.id])) {
-          // ### - messaging
-          Blotter.Messaging.logError("Blotter.Renderer", "Blotter.Text object not found in blotter.");
+          Blotter.Messaging.logError("Blotter", "boundsForText", "Blotter.Text object not found in blotter");
           return;
         }
 
@@ -235,8 +233,8 @@
     };
   })();
 
-  //EventEmitter.prototype.apply(Blotter.prototype);
-  //_.extend(Blotter.prototype, EventEmitter.prototype);
+  _.extend(Blotter.prototype, EventEmitter.prototype);
+
 })(
   this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
 );

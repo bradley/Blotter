@@ -47,7 +47,7 @@
       },
 
       boundsForText : function (text) {
-        Blotter.Messaging.ensureInstanceOf(text, Blotter.Text, "Blotter.Text", "Blotter.Material");
+        Blotter.Messaging.ensureInstanceOf(text, Blotter.Text, "Blotter.Text", "Blotter.Mapping", "boundsForText");
 
         var bounds = this._textBounds[text.id];
 

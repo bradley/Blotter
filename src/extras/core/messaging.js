@@ -2,33 +2,31 @@
 
   Blotter.Messaging = (function () {
 
-    function _formattedMessage (domain, message) {
-      return domain + ": " + message;
+    function _formattedMessage (domain, method, message) {
+      return domain + (method ? ("#" + method) : "") + ": " + message;
     }
 
     return {
 
-  // ### - messaging. is this really necessary?
-      ensureInstanceOf : function (object, constructor, constructorStr, domain) {
+      ensureInstanceOf : function (object, constructor, constructorStr, domain, method) {
         if (!(object instanceof constructor)) {
-          this.logError(domain, "argument must be instanceof " + constructorStr);
+          this.logError(domain, method, "argument must be instanceof " + constructorStr);
           return;
         }
       },
 
-      logError : function (domain, message) {
-        var formatted = _formattedMessage(domain, message);
+      logError : function (domain, method, message) {
+        var formatted = _formattedMessage(domain, method, message);
         console.error(formatted);
       },
 
-// ### - use this more
-      logWarning : function (domain, message) {
-        var formatted = _formattedMessage(domain, message);
+      logWarning : function (domain, method, message) {
+        var formatted = _formattedMessage(domain, method, message);
         console.warn(formatted);
       },
 
-      throwError : function (domain, message) {
-        var formatted = _formattedMessage(domain, message);
+      throwError : function (domain, method, message) {
+        var formatted = _formattedMessage(domain, method, message);
         throw formatted;
       }
     };

@@ -5,8 +5,6 @@
   Blotter.Renderer = function () {
     this._currentAnimationLoop = false;
 
-    // Prepare back buffer scene
-
     this._scene = new THREE.Scene();
 
     this._plane = new THREE.PlaneGeometry(1, 1);
@@ -20,7 +18,6 @@
 
     this._camera = new THREE.OrthographicCamera(0.5, 0.5, 0.5, 0.5, 0, 100);
 
-    _.extendOwn(this, EventEmitter.prototype);
     this.init.apply(this, arguments);
   };
 
@@ -132,6 +129,8 @@
       }
     };
   })();
+
+  _.extend(Blotter.Renderer.prototype, EventEmitter.prototype);
 
 })(
   this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate

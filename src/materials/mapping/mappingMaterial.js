@@ -17,7 +17,6 @@
             data = dataTextureObject.data;
 
         if (!Blotter.UniformUtils.validValueForUniformType(type, value)) {
-          // ### - messaging
           Blotter.Messaging.logError("Blotter.MappingMaterial", "uniform value not valid for uniform type: " + this._type);
           return;
         }
@@ -62,8 +61,7 @@
         },
 
         set type (v) {
-          // ### - messaging
-          Blotter.Messaging.logError("Blotter.MaterialScope", "uniform types may not be updated");
+          Blotter.Messaging.logError("Blotter.MappingMaterial", false, "uniform types may not be updated");
         },
 
         get value () {
@@ -72,8 +70,7 @@
 
         set value (v) {
           if (!Blotter.UniformUtils.validValueForUniformType(this._type, v)) {
-            // ### - messaging
-            Blotter.Messaging.logError("Blotter.MaterialScope", "uniform value not valid for uniform type: " + this._type);
+            Blotter.Messaging.logError("Blotter.MappingMaterial", false, "uniform value not valid for uniform type: " + this._type);
             return;
           }
           this._value = v;
@@ -123,8 +120,7 @@
       },
 
       boundsForText : function (text) {
-        // ### - messaging
-        Blotter.Messaging.ensureInstanceOf(text, Blotter.Text, "Blotter.Text", "Blotter.MappingMaterial");
+        Blotter.Messaging.ensureInstanceOf(text, Blotter.Text, "Blotter.Text", "Blotter.MappingMaterial", "boundsForText");
         return this.mapping.boundsForText(text);
       }
     };

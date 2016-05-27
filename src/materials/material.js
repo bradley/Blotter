@@ -1,14 +1,7 @@
 (function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
 
-  Blotter.Material = function(mainImage, options) {
-    _.defaults(options, {
-      uniforms : {}
-    });
-
-    this.mainImage = mainImage;
-    this.uniforms = options.uniforms;
-
-    _.extendOwn(this, EventEmitter.prototype);
+  Blotter.Material = function () {
+    this.init.apply(this, arguments);
   };
 
   Blotter.Material.prototype = (function() {
@@ -53,12 +46,16 @@
 
       set uniforms (uniforms) {
         this._uniforms = Blotter.UniformUtils.extractValidUniforms(uniforms);
+      },
+
+      init : function () {
+        this.mainImage = _defaultMainImageSrc();
+        this.uniforms = {};
       }
     };
   })();
 
-  //EventEmitter.prototype.apply(Blotter.Material.prototype);
-  //_.extend(Blotter.Material.prototype, EventEmitter.prototype);
+  _.extend(Blotter.Material.prototype, EventEmitter.prototype);
 
 })(
   this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate

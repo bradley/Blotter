@@ -17,8 +17,6 @@
 
     this.domElement = Blotter.CanvasUtils.hiDpiCanvas(0, 0, this.blotter.ratio);
     this.context = this.domElement.getContext("2d");
-
-    _.extendOwn(this, EventEmitter.prototype);
   };
 
   Blotter.RenderScope.prototype = (function () {
@@ -48,7 +46,6 @@
           w : bounds.w,
           h : bounds.h,
           x : -1 * Math.floor(bounds.x),
-          // ### --- !
           y : -1 * Math.floor(mappingMaterial.height - (bounds.y + bounds.h))
         };
       }
@@ -145,8 +142,7 @@
     };
   })();
 
-  //EventEmitter.prototype.apply(Blotter.RenderScope.prototype);
-  //_.extend(Blotter.RenderScope.prototype, EventEmitter.prototype);
+  _.extend(Blotter.RenderScope.prototype, EventEmitter.prototype);
 
 })(
   this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate

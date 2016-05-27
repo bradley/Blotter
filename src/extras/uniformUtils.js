@@ -93,19 +93,17 @@
 
     // Given an object containing uniform descriptions, return an object containing only valid uniforms based on the uniform's type and value
 
-    extractValidUniforms : function (uniforms, domain) {
+    extractValidUniforms : function (uniforms) {
       uniforms = uniforms || {};
       return _.reduce(uniforms, function (memo, uniformObject, uniformName) {
         if (Blotter.UniformUtils.UniformTypes.indexOf(uniformObject.type) == -1) {
-  // ### - messaging
-          Blotter.Messaging.logError(domain, "uniforms must be one of type: " +
+          Blotter.Messaging.logError("Blotter.UniformUtils", "extractValidUniforms", "uniforms must be one of type: " +
             Blotter.UniformUtils.UniformTypes.join(", "));
           return memo;
         }
 
         if (!Blotter.UniformUtils.validValueForUniformType(uniformObject.type, uniformObject.value)) {
-  // ### - messaging
-          Blotter.Messaging.logError(domain, "uniform value for " + uniformName + " is incorrect for type: " + uniformObject.type);
+          Blotter.Messaging.logError("Blotter.UniformUtils", "extractValidUniforms", "uniform value for " + uniformName + " is incorrect for type: " + uniformObject.type);
           return memo;
         }
 

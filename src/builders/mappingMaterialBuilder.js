@@ -37,13 +37,11 @@
 
         userDefinedUniforms.privateUniformTextureDeclarations += "uniform sampler2D " + uniformTextureName + ";\n";
         userDefinedUniforms.publicUniformDeclarations += glslDataType + " " + uniformName + ";\n";
-        userDefinedUniforms.uniformDefinitions += uniformName + " = " + "texture2D(" + uniformTextureName + " , vec2(textIndex, 0.5))." + glslSwizzle + ";\n";
+        userDefinedUniforms.uniformDefinitions += "   " + uniformName + " = " + "texture2D(" + uniformTextureName + " , vec2(textIndex, 0.5))." + glslSwizzle + ";\n";
 
         return userDefinedUniforms;
       }, userDefinedUniforms);
 
-
-      // ### - inspect this in chrome to see how the formatting is output.
       fragmentSrc = [
 
         "precision highp float;",
@@ -59,11 +57,11 @@
         "varying vec2 _vTexCoord;",
         "vec4 _textBounds;",
 
-        // Public blotter defined uniforms.
-        "vec2 uResolution;",
-
         // Private versions of use user defined uniforms
         userDefinedUniforms.privateUniformTextureDeclarations,
+
+        // Public blotter defined uniforms.
+        "vec2 uResolution;",
 
         // Public versions of user defined uniforms.
         userDefinedUniforms.publicUniformDeclarations,
@@ -83,7 +81,25 @@
         "   return texture2D(_uSampler, uv);",
         "}",
 
-      // ### - what other methods ought we expose?
+        "void combineColors( out vec4 adjustedColor, in vec4 bg, in vec4 color ) {",
+        "  float a = color.a;",
+
+        "  float r = (1.0 - a) * bg.r + a * color.r;",
+        "  float g = (1.0 - a) * bg.g + a * color.g;",
+        "  float b = (1.0 - a) * bg.b + a * color.b;",
+
+        "  adjustedColor = vec4(r, g, b, 1.0);",
+        "}",
+
+        "void rgbaFromRgb( out vec4 rgba, in vec3 rgb ) {",
+        "  float a = 1.0 - min(rgb.r, min(rgb.g, rgb.b));",
+
+        "  float r = 1.0 - (1.0 - rgb.r) / a;",
+        "  float g = 1.0 - (1.0 - rgb.g) / a;",
+        "  float b = 1.0 - (1.0 - rgb.b) / a;",
+
+        "  rgba = vec4(r, g, b, a);",
+        "}",
 
         "void mainImage( out vec4 mainImage, in vec2 fragCoord );",
 
@@ -101,7 +117,7 @@
 
         //  Set "uniform" values visible to user.
         "   uResolution = _textBounds.zw;",
-            userDefinedUniforms.uniformDefinitions,
+        userDefinedUniforms.uniformDefinitions,
 
         //  Set fragment coordinate in respect to position within text bounds.
         "   vec2 fragCoord = gl_FragCoord.xy - _textBounds.xy;",

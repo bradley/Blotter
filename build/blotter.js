@@ -43181,8 +43181,7 @@ GrowingPacker.prototype = {
 
   var Blotter = root.Blotter = previousBlotter = function (material, options) {
     if (!Detector.webgl) {
-    // ### - messaging
-      Blotter.Messaging.throwError("Blotter", "device does not support webgl");
+      Blotter.Messaging.throwError("Blotter", false, "device does not support webgl");
     }
 
     this.Version = "v0.1.0";
@@ -43195,7 +43194,6 @@ GrowingPacker.prototype = {
 
     this._renderer = new Blotter.Renderer();
 
-    _.extendOwn(this, EventEmitter.prototype);
     this.init.apply(this, arguments);
   };
 
@@ -43251,8 +43249,10 @@ GrowingPacker.prototype = {
         });
 
         this._renderer.material = mappingMaterial.shaderMaterial;
-        this._renderer.start();
-
+        if (this.autostart) {
+          this._renderer.start();
+        }
+        
         this.trigger(this.mappingMaterial ? "update" : "ready");
         this.mappingMaterial = mappingMaterial;
       }, this))();
@@ -43314,10 +43314,12 @@ GrowingPacker.prototype = {
       },
 
       start : function () {
+        this.autostart = true;
         this._renderer.start();
       },
 
       stop : function () {
+        this.autostart = false;
         this._renderer.stop();
       },
 
@@ -43326,7 +43328,7 @@ GrowingPacker.prototype = {
       },
 
       setMaterial : function (material) {
-        Blotter.Messaging.ensureInstanceOf(material, Blotter.Material, "Blotter.Material", "Blotter.Renderer");
+        Blotter.Messaging.ensureInstanceOf(material, Blotter.Material, "Blotter.Material", "Blotter", "setMaterial");
 
         this._material = material;
 
@@ -43383,12 +43385,10 @@ GrowingPacker.prototype = {
       },
 
       forText : function (text) {
-        // ### - messaging
-        Blotter.Messaging.ensureInstanceOf(text, Blotter.Text, "Blotter.Text", "Blotter.Renderer");
+        Blotter.Messaging.ensureInstanceOf(text, Blotter.Text, "Blotter.Text", "Blotter", "forText");
 
         if (!(this._scopes[text.id])) {
-          // ### - messaging
-          Blotter.Messaging.logError("Blotter.Renderer", "Blotter.Text object not found in blotter. Set needsUpdate to true.");
+          Blotter.Messaging.logError("Blotter", "forText", "Blotter.Text object not found in blotter");
           return;
         }
 
@@ -43396,12 +43396,10 @@ GrowingPacker.prototype = {
       },
 
       boundsForText : function (text) {
-        // ### - messaging
-        Blotter.Messaging.ensureInstanceOf(text, Blotter.Text, "Blotter.Text", "Blotter.Renderer");
+        Blotter.Messaging.ensureInstanceOf(text, Blotter.Text, "Blotter.Text", "Blotter", "boundsForText");
 
         if (!(this._scopes[text.id])) {
-          // ### - messaging
-          Blotter.Messaging.logError("Blotter.Renderer", "Blotter.Text object not found in blotter.");
+          Blotter.Messaging.logError("Blotter", "boundsForText", "Blotter.Text object not found in blotter");
           return;
         }
 
@@ -43412,73 +43410,7 @@ GrowingPacker.prototype = {
     };
   })();
 
-  //EventEmitter.prototype.apply(Blotter.prototype);
-  //_.extend(Blotter.prototype, EventEmitter.prototype);
-})(
-  this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
-);
-
-(function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
-
-  Blotter.Material = function(mainImage, options) {
-    _.defaults(options, {
-      uniforms : {}
-    });
-
-    this.mainImage = mainImage;
-    this.uniforms = options.uniforms;
-
-    _.extendOwn(this, EventEmitter.prototype);
-  };
-
-  Blotter.Material.prototype = (function() {
-
-    function _defaultMainImageSrc () {
-      var mainImage = [
-
-        "void mainImage( out vec4 mainImage, in vec2 fragCoord ) {",
-
-          "mainImage = textTexture(fragCoord / uResolution);",
-
-        "}"
-
-      ];
-
-      return mainImage.join("\n");
-    }
-
-    return {
-
-      constructor : Blotter.Material,
-
-      get needsUpdate () { }, // jshint
-
-      set needsUpdate (value) {
-        if (value === true) {
-          this.trigger("update");
-        }
-      },
-
-      get mainImage () {
-        return this._mainImage;
-      },
-
-      set mainImage (mainImage) {
-        this._mainImage = mainImage || _defaultMainImageSrc();
-      },
-
-      get uniforms () {
-        return this._uniforms;
-      },
-
-      set uniforms (uniforms) {
-        this._uniforms = Blotter.UniformUtils.extractValidUniforms(uniforms);
-      }
-    };
-  })();
-
-  //EventEmitter.prototype.apply(Blotter.Material.prototype);
-  //_.extend(Blotter.Material.prototype, EventEmitter.prototype);
+  _.extend(Blotter.prototype, EventEmitter.prototype);
 
 })(
   this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
@@ -43490,8 +43422,6 @@ GrowingPacker.prototype = {
     this.id = THREE.Math.generateUUID();
     this.value = value;
     this.properties = properties;
-
-    _.extendOwn(this, EventEmitter.prototype);
   };
 
   Blotter.Text.prototype = {
@@ -43514,8 +43444,7 @@ GrowingPacker.prototype = {
     }
   };
 
-  //EventEmitter.prototype.apply(Blotter.Text.prototype);
-  //_.extend(Blotter.Text.prototype, EventEmitter.prototype);
+  _.extend(Blotter.Text.prototype, EventEmitter.prototype);
 
 })(
   this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
@@ -43525,33 +43454,31 @@ GrowingPacker.prototype = {
 
   Blotter.Messaging = (function () {
 
-    function _formattedMessage (domain, message) {
-      return domain + ": " + message;
+    function _formattedMessage (domain, method, message) {
+      return domain + (method ? ("#" + method) : "") + ": " + message;
     }
 
     return {
 
-  // ### - messaging. is this really necessary?
-      ensureInstanceOf : function (object, constructor, constructorStr, domain) {
+      ensureInstanceOf : function (object, constructor, constructorStr, domain, method) {
         if (!(object instanceof constructor)) {
-          this.logError(domain, "argument must be instanceof " + constructorStr);
+          this.logError(domain, method, "argument must be instanceof " + constructorStr);
           return;
         }
       },
 
-      logError : function (domain, message) {
-        var formatted = _formattedMessage(domain, message);
+      logError : function (domain, method, message) {
+        var formatted = _formattedMessage(domain, method, message);
         console.error(formatted);
       },
 
-// ### - use this more
-      logWarning : function (domain, message) {
-        var formatted = _formattedMessage(domain, message);
+      logWarning : function (domain, method, message) {
+        var formatted = _formattedMessage(domain, method, message);
         console.warn(formatted);
       },
 
-      throwError : function (domain, message) {
-        var formatted = _formattedMessage(domain, message);
+      throwError : function (domain, method, message) {
+        var formatted = _formattedMessage(domain, method, message);
         throw formatted;
       }
     };
@@ -43606,16 +43533,16 @@ GrowingPacker.prototype = {
       return canvas;
     },
 
-  	// Creates and returns a high DPI canvas based on a device specific pixel ratio
+    // Creates and returns a high DPI canvas based on a device specific pixel ratio
 
-  	hiDpiCanvas : function (w, h, ratio) {
-  	  ratio = ratio || this.pixelRatio;
-  	  var canvas = document.createElement("canvas");
+    hiDpiCanvas : function (w, h, ratio) {
+      ratio = ratio || this.pixelRatio;
+      var canvas = document.createElement("canvas");
 
       this.updateCanvasSize(canvas, w, h, ratio);
 
-  	  return canvas;
-  	},
+      return canvas;
+    },
 
     updateCanvasSize : function (canvas, w, h, ratio) {
       ratio = ratio || 1;
@@ -43627,9 +43554,9 @@ GrowingPacker.prototype = {
       canvas.getContext("2d").setTransform(ratio, 0, 0, ratio, 0, 0);
     },
 
-  	// Returns the device's pixel ratio
+    // Returns the device's pixel ratio
 
-  	pixelRatio : (function () {
+    pixelRatio : (function () {
       var ctx = document.createElement("canvas").getContext("2d"),
           dpr = window.devicePixelRatio || 1,
           bsr = ctx.backingStorePixelRatio;
@@ -43672,33 +43599,33 @@ GrowingPacker.prototype = {
 
 (function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
 
-	Blotter.PropertyDefaults = {
-		family       : 'sans-serif',
-		size         : 12,
-		leading      : 1.5,
-		fill         : '#000',
-		style        : 'normal',
-		weight       : 500,
-		padding      : 0,
-		paddingTop   : 0,
-		paddingRight : 0,
-		paddingBottom: 0,
-		paddingLeft  : 0
-	};
+  Blotter.PropertyDefaults = {
+    family       : 'sans-serif',
+    size         : 12,
+    leading      : 1.5,
+    fill         : '#000',
+    style        : 'normal',
+    weight       : 500,
+    padding      : 0,
+    paddingTop   : 0,
+    paddingRight : 0,
+    paddingBottom: 0,
+    paddingLeft  : 0
+  };
 
-	Blotter.TextUtils = {
+  Blotter.TextUtils = {
 
-		Properties : _.keys(Blotter.PropertyDefaults),
+    Properties : _.keys(Blotter.PropertyDefaults),
 
-		// Recieves property values (optional) and fills in any missing values with default values
+    // Recieves property values (optional) and fills in any missing values with default values
 
-		ensurePropertyValues : function(properties) {
-			properties = _.defaults(properties || {}, Blotter.PropertyDefaults);
-			return properties;
-		},
+    ensurePropertyValues : function(properties) {
+      properties = _.defaults(properties || {}, Blotter.PropertyDefaults);
+      return properties;
+    },
 
-		filterTexts : function(texts) {
-			if (texts instanceof Blotter.Text) {
+    filterTexts : function(texts) {
+      if (texts instanceof Blotter.Text) {
         texts = [texts];
       } else {
         texts = _.toArray(texts);
@@ -43708,56 +43635,55 @@ GrowingPacker.prototype = {
         var isText = text instanceof Blotter.Text;
 
         if (!isText) {
-  // ### - messaging
-          Blotter.Messaging.logError("Blotter.Renderer", "object not instance of Blotter.Text");
+          Blotter.Messaging.logWarning("Blotter.TextUtils", "filterTexts", "object must be instance of Blotter.Text");
         }
 
         return isText;
       }, this));
-		},
+    },
 
-		// Format padding values from style properties for passing to document
+    // Format padding values from style properties for passing to document
 
-		stringifiedPadding : function(properties) {
-			var _properties = properties || this.ensurePropertyValues(),
-					pTop = properties.paddingTop || _properties.padding,
-					pRight = _properties.paddingRight || _properties.padding,
-					pBottom = _properties.paddingBottom || _properties.padding,
-					pLeft = _properties.paddingLeft || _properties.padding;
+    stringifiedPadding : function(properties) {
+      var _properties = properties || this.ensurePropertyValues(),
+          pTop = properties.paddingTop || _properties.padding,
+          pRight = _properties.paddingRight || _properties.padding,
+          pBottom = _properties.paddingBottom || _properties.padding,
+          pLeft = _properties.paddingLeft || _properties.padding;
 
-			return pTop + "px " + pRight + "px " + pBottom + "px " + pLeft + "px";
-		},
+      return pTop + "px " + pRight + "px " + pBottom + "px " + pLeft + "px";
+    },
 
-		// Determines size of text within the document given certain style properties
+    // Determines size of text within the document given certain style properties
 
-		sizeForText : function(textValue, properties) {
-			var el = document.createElement('p'),
-		  		size;
+    sizeForText : function(textValue, properties) {
+      var el = document.createElement('p'),
+          size;
 
-		  properties = this.ensurePropertyValues(properties);
+      properties = this.ensurePropertyValues(properties);
 
-		  el.innerHTML = textValue;
-		  el.style.fontFamily = properties.family;
-		  el.style.fontSize = properties.size + "px";
-		  el.style.fontWeight = properties.weight;
-		  el.style.fontStyle = properties.style;
-		  el.style.padding = this.stringifiedPadding(properties);
-		  el.style.lineHeight = properties.leading;
-		  el.style.visibility = "hidden";
-		  el.style.display = "inline-block";
+      el.innerHTML = textValue;
+      el.style.fontFamily = properties.family;
+      el.style.fontSize = properties.size + "px";
+      el.style.fontWeight = properties.weight;
+      el.style.fontStyle = properties.style;
+      el.style.padding = this.stringifiedPadding(properties);
+      el.style.lineHeight = properties.leading;
+      el.style.visibility = "hidden";
+      el.style.display = "inline-block";
 
-		  document.body.appendChild(el);
+      document.body.appendChild(el);
 
-		  size = {
-		  	w: el.offsetWidth,
-		    h: el.offsetHeight
-		  };
+      size = {
+        w: el.offsetWidth,
+        h: el.offsetHeight
+      };
 
-		  document.body.removeChild(el);
+      document.body.removeChild(el);
 
-		  return size;
-		}
-	};
+      return size;
+    }
+  };
 
 })(
   this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
@@ -43858,19 +43784,17 @@ GrowingPacker.prototype = {
 
     // Given an object containing uniform descriptions, return an object containing only valid uniforms based on the uniform's type and value
 
-    extractValidUniforms : function (uniforms, domain) {
+    extractValidUniforms : function (uniforms) {
       uniforms = uniforms || {};
       return _.reduce(uniforms, function (memo, uniformObject, uniformName) {
         if (Blotter.UniformUtils.UniformTypes.indexOf(uniformObject.type) == -1) {
-  // ### - messaging
-          Blotter.Messaging.logError(domain, "uniforms must be one of type: " +
+          Blotter.Messaging.logError("Blotter.UniformUtils", "extractValidUniforms", "uniforms must be one of type: " +
             Blotter.UniformUtils.UniformTypes.join(", "));
           return memo;
         }
 
         if (!Blotter.UniformUtils.validValueForUniformType(uniformObject.type, uniformObject.value)) {
-  // ### - messaging
-          Blotter.Messaging.logError(domain, "uniform value for " + uniformName + " is incorrect for type: " + uniformObject.type);
+          Blotter.Messaging.logError("Blotter.UniformUtils", "extractValidUniforms", "uniform value for " + uniformName + " is incorrect for type: " + uniformObject.type);
           return memo;
         }
 
@@ -43933,7 +43857,7 @@ GrowingPacker.prototype = {
       },
 
       boundsForText : function (text) {
-        Blotter.Messaging.ensureInstanceOf(text, Blotter.Text, "Blotter.Text", "Blotter.Material");
+        Blotter.Messaging.ensureInstanceOf(text, Blotter.Text, "Blotter.Text", "Blotter.Mapping", "boundsForText");
 
         var bounds = this._textBounds[text.id];
 
@@ -44011,7 +43935,6 @@ GrowingPacker.prototype = {
             data = dataTextureObject.data;
 
         if (!Blotter.UniformUtils.validValueForUniformType(type, value)) {
-          // ### - messaging
           Blotter.Messaging.logError("Blotter.MappingMaterial", "uniform value not valid for uniform type: " + this._type);
           return;
         }
@@ -44056,8 +43979,7 @@ GrowingPacker.prototype = {
         },
 
         set type (v) {
-          // ### - messaging
-          Blotter.Messaging.logError("Blotter.MaterialScope", "uniform types may not be updated");
+          Blotter.Messaging.logError("Blotter.MappingMaterial", false, "uniform types may not be updated");
         },
 
         get value () {
@@ -44066,8 +43988,7 @@ GrowingPacker.prototype = {
 
         set value (v) {
           if (!Blotter.UniformUtils.validValueForUniformType(this._type, v)) {
-            // ### - messaging
-            Blotter.Messaging.logError("Blotter.MaterialScope", "uniform value not valid for uniform type: " + this._type);
+            Blotter.Messaging.logError("Blotter.MappingMaterial", false, "uniform value not valid for uniform type: " + this._type);
             return;
           }
           this._value = v;
@@ -44117,8 +44038,7 @@ GrowingPacker.prototype = {
       },
 
       boundsForText : function (text) {
-        // ### - messaging
-        Blotter.Messaging.ensureInstanceOf(text, Blotter.Text, "Blotter.Text", "Blotter.MappingMaterial");
+        Blotter.Messaging.ensureInstanceOf(text, Blotter.Text, "Blotter.Text", "Blotter.MappingMaterial", "boundsForText");
         return this.mapping.boundsForText(text);
       }
     };
@@ -44130,12 +44050,170 @@ GrowingPacker.prototype = {
 
 (function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
 
+  Blotter.Material = function () {
+    this.init.apply(this, arguments);
+  };
+
+  Blotter.Material.prototype = (function() {
+
+    function _defaultMainImageSrc () {
+      var mainImage = [
+
+        "void mainImage( out vec4 mainImage, in vec2 fragCoord ) {",
+
+          "mainImage = textTexture(fragCoord / uResolution);",
+
+        "}"
+
+      ];
+
+      return mainImage.join("\n");
+    }
+
+    return {
+
+      constructor : Blotter.Material,
+
+      get needsUpdate () { }, // jshint
+
+      set needsUpdate (value) {
+        if (value === true) {
+          this.trigger("update");
+        }
+      },
+
+      get mainImage () {
+        return this._mainImage;
+      },
+
+      set mainImage (mainImage) {
+        this._mainImage = mainImage || _defaultMainImageSrc();
+      },
+
+      get uniforms () {
+        return this._uniforms;
+      },
+
+      set uniforms (uniforms) {
+        this._uniforms = Blotter.UniformUtils.extractValidUniforms(uniforms);
+      },
+
+      init : function () {
+        this.mainImage = _defaultMainImageSrc();
+        this.uniforms = {};
+      }
+    };
+  })();
+
+  _.extend(Blotter.Material.prototype, EventEmitter.prototype);
+
+})(
+  this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
+);
+
+(function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
+
+  Blotter.ShaderMaterial = function(mainImage, options) {
+    Blotter.Material.apply(this, arguments);
+
+    _.defaults(options, {
+      uniforms : {}
+    });
+
+    this.mainImage = mainImage;
+    this.uniforms = options.uniforms;
+  };
+
+  Blotter.ShaderMaterial.prototype = Object.create(Blotter.Material.prototype);
+  Blotter.ShaderMaterial.prototype.constructor = Blotter.ShaderMaterial;
+
+})(
+  this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
+);
+
+(function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
+
+  Blotter.BubbleShiftMaterial = function() {
+    Blotter.Material.apply(this, arguments);
+  };
+
+  Blotter.BubbleShiftMaterial.prototype = Object.create(Blotter.Material.prototype);
+
+  _.extend(Blotter.BubbleShiftMaterial.prototype, (function () {
+
+    function _mainImageSrc () {
+      var mainImageSrc = [
+
+        "void mainImage( out vec4 mainImage, in vec2 fragCoord ) {",
+
+        "   // p = x, y percentage for texel position within total resolution.",
+        "   vec2 p = fragCoord / uResolution;",
+        "   // d = x, y percentage for texel position within total resolution relative to center point.",
+        "   vec2 d = p - uCenterPoint;",
+
+        "   // The dot function returns the dot product of the two",
+        "   // input parameters, i.e. the sum of the component-wise",
+        "   // products. If x and y are the same the square root of",
+        "   // the dot product is equivalent to the length of the vector.",
+        "   // Therefore, r = length of vector represented by d (the ",
+        "   // distance of the texel from center position).",
+        "   // ",
+        "   // In order to apply weights here, we add our weight to this distance",
+        "   // (pushing it closer to 1 - essentially giving no effect at all) and",
+        "   // find the min between our weighted distance and 1.0",
+        "   float inverseLenseWeight = 1.0 - uLenseWeight;",
+        "   float r = min(sqrt(dot(d, d)) + inverseLenseWeight, 1.0);",
+
+        "   vec2 offsetUV = uCenterPoint + (d * r);",
+
+        "   // RGB shift",
+        "   vec2 offset = vec2(0.0);",
+        "   if (r < 1.0) {",
+        "     float amount = 0.012;",
+        "     float angle = 0.45;",
+        "     offset = (amount * (1.0 - r)) * vec2(cos(angle), sin(angle));",
+        "   }",
+
+        "   vec4 cr = textTexture(offsetUV + offset);",
+        "   vec4 cga = textTexture(offsetUV);",
+        "   vec4 cb = textTexture(offsetUV - offset);",
+
+        "   combineColors(cr, vec4(1.0, 1.0, 1.0, 1.0), cr);",
+        "   combineColors(cga, vec4(1.0, 1.0, 1.0, 1.0), cga);",
+        "   combineColors(cb, vec4(1.0, 1.0, 1.0, 1.0), cb);",
+
+        "   rgbaFromRgb(mainImage, vec3(cr.r, cga.g, cb.b));",
+        "}"
+      ].join("\n");
+
+      return mainImageSrc;
+    }
+
+    return {
+
+      constructor : Blotter.BubbleShiftMaterial,
+
+      init : function () {
+        this.mainImage = _mainImageSrc();
+        this.uniforms = {
+          uCenterPoint : { type : "2f", value : [0.5, 0.5] },
+          uLenseWeight : { type : "1f", value : 0.9 }
+        };
+      }
+    };
+
+  })());
+
+})(
+  this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
+);
+
+(function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
+
   var root = this;
 
   Blotter.Renderer = function () {
     this._currentAnimationLoop = false;
-
-    // Prepare back buffer scene
 
     this._scene = new THREE.Scene();
 
@@ -44150,7 +44228,6 @@ GrowingPacker.prototype = {
 
     this._camera = new THREE.OrthographicCamera(0.5, 0.5, 0.5, 0.5, 0, 100);
 
-    _.extendOwn(this, EventEmitter.prototype);
     this.init.apply(this, arguments);
   };
 
@@ -44263,6 +44340,8 @@ GrowingPacker.prototype = {
     };
   })();
 
+  _.extend(Blotter.Renderer.prototype, EventEmitter.prototype);
+
 })(
   this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
 );
@@ -44286,8 +44365,6 @@ GrowingPacker.prototype = {
 
     this.domElement = Blotter.CanvasUtils.hiDpiCanvas(0, 0, this.blotter.ratio);
     this.context = this.domElement.getContext("2d");
-
-    _.extendOwn(this, EventEmitter.prototype);
   };
 
   Blotter.RenderScope.prototype = (function () {
@@ -44317,7 +44394,6 @@ GrowingPacker.prototype = {
           w : bounds.w,
           h : bounds.h,
           x : -1 * Math.floor(bounds.x),
-          // ### --- !
           y : -1 * Math.floor(mappingMaterial.height - (bounds.y + bounds.h))
         };
       }
@@ -44414,8 +44490,7 @@ GrowingPacker.prototype = {
     };
   })();
 
-  //EventEmitter.prototype.apply(Blotter.RenderScope.prototype);
-  //_.extend(Blotter.RenderScope.prototype, EventEmitter.prototype);
+  _.extend(Blotter.RenderScope.prototype, EventEmitter.prototype);
 
 })(
   this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
@@ -44446,7 +44521,6 @@ GrowingPacker.prototype = {
 
     return {
 
-// ### - does this need to use ratio too? seems like we may lose some fidelity since we dont. unsure how this even works. GLSL magic i guess.
       build : function (mapping, completion) {
         setImmediate(function() {
           var data = _boundsDataForMapping(mapping),
@@ -44592,7 +44666,6 @@ GrowingPacker.prototype = {
 
     return {
 
-// ### - does this work with no texts? It should return an empty mapping
       build : function (texts, completion) {
         setImmediate(function() {
           var filteredTexts = Blotter.TextUtils.filterTexts(texts),
@@ -44621,7 +44694,6 @@ GrowingPacker.prototype = {
               w : packedSizesObject.w,
               h : packedSizesObject.h,
               x : packedSizesObject.fit.x,
-// ### -- hmmmmm....
               y : packer.root.h - (packedSizesObject.fit.y + packedSizesObject.h)
             };
           }
@@ -44675,13 +44747,11 @@ GrowingPacker.prototype = {
 
         userDefinedUniforms.privateUniformTextureDeclarations += "uniform sampler2D " + uniformTextureName + ";\n";
         userDefinedUniforms.publicUniformDeclarations += glslDataType + " " + uniformName + ";\n";
-        userDefinedUniforms.uniformDefinitions += uniformName + " = " + "texture2D(" + uniformTextureName + " , vec2(textIndex, 0.5))." + glslSwizzle + ";\n";
+        userDefinedUniforms.uniformDefinitions += "   " + uniformName + " = " + "texture2D(" + uniformTextureName + " , vec2(textIndex, 0.5))." + glslSwizzle + ";\n";
 
         return userDefinedUniforms;
       }, userDefinedUniforms);
 
-
-      // ### - inspect this in chrome to see how the formatting is output.
       fragmentSrc = [
 
         "precision highp float;",
@@ -44697,11 +44767,11 @@ GrowingPacker.prototype = {
         "varying vec2 _vTexCoord;",
         "vec4 _textBounds;",
 
-        // Public blotter defined uniforms.
-        "vec2 uResolution;",
-
         // Private versions of use user defined uniforms
         userDefinedUniforms.privateUniformTextureDeclarations,
+
+        // Public blotter defined uniforms.
+        "vec2 uResolution;",
 
         // Public versions of user defined uniforms.
         userDefinedUniforms.publicUniformDeclarations,
@@ -44721,7 +44791,25 @@ GrowingPacker.prototype = {
         "   return texture2D(_uSampler, uv);",
         "}",
 
-      // ### - what other methods ought we expose?
+        "void combineColors( out vec4 adjustedColor, in vec4 bg, in vec4 color ) {",
+        "  float a = color.a;",
+
+        "  float r = (1.0 - a) * bg.r + a * color.r;",
+        "  float g = (1.0 - a) * bg.g + a * color.g;",
+        "  float b = (1.0 - a) * bg.b + a * color.b;",
+
+        "  adjustedColor = vec4(r, g, b, 1.0);",
+        "}",
+
+        "void rgbaFromRgb( out vec4 rgba, in vec3 rgb ) {",
+        "  float a = 1.0 - min(rgb.r, min(rgb.g, rgb.b));",
+
+        "  float r = 1.0 - (1.0 - rgb.r) / a;",
+        "  float g = 1.0 - (1.0 - rgb.g) / a;",
+        "  float b = 1.0 - (1.0 - rgb.b) / a;",
+
+        "  rgba = vec4(r, g, b, a);",
+        "}",
 
         "void mainImage( out vec4 mainImage, in vec2 fragCoord );",
 
@@ -44739,7 +44827,7 @@ GrowingPacker.prototype = {
 
         //  Set "uniform" values visible to user.
         "   uResolution = _textBounds.zw;",
-            userDefinedUniforms.uniformDefinitions,
+        userDefinedUniforms.uniformDefinitions,
 
         //  Set fragment coordinate in respect to position within text bounds.
         "   vec2 fragCoord = gl_FragCoord.xy - _textBounds.xy;",
