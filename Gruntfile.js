@@ -21,13 +21,13 @@ module.exports = function(grunt) {
 
       srcFiles : [
         'src/blotter.js',
-        'src/text.js',
         'src/extras/core/messaging.js',
         'src/extras/core/vendorPrefixes.js',
         'src/extras/objects/modelEventBinding.js',
         'src/extras/canvasUtils.js',
         'src/extras/textUtils.js',
         'src/extras/uniformUtils.js',
+        'src/texts/text.js',
         'src/materials/mapping/mapping.js',
         'src/materials/mapping/mappingMaterial.js',
         'src/materials/material.js',
