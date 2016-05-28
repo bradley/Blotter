@@ -28,7 +28,6 @@
           scope.render();
         }
       }, this));
-      this.trigger("render");
     }
 
     function _update () {

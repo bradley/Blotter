@@ -49,7 +49,6 @@
           scope.render();
         }
       }, this));
-      this.trigger("render");
     }
 
     function _update () {
@@ -1132,6 +1131,7 @@
     this.frameCount = 0;
 
     this.domElement = Blotter.CanvasUtils.hiDpiCanvas(0, 0, this.blotter.ratio);
+    this.domElement.innerHTML = text.value;
     this.context = this.domElement.getContext("2d");
   };
 
@@ -1188,6 +1188,8 @@
           bounds.h / this.blotter.ratio,
           this.blotter.ratio
         );
+
+        this.domElement.innerHTML = this.text.value;
 
         this.material.uniforms = mappingMaterial.uniformsInterfaceForText(this.text);
         this.material.mainImage = mappingMaterial.mainImage;

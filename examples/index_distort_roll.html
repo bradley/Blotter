@@ -15,13 +15,14 @@
         padding: 0;
         margin: 0;
         vertical-align: middle;
+        margin-top: -3px;
       }
     </style>
 
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-beta1/jquery.js"></script>
     <script type="text/javascript" src="../build/blotter.js"></script>
   </head>
-    <p>An <span id="glitch-target"></span> is a set of limitations.</p>
+    <p>An <span id="glitch-target">observation</span> is a set of limitations.</p>
     <script>
       $(document).ready(function() {
 
@@ -39,26 +40,27 @@
         var text = new Blotter.Text("observation", styleProperties);
 
         var material = new Blotter.RollDistortMaterial();
-
+_.delay(function () {
         var blotter = new Blotter(material, {
           texts : [text]
         });
 
         var startTime = new Date().getTime(),
             myScope = blotter.forText(text);
-
-        myScope.appendTo(document.getElementById("glitch-target"));
+        
  
         blotter.on("ready", function () {
+          $("#glitch-target").empty();
+          myScope.appendTo(document.getElementById("glitch-target"));
           myScope.material.uniforms.uDistortion.value = 3.0;
           myScope.material.uniforms.uDistortion2.value = 5.0;
         });
 
-        blotter.on("render", function () {
+        myScope.on("render", function () {
           var time = (new Date().getTime() - startTime) / 1000;
           myScope.material.uniforms.uTime.value = time;
         });
-
+}, 2000);
       });
     </script>
   </body>
