@@ -73,7 +73,7 @@
           var text = this.texts[i],
               bounds = this._textBounds[text.id],
               yOffset = _getYOffset.call(this, text.properties.size, text.properties.leading) / 2, // divide yOffset by 2 to accomodate `middle` textBaseline
-              adjustedY = bounds.y + text.properties.paddingTop + yOffset;
+              adjustedY = bounds.y + text.properties.paddingBottom + yOffset;
 
           ctx.font = text.properties.style +
                " " + text.properties.weight +
