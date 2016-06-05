@@ -4,51 +4,52 @@ module.exports = function(grunt) {
 
   // Project configuration
   grunt.initConfig({
-    pkg: grunt.file.readJSON('package.json'),
+    pkg: grunt.file.readJSON("package.json"),
     meta: {
 
-      licenseFile : 'license.txt',
+      licenseFile : "license.txt",
 
       depFiles : [
-        'third_party/underscore/underscore.js',
-        'third_party/three/three.js',
-        'third_party/three/Detector.js',
-        'third_party/set_immediate/setimmediate.js',
-        'third_party/event_emitter/EventEmitter.js',
-        'third_party/packer/packer.growing.js',
-        'third_party/request_animation_frame/requestAnimationFrame.js'
+        "third_party/underscore/underscore.js",
+        "third_party/three/three.js",
+        "third_party/three/Detector.js",
+        "third_party/set_immediate/setimmediate.js",
+        "third_party/event_emitter/EventEmitter.js",
+        "third_party/packer/packer.growing.js",
+        "third_party/request_animation_frame/requestAnimationFrame.js"
       ],
 
       srcFiles : [
-        'src/blotter.js',
-        'src/extras/core/messaging.js',
-        'src/extras/core/vendorPrefixes.js',
-        'src/extras/objects/modelEventBinding.js',
-        'src/extras/canvasUtils.js',
-        'src/extras/textUtils.js',
-        'src/extras/uniformUtils.js',
-        'src/texts/text.js',
-        'src/mapping/mapping.js',
-        'src/mapping/mappingMaterial.js',
-        'src/materials/material.js',
-        'src/materials/shaderMaterial.js',
-        'src/rendering/renderer.js',
-        'src/rendering/renderScope.js',
-        'src/builders/textures/boundsDataTextureBuilder.js',
-        'src/builders/textures/indicesDataTextureBuilder.js',
-        'src/builders/textures/textTextureBuilder.js',
-        'src/builders/mappingBuilder.js',
-        'src/builders/mappingMaterialBuilder.js',
+        "src/blotter.js",
+        "src/extras/core/messaging.js",
+        "src/extras/core/vendorPrefixes.js",
+        "src/extras/objects/modelEventBinding.js",
+        "src/extras/canvasUtils.js",
+        "src/extras/textUtils.js",
+        "src/extras/uniformUtils.js",
+        "src/texts/text.js",
+        "src/mapping/mapping.js",
+        "src/mapping/mappingMaterial.js",
+        "src/materials/material.js",
+        "src/materials/shaderMaterial.js",
+        "src/rendering/renderer.js",
+        "src/rendering/renderScope.js",
+        "src/builders/textures/boundsDataTextureBuilder.js",
+        "src/builders/textures/indicesDataTextureBuilder.js",
+        "src/builders/textures/textTextureBuilder.js",
+        "src/builders/mappingBuilder.js",
+        "src/builders/mappingMaterialBuilder.js",
 
-        'src/materials/effects/bubbleShiftMaterial.js',
-        'src/materials/effects/rollDistortMaterial.js',
+        "src/materials/effects/bubbleSplitMaterial.js",
+        "src/materials/effects/rollDistortMaterial.js",
+        "src/materials/effects/rgbSplitMaterial.js"
       ]
     },
 
     watch: {
       scripts: {
-        files: ['src/**/*.js'],
-        tasks: ['jshint', 'concat']
+        files: ["src/**/*.js"],
+        tasks: ["jshint", "concat"]
       }
     },
 
@@ -56,45 +57,45 @@ module.exports = function(grunt) {
       options: {
         jshintrc: true,
       },
-      all: ['Gruntfile.js', 'src/**/*.js']
+      all: ["Gruntfile.js", "src/**/*.js"]
     },
 
     concat: {
       options: {
-        separator: '\n'
+        separator: "\n"
       },
       clean : {
         src: [
           "<%= meta.licenseFile %>",
           "<%= meta.srcFiles %>"
         ],
-        dest: 'build/blotter.clean.js'
+        dest: "build/blotter.clean.js"
       },
       dist: {
         src: [
-          '<%= meta.licenseFile %>',
-          '<%= meta.depFiles %>',
-          '<%= meta.srcFiles %>'
+          "<%= meta.licenseFile %>",
+          "<%= meta.depFiles %>",
+          "<%= meta.srcFiles %>"
         ],
-        dest: 'build/<%= pkg.name %>.js'
+        dest: "build/<%= pkg.name %>.js"
       }
     },
 
     uglify: {
        release: {
-         src: ['build/blotter.js'],
-        dest: 'build/blotter.min.js'
+         src: ["build/blotter.js"],
+        dest: "build/blotter.min.js"
        }
     }
   });
 
   // Load tasks
-  grunt.loadNpmTasks('grunt-contrib-watch');
-  grunt.loadNpmTasks('grunt-contrib-uglify');
-  grunt.loadNpmTasks('grunt-contrib-jshint');
-  grunt.loadNpmTasks('grunt-contrib-concat');
-  grunt.loadNpmTasks('grunt-closure-tools');
+  grunt.loadNpmTasks("grunt-contrib-watch");
+  grunt.loadNpmTasks("grunt-contrib-uglify");
+  grunt.loadNpmTasks("grunt-contrib-jshint");
+  grunt.loadNpmTasks("grunt-contrib-concat");
+  grunt.loadNpmTasks("grunt-closure-tools");
 
   // Default task
-  grunt.registerTask('default', ['jshint' , 'concat', 'uglify']);
+  grunt.registerTask("default", ["jshint" , "concat", "uglify"]);
 };

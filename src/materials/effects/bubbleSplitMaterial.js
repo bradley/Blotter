@@ -1,12 +1,12 @@
 (function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
 
-  Blotter.BubbleShiftMaterial = function() {
+  Blotter.BubbleSplitMaterial = function() {
     Blotter.Material.apply(this, arguments);
   };
 
-  Blotter.BubbleShiftMaterial.prototype = Object.create(Blotter.Material.prototype);
+  Blotter.BubbleSplitMaterial.prototype = Object.create(Blotter.Material.prototype);
 
-  _.extend(Blotter.BubbleShiftMaterial.prototype, (function () {
+  _.extend(Blotter.BubbleSplitMaterial.prototype, (function () {
 
     function _mainImageSrc () {
       var mainImageSrc = [
@@ -33,7 +33,7 @@
 
         "   vec2 offsetUV = uCenterPoint + (d * r);",
 
-        "   // RGB shift",
+        "   // RGB split",
         "   vec2 offset = vec2(0.0);",
         "   if (r < 1.0) {",
         "     float amount = 0.012;",
@@ -58,7 +58,7 @@
 
     return {
 
-      constructor : Blotter.BubbleShiftMaterial,
+      constructor : Blotter.BubbleSplitMaterial,
 
       init : function () {
         this.mainImage = _mainImageSrc();

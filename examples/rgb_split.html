@@ -36,25 +36,17 @@
 
         var text = new Blotter.Text("observation", styleProperties);
 
-        var material = new Blotter.RollDistortMaterial();
-        material.uniforms.uDistortion.value = 3.0;
-        material.uniforms.uDistortion2.value = 5.0;
+        var material = new Blotter.RGBSplitMaterial();
 
         var blotter = new Blotter(material, {
           texts : text
         });
 
-        var startTime = new Date().getTime(),
-            myScope = blotter.forText(text);
+        var myScope = blotter.forText(text);
 
         blotter.on("ready", function () {
           $("#glitch-target").empty();
           myScope.appendTo(document.getElementById("glitch-target"));
-        });
-
-        myScope.on("render", function () {
-          var time = (new Date().getTime() - startTime) / 1000;
-          myScope.material.uniforms.uTime.value = time;
         });
       });
     </script>

@@ -44950,13 +44950,13 @@ GrowingPacker.prototype = {
 
 (function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
 
-  Blotter.BubbleShiftMaterial = function() {
+  Blotter.BubbleSplitMaterial = function() {
     Blotter.Material.apply(this, arguments);
   };
 
-  Blotter.BubbleShiftMaterial.prototype = Object.create(Blotter.Material.prototype);
+  Blotter.BubbleSplitMaterial.prototype = Object.create(Blotter.Material.prototype);
 
-  _.extend(Blotter.BubbleShiftMaterial.prototype, (function () {
+  _.extend(Blotter.BubbleSplitMaterial.prototype, (function () {
 
     function _mainImageSrc () {
       var mainImageSrc = [
@@ -44983,7 +44983,7 @@ GrowingPacker.prototype = {
 
         "   vec2 offsetUV = uCenterPoint + (d * r);",
 
-        "   // RGB shift",
+        "   // RGB split",
         "   vec2 offset = vec2(0.0);",
         "   if (r < 1.0) {",
         "     float amount = 0.012;",
@@ -45008,7 +45008,7 @@ GrowingPacker.prototype = {
 
     return {
 
-      constructor : Blotter.BubbleShiftMaterial,
+      constructor : Blotter.BubbleSplitMaterial,
 
       init : function () {
         this.mainImage = _mainImageSrc();
@@ -45118,6 +45118,55 @@ GrowingPacker.prototype = {
           uDistortion2 : { type : "1f", value : 0.0 },
           uSpeed : { type : "1f", value : 0.1 }
         };
+      }
+    };
+
+  })());
+
+})(
+  this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
+);
+
+(function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
+
+  Blotter.RGBSplitMaterial = function() {
+    Blotter.Material.apply(this, arguments);
+  };
+
+  Blotter.RGBSplitMaterial.prototype = Object.create(Blotter.Material.prototype);
+
+  _.extend(Blotter.RGBSplitMaterial.prototype, (function () {
+
+    function _mainImageSrc () {
+      var mainImageSrc = [
+        "void mainImage( out vec4 mainImage, in vec2 fragCoord ) {",
+        "   vec2 p = fragCoord / uResolution;",
+
+        "   float amount = 10.0;",
+        "   float angle = 0.25;",
+        "   vec2 offset = (amount / uResolution) * vec2(cos(angle), sin(angle));",
+
+        "   vec4 cr = textTexture(p + offset);",
+        "   vec4 cga = textTexture(p);",
+        "   vec4 cb = textTexture(p - offset);",
+
+        "   combineColors(cr, vec4(1.0, 1.0, 1.0, 1.0), cr);",
+        "   combineColors(cga, vec4(1.0, 1.0, 1.0, 1.0), cga);",
+        "   combineColors(cb, vec4(1.0, 1.0, 1.0, 1.0), cb);",
+
+        "   rgbaFromRgb(mainImage, vec3(cr.r, cga.g, cb.b));",
+        "}"
+      ].join("\n");
+
+      return mainImageSrc;
+    }
+
+    return {
+
+      constructor : Blotter.RGBSplitMaterial,
+
+      init : function () {
+        this.mainImage = _mainImageSrc();
       }
     };
 
