@@ -1,1 +1,236 @@
-hello blotter
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=400">
+    <meta name="description" content="DESCRIPTION HERE">
+    <meta name="keywords" content="blotter.js, blotter, javascript, library, graphics, text, rendering, effects, styles, web, html5">
+    <meta name="author" content="bradley">
+    <link rel="image_src" href="./images/logo.gif" />
+    <title>Blotter.js</title>
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Ubuntu+Mono:400,400italic">
+    <link rel="stylesheet" type="text/css" href="./styles/main.css">
+    <link rel="shortcut icon" type="image/gif" href="./images/favicon.gif">
+    <script src="./third_party/jquery.js"></script>
+    <script src="./third_party/blotter.js"></script>
+    <script src="./third_party/codemirror.js"></script>
+    <script>
+
+      $(function() {
+
+        var totalColors = 5;
+        var chosen = [];
+        var colors = [
+          'red',
+          'orange',
+          'green',
+          'blue',
+          'purple'
+        ];
+
+        var $examples = $('.examples');
+        var $projects = $('.projects');
+
+        $.getJSON('./data/examples.json', function(resp) {
+
+          var html = resp.template;
+
+          $examples.html(
+            _.map(resp.items.splice(0, 6), function(data, i) {
+              data.href = './' + data.href;
+              data.img = './' + data.img;
+              return _.template(html)(data);
+            }).join('\n')
+          );
+
+          $examples.children().each(function(i, child) {
+            var index = Math.floor(Math.random() * colors.length);
+            var color = colors.splice(index, 1);
+            child.className = color;
+            chosen.push(color);
+            if (chosen.length >= totalColors) {
+              colors = chosen.slice(0);
+              chosen.length = 0;
+            }
+          });
+
+        });
+
+        $.getJSON('./data/projects.json', function(resp) {
+
+          var html = resp.template;
+
+          $projects.html(
+            _.map(resp.items.splice(0, 6), function(data, i) {
+              data.img = './' + data.img;
+              return _.template(html)(data);
+            }).join('\n')
+          );
+
+          $projects.children().each(function(i, child) {
+            var index = Math.floor(Math.random() * colors.length);
+            var color = colors.splice(index, 1);
+            child.className = color;
+            chosen.push(color);
+            if (chosen.length >= totalColors) {
+              colors = chosen.slice(0);
+              chosen.length = 0;
+            }
+          });
+
+        });
+
+      });
+
+      function addEditor(selector) {
+
+        _.delay(function() {
+
+          var parent = $(selector);
+          var code = parent.find('script').html();
+          var domElement = parent.find('svg');
+          var mirror = CodeMirror(parent[0], {
+            value: code,
+            mode: "javascript",
+            tabSize: 2,
+            lineWrapping: true,
+            lineNumbers: true
+          });
+
+          var container = document.createElement('div');
+          container.classList.add('two-container');
+
+          domElement.appendTo(container);
+          parent.append(container);
+
+          var doc = mirror.getDoc();
+
+          var update = _.debounce(function() {
+            code = doc.getValue();
+            try {
+              domElement.remove();
+              eval(code); // yikes!
+              domElement = parent.find('svg');
+            } catch (e) {
+              console.log(e);
+            }
+          }, 1000);
+
+          mirror.on('change', update);
+
+        }, 100);
+
+      }
+
+    </script>
+  </head>
+  <body>
+    <div id="content">
+      <div id="introduction">
+        <script src="./src/logo.js"></script>
+      </div>
+      <p>
+        <strong>Blotter.js</strong> is THIS IS THE DESCRIPTION (some <code>code</code> tags would be nice).
+      </p>
+      <div class="horizon"></div>
+      <ul id="toc">
+        <li><a href="#introduction">Introduction</a></li>
+        <li><a href="#download">Download</a></li>
+        <li><a href="#overview">Overview</a></li>
+        <li><a href="#basic-usage">Basic Usage</a></li>
+        <li><a href="./examples/">Examples</a></li>
+        <li><a href="./projects/">Projects</a></li>
+        <li><a href="#documentation">Documentation</a></li>
+        <li><a href="http://github.com/bradley/blotter" target="_blank">Source</a></li>
+        <li><a href="#credits">Credits</a></li>
+      </ul>
+      <div id="download" class="horizon"></div>
+      <h2>Download</h2>
+      <p class="download">
+        <a href="https://raw.github.com/bradley/blotter/master/build/two.js">Development Version</a>
+      </p>
+      <p class="download">
+        <a href="https://raw.github.com/bradley/blotter/master/build/two.min.js">Production Version</a>
+      </p>
+      <p class="download nota-bene">
+        Blotter requires <a href="http://underscorejs.org">Underscore.js</a> and <a href="http://threejs.org/">Three.js</a>. If you&apos;re already loading these files elsewhere then you can build the project yourself and get the file size even smaller. For more information on <em>custom builds</em> check out the source on <a href="http://github.com/bradley/blotter#custom-build">github</a>.
+      </p>
+      <div id="overview" class="horizon"></div>
+      <h2>Overview</h2>
+      <ul>
+        <li>
+          <h3>GLSL Backed Text Effects with Ease</h3>
+          <p>
+            Blotter provides a simple interface for building and manipulating text effects that utilize GLSL shaders without requiring that the designer know GLSL. Blotter has a growing library of configurable effects while also providing ways for student or experienced GLSL programmers to quickly bootstrap new ones.
+          </p>
+        </li>
+        <li>
+          <h3>Atlasing Effects in a Single WebGL Back Buffer</h3>
+          <p>
+            Blotter bypasses the limit browsers place on the number of live WebGL contexts in the document by using an atlas. This atlas maps elements that share the same effects so that they may be rendered together in a single WebGL context. The resulting image data is then output to individual 2d contexts for each element.
+          </p>
+        </li>
+        <li>
+          <h3>Animation Loop</h3>
+          <p>
+            Rather than executing on a time based interval, Blotter's internal animation loop uses `requestAnimationFrame` to match the browser's display refresh rate and pause when the user navigates to other browser tabs; improving performance and preserving the battery life on the user's device.
+          </p>
+        </li>
+        <li>
+          <h3>Event Based Callbacks</h3>
+          <p>
+            Blotter emits events to provide visibility into its lifecycle. Similarly, elements created for texts rendered through Blotter emit their own lifecycle events in addition to those regarding how users interact with these elements, such as a subset of the standard `MouseEvent` events. Any event may be hooked into and used for making updates to, for example, how your Blotter objects are being rendered.
+          </p>
+        </li>
+        <li>
+          <h3>What Blotter Isn't</h3>
+          <p>
+            Any texts you pass to Blotter can be individually configured using familiar style properties. You can use custom font faces through the `@font-face` spec. However, Blotter ultimately renders the texts passed to it into 2d canvas elements. This means rendered text won't be selectable. Blotter is great for elements like titles, headings, and texts used for graphic purposes. It's not recommended that Blotter be used for bodies of text or think pieces.
+          </p>
+      </ul>
+      <div id="basic-usage" class="horizon"></div>
+      <h2>Basic Usage</h2>
+      <p>
+        In order to start any of these demos you&apos;ll want to <a href="#download">download</a> two.js and add it to your <code>&lt;html&gt;</code> document. Once downloaded add this tag to the <code>&lt;head&gt;</code> of your document: <code>&lt;script src=&quot;./path-to-two/two.js&quot;&gt;&lt;/script&gt;</code>. When you visit the page, you should be able to open up the <a href="https://developers.google.com/chrome-developer-tools/docs/console#opening_the_console">console</a> and type <code>Two</code>. If this returns a function then you&apos;re ready to begin!
+      </p>
+      <br />
+      <div id="draw-shapes" class="basic-usage">
+        <h3>Drawing Your First Shapes</h3>
+        <p>
+          Before we get into all the fancy animating it&apos;s good to get a feel for how to make shapes in two.js. In order to do this we need to have an instance of two. This sets up a dom element that contains either an <code>svg</code> or <code>canvas</code> element to add to the webpage. The two object has a <code>scene</code> which holds all shapes as well as methods for creating shapes.
+        </p>
+        <p class="nota-bene">
+          For a list of all properties and construction parameters check out the <a href="#documentation">documentation</a>.
+        </p>
+        <br />
+        <script>
+          var styleProperties = {
+            family: "Charcoal, sans-serif",
+            size: 22,
+            leading: 1.5,
+            fill: "#0d0f17"
+          };
+          var text = new Blotter.Text("observation", styleProperties);
+          var material = new Blotter.RGBSplitMaterial();
+          var blotter = new Blotter(material, {
+            texts : text
+          });
+          var myScope = blotter.forText(text);
+
+          blotter.on("ready", function () {
+            $("#glitch-target").empty();
+            myScope.appendTo(document.getElementById("glitch-target"));
+          });
+        </script>
+        <script>
+          $(function() {
+            addEditor('#draw-shapes');
+          });
+        </script>
+      </div>
+    </div>
+    <script>
+      // Analytics code here
+    </script>
+  </body>
+</html>
