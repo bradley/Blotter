@@ -1,5 +1,5 @@
-@import 'variables';
-@import 'codemirror';
+@import "variables";
+@import "codemirror_custom";
 
 * {
   margin: 0;
@@ -19,15 +19,19 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'proxima-nova', helvetica, sans-serif;
+  font-family: "utopia-std", sans-serif;
   vertical-align: top;
   color: tint($black, 20%);
+  line-height: 1.5;
+  margin-bottom: $line-height;
+  font-weight: 400;
+  letter-spacing: 0.015em;
+  word-spacing: 0.15em;
 }
 
 /* Used for main section headings. */
 h2 {
   font-size: $font-size * 2;
-  margin-bottom: $line-height / 2;
 
   @media screen and (max-width: $min-screen-width),
   screen and (max-device-width: $min-device-width) {
@@ -166,10 +170,10 @@ li.horizon {
 
 
 .basic-usage {
-  svg {
-    border: 1px solid shade($grey, 10%);
+  canvas {
+    /* border: 1px solid $grey; */
   }
-  .two-container {
+  .blotter-container {
     margin-top: $line-height;
   }
 }
@@ -178,8 +182,8 @@ li.horizon {
   margin-top: $line-height;
 }
 
-#draw-shapes > .CodeMirror {
-  height: 504px;
+#draw-text > .CodeMirror {
+  height: 336px;
 }
 #draw-group > .CodeMirror {
   height: 528px;

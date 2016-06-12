@@ -1,0 +1,72 @@
+@import "variables";
+@import "codemirror";
+
+.CodeMirror {
+  font-family: "Ubuntu Mono", monospace;
+  padding-right: 8px;
+}
+
+.CodeMirror-lines {
+  padding: 0; /* Vertical padding around content */
+}
+.CodeMirror pre {
+  padding: 0 0 0 8px; /* Horizontal padding of content */
+}
+
+.CodeMirror-gutters {
+  border-right: 1px solid $grey;
+  background-color: #f7f7f7;
+}
+.CodeMirror-linenumbers {}
+.CodeMirror-linenumber {
+  padding: 0 8px;
+  min-width: 20px;
+  text-align: right;
+  color: #999;
+  font-size: 75%;
+  line-height: 24px;
+}
+
+.CodeMirror-lines > div > div > div {
+  &:nth-child(odd) .CodeMirror-linenumber {
+    /* background: red; */
+  }
+}
+
+@media screen and (min-width: $min-screen-width) {
+  .CodeMirror {
+    border-right: 1px solid $grey;
+  }
+}
+
+@media screen and (max-width: $min-screen-width) {
+  .CodeMirror {
+    border-left: em(2) solid $grey;
+  }
+
+  .CodeMirror-gutters,
+  .CodeMirror-linenumbers,
+  .CodeMirror-linenumber {
+    display: none;
+  }
+}
+
+.cm-s-default .cm-keyword {color: $turquoise;}
+.cm-s-default .cm-number {color: $red;}
+.cm-s-default .cm-def {color: $black;}
+.cm-s-default .cm-variable {color: $black;}
+.cm-s-default .cm-variable-2 {color: $purple;}
+.cm-s-default .cm-property {color: $fuscia;}
+.cm-s-default .cm-variable + .cm-property {color: $purple}
+.cm-s-default .cm-comment {color: #c7c7c7; font-style: italic;}
+.cm-s-default .cm-string {color: $dark-soft-blue;}
+.cm-s-default .cm-string-2 {color: $dark-soft-blue;}
+
+.CodeMirror pre {
+  font-size: $font-size;
+  line-height: $line-height;
+  color: $violet;
+}
+
+.CodeMirror-selected { background: $yellow; }
+.CodeMirror-focused .CodeMirror-selected { background: $yellow; }
