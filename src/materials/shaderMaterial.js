@@ -8,7 +8,6 @@
     });
 
     this.mainImage = mainImage;
-    this.uniforms = options.uniforms;
   };
 
   Blotter.ShaderMaterial.prototype = Object.create(Blotter.Material.prototype);
