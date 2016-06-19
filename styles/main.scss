@@ -182,12 +182,76 @@ li.horizon {
   margin-top: $line-height;
 }
 
+
+
+
+
+
+
+
+
+
+.tabbed-editor {
+  max-width: 750px;
+  float: none;
+  list-style: none;
+  padding: 0;
+
+  .editable-content:after {
+    content: '';
+    display: table;
+    clear: both;
+  }
+
+  input[type=radio] {
+    display:none;
+  }
+
+  label {
+    display: block;
+    float: left;
+
+    &:hover span {
+      color: black;
+    }
+
+    span {
+      cursor: pointer;
+      color: #ccc;
+    }
+  }
+
+  .tab-content {
+    width: 100%;
+    float: left;
+    box-sizing: border-box;
+    background-color:#ffffff;
+  }
+
+  .tab:checked + span {
+    background: #FFF;
+    color: black;
+  }
+
+  .section-label {
+    padding: 10px;
+    display: inline-block;
+    font-size: 14px;
+    font-weight: normal;
+    text-decoration: none;
+    text-align: center;
+    line-height: 1.5;
+  }
+}
+
+/*
 #draw-text > .CodeMirror {
   height: 336px;
 }
 #draw-group > .CodeMirror {
   height: 528px;
 }
+*/
 
 /*
 .examples,

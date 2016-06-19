@@ -86,47 +86,76 @@
 
         });
 
-      });
 
-      function addEditor(selector) {
+        (function ($, selector) {
 
-        _.delay(function() {
+          $.fn.makeEditor = function() {
+            var jsTab = this.find(".js-tab");
+            var htmlTab = this.find(".html-tab");
+            var outputEl = this.find(".output");
+            var jsCode = this.find("script.js-code").html();
+            var htmlCode = outputEl.html();
+            var jsContent = this.find(".js-content");
+            var htmlContent = this.find(".html-content");
 
-          var parent = $(selector);
-          var code = parent.find("script").html();
-          var domElement = parent.find("canvas");
-          var mirror = CodeMirror(parent[0], {
-            value: code,
-            mode: "javascript",
-            tabSize: 2,
-            lineWrapping: true,
-            lineNumbers: true
-          });
+            var jsMirror = CodeMirror(jsContent[0], {
+              value: jsCode,
+              mode: "javascript",
+              tabSize: 2,
+              lineWrapping: true,
+              lineNumbers: true
+            });
 
-          var container = document.createElement("div");
-          container.classList.add("blotter-container");
+            var htmlMirror = CodeMirror(htmlContent[0], {
+              value: htmlCode,
+              mode: "html",
+              tabSize: 2,
+              lineWrapping: true,
+              lineNumbers: true
+            });
 
-          domElement.appendTo(container);
-          parent.append(container);
+            var jsDoc = jsMirror.getDoc();
+            var htmlDoc = htmlMirror.getDoc();
 
-          var doc = mirror.getDoc();
+            var update = _.debounce(function() {
+              htmlCode = htmlDoc.getValue();
+              try {
+                outputEl.html(unescape(htmlCode));
+              } catch (e) {
+                console.log(e);
+              }
 
-          var update = _.debounce(function() {
-            code = doc.getValue();
-            try {
-              domElement.remove();
-              eval(code); // yikes!
-              domElement = parent.find("canvas");
-            } catch (e) {
-              console.log(e);
+              jsCode = jsDoc.getValue();
+              try {
+                eval(jsCode); // yikes!
+              } catch (e) {
+                console.log(e);
+              }
+            }, 1000);
+            htmlMirror.on('change', update);
+            jsMirror.on('change', update);
+
+            var showJSContent = function () {
+              htmlContent.hide();
+              jsContent.show();
             }
-          }, 1000);
+            jsTab.on("click", showJSContent);
 
-          mirror.on('change', update);
+            var showHTMLContent = function () {
+              jsContent.hide();
+              htmlContent.show();
+            }
+            htmlTab.on("click", showHTMLContent);
 
-        }, 100);
+            update();
+            showJSContent();
+            return this;
+          };
 
-      }
+          $(selector).makeEditor();
+        }(jQuery, ".tabbed-editor"));
+
+      });
 
     </script>
   </head>
@@ -194,13 +223,29 @@
         To get started with Blotter, <a href="#download">download</a> blotter.js and include it in the <code>head</code> of your <code>html</code> document.
       </p>
       <br />
-      <div id="draw-text" class="basic-usage">
+      <div class="basic-usage">
         <h3>Drawing Text</h3>
         <p>
           Before adding any effects, you should learn how to draw plain, boring old text using Blotter. To do so, you'll need at least one Text, a Material, and an instance of Blotter.
         </p>
         <br />
-        <script>var text = new Blotter.Text("observation", {
+
+        <div class="tabbed-editor">
+          <div class="editable-content">
+            <label>
+              <input type="radio" name="tabs" class="tab js-tab" checked="">
+              <span class="section-label">Javascript</span>
+            </label>
+            <label>
+              <input type="radio" name="tabs" class="tab html-tab">
+              <span class="section-label">HTML</span>
+            </label>
+
+            <div class="tab-content js-content"></div>
+            <div class="tab-content html-content"></div>
+          </div>
+
+          <script class="js-code"  type="application/json">var text = new Blotter.Text("observation", {
   family : "sans-serif",
   size : 22,
   fill : "#0d0f17"
@@ -214,11 +259,13 @@ var elem = document.getElementById("draw-text");
 var myScope = blotter.forText(text);
 
 myScope.appendTo(elem);</script>
-        <script>
-          $(function() {
-            addEditor('#draw-text');
-          });
-        </script>
+
+          <div class="output-container">
+            <span class="section-label">Output</span>
+            <div class="output"><div id="draw-text"></div></div>
+          </div>
+
+        </div>
       </div>
     </div>
     <script>

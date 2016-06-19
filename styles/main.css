@@ -504,12 +504,50 @@ li.horizon {
 .basic-usage + .basic-usage {
   margin-top: 24px; }
 
+.tabbed-editor {
+  max-width: 750px;
+  float: none;
+  list-style: none;
+  padding: 0; }
+  .tabbed-editor .editable-content:after {
+    content: '';
+    display: table;
+    clear: both; }
+  .tabbed-editor input[type=radio] {
+    display: none; }
+  .tabbed-editor label {
+    display: block;
+    float: left; }
+    .tabbed-editor label:hover span {
+      color: black; }
+    .tabbed-editor label span {
+      cursor: pointer;
+      color: #ccc; }
+  .tabbed-editor .tab-content {
+    width: 100%;
+    float: left;
+    box-sizing: border-box;
+    background-color: #ffffff; }
+  .tabbed-editor .tab:checked + span {
+    background: #FFF;
+    color: black; }
+  .tabbed-editor .section-label {
+    padding: 10px;
+    display: inline-block;
+    font-size: 14px;
+    font-weight: normal;
+    text-decoration: none;
+    text-align: center;
+    line-height: 1.5; }
+
+/*
 #draw-text > .CodeMirror {
-  height: 336px; }
-
+  height: 336px;
+}
 #draw-group > .CodeMirror {
-  height: 528px; }
-
+  height: 528px;
+}
+*/
 /*
 .examples,
 .projects {
