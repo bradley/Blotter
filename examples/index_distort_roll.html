@@ -6,8 +6,8 @@
     <style type="text/css">
       body {
         padding: 20px;
-        font-family: Charcoal, sans-serif;
-        font-size: 22px;
+        font-family: serif;
+        font-size: 48px;
         line-height: 1.5;
         color: #0d0f17;
       }
@@ -28,17 +28,16 @@
       $(document).ready(function() {
 
         var styleProperties = {
-          family: "Charcoal, sans-serif",
-          size: 22,
-          leading: 1.5,
+          family: "serif",
+          size: 48,
           fill: "#0d0f17"
         };
 
         var text = new Blotter.Text("observation", styleProperties);
 
-        var material = new Blotter.RollDistortMaterial();
-        material.uniforms.uDistortion.value = 3.0;
-        material.uniforms.uDistortion2.value = 5.0;
+        var material = new Blotter.Material();
+        //material.uniforms.uDistortion.value = 3.0;
+        //material.uniforms.uDistortion2.value = 5.0;
 
         var blotter = new Blotter(material, {
           texts : text
@@ -48,13 +47,15 @@
             myScope = blotter.forText(text);
 
         blotter.on("ready", function () {
+          _.delay(function () {
           $("#glitch-target").empty();
           myScope.appendTo(document.getElementById("glitch-target"));
+        }, 2000);
         });
 
         myScope.on("render", function () {
           var time = (new Date().getTime() - startTime) / 1000;
-          myScope.material.uniforms.uTime.value = time;
+          //myScope.material.uniforms.uTime.value = time;
         });
       });
     </script>

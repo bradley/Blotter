@@ -667,13 +667,13 @@
 
   Blotter.Mapping.prototype = (function () {
 
-    function _getYOffset (size, lineHeight) {
+    function _getLineHeightPixels (size, lineHeight) {
       lineHeight = lineHeight || Blotter.TextUtils.ensurePropertyValues().leading;
       if (!isNaN(lineHeight)) {
         lineHeight = size * lineHeight;
-      } else if (lineHeight.toString().indexOf('px') !== -1) {
+      } else if (lineHeight.toString().indexOf("px") !== -1) {
         lineHeight = parseInt(lineHeight);
-      } else if (lineHeight.toString().indexOf('%') !== -1) {
+      } else if (lineHeight.toString().indexOf("%") !== -1) {
         lineHeight = (parseInt(lineHeight) / 100) * size;
       }
 
@@ -719,38 +719,48 @@
 
       toCanvas : function () {
         var canvas = Blotter.CanvasUtils.hiDpiCanvas(this._width, this._height, this._ratio),
-            ctx = canvas.getContext("2d", { alpha: false });
+            ctx = canvas.getContext("2d", { alpha: false }),
+            img = new Image();
 
         ctx.textBaseline = "middle";
 
         for (var i = 0; i < this.texts.length; i++) {
           var text = this.texts[i],
               bounds = this._textBounds[text.id],
-              yOffset = _getYOffset.call(this, text.properties.size, text.properties.leading) / 2, // divide yOffset by 2 to accomodate `middle` textBaseline
-              adjustedY = bounds.y + text.properties.paddingBottom + yOffset;
+              yOffset = (_getLineHeightPixels.call(this, text.properties.size, text.properties.leading) / 2);// * -1;
 
           ctx.font = text.properties.style +
                " " + text.properties.weight +
                " " + text.properties.size + "px" +
                " " + text.properties.family;
+
           ctx.save();
-          ctx.translate(bounds.x + text.properties.paddingLeft, adjustedY);
+          ctx.translate(bounds.x + text.properties.paddingLeft, bounds.y + text.properties.paddingTop);
           // Flip Y. Ultimately, webgl context will be output flipped vertically onto 2d contexts.
-          ctx.scale(1, -1);
+          //ctx.scale(1, -1);
           ctx.fillStyle = text.properties.fill;
           ctx.fillText(
             text.value,
             0,
-            0
+            yOffset
           );
 
           ctx.restore();
         }
 
+        img.src = canvas.toDataURL("image/png");
+
+        ctx.save();
+        ctx.scale(1, -1);
+        ctx.clearRect(0, this._height * -1, this._width, this._height);
+        ctx.drawImage(img, 0, this._height * -1, this._width, this._height);
+        ctx.restore();
+
         return canvas;
       },
 
       toDataURL : function () {
+        window.open(this.toCanvas().toDataURL());
         return this.toCanvas().toDataURL();
       }
     };
