@@ -48,10 +48,7 @@
             myScope = blotter.forText(text);
 
         blotter.on("ready", function () {
-          _.delay(function () {
-          $("#glitch-target").empty();
-          myScope.appendTo(document.getElementById("glitch-target"));
-        }, 2000);
+          $("#glitch-target").html(myScope.domElement)
         });
 
         myScope.on("render", function () {
