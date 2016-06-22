@@ -43883,7 +43883,7 @@ GrowingPacker.prototype = {
         for (var i = 0; i < this.texts.length; i++) {
           var text = this.texts[i],
               bounds = this._textBounds[text.id],
-              yOffset = (_getLineHeightPixels.call(this, text.properties.size, text.properties.leading) / 2);// * -1;
+              yOffset = (_getLineHeightPixels.call(this, text.properties.size, text.properties.leading) / 2);
 
           ctx.font = text.properties.style +
                " " + text.properties.weight +
@@ -43891,9 +43891,8 @@ GrowingPacker.prototype = {
                " " + text.properties.family;
 
           ctx.save();
-          ctx.translate(bounds.x + text.properties.paddingLeft, bounds.y + text.properties.paddingTop);
-          // Flip Y. Ultimately, webgl context will be output flipped vertically onto 2d contexts.
-          //ctx.scale(1, -1);
+
+          ctx.translate(bounds.x + text.properties.paddingLeft, (this._height - (bounds.y + bounds.h)) + text.properties.paddingTop);
           ctx.fillStyle = text.properties.fill;
           ctx.fillText(
             text.value,
@@ -43916,7 +43915,6 @@ GrowingPacker.prototype = {
       },
 
       toDataURL : function () {
-        window.open(this.toCanvas().toDataURL());
         return this.toCanvas().toDataURL();
       }
     };

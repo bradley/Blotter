@@ -33,14 +33,15 @@
           fill: "#0d0f17"
         };
 
-        var text = new Blotter.Text("observation", styleProperties);
+        var text = new Blotter.Text("observation", styleProperties),
+            text2 = new Blotter.Text("ddasdasfasdasfasfasf", styleProperties);
 
         var material = new Blotter.Material();
         //material.uniforms.uDistortion.value = 3.0;
         //material.uniforms.uDistortion2.value = 5.0;
 
         var blotter = new Blotter(material, {
-          texts : text
+          texts : [text2, text]
         });
 
         var startTime = new Date().getTime(),
