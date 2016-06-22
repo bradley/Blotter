@@ -7,7 +7,7 @@
       body {
         padding: 20px;
         font-family: serif;
-        font-size: 48px;
+        font-size: 40px;
         line-height: 1.5;
         color: #0d0f17;
       }
@@ -29,16 +29,16 @@
 
         var styleProperties = {
           family: "serif",
-          size: 48,
+          size: 40,
           fill: "#0d0f17"
         };
 
         var text = new Blotter.Text("observation", styleProperties),
             text2 = new Blotter.Text("ddasdasfasdasfasfasf", styleProperties);
 
-        var material = new Blotter.Material();
-        //material.uniforms.uDistortion.value = 3.0;
-        //material.uniforms.uDistortion2.value = 5.0;
+        var material = new Blotter.RollDistortMaterial();
+        material.uniforms.uDistortion.value = 3.0;
+        material.uniforms.uDistortion2.value = 5.0;
 
         var blotter = new Blotter(material, {
           texts : [text2, text]
@@ -56,7 +56,7 @@
 
         myScope.on("render", function () {
           var time = (new Date().getTime() - startTime) / 1000;
-          //myScope.material.uniforms.uTime.value = time;
+          myScope.material.uniforms.uTime.value = time;
         });
       });
     </script>

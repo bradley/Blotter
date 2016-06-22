@@ -727,7 +727,8 @@
         for (var i = 0; i < this.texts.length; i++) {
           var text = this.texts[i],
               bounds = this._textBounds[text.id],
-              yOffset = (_getLineHeightPixels.call(this, text.properties.size, text.properties.leading) / 2);
+              halfLH = (_getLineHeightPixels.call(this, text.properties.size, text.properties.leading) / 2),
+              halfLHRemainder = halfLH % 1;
 
           ctx.font = text.properties.style +
                " " + text.properties.weight +
@@ -736,19 +737,23 @@
 
           ctx.save();
 
-          ctx.translate(bounds.x + text.properties.paddingLeft, (this._height - (bounds.y + bounds.h)) + text.properties.paddingTop);
+          ctx.translate(
+            Math.round(bounds.x + text.properties.paddingLeft),// - (0.25 * (halfLHRemainder || 1)),
+            (this._height - (bounds.y + bounds.h)) + text.properties.paddingTop
+          );
           ctx.fillStyle = text.properties.fill;
           ctx.fillText(
             text.value,
             0,
-            yOffset
+            Math.round(halfLH)// + (halfLHRemainder / 2)
           );
-
+          console.log(Math.floor(halfLH) - (halfLHRemainder / 2));
           ctx.restore();
         }
 
         img.src = canvas.toDataURL("image/png");
 
+        // Flip Y for WebGL
         ctx.save();
         ctx.scale(1, -1);
         ctx.clearRect(0, this._height * -1, this._width, this._height);

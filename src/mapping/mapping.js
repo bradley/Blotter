@@ -73,7 +73,7 @@
         for (var i = 0; i < this.texts.length; i++) {
           var text = this.texts[i],
               bounds = this._textBounds[text.id],
-              yOffset = (_getLineHeightPixels.call(this, text.properties.size, text.properties.leading) / 2);
+              halfLH = (_getLineHeightPixels.call(this, text.properties.size, text.properties.leading) / 2);
 
           ctx.font = text.properties.style +
                " " + text.properties.weight +
@@ -82,12 +82,15 @@
 
           ctx.save();
 
-          ctx.translate(bounds.x + text.properties.paddingLeft, (this._height - (bounds.y + bounds.h)) + text.properties.paddingTop);
+          ctx.translate(
+            bounds.x + text.properties.paddingLeft,
+            (this._height - (bounds.y + bounds.h)) + text.properties.paddingTop
+          );
           ctx.fillStyle = text.properties.fill;
           ctx.fillText(
             text.value,
             0,
-            yOffset
+            Math.round(halfLH)
           );
 
           ctx.restore();
