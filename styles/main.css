@@ -540,6 +540,9 @@ li.horizon {
     text-align: center;
     line-height: 1.5; }
 
+.output canvas {
+  vertical-align: top; }
+
 /*
 #draw-text > .CodeMirror {
   height: 336px;
@@ -702,5 +705,3 @@ p.static, p.static + p {
 ::-moz-selection {
   background: tint(#fff45f, 25%);
   /* Firefox */ }
-
-/*# sourceMappingURL=main.css.map */

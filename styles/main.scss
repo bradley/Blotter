@@ -244,6 +244,12 @@ li.horizon {
   }
 }
 
+.output {
+  canvas {
+    vertical-align: top;
+  }
+}
+
 /*
 #draw-text > .CodeMirror {
   height: 336px;
