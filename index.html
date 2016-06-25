@@ -169,7 +169,6 @@
 
               this.jsCode = this.jsDoc.getValue();
               try {
-                console.log("here");
                 eval(this.jsCode); // yikes!
               } catch (e) {
                 console.log(e);
@@ -300,7 +299,7 @@
 
           <script class="js-code"  type="application/json">var text = new Blotter.Text("observation", {
   family : "'adobe-garamond-pro', serif",
-  size : 40,
+  size : 27,
   fill : "#171717"
 });
 
@@ -355,7 +354,7 @@ blotter.on("ready", function () {
 
           <script class="js-code"  type="application/json">var text = new Blotter.Text("observation", {
   family : "'adobe-garamond-pro', serif",
-  size : 40,
+  size : 27,
   fill : "#171717"
 });
 
@@ -394,6 +393,87 @@ blotter.on("ready", function () {
           <div class="output-container">
             <span class="section-label">Output</span>
             <div class="output">An <span id="custom-effect-text">observation</span> is a set of limitations.</div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="basic-usage">
+        <h3>Custom Effects</h3>
+        <p>badasdasd</p>
+
+        <br />
+
+        <div class="tabbed-editor">
+          <div class="editable-content">
+            <label>
+              <input type="radio" name="tabs" class="tab js-tab" checked="">
+              <span class="section-label">Javascript</span>
+            </label>
+            <label>
+              <input type="radio" name="tabs" class="tab html-tab">
+              <span class="section-label">HTML</span>
+            </label>
+
+            <div class="tab-content js-content"></div>
+            <div class="tab-content html-content"></div>
+          </div>
+
+          <script class="js-code"  type="application/json">var mainImage = [
+  "void mainImage( out vec4 mainImage, in vec2 fragCoord ) {",
+  "   vec2 uv = fragCoord / uResolution;",
+
+  "   float amount = 10.0;",
+  "   float angle = 0.25;",
+  "   vec2 offset = (amount / uResolution) * vec2(cos(angle), sin(angle));",
+
+  "   vec4 cr = textTexture(uv + offset);",
+  "   vec4 cga = textTexture(uv);",
+  "   vec4 cb = textTexture(uv - offset);",
+
+  "   combineColors(cr, vec4(1.0, 1.0, 1.0, 1.0), cr);",
+  "   combineColors(cga, vec4(1.0, 1.0, 1.0, 1.0), cga);",
+  "   combineColors(cb, vec4(1.0, 1.0, 1.0, 1.0), cb);",
+
+  "   rgbaFromRgb(mainImage, vec3(cr.r, cga.g, cb.b));",
+  "}"
+].join("\n");
+
+var material = new Blotter.ShaderMaterial(mainImage);
+var blotter = new Blotter(material, {
+  texts : [] // optional
+});
+
+var properties = {
+  family : "'adobe-garamond-pro', serif",
+  size : 27,
+  fill : "#171717"
+};
+var texts = [];
+
+$.each($(".shared-custom-effect-text"), function (_, textEl) {
+  var textStr = $(textEl).text(),
+      text = new Blotter.Text(textStr, properties);
+
+  texts.push(text);
+
+  blotter.on("ready", function () {
+    var textScope = blotter.forText(text);
+    $(textEl).html(textScope.domElement);
+  });
+});
+
+blotter.addTexts(texts);
+blotter.needsUpdate = true;</script>
+
+          <div class="output-container">
+            <span class="section-label">Output</span>
+            <div class="output"><p>
+An <span class="shared-custom-effect-text">observation</span> is a set of limitations.
+</p>
+<p>
+Victory is to be avoided for it ceases the <span class="shared-custom-effect-text">play</span>.
+</p></div>
           </div>
 
         </div>
