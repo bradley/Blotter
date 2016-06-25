@@ -9,151 +9,201 @@
     <link rel="image_src" href="./images/logo.gif" />
     <title>Blotter.js</title>
 
-    <link rel="shortcut icon" type="image/gif" href="./images/favicon.gif">
+    <link rel="shortcut icon" type="image/gif" href="./images/favicon.ico">
 
     <script src="https://use.typekit.net/akc6qok.js"></script>
-    <script>try{Typekit.load({ async: true });}catch(e){}</script>
-    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Ubuntu+Mono:400,400italic">
+    <script type="text/javascript">
+      var BlotterSite = {};
+
+      try {
+        Typekit.load({
+          async: true,
+          active: function() {
+            try {
+              BlotterSite.editors.update();
+            } catch(e) {};
+          }
+        })
+      } catch(e) {}
+    </script>
+
+    <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,400i" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="./styles/main.css">
 
     <script src="./third_party/jquery.min.js"></script>
     <script src="./third_party/blotter.min.js"></script>
     <script src="./third_party/codemirror.min.js"></script>
     <script src="./third_party/javascript.js"></script>
+
     <script>
+
+      // $(function() {
+
+        // var totalColors = 5;
+        // var chosen = [];
+        // var colors = [
+        //   'red',
+        //   'orange',
+        //   'green',
+        //   'blue',
+        //   'purple'
+        // ];
+
+        // var $examples = $('.examples');
+        // var $projects = $('.projects');
+
+        // $.getJSON('./data/examples.json', function(resp) {
+
+        //   var html = resp.template;
+
+        //   $examples.html(
+        //     _.map(resp.items.splice(0, 6), function(data, i) {
+        //       data.href = './' + data.href;
+        //       data.img = './' + data.img;
+        //       return _.template(html)(data);
+        //     }).join('\n')
+        //   );
+
+        //   $examples.children().each(function(i, child) {
+        //     var index = Math.floor(Math.random() * colors.length);
+        //     var color = colors.splice(index, 1);
+        //     child.className = color;
+        //     chosen.push(color);
+        //     if (chosen.length >= totalColors) {
+        //       colors = chosen.slice(0);
+        //       chosen.length = 0;
+        //     }
+        //   });
+
+        // });
+
+        // $.getJSON('./data/projects.json', function(resp) {
+
+        //   var html = resp.template;
+
+        //   $projects.html(
+        //     _.map(resp.items.splice(0, 6), function(data, i) {
+        //       data.img = './' + data.img;
+        //       return _.template(html)(data);
+        //     }).join('\n')
+        //   );
+
+        //   $projects.children().each(function(i, child) {
+        //     var index = Math.floor(Math.random() * colors.length);
+        //     var color = colors.splice(index, 1);
+        //     child.className = color;
+        //     chosen.push(color);
+        //     if (chosen.length >= totalColors) {
+        //       colors = chosen.slice(0);
+        //       chosen.length = 0;
+        //     }
+        //   });
+
+        // });
+      // });
 
       $(function() {
 
-        var totalColors = 5;
-        var chosen = [];
-        var colors = [
-          'red',
-          'orange',
-          'green',
-          'blue',
-          'purple'
-        ];
+        BlotterSite.Editor = function (el) {
+          this.init.apply(this, arguments);
+        };
 
-        var $examples = $('.examples');
-        var $projects = $('.projects');
+        BlotterSite.Editor.prototype = (function () {
 
-        $.getJSON('./data/examples.json', function(resp) {
-
-          var html = resp.template;
-
-          $examples.html(
-            _.map(resp.items.splice(0, 6), function(data, i) {
-              data.href = './' + data.href;
-              data.img = './' + data.img;
-              return _.template(html)(data);
-            }).join('\n')
-          );
-
-          $examples.children().each(function(i, child) {
-            var index = Math.floor(Math.random() * colors.length);
-            var color = colors.splice(index, 1);
-            child.className = color;
-            chosen.push(color);
-            if (chosen.length >= totalColors) {
-              colors = chosen.slice(0);
-              chosen.length = 0;
-            }
-          });
-
-        });
-
-        $.getJSON('./data/projects.json', function(resp) {
-
-          var html = resp.template;
-
-          $projects.html(
-            _.map(resp.items.splice(0, 6), function(data, i) {
-              data.img = './' + data.img;
-              return _.template(html)(data);
-            }).join('\n')
-          );
-
-          $projects.children().each(function(i, child) {
-            var index = Math.floor(Math.random() * colors.length);
-            var color = colors.splice(index, 1);
-            child.className = color;
-            chosen.push(color);
-            if (chosen.length >= totalColors) {
-              colors = chosen.slice(0);
-              chosen.length = 0;
-            }
-          });
-
-        });
-
-
-        (function ($, selector) {
-
-          $.fn.makeEditor = function() {
-            var jsTab = this.find(".js-tab");
-            var htmlTab = this.find(".html-tab");
-            var outputEl = this.find(".output");
-            var jsCode = this.find("script.js-code").html();
-            var htmlCode = outputEl.html();
-            var jsContent = this.find(".js-content");
-            var htmlContent = this.find(".html-content");
-
-            var jsMirror = CodeMirror(jsContent[0], {
-              value: jsCode,
+          function _buildJSMirror (el, code) {
+            return CodeMirror(el, {
+              value: code,
               mode: "javascript",
               tabSize: 2,
               lineWrapping: true,
               lineNumbers: true
             });
+          }
 
-            var htmlMirror = CodeMirror(htmlContent[0], {
-              value: htmlCode,
+          function _buildHTMLMirror (el, code) {
+            return CodeMirror(el, {
+              value: code,
               mode: "html",
               tabSize: 2,
               lineWrapping: true,
               lineNumbers: true
             });
+          }
 
-            var jsDoc = jsMirror.getDoc();
-            var htmlDoc = htmlMirror.getDoc();
+          return {
 
-            var update = _.debounce(function() {
-              htmlCode = htmlDoc.getValue();
+            constructor : BlotterSite.Editor,
+
+            init : function (el) {
+              this.el = el;
+              this.outputEl = el.find(".output");
+              this.jsCode = el.find("script.js-code").html();
+              this.htmlCode = this.outputEl.html();
+              this.jsContent = el.find(".js-content");
+              this.htmlContent = el.find(".html-content");
+
+              this.htmlMirror = _buildHTMLMirror(this.htmlContent[0], this.htmlCode);
+              this.jsMirror = _buildJSMirror(this.jsContent[0], this.jsCode);
+
+              this.htmlMirror.on("change", this.update());
+              this.jsMirror.on("change", this.update());
+
+              this.jsDoc = this.jsMirror.getDoc();
+              this.htmlDoc = this.htmlMirror.getDoc();
+
+              el.find(".html-tab").on("click", this.showHTMLContent);
+              el.find(".js-tab").on("click", this.showJSContent);
+
+              this.update();
+              this.showJSContent();
+            },
+
+            update : _.debounce(function() {
+              this.htmlCode = this.htmlDoc.getValue();
               try {
-                outputEl.html(unescape(htmlCode));
+                this.outputEl.html(unescape(this.htmlCode));
               } catch (e) {
                 console.log(e);
               }
 
-              jsCode = jsDoc.getValue();
+              this.jsCode = this.jsDoc.getValue();
               try {
-                eval(jsCode); // yikes!
+                eval(this.jsCode); // yikes!
               } catch (e) {
                 console.log(e);
               }
-            }, 1000);
-            htmlMirror.on('change', update);
-            jsMirror.on('change', update);
+            }, 1000),
 
-            var showJSContent = function () {
-              htmlContent.hide();
-              jsContent.show();
+            showHTMLContent : function () {
+              this.jsContent.hide();
+              this.htmlContent.show();
+            },
+
+            showJSContent : function () {
+              this.htmlContent.hide();
+              this.jsContent.show();
             }
-            jsTab.on("click", showJSContent);
+          }
+        })();
 
-            var showHTMLContent = function () {
-              jsContent.hide();
-              htmlContent.show();
+        $(document).ready(function () {
+
+          BlotterSite.editors = (function (editors) {
+            return {
+              editors : editors,
+
+              update : function () {
+                _.each(this.editors, function (editor) {
+                  editor.update();
+                });
+              }
             }
-            htmlTab.on("click", showHTMLContent);
+          })(_.reduce($(".tabbed-editor"), function (m, el) {
+            m.push(new BlotterSite.Editor($(el)));
+            return m;
+          }, []));
 
-            update();
-            showJSContent();
-            return this;
-          };
-
-          $(selector).makeEditor();
-        }(jQuery, ".tabbed-editor"));
+        });
 
       });
 
@@ -162,7 +212,7 @@
   <body>
     <div id="content">
       <div id="introduction">
-        <script src="./src/logo.js"></script>
+        <!-- <script src="./src/logo.js"></script> -->
         <img src="./images/logo.png"/>
       </div>
       <p>
@@ -247,23 +297,26 @@
           </div>
 
           <script class="js-code"  type="application/json">var text = new Blotter.Text("observation", {
-  family : "'adobe-garamond-pro', sans-serif",
+  family : "'adobe-garamond-pro', serif",
   size : 16,
   fill : "#171717"
 });
+
 var material = new Blotter.Material();
 var blotter = new Blotter(material, {
   texts : text
 });
 
-var elem = document.getElementById("draw-text");
+var elem = $("#draw-text");
 var myScope = blotter.forText(text);
 
-myScope.appendTo(elem);</script>
+blotter.on("ready", function () {
+  elem.html(myScope.domElement)
+});</script>
 
           <div class="output-container">
             <span class="section-label">Output</span>
-            <div class="output">An <span id="draw-text"></span> a set of limitations.</div>
+            <div class="output">An <span id="draw-text">observation</span> is a set of limitations.</div>
           </div>
 
         </div>

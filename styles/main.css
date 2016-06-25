@@ -396,7 +396,7 @@ body {
       background: #eee; } }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: "utopia-std", sans-serif;
+  font-family: "utopia-std", serif;
   vertical-align: top;
   color: tint(#171717, 20%);
   line-height: 1.5;
@@ -466,7 +466,11 @@ li.horizon {
 /* logo */
 #introduction {
   height: 80px;
-  margin-bottom: 24px; }
+  margin-bottom: 24px;
+  /* temporary until we replace it with webgl */ }
+  #introduction img {
+    height: 100%;
+    margin-left: -16px; }
 
 #content {
   padding: 25px 25px 50px 25px;

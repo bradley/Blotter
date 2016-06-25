@@ -1,0 +1,48 @@
+
+
+// float opS( float d2, float d1 ){return max(-d1,d2);}
+
+// float rand(vec2 co){
+//     return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
+// }
+
+// float rand(float n){
+//   return fract(cos(n*89.42)*343.42);
+// }
+
+// float distanceToAmount(float d, float amount)
+// {
+//     return clamp(1.0 / (clamp(d, 1.0/amount, 1.0)*amount), 0.,1.);
+// }
+
+// float sdAxisAlignedRect(vec2 uv, vec2 tl, vec2 br)
+// {
+//     vec2 d = max(tl-uv, uv-br);
+//     return length(max(vec2(0.0), d)) + min(0.0, max(d.x, d.y));
+// }
+
+// void mainImage( out vec4 fragColor, in vec2 fragCoord )
+// {
+//     vec2 uCenterPoint = vec2(0.5);
+//     float uLenseWeight = 0.00004;
+//     vec2 uv = fragCoord / iResolution.xy;
+//   vec2 d = uv - uCenterPoint;
+
+//     uv.x += cos(uv.y* (uv.x + 1.0) * 3.) * 0.003;
+//     uv.y += cos(uv.x * 6.) * 0.0007;
+
+//     vec4 color = vec4(1.0, 1.0, 0.0, 0.0);// bg
+
+
+//     // red-orangeish square.
+//     //float dist = sdAxisAlignedRect(uv, vec2(-0.68), vec2(-0.55));
+//     float r = sqrt(dot(d, d));
+//     float amt = 90. + (rand(uv.y) * 100.) + (rand(uv.x / 4.) * 9.);
+
+//     //float vary = sin(uv.x*uv.y*50.)*0.0047;
+//     //dist = opS(dist-0.028+vary, dist-0.019-vary);// round edges, and hollow it out
+//     color = mix(color, texture2D(iChannel0, fragCoord / iResolution.xy), distanceToAmount(r, amt) * 0.75);
+//     //col = mix(col, vec3(0.95, 0.0, 0.0), dtoa(dist, 700.));
+
+//     fragColor = color;
+// }

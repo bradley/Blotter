@@ -19,7 +19,7 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: "utopia-std", sans-serif;
+  font-family: "utopia-std", serif;
   vertical-align: top;
   color: tint($black, 20%);
   line-height: 1.5;
@@ -122,6 +122,12 @@ li.horizon {
 #introduction {
   height: 80px;
   margin-bottom: $line-height;
+
+  /* temporary until we replace it with webgl */
+  img {
+    height: 100%;
+    margin-left: -16px;
+  }
 }
 
 #content {
