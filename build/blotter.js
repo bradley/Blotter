@@ -43883,8 +43883,7 @@ GrowingPacker.prototype = {
         for (var i = 0; i < this.texts.length; i++) {
           var text = this.texts[i],
               bounds = this._textBounds[text.id],
-              halfLH = (_getLineHeightPixels.call(this, text.properties.size, text.properties.leading) / 2),
-              halfLHRemainder = halfLH % 1;
+              halfLH = (_getLineHeightPixels.call(this, text.properties.size, text.properties.leading) / 2);
 
           ctx.font = text.properties.style +
                " " + text.properties.weight +
@@ -43894,16 +43893,16 @@ GrowingPacker.prototype = {
           ctx.save();
 
           ctx.translate(
-            Math.round(bounds.x + text.properties.paddingLeft),// - (0.25 * (halfLHRemainder || 1)),
+            bounds.x + text.properties.paddingLeft,
             (this._height - (bounds.y + bounds.h)) + text.properties.paddingTop
           );
           ctx.fillStyle = text.properties.fill;
           ctx.fillText(
             text.value,
             0,
-            Math.round(halfLH)// + (halfLHRemainder / 2)
+            Math.round(halfLH)
           );
-          console.log(Math.floor(halfLH) - (halfLHRemainder / 2));
+
           ctx.restore();
         }
 
