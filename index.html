@@ -300,7 +300,7 @@
 
           <script class="js-code"  type="application/json">var text = new Blotter.Text("observation", {
   family : "'adobe-garamond-pro', serif",
-  size : 16,
+  size : 40,
   fill : "#171717"
 });
 
@@ -318,7 +318,82 @@ blotter.on("ready", function () {
 
           <div class="output-container">
             <span class="section-label">Output</span>
-            <div class="output">An <span id="draw-text">observation</span> is a set of limitations.</div>
+            <div class="output"><span id="draw-text">observation</span></div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="basic-usage">
+        <h3>Custom Effects</h3>
+        <p>
+          When applying effects to text on the web, designers have traditionally been constrained to those provided by CSS. In the majority of cases this is entirely suitable – text is text right? Yet still, there exist numerous examples of designers combining CSS properties or gifs and images to create effects that evoke something more playful. Precisely here, Blotter exists to provide an alternative.
+        </p>
+        <p>
+          In the previous example, we saw how to draw text as it may appear in the browser using normal CSS. Now let's see how we might apply a custom effect using a GLSL shader. We'll learn how to use Blotter's <a href="#">ShaderMaterial</a> and how one might write the shader on which it depends.
+        </p>
+        <p>
+          [ASIDE] If you don't intend to write your own custom effects at this time, you can skip this section and go right to reading about how to apply pre-made Blotter effects to your texts.
+        </p>
+
+        <br />
+
+        <div class="tabbed-editor">
+          <div class="editable-content">
+            <label>
+              <input type="radio" name="tabs" class="tab js-tab" checked="">
+              <span class="section-label">Javascript</span>
+            </label>
+            <label>
+              <input type="radio" name="tabs" class="tab html-tab">
+              <span class="section-label">HTML</span>
+            </label>
+
+            <div class="tab-content js-content"></div>
+            <div class="tab-content html-content"></div>
+          </div>
+
+          <script class="js-code"  type="application/json">var text = new Blotter.Text("observation", {
+  family : "'adobe-garamond-pro', serif",
+  size : 40,
+  fill : "#171717"
+});
+
+var mainImage = [
+  "void mainImage( out vec4 mainImage, in vec2 fragCoord ) {",
+  "   vec2 p = fragCoord / uResolution;",
+
+  "   float amount = 10.0;",
+  "   float angle = 0.25;",
+  "   vec2 offset = (amount / uResolution) * vec2(cos(angle), sin(angle));",
+
+  "   vec4 cr = textTexture(p + offset);",
+  "   vec4 cga = textTexture(p);",
+  "   vec4 cb = textTexture(p - offset);",
+
+  "   combineColors(cr, vec4(1.0, 1.0, 1.0, 1.0), cr);",
+  "   combineColors(cga, vec4(1.0, 1.0, 1.0, 1.0), cga);",
+  "   combineColors(cb, vec4(1.0, 1.0, 1.0, 1.0), cb);",
+
+  "   rgbaFromRgb(mainImage, vec3(cr.r, cga.g, cb.b));",
+  "}"
+].join("\n");
+
+var material = new Blotter.ShaderMaterial(mainImage);
+var blotter = new Blotter(material, {
+  texts : text
+});
+
+var elem = $("#custom-effect-text");
+var myScope = blotter.forText(text);
+
+blotter.on("ready", function () {
+  elem.html(myScope.domElement)
+});</script>
+
+          <div class="output-container">
+            <span class="section-label">Output</span>
+            <div class="output">An <span id="custom-effect-text">observation</span> is a set of limitations.</div>
           </div>
 
         </div>

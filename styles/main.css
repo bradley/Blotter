@@ -544,8 +544,11 @@ li.horizon {
     text-align: center;
     line-height: 1.5; }
 
-.output canvas {
-  vertical-align: top; }
+.output {
+  font-size: 40px;
+  line-height: 1.5; }
+  .output canvas {
+    vertical-align: top; }
 
 /*
 #draw-text > .CodeMirror {
