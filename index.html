@@ -137,22 +137,23 @@
             init : function (el) {
               this.el = el;
               this.outputEl = el.find(".output");
+
               this.jsCode = el.find("script.js-code").html();
               this.htmlCode = this.outputEl.html();
               this.jsContent = el.find(".js-content");
               this.htmlContent = el.find(".html-content");
 
-              this.htmlMirror = _buildHTMLMirror(this.htmlContent[0], this.htmlCode);
               this.jsMirror = _buildJSMirror(this.jsContent[0], this.jsCode);
+              this.htmlMirror = _buildHTMLMirror(this.htmlContent[0], this.htmlCode);
 
-              this.htmlMirror.on("change", this.update());
-              this.jsMirror.on("change", this.update());
+              this.jsMirror.on("change", _.bind(this.update, this));
+              this.htmlMirror.on("change", _.bind(this.update, this));
 
-              this.jsDoc = this.jsMirror.getDoc();
               this.htmlDoc = this.htmlMirror.getDoc();
+              this.jsDoc = this.jsMirror.getDoc();
 
-              el.find(".html-tab").on("click", this.showHTMLContent);
-              el.find(".js-tab").on("click", this.showJSContent);
+              el.find(".js-tab").on("click", _.bind(this.showJSContent, this));
+              el.find(".html-tab").on("click", _.bind(this.showHTMLContent, this));
 
               this.update();
               this.showJSContent();
@@ -168,20 +169,21 @@
 
               this.jsCode = this.jsDoc.getValue();
               try {
+                console.log("here");
                 eval(this.jsCode); // yikes!
               } catch (e) {
                 console.log(e);
               }
             }, 1000),
 
-            showHTMLContent : function () {
-              this.jsContent.hide();
-              this.htmlContent.show();
-            },
-
             showJSContent : function () {
               this.htmlContent.hide();
               this.jsContent.show();
+            },
+
+            showHTMLContent : function () {
+              this.jsContent.hide();
+              this.htmlContent.show();
             }
           }
         })();
