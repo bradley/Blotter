@@ -8,7 +8,7 @@
         var loader = new THREE.TextureLoader();
 
         loader.load(mapping.toDataURL(), _.bind(function(texture) {
-          texture.generateMipmaps = false;
+          texture.generateMipmaps = true; // TODO: Make optional.
           texture.minFilter = THREE.LinearFilter;
           texture.magFilter = THREE.LinearFilter;
           texture.needsUpdate = true;
