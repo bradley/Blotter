@@ -16,11 +16,6 @@
         var type = dataTextureObject.userUniform.type,
             data = dataTextureObject.data;
 
-        if (!Blotter.UniformUtils.validValueForUniformType(type, value)) {
-          Blotter.Messaging.logError("Blotter.MappingMaterial", "uniform value not valid for uniform type: " + this._type);
-          return;
-        }
-
         if (type == "1f") {
           data[4*i]   = value;    // x (r)
           data[4*i+1] = 0.0;
