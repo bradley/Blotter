@@ -2,16 +2,24 @@
 
   Blotter.ShaderMaterial = function(mainImage, options) {
     Blotter.Material.apply(this, arguments);
-
-    _.defaults(options, {
-      uniforms : {}
-    });
-
-    this.mainImage = mainImage;
   };
 
   Blotter.ShaderMaterial.prototype = Object.create(Blotter.Material.prototype);
-  Blotter.ShaderMaterial.prototype.constructor = Blotter.ShaderMaterial;
+
+  _.extend(Blotter.ShaderMaterial.prototype, (function () {
+
+    return {
+
+      constructor : Blotter.RGBSplitMaterial,
+
+      init : function (mainImage, options) {
+        _.defaults(this, options);
+
+        this.mainImage = mainImage;
+      }
+    };
+
+  })());
 
 })(
   this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
