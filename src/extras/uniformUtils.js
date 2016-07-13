@@ -95,19 +95,19 @@
 
     extractValidUniforms : function (uniforms) {
       uniforms = uniforms || {};
-      return _.reduce(uniforms, function (memo, uniformObject, uniformName) {
-        if (Blotter.UniformUtils.UniformTypes.indexOf(uniformObject.type) == -1) {
+      return _.reduce(uniforms, function (memo, uniformDescription, uniformName) {
+        if (Blotter.UniformUtils.UniformTypes.indexOf(uniformDescription.type) == -1) {
           Blotter.Messaging.logError("Blotter.UniformUtils", "extractValidUniforms", "uniforms must be one of type: " +
             Blotter.UniformUtils.UniformTypes.join(", "));
           return memo;
         }
 
-        if (!Blotter.UniformUtils.validValueForUniformType(uniformObject.type, uniformObject.value)) {
-          Blotter.Messaging.logError("Blotter.UniformUtils", "extractValidUniforms", "uniform value for " + uniformName + " is incorrect for type: " + uniformObject.type);
+        if (!Blotter.UniformUtils.validValueForUniformType(uniformDescription.type, uniformDescription.value)) {
+          Blotter.Messaging.logError("Blotter.UniformUtils", "extractValidUniforms", "uniform value for " + uniformName + " is incorrect for type: " + uniformDescription.type);
           return memo;
         }
 
-        memo[uniformName] = _.pick(uniformObject, "type", "value");
+        memo[uniformName] = _.pick(uniformDescription, "type", "value");
         return memo;
       }, {});
     }
