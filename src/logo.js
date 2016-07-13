@@ -110,7 +110,7 @@ blotter.on("ready", function () {
 
 var startTime = new Date().getTime();
 
-blotter.on("render", function () {
+blotter.forText(text).on("render", function () {
   var time = (new Date().getTime() - startTime) / 1000;
   material.uniforms.uTime.value = time;
 });
