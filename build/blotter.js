@@ -44128,7 +44128,7 @@ GrowingPacker.prototype = {
   Blotter.ShaderMaterial = function(mainImage, options) {
     Blotter.Material.apply(this, arguments);
 
-    _.defaults(options, {
+    _.defaults(this, options, {
       uniforms : {}
     });
 
