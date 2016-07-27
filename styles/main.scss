@@ -11,9 +11,6 @@ body {
   font-size: $font-size;
   line-height: $line-height;
   color: $black;
-  @media screen and (max-width: $min-screen-width) {
-    background: $grey;
-  }
   padding: 25px;
   vertical-align: top;
 }
@@ -41,6 +38,10 @@ h2 {
 
 code {
   font-family: 'Ubuntu Mono', monospace;
+  font-size: 14px;
+  background: $grey;
+  padding: 2px 4px 4px;
+  border-radius: 3px;
 }
 
 p {
@@ -232,6 +233,10 @@ li.horizon {
     float: left;
     box-sizing: border-box;
     background-color:#ffffff;
+
+    > .CodeMirror {
+      height: auto;
+    }
   }
 
   .tab:checked + span {
@@ -259,14 +264,6 @@ li.horizon {
   }
 }
 
-/*
-#draw-text > .CodeMirror {
-  height: 336px;
-}
-#draw-group > .CodeMirror {
-  height: 528px;
-}
-*/
 
 /*
 .examples,

@@ -17,8 +17,8 @@
 
       try {
         Typekit.load({
-          async: true,
-          active: function() {
+          async : true,
+          active : function() {
             try {
               BlotterSite.editors.update();
             } catch(e) {};
@@ -146,8 +146,8 @@
               this.jsMirror = _buildJSMirror(this.jsContent[0], this.jsCode);
               this.htmlMirror = _buildHTMLMirror(this.htmlContent[0], this.htmlCode);
 
-              this.jsMirror.on("change", _.bind(this.update, this));
-              this.htmlMirror.on("change", _.bind(this.update, this));
+              this.jsMirror.on("change", _.bind(_.debounce(this.update, 1000), this));
+              this.htmlMirror.on("change", _.bind(_.debounce(this.update, 1000), this));
 
               this.htmlDoc = this.htmlMirror.getDoc();
               this.jsDoc = this.jsMirror.getDoc();
@@ -159,7 +159,7 @@
               this.showJSContent();
             },
 
-            update : _.debounce(function() {
+            update : function() {
               this.htmlCode = this.htmlDoc.getValue();
               try {
                 this.outputEl.html(unescape(this.htmlCode));
@@ -173,7 +173,7 @@
               } catch (e) {
                 console.log(e);
               }
-            }, 1000),
+            },
 
             showJSContent : function () {
               this.htmlContent.hide();
@@ -217,7 +217,10 @@
         <img src="./images/logo.png"/>
       </div>
       <p>
-        <strong>Blotter.js</strong> is THIS IS THE DESCRIPTION (some <code>code</code> tags would be nice).
+        When applying effects to text on the web, designers have traditionally been constrained to those provided by <code>css</code>. In the majority of cases this is entirely suitable – text is text right? Yet still, there exist numerous examples of designers combining <code>css</code> properties or gifs and images to create effects that evoke something more playful. Precisely here, Blotter exists to provide an alternative.
+      </p>
+      <p>
+        <strong>Blotter</strong> is a <code>webgl</code> backed JavaScript api geared towards allowing designers to easily draw both pre-made and custom text effects using <code>glsl</code> shaders.
       </p>
       <div class="horizon"></div>
       <ul id="toc">
@@ -248,25 +251,25 @@
         <li>
           <h3>GLSL Backed Text Effects with Ease</h3>
           <p>
-            Blotter provides a simple interface for building and manipulating text effects that utilize GLSL shaders without requiring that the designer know GLSL. Blotter has a growing library of configurable effects while also providing ways for student or experienced GLSL programmers to quickly bootstrap new ones.
+            Blotter provides a simple interface for building and manipulating text effects that utilize <code>glsl</code> shaders without requiring that the designer know <code>glsl</code>. Blotter has a growing library of configurable effects while also providing ways for student or experienced <code>glsl</code> programmers to quickly bootstrap new ones.
           </p>
         </li>
         <li>
           <h3>Atlasing Effects in a Single WebGL Back Buffer</h3>
           <p>
-            Blotter bypasses the limit browsers place on the number of live WebGL contexts in the document by using an atlas. This atlas maps elements that share the same effects so that they may be rendered together in a single WebGL context. The resulting image data is then output to individual 2d contexts for each element.
+            Blotter bypasses the limit browsers place on the number of live <code>webgl</code> contexts in the document by using an atlas. This atlas maps elements that share the same effects so that they may be rendered together in a single <code>webgl</code> context. The resulting image data is then output to individual <code>2d</code> contexts for each element.
           </p>
         </li>
         <li>
           <h3>Animation Loop</h3>
           <p>
-            Rather than executing on a time based interval, Blotter's internal animation loop uses `requestAnimationFrame` to match the browser's display refresh rate and pause when the user navigates to other browser tabs; improving performance and preserving the battery life on the user's device.
+            Rather than executing on a time based interval, Blotter's internal animation loop uses <code>requestAnimationFrame</code> to match the browser's display refresh rate and pause when the user navigates to other browser tabs; improving performance and preserving the battery life on the user's device.
           </p>
         </li>
         <li>
           <h3>What Blotter Isn't</h3>
           <p>
-            Any texts you pass to Blotter can be individually configured using familiar style properties. You can use custom font faces through the `@font-face` spec. However, Blotter ultimately renders the texts passed to it into 2d canvas elements. This means rendered text won't be selectable. Blotter is great for elements like titles, headings, and texts used for graphic purposes. It's not recommended that Blotter be used for lengthy bodies of text.
+            Any texts you pass to Blotter can be individually configured using familiar style properties. You can use custom font faces through the <code>@font-face</code> spec. However, Blotter ultimately renders the texts passed to it into <code>canvas</code> elements. This means rendered text won't be selectable. Blotter is great for elements like titles, headings, and texts used for graphic purposes. It's not recommended that Blotter be used for lengthy bodies of text.
           </p>
       </ul>
       <div id="basic-usage" class="horizon"></div>
@@ -285,8 +288,8 @@
         <div class="tabbed-editor">
           <div class="editable-content">
             <label>
-              <input type="radio" name="tabs" class="tab js-tab" checked="">
-              <span class="section-label">Javascript</span>
+              <input type="radio" name="tabs" class="tab js-tab" checked="checked">
+              <span class="section-label">JavaScript</span>
             </label>
             <label>
               <input type="radio" name="tabs" class="tab html-tab">
@@ -308,16 +311,17 @@ var blotter = new Blotter(material, {
   texts : text
 });
 
-var elem = $("#draw-text");
-var myScope = blotter.forText(text);
-
 blotter.on("ready", function () {
-  elem.html(myScope.domElement)
+  var elem = $("#draw-text");
+  var myScope = blotter.forText(text);
+
+  //myScope.appendTo(elem);
+  elem.html(myScope.domElement);
 });</script>
 
           <div class="output-container">
             <span class="section-label">Output</span>
-            <div class="output">An <span id="draw-text">observation</span> is a set of limitations.</div>
+            <div class="output"><span id="draw-text">observation</span></div>
           </div>
 
         </div>
@@ -326,10 +330,10 @@ blotter.on("ready", function () {
       <div class="basic-usage">
         <h3>Custom Effects</h3>
         <p>
-          When applying effects to text on the web, designers have traditionally been constrained to those provided by CSS. In the majority of cases this is entirely suitable – text is text right? Yet still, there exist numerous examples of designers combining CSS properties or gifs and images to create effects that evoke something more playful. Precisely here, Blotter exists to provide an alternative.
+          In the previous example, we saw how to draw text as it may appear in the browser using normal <code>css</code>. Now let's see how we might apply a custom effect using a <code>glsl</code> shader. We'll learn how to use Blotter's <a href="#">ShaderMaterial</a> and how one might write the shader on which it depends.
         </p>
         <p>
-          In the previous example, we saw how to draw text as it may appear in the browser using normal CSS. Now let's see how we might apply a custom effect using a GLSL shader. We'll learn how to use Blotter's <a href="#">ShaderMaterial</a> and how one might write the shader on which it depends.
+          Blotter's <code>ShaderMaterial</code> takes a string repr
         </p>
         <p>
           [ASIDE] If you don't intend to write your own custom effects at this time, you can skip this section and go right to reading about how to apply pre-made Blotter effects to your texts.
@@ -340,75 +344,8 @@ blotter.on("ready", function () {
         <div class="tabbed-editor">
           <div class="editable-content">
             <label>
-              <input type="radio" name="tabs" class="tab js-tab" checked="">
-              <span class="section-label">Javascript</span>
-            </label>
-            <label>
-              <input type="radio" name="tabs" class="tab html-tab">
-              <span class="section-label">HTML</span>
-            </label>
-
-            <div class="tab-content js-content"></div>
-            <div class="tab-content html-content"></div>
-          </div>
-
-          <script class="js-code"  type="application/json">var text = new Blotter.Text("observation", {
-  family : "'adobe-garamond-pro', serif",
-  size : 27,
-  fill : "#171717"
-});
-
-var mainImage = [
-  "void mainImage( out vec4 mainImage, in vec2 fragCoord ) {",
-  "   vec2 uv = fragCoord / uResolution;",
-
-  "   float amount = 10.0;",
-  "   float angle = 0.25;",
-  "   vec2 offset = (amount / uResolution) * vec2(cos(angle), sin(angle));",
-
-  "   vec4 cr = textTexture(uv + offset);",
-  "   vec4 cga = textTexture(uv);",
-  "   vec4 cb = textTexture(uv - offset);",
-
-  "   combineColors(cr, vec4(1.0, 1.0, 1.0, 1.0), cr);",
-  "   combineColors(cga, vec4(1.0, 1.0, 1.0, 1.0), cga);",
-  "   combineColors(cb, vec4(1.0, 1.0, 1.0, 1.0), cb);",
-
-  "   rgbaFromRgb(mainImage, vec3(cr.r, cga.g, cb.b));",
-  "}"
-].join("\n");
-
-var material = new Blotter.ShaderMaterial(mainImage);
-var blotter = new Blotter(material, {
-  texts : text
-});
-
-var elem = $("#custom-effect-text");
-var myScope = blotter.forText(text);
-
-blotter.on("ready", function () {
-  elem.html(myScope.domElement)
-});</script>
-
-          <div class="output-container">
-            <span class="section-label">Output</span>
-            <div class="output">An <span id="custom-effect-text">observation</span> is a set of limitations.</div>
-          </div>
-
-        </div>
-      </div>
-
-      <div class="basic-usage">
-        <h3>Custom Effects</h3>
-        <p>badasdasd</p>
-
-        <br />
-
-        <div class="tabbed-editor">
-          <div class="editable-content">
-            <label>
-              <input type="radio" name="tabs" class="tab js-tab" checked="">
-              <span class="section-label">Javascript</span>
+              <input type="radio" name="tabs" class="tab js-tab" checked="checked">
+              <span class="section-label">JavaScript</span>
             </label>
             <label>
               <input type="radio" name="tabs" class="tab html-tab">
@@ -438,6 +375,131 @@ blotter.on("ready", function () {
   "   rgbaFromRgb(mainImage, vec3(cr.r, cga.g, cb.b));",
   "}"
 ].join("\n");
+
+var text = new Blotter.Text("observation", {
+  family : "'adobe-garamond-pro', serif",
+  size : 27,
+  fill : "#171717"
+});
+
+var material = new Blotter.ShaderMaterial(mainImage);
+var blotter = new Blotter(material, {
+  texts : text
+});
+
+blotter.on("ready", function () {
+  var elem = $("#custom-effect-text");
+  var myScope = blotter.forText(text);
+
+  elem.html(myScope.domElement)
+});</script>
+
+          <div class="output-container">
+            <span class="section-label">Output</span>
+            <div class="output">An <span id="custom-effect-text">observation</span> is a set of limitations.</div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="basic-usage">
+        <h3>Custom Effects</h3>
+        <p>badasdasd</p>
+
+        <br />
+
+        <div class="tabbed-editor">
+          <div class="editable-content">
+            <label>
+              <input type="radio" name="tabs" class="tab js-tab" checked="checked">
+              <span class="section-label">JavaScript</span>
+            </label>
+            <label>
+              <input type="radio" name="tabs" class="tab html-tab">
+              <span class="section-label">HTML</span>
+            </label>
+
+            <div class="tab-content js-content"></div>
+            <div class="tab-content html-content"></div>
+          </div>
+
+          <script class="js-code"  type="application/json">var mainImage = [
+  "void mainImage( out vec4 mainImage, in vec2 fragCoord ) {",
+  "   vec2 uv = fragCoord / uResolution;",
+
+  "   float amount = 10.0;",
+  "   float angle = 0.25;",
+  "   vec2 offset = (amount / uResolution) * vec2(cos(angle), sin(angle));",
+
+  "   vec4 cr = textTexture(uv + offset);",
+  "   vec4 cga = textTexture(uv);",
+  "   vec4 cb = textTexture(uv - offset);",
+
+  "   combineColors(cr, vec4(1.0, 1.0, 1.0, 1.0), cr);",
+  "   combineColors(cga, vec4(1.0, 1.0, 1.0, 1.0), cga);",
+  "   combineColors(cb, vec4(1.0, 1.0, 1.0, 1.0), cb);",
+
+  "   rgbaFromRgb(mainImage, vec3(cr.r, cga.g, cb.b));",
+  "}"
+].join("\n");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+vec2 centerPoint = vec2(0.5);
+
+const int mSize = 11;
+const int kSize = (mSize - 1) / 2;
+float kernel[mSize];
+
+vec2 uv = fragCoord / uResolution;
+// uv.x += cos(uv.y* (uv.x + 1.0) * 3.) * 0.003;
+// uv.y += cos(uv.x * 6.) * 0.0007;
+vec3 c = texture2D(iChannel0, uv).rgb;
+
+vec3 finalColour = vec3(0.0);
+
+//create the 1-D kernel
+float sigma = 7.0;
+float Z = 0.0;
+
+for (int j = 0; j <= kSize; ++j)
+{
+  kernel[kSize+j] = kernel[kSize-j] = normpdf(float(j), sigma);
+}
+
+//get the normalization factor (as the gaussian has been clamped)
+for (int j = 0; j < mSize; ++j)
+{
+  Z += kernel[j];
+}
+
+//read out the texels
+for (int i=-kSize; i <= kSize; ++i)
+{
+  for (int j=-kSize; j <= kSize; ++j)
+  {
+      final_colour += kernel[kSize+j]*kernel[kSize+i]*texture2D(iChannel0, (fragCoord.xy+vec2(float(i),float(j))) / iResolution.xy).rgb;
+  }
+}
+
+fragColor = vec4(final_colour/(Z*Z), 1.0);
+
+
+
+
+
 
 var material = new Blotter.ShaderMaterial(mainImage);
 var blotter = new Blotter(material, {

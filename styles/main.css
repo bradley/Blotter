@@ -313,7 +313,7 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
   /* Horizontal padding of content */ }
 
 .CodeMirror-gutters {
-  border-right: 1px solid #eee;
+  border-right: 1px solid #f3f3f3;
   background-color: #f7f7f7; }
 
 .CodeMirror-linenumber {
@@ -329,10 +329,10 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
 
 @media screen and (min-width: 400px) {
   .CodeMirror {
-    border-right: 1px solid #eee; } }
+    border-right: 1px solid #f3f3f3; } }
 @media screen and (max-width: 400px) {
   .CodeMirror {
-    border-left: em(2) solid #eee; }
+    border-left: em(2) solid #f3f3f3; }
 
   .CodeMirror-gutters,
   .CodeMirror-linenumbers,
@@ -391,9 +391,6 @@ body {
   color: #171717;
   padding: 25px;
   vertical-align: top; }
-  @media screen and (max-width: 400px) {
-    body {
-      background: #eee; } }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: "utopia-std", serif;
@@ -413,7 +410,11 @@ h2 {
       text-align: center; } }
 
 code {
-  font-family: 'Ubuntu Mono', monospace; }
+  font-family: 'Ubuntu Mono', monospace;
+  font-size: 14px;
+  background: #f3f3f3;
+  padding: 2px 4px 4px;
+  border-radius: 3px; }
 
 p {
   max-width: 580px; }
@@ -532,6 +533,8 @@ li.horizon {
     float: left;
     box-sizing: border-box;
     background-color: #ffffff; }
+    .tabbed-editor .tab-content > .CodeMirror {
+      height: auto; }
   .tabbed-editor .tab:checked + span {
     background: #FFF;
     color: black; }
@@ -550,14 +553,6 @@ li.horizon {
   .output canvas {
     vertical-align: top; }
 
-/*
-#draw-text > .CodeMirror {
-  height: 336px;
-}
-#draw-group > .CodeMirror {
-  height: 528px;
-}
-*/
 /*
 .examples,
 .projects {
@@ -688,7 +683,7 @@ p.detail {
   margin-top: 6px;
   padding-left: 12px;
   margin-left: 3px;
-  border-left: 3px solid shade(#eee, 10%); }
+  border-left: 3px solid shade(#f3f3f3, 10%); }
 
 /* Used for properties and objects that are static. This would be like Blotter.UniformUtils.UniformTypes */
 p.static, p.static + p {
