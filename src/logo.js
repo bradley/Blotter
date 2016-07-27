@@ -94,10 +94,10 @@ $(document).ready(function () {
 
     "    // Setup ========================================================================",
 
-    "    vec2 uv = fragCoord.xy / iResolution.xy;",
-    "    vec4 baseSample = texture2D(iChannel0, uv);",
-    "    float time = iGlobalTime / 1.0;",
-    "    float onePixel = 1.0 / iResolution.y;",
+    "    vec2 uv = fragCoord.xy / uResolution.xy;",
+    "    vec4 baseSample = textTexture(uv);",
+    "    float time = uTime / 1.0;",
+    "    float onePixel = 1.0 / uResolution.y;",
 
     "    vec4 finalColour = vec4(0.0);",
 
@@ -115,7 +115,7 @@ $(document).ready(function () {
     "    float stepDistance = 1.0;",
     "    float darkestDistance = 0.0;",
 
-    "    vec2 maxDistanceUV = uv + (vec2(0.0, float(darknessRadius) + onePixel) / iResolution.xy);",
+    "    vec2 maxDistanceUV = uv + (vec2(0.0, float(darknessRadius) + onePixel) / uResolution.xy);",
     "    float maxDistance = distance(uv, maxDistanceUV);",
 
     "    // Find the darkest sample and some relevant meta data within a radius.",
@@ -123,8 +123,8 @@ $(document).ready(function () {
     "    //   us making steps on a `+=2` basis in the interest of performance. Play!",
     "    for (int i = -darknessRadius; i <= darknessRadius; i += 2) {",
     "        for (int j = -darknessRadius; j <= darknessRadius; j += 2) {",
-    "            stepUV = uv + vec2(float(i), float(j)) / iResolution.xy;",
-    "            stepSample = texture2D(iChannel0, stepUV, 0.0);",
+    "            stepUV = uv + vec2(float(i), float(j)) / uResolution.xy;",
+    "            stepSample = textTexture(stepUV);",
     "            stepDistance = max(0.0, distance(uv, stepUV));",
 
     "            float stepDarkestSampleWeight = 1.0 - smoothstep(0.0, maxDistance, stepDistance);",
@@ -199,8 +199,8 @@ $(document).ready(function () {
 
     "    for (int i = -kSize; i <= kSize; i++) {",
     "        for (int j = -kSize; j <= kSize; j++) {",
-    "            stepUV = uv + vec2(float(i), float(j)) / iResolution.xy;",
-    "            stepSample = texture2D(iChannel0, stepUV, 2.0);",
+    "            stepUV = uv + vec2(float(i), float(j)) / uResolution.xy;",
+    "            stepSample = textTexture(stepUV);",
     "            stepDistance = max(0.0, distance(uv, darkestUV));",
 
     "            float stepDarkestSampleWeight = 1.0 - smoothstep(0.0, maxDistance, stepDistance);",
@@ -230,16 +230,26 @@ $(document).ready(function () {
     fill : "#171717"
   });
 
-  var material = new Blotter.ShaderMaterial(mainImage);
+  var material = new Blotter.ShaderMaterial(mainImage, {
+    options : {
+      uTime : { type : "1f", value : 0.0 }
+    }
+  });
   var blotter = new Blotter(material, {
     texts : text
   });
 
-  blotter.on("ready", function () {
-    var elem = $("#logo");
-    var myScope = blotter.forText(text);
+  var elem = $("#logo");
+  var myScope = blotter.forText(text);
+  var startTime = new Date().getTime();
 
-    elem.html(myScope.domElement)
+  blotter.on("ready", function () {
+    elem.html(myScope.domElement);
+  });
+
+  myScope.on("render", function () {
+    var time = (new Date().getTime() - startTime) / 1000;
+    myScope.material.uniforms.uTime.value = time;
   });
 
 
