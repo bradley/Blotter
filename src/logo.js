@@ -88,7 +88,7 @@ $(document).ready(function () {
     "}",
 
 
-    "void mainImage( out vec4 fragColor, in vec2 fragCoord )",
+    "void mainImage( out vec4 mainImage, in vec2 fragCoord )",
     "{",
 
 
@@ -96,60 +96,10 @@ $(document).ready(function () {
 
     "    vec2 uv = fragCoord.xy / uResolution.xy;",
     "    vec4 baseSample = textTexture(uv);",
+    "    combineColors(baseSample, vec4(1.0), baseSample);",
     "    float time = uTime / 1.0;",
-    "    float onePixel = 1.0 / uResolution.y;",
 
     "    vec4 finalColour = vec4(0.0);",
-
-
-    "    // Create Darkness ==============================================================",
-
-    "    const int darknessRadius = 16;",
-
-    "    vec2 stepUV = vec2(0.0);",
-    "    vec2 darkestUV = uv;",
-
-    "    vec4 stepSample = vec4(0.0);",
-    "    vec4 darkestSample = baseSample;",
-
-    "    float stepDistance = 1.0;",
-    "    float darkestDistance = 0.0;",
-
-    "    vec2 maxDistanceUV = uv + (vec2(0.0, float(darknessRadius) + onePixel) / uResolution.xy);",
-    "    float maxDistance = distance(uv, maxDistanceUV);",
-
-    "    // Find the darkest sample and some relevant meta data within a radius.",
-    "    //   Note: You may notice some artifacts in our darkness. This is due to",
-    "    //   us making steps on a `+=2` basis in the interest of performance. Play!",
-    "    for (int i = -darknessRadius; i <= darknessRadius; i += 2) {",
-    "        for (int j = -darknessRadius; j <= darknessRadius; j += 2) {",
-    "            stepUV = uv + vec2(float(i), float(j)) / uResolution.xy;",
-    "            stepSample = textTexture(stepUV);",
-    "            stepDistance = max(0.0, distance(uv, stepUV));",
-
-    "            float stepDarkestSampleWeight = 1.0 - smoothstep(0.0, maxDistance, stepDistance);",
-
-    "            vec4 mixedStep = mix(baseSample, stepSample, stepDarkestSampleWeight);",
-
-    "            if (mixedStep == min(darkestSample, mixedStep) && stepDistance <= maxDistance) {",
-
-    "                if (mixedStep == darkestSample) {",
-    "                    darkestDistance = min(stepDistance, darkestDistance);",
-    "                    if (darkestDistance == stepDistance) {",
-    "                      darkestUV = stepUV;",
-    "                    }",
-    "                }",
-    "                else {",
-    "                    darkestDistance = stepDistance;",
-    "                }",
-
-    "                darkestSample = mixedStep;",
-    "            }",
-    "        }",
-    "    }",
-
-    "    float darkestSampleWeight = 1.0 - smoothstep(0.0, maxDistance, darkestDistance);",
-    "    darkestSampleWeight = smoothstep(0.0, 0.85, darkestSampleWeight);",
 
 
     "    // Create Heat Points ===========================================================",
@@ -173,15 +123,70 @@ $(document).ready(function () {
     "    float heatPoint1Dist = distance(uv, heatPoint1Uv);",
     "    float heatPoint2Dist = distance(uv, heatPoint2Uv);",
     "    float heatPoint3Dist = distance(uv, heatPoint3Uv);",
-    "    float combinedDist = (heatPoint1Dist * heatPoint2Dist * heatPoint3Dist);",
+    "    float combinedDist = (heatPoint1Dist);// * heatPoint2Dist * heatPoint3Dist);",
 
     "    // Invert and scale",
     "    float amount = 1.0 - smoothstep(0.2, 1.55, combinedDist * heatDistanceScale);",
 
 
+    "    // Create Darkness ==============================================================",
+
+    "    const int darknessRadius = 10;",
+
+    "    vec2 stepCoord = vec2(0.0);",
+    "    vec2 stepUV = vec2(0.0);",
+    "    vec2 darkestUV = uv;",
+
+    "    vec4 stepSample = vec4(1.0);",
+    "    vec4 darkestSample = stepSample;",
+
+    "    float stepDistance = 1.0;",
+    "    float darkestDistance = 0.0;",
+
+    "    vec2 maxDistanceCoord = fragCoord.xy + vec2(float(darknessRadius), 0.0);",
+    "    vec2 maxDistanceUV = maxDistanceCoord.xy / uResolution.xy;",
+    "    float maxDistance = distance(fragCoord, maxDistanceCoord);",
+
+    "    // Find the darkest sample and some relevant meta data within a radius.",
+    "    //   Note: You may notice some artifacts in our darkness. This is due to",
+    "    //   us making steps on a `+=2` basis in the interest of performance. Play!",
+    "    for (int i = -darknessRadius; i <= darknessRadius; i += 1) {",
+    "        for (int j = -darknessRadius; j <= darknessRadius; j += 1) {",
+    "            stepCoord = fragCoord + vec2(float(i), float(j));",
+    "            stepUV = stepCoord / uResolution.xy;",
+    "            stepSample = textTexture(stepUV);",
+    "            vec4 sampleOnWhite = vec4(0.0);",
+    "            combineColors(sampleOnWhite, vec4(1.0), stepSample);",
+    "            stepDistance = distance(fragCoord, stepCoord);",
+
+    "            float stepDarkestSampleWeight = 1.0 - smoothstep(0.0, 1.0, (stepDistance / maxDistance) * 0.5);",
+
+    "            vec4 mixedStep = mix(baseSample, sampleOnWhite, stepDarkestSampleWeight);",
+
+    "            if (mixedStep == min(darkestSample, mixedStep) && stepDistance <= maxDistance) {",
+
+    "                if (mixedStep == darkestSample) {",
+    "                    darkestDistance = min(stepDistance, darkestDistance);",
+    "                    if (darkestDistance == stepDistance) {",
+    "                      darkestUV = stepUV;",
+    "                    }",
+    "                }",
+    "                else {",
+    "                    darkestDistance = stepDistance;",
+    "                }",
+
+    "                darkestSample = mixedStep;",
+    "            }",
+    "        }",
+    "    }",
+
+    "    float darkestSampleWeight = 1.0 - smoothstep(0.0, 1.0, darkestDistance / maxDistance);",
+    "    //darkestSampleWeight = smoothstep(0.0, 0.85, darkestSampleWeight);",
+
+
     "    // Single Pass Blur =============================================================",
 
-    "    const int diameter = 5;",
+    "    const int diameter = 7;",
     "    const int kSize = (diameter - 1) / 2;",
     "    float kernel[diameter];",
 
@@ -199,14 +204,20 @@ $(document).ready(function () {
 
     "    for (int i = -kSize; i <= kSize; i++) {",
     "        for (int j = -kSize; j <= kSize; j++) {",
-    "            stepUV = uv + vec2(float(i), float(j)) / uResolution.xy;",
+    "            stepCoord = fragCoord + vec2(float(i), float(j));",
+    "            stepUV = stepCoord / uResolution.xy;",
     "            stepSample = textTexture(stepUV);",
-    "            stepDistance = max(0.0, distance(uv, darkestUV));",
+    "            combineColors(stepSample, vec4(1.0, 1.0, 1.0, 1.0), stepSample);",
+    "            stepDistance = distance(fragCoord, stepCoord);",
 
     "            float stepDarkestSampleWeight = 1.0 - smoothstep(0.0, maxDistance, stepDistance);",
     "            stepSample = mix(stepSample,",
     "                             darkestSample,",
-    "                             ((stepDarkestSampleWeight / 2.0) * amount) * when_le(stepDistance, maxDistance));",
+    "                             ((stepDarkestSampleWeight) * amount) * when_le(stepDistance, maxDistance));",
+
+    "            //stepSample = mix(stepSample,",
+    "            //                 darkestSample,",
+    "            //                 ((stepDarkestSampleWeight / 2.0)) * when_le(stepDistance, maxDistance));",
 
     "            finalColour += kernel[kSize + j] * kernel[kSize + i] * stepSample;",
     "        }",
@@ -217,21 +228,22 @@ $(document).ready(function () {
 
     "    // Mix Blur and Darkness  =======================================================",
 
-    "    finalColour = mix(finalColour, darkestSample, (darkestSampleWeight * 0.5) * amount);// * amount);",
+    "    //finalColour = mix(finalColour, darkestSample, (darkestSampleWeight) * amount);",
+    "    finalColour = mix(baseSample, darkestSample, darkestSampleWeight);",
 
-
-    "    fragColor = finalColour;",
+    "    //rgbaFromRgb(mainImage, finalColour.rgb);",
+    "    mainImage = darkestSample;",
     "}"
   ].join("\n");
 
-  var text = new Blotter.Text("observation", {
-    family : "'adobe-garamond-pro', serif",
+  var text = new Blotter.Text("BLOTTER", {
+    family : "serif",
     size : 32,
     fill : "#171717"
   });
 
   var material = new Blotter.ShaderMaterial(mainImage, {
-    options : {
+    uniforms : {
       uTime : { type : "1f", value : 0.0 }
     }
   });
