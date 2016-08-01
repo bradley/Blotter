@@ -104,29 +104,29 @@ $(document).ready(function () {
 
     "    // Create Heat Points ===========================================================",
 
-    "    float heatDistanceScale = 8.0; // Larger equates to smaller spread",
+    "    float heatDistanceScale = 1.0; // Larger equates to smaller spread",
 
     "    // Define 3 heat points",
-    "    float heatPoint1X = (0.5 + sin(time * 1.05) / 4.0);",
-    "    float heatPoint1Y = (0.5 - cos(time * 2.5) / 4.0);",
-    "    vec2 heatPoint1Uv = vec2(heatPoint1X, heatPoint1Y);",
+    "    float heatPoint1X = 0.5 + (sin(time * 1.05) / 4.0);",
+    "    float heatPoint1Y = 0.5 - (cos(time * 2.5) / 2.0);",
+    "    vec2 heatPoint1Uv = uResolution.xy * vec2(heatPoint1X, heatPoint1Y);",
 
-    "    float heatPoint2X = (0.5 + sin(time * 1.0) / 4.0);",
-    "    float heatPoint2Y = (0.5 - cos(time * 2.0) / 4.0);",
-    "    vec2 heatPoint2Uv = vec2(heatPoint2X, heatPoint2Y);",
+    "    float heatPoint2X = 0.5 + (sin(-time * 1.0) / 2.5);",
+    "    float heatPoint2Y = 0.5 - (cos(time * 2.0) / 4.0);",
+    "    vec2 heatPoint2Uv = uResolution.xy * vec2(heatPoint2X, heatPoint2Y);",
 
-    "    float heatPoint3X = (0.5 + sin(time * 3.0) / 4.0);",
-    "    float heatPoint3Y = (0.5 - cos(time * 0.5) / 4.0);",
-    "    vec2 heatPoint3Uv = vec2(heatPoint3X, heatPoint3Y);",
+    "    float heatPoint3X = 0.5 + (sin(time * 2.0) / 4.0);",
+    "    float heatPoint3Y = 0.5 - (cos(time * 0.5) / 2.0);",
+    "    vec2 heatPoint3Uv = uResolution.xy * vec2(heatPoint3X, heatPoint3Y);",
 
     "    // Calculate distances from current UV and combine",
-    "    float heatPoint1Dist = distance(uv, heatPoint1Uv);",
-    "    float heatPoint2Dist = distance(uv, heatPoint2Uv);",
-    "    float heatPoint3Dist = distance(uv, heatPoint3Uv);",
-    "    float combinedDist = (heatPoint1Dist);// * heatPoint2Dist * heatPoint3Dist);",
+    "    float heatPoint1Dist = distance(fragCoord, heatPoint1Uv) / uResolution.y;",
+    "    float heatPoint2Dist = distance(fragCoord, heatPoint2Uv) / uResolution.y;",
+    "    float heatPoint3Dist = distance(fragCoord, heatPoint3Uv) / uResolution.y;",
+    "    float combinedDist = (heatPoint1Dist * heatPoint2Dist * heatPoint3Dist);",
 
     "    // Invert and scale",
-    "    float amount = 1.0 - smoothstep(0.2, 1.55, combinedDist * heatDistanceScale);",
+    "    float amount = 1.0 - smoothstep(-0.4, 1.4, combinedDist * heatDistanceScale);",
 
 
     "    // Create Darkness ==============================================================",
@@ -135,13 +135,11 @@ $(document).ready(function () {
 
     "    vec2 stepCoord = vec2(0.0);",
     "    vec2 stepUV = vec2(0.0);",
-    "    vec2 darkestUV = uv;",
 
     "    vec4 stepSample = vec4(1.0);",
-    "    vec4 darkestSample = stepSample;",
+    "    vec4 darkestSample = baseSample;",
 
     "    float stepDistance = 1.0;",
-    "    float darkestDistance = 0.0;",
 
     "    vec2 maxDistanceCoord = fragCoord.xy + vec2(float(darknessRadius), 0.0);",
     "    vec2 maxDistanceUV = maxDistanceCoord.xy / uResolution.xy;",
@@ -157,41 +155,27 @@ $(document).ready(function () {
     "            stepSample = textTexture(stepUV);",
     "            vec4 sampleOnWhite = vec4(0.0);",
     "            combineColors(sampleOnWhite, vec4(1.0), stepSample);",
-    "            stepDistance = distance(fragCoord, stepCoord);",
+    "            stepDistance = distance(fragCoord, stepCoord) / amount;",
 
-    "            float stepDarkestSampleWeight = 1.0 - smoothstep(0.0, 1.0, (stepDistance / maxDistance) * 0.5);",
+    "            float stepDarkestSampleWeight = 1.0 - smoothstep(0.0, 1.0, (stepDistance / maxDistance));",
 
-    "            vec4 mixedStep = mix(baseSample, sampleOnWhite, stepDarkestSampleWeight);",
+    "            vec4 mixedStep = mix(darkestSample, sampleOnWhite, (stepDarkestSampleWeight * 0.5));",
 
-    "            if (mixedStep == min(darkestSample, mixedStep) && stepDistance <= maxDistance) {",
-
-    "                if (mixedStep == darkestSample) {",
-    "                    darkestDistance = min(stepDistance, darkestDistance);",
-    "                    if (darkestDistance == stepDistance) {",
-    "                      darkestUV = stepUV;",
-    "                    }",
-    "                }",
-    "                else {",
-    "                    darkestDistance = stepDistance;",
-    "                }",
-
+    "            if (mixedStep == min(mixedStep, darkestSample) && stepDistance <= maxDistance) {",
     "                darkestSample = mixedStep;",
     "            }",
     "        }",
     "    }",
 
-    "    float darkestSampleWeight = 1.0 - smoothstep(0.0, 1.0, darkestDistance / maxDistance);",
-    "    //darkestSampleWeight = smoothstep(0.0, 0.85, darkestSampleWeight);",
-
 
     "    // Single Pass Blur =============================================================",
 
-    "    const int diameter = 7;",
+    "    const int diameter = 5;",
     "    const int kSize = (diameter - 1) / 2;",
     "    float kernel[diameter];",
 
     "    // Create the 1-D kernel",
-    "    float sigma = 7.0;",
+    "    float sigma = 8.0;",
     "    float Z = 0.0;",
     "    for (int i = 0; i <= kSize; i++) {",
     "        kernel[kSize + i] = kernel[kSize - i] = normpdf(float(i), sigma);",
@@ -207,17 +191,7 @@ $(document).ready(function () {
     "            stepCoord = fragCoord + vec2(float(i), float(j));",
     "            stepUV = stepCoord / uResolution.xy;",
     "            stepSample = textTexture(stepUV);",
-    "            combineColors(stepSample, vec4(1.0, 1.0, 1.0, 1.0), stepSample);",
-    "            stepDistance = distance(fragCoord, stepCoord);",
-
-    "            float stepDarkestSampleWeight = 1.0 - smoothstep(0.0, maxDistance, stepDistance);",
-    "            stepSample = mix(stepSample,",
-    "                             darkestSample,",
-    "                             ((stepDarkestSampleWeight) * amount) * when_le(stepDistance, maxDistance));",
-
-    "            //stepSample = mix(stepSample,",
-    "            //                 darkestSample,",
-    "            //                 ((stepDarkestSampleWeight / 2.0)) * when_le(stepDistance, maxDistance));",
+    "            combineColors(stepSample, vec4(1.0), stepSample);",
 
     "            finalColour += kernel[kSize + j] * kernel[kSize + i] * stepSample;",
     "        }",
@@ -228,16 +202,16 @@ $(document).ready(function () {
 
     "    // Mix Blur and Darkness  =======================================================",
 
-    "    //finalColour = mix(finalColour, darkestSample, (darkestSampleWeight) * amount);",
-    "    finalColour = mix(baseSample, darkestSample, darkestSampleWeight);",
+    "    finalColour = mix(finalColour, darkestSample, 0.5);",
+    "    //finalColour = mix(baseSample, darkestSample, darkestSampleWeight);",
 
     "    //rgbaFromRgb(mainImage, finalColour.rgb);",
-    "    mainImage = darkestSample;",
+    "    mainImage = finalColour;",
     "}"
   ].join("\n");
 
   var text = new Blotter.Text("BLOTTER", {
-    family : "serif",
+    family : "sans-serif",
     size : 32,
     fill : "#171717"
   });
