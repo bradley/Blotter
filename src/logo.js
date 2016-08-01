@@ -97,7 +97,7 @@ $(document).ready(function () {
     "    vec2 uv = fragCoord.xy / uResolution.xy;",
     "    vec4 baseSample = textTexture(uv);",
     "    combineColors(baseSample, vec4(1.0), baseSample);",
-    "    float time = uTime / 1.0;",
+    "    float time = uTime / 2.5;",
 
     "    vec4 finalColour = vec4(0.0);",
 
@@ -123,10 +123,10 @@ $(document).ready(function () {
     "    float heatPoint1Dist = distance(fragCoord, heatPoint1Uv) / uResolution.y;",
     "    float heatPoint2Dist = distance(fragCoord, heatPoint2Uv) / uResolution.y;",
     "    float heatPoint3Dist = distance(fragCoord, heatPoint3Uv) / uResolution.y;",
-    "    float combinedDist = (heatPoint1Dist * heatPoint2Dist * heatPoint3Dist);",
+    "    float combinedDist = (heatPoint1Dist);// * heatPoint2Dist * heatPoint3Dist);",
 
     "    // Invert and scale",
-    "    float amount = 1.0 - smoothstep(-0.4, 1.4, combinedDist * heatDistanceScale);",
+    "    float amount = 1.0 - smoothstep(0.4, 1.4, combinedDist * heatDistanceScale);",
 
 
     "    // Create Darkness ==============================================================",
@@ -159,7 +159,7 @@ $(document).ready(function () {
 
     "            float stepDarkestSampleWeight = 1.0 - smoothstep(0.0, 1.0, (stepDistance / maxDistance));",
 
-    "            vec4 mixedStep = mix(darkestSample, sampleOnWhite, (stepDarkestSampleWeight * 0.5));",
+    "            vec4 mixedStep = mix(darkestSample, sampleOnWhite, stepDarkestSampleWeight * 0.5);",
 
     "            if (mixedStep == min(mixedStep, darkestSample) && stepDistance <= maxDistance) {",
     "                darkestSample = mixedStep;",
@@ -170,7 +170,7 @@ $(document).ready(function () {
 
     "    // Single Pass Blur =============================================================",
 
-    "    const int diameter = 5;",
+    "    const int diameter = 13;",
     "    const int kSize = (diameter - 1) / 2;",
     "    float kernel[diameter];",
 
@@ -193,6 +193,17 @@ $(document).ready(function () {
     "            stepSample = textTexture(stepUV);",
     "            combineColors(stepSample, vec4(1.0), stepSample);",
 
+    "            //stepDistance = distance(fragCoord, stepCoord);",
+
+    "            //float stepDarkestSampleWeight = 1.0 - smoothstep(0.0, maxDistance, stepDistance);",
+    "            //stepSample = mix(stepSample,",
+    "            //                 darkestSample,",
+    "            //                 ((stepDarkestSampleWeight) * amount) * when_le(stepDistance, maxDistance));",
+
+    "            //stepSample = mix(stepSample,",
+    "            //                 darkestSample,",
+    "            //                 0.5 * when_le(stepDistance, maxDistance));",
+
     "            finalColour += kernel[kSize + j] * kernel[kSize + i] * stepSample;",
     "        }",
     "    }",
@@ -202,15 +213,15 @@ $(document).ready(function () {
 
     "    // Mix Blur and Darkness  =======================================================",
 
-    "    finalColour = mix(finalColour, darkestSample, 0.5);",
+    "    //finalColour = min(finalColour, min(finalColour, darkestSample / amount));//, 0.5);",
     "    //finalColour = mix(baseSample, darkestSample, darkestSampleWeight);",
 
     "    //rgbaFromRgb(mainImage, finalColour.rgb);",
-    "    mainImage = finalColour;",
+    "    mainImage = darkestSample;",
     "}"
   ].join("\n");
 
-  var text = new Blotter.Text("BLOTTER", {
+  var text = new Blotter.Text("TATE", {
     family : "sans-serif",
     size : 32,
     fill : "#171717"
