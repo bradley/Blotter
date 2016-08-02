@@ -224,6 +224,8 @@ $(document).ready(function () {
   var text = new Blotter.Text("TATE", {
     family : "sans-serif",
     size : 32,
+    paddingLeft: 10,
+    paddingRight: 10,
     fill : "#171717"
   });
 
