@@ -250,6 +250,4 @@ $(document).ready(function () {
     var time = (new Date().getTime() - startTime) / 1000;
     myScope.material.uniforms.uTime.value = time;
   });
-
-
 });
