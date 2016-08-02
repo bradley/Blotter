@@ -95,8 +95,6 @@ $(document).ready(function () {
     "    // Setup ========================================================================",
 
     "    vec2 uv = fragCoord.xy / uResolution.xy;",
-    "    vec4 baseSample = textTexture(uv);",
-    "    combineColors(baseSample, vec4(1.0), baseSample);",
     "    float time = uTime / 2.5;",
 
     "    vec4 finalColour = vec4(0.0);",
@@ -104,29 +102,29 @@ $(document).ready(function () {
 
     "    // Create Heat Points ===========================================================",
 
-    "    float heatDistanceScale = 1.0; // Larger equates to smaller spread",
+    "    float heatDistanceScale = 2.0; // Larger equates to smaller spread",
 
     "    // Define 3 heat points",
-    "    float heatPoint1X = 0.5 + (sin(time * 1.05) / 4.0);",
-    "    float heatPoint1Y = 0.5 - (cos(time * 2.5) / 2.0);",
-    "    vec2 heatPoint1Uv = uResolution.xy * vec2(heatPoint1X, heatPoint1Y);",
+    "    float heatPoint1X = 0.5 + (sin(time) / 2.5);",
+    "    float heatPoint1Y = 0.5 - (cos(time) / 3.5);",
+    "    vec2 heatPoint1Uv = vec2(heatPoint1X, heatPoint1Y);",
 
-    "    float heatPoint2X = 0.5 + (sin(-time * 1.0) / 2.5);",
-    "    float heatPoint2Y = 0.5 - (cos(time * 2.0) / 4.0);",
-    "    vec2 heatPoint2Uv = uResolution.xy * vec2(heatPoint2X, heatPoint2Y);",
+    "    float heatPoint2X = 0.5 + (sin(time - 1.15) / 2.5);",
+    "    float heatPoint2Y = 0.5 - (cos(time - 1.15) / 3.5);",
+    "    vec2 heatPoint2Uv = vec2(heatPoint2X, heatPoint2Y);",
 
-    "    float heatPoint3X = 0.5 + (sin(time * 2.0) / 4.0);",
-    "    float heatPoint3Y = 0.5 - (cos(time * 0.5) / 2.0);",
-    "    vec2 heatPoint3Uv = uResolution.xy * vec2(heatPoint3X, heatPoint3Y);",
+    "    float heatPoint3X = 0.5 + (sin(time - 3.25) / 2.5);",
+    "    float heatPoint3Y = 0.5 - (cos(time - 3.25) / 3.5);",
+    "    vec2 heatPoint3Uv = vec2(heatPoint3X, heatPoint3Y);",
 
     "    // Calculate distances from current UV and combine",
-    "    float heatPoint1Dist = distance(fragCoord, heatPoint1Uv) / uResolution.y;",
-    "    float heatPoint2Dist = distance(fragCoord, heatPoint2Uv) / uResolution.y;",
-    "    float heatPoint3Dist = distance(fragCoord, heatPoint3Uv) / uResolution.y;",
-    "    float combinedDist = (heatPoint1Dist);// * heatPoint2Dist * heatPoint3Dist);",
+    "    float heatPoint1Dist = distance(uv, heatPoint1Uv);",
+    "    float heatPoint2Dist = distance(uv, heatPoint2Uv);",
+    "    float heatPoint3Dist = distance(uv, heatPoint3Uv);",
+    "    float combinedDist = (heatPoint1Dist * heatPoint3Dist);",
 
     "    // Invert and scale",
-    "    float amount = 1.0 - smoothstep(0.4, 1.4, combinedDist * heatDistanceScale);",
+    "    float amount = 1.0 - smoothstep(0.175, 0.666, combinedDist * heatDistanceScale);",
 
 
     "    // Create Darkness ==============================================================",
@@ -137,7 +135,7 @@ $(document).ready(function () {
     "    vec2 stepUV = vec2(0.0);",
 
     "    vec4 stepSample = vec4(1.0);",
-    "    vec4 darkestSample = baseSample;",
+    "    vec4 darkestSample = vec4(1.0);",
 
     "    float stepDistance = 1.0;",
 
@@ -159,7 +157,7 @@ $(document).ready(function () {
 
     "            float stepDarkestSampleWeight = 1.0 - smoothstep(0.0, 1.0, (stepDistance / maxDistance));",
 
-    "            vec4 mixedStep = mix(darkestSample, sampleOnWhite, stepDarkestSampleWeight * 0.5);",
+    "            vec4 mixedStep = mix(darkestSample, sampleOnWhite, (stepDarkestSampleWeight * 0.5) * smoothstep(0.35, 1.4, amount));",
 
     "            if (mixedStep == min(mixedStep, darkestSample) && stepDistance <= maxDistance) {",
     "                darkestSample = mixedStep;",
@@ -167,61 +165,12 @@ $(document).ready(function () {
     "        }",
     "    }",
 
-
-    "    // Single Pass Blur =============================================================",
-
-    "    const int diameter = 13;",
-    "    const int kSize = (diameter - 1) / 2;",
-    "    float kernel[diameter];",
-
-    "    // Create the 1-D kernel",
-    "    float sigma = 8.0;",
-    "    float Z = 0.0;",
-    "    for (int i = 0; i <= kSize; i++) {",
-    "        kernel[kSize + i] = kernel[kSize - i] = normpdf(float(i), sigma);",
-    "    }",
-
-    "    // Get the normalization factor (as the gaussian has been clamped)",
-    "    for (int i = 0; i < diameter; i++) {",
-    "        Z += kernel[i];",
-    "    }",
-
-    "    for (int i = -kSize; i <= kSize; i++) {",
-    "        for (int j = -kSize; j <= kSize; j++) {",
-    "            stepCoord = fragCoord + vec2(float(i), float(j));",
-    "            stepUV = stepCoord / uResolution.xy;",
-    "            stepSample = textTexture(stepUV);",
-    "            combineColors(stepSample, vec4(1.0), stepSample);",
-
-    "            //stepDistance = distance(fragCoord, stepCoord);",
-
-    "            //float stepDarkestSampleWeight = 1.0 - smoothstep(0.0, maxDistance, stepDistance);",
-    "            //stepSample = mix(stepSample,",
-    "            //                 darkestSample,",
-    "            //                 ((stepDarkestSampleWeight) * amount) * when_le(stepDistance, maxDistance));",
-
-    "            //stepSample = mix(stepSample,",
-    "            //                 darkestSample,",
-    "            //                 0.5 * when_le(stepDistance, maxDistance));",
-
-    "            finalColour += kernel[kSize + j] * kernel[kSize + i] * stepSample;",
-    "        }",
-    "    }",
-
-    "    finalColour = vec4(finalColour/(Z*Z));",
-
-
-    "    // Mix Blur and Darkness  =======================================================",
-
-    "    //finalColour = min(finalColour, min(finalColour, darkestSample / amount));//, 0.5);",
-    "    //finalColour = mix(baseSample, darkestSample, darkestSampleWeight);",
-
-    "    //rgbaFromRgb(mainImage, finalColour.rgb);",
     "    mainImage = darkestSample;",
+    "    //mainImage = vec4(vec3(amount), 1.0);",
     "}"
   ].join("\n");
 
-  var text = new Blotter.Text("TATE", {
+  var text = new Blotter.Text("テスト", {
     family : "sans-serif",
     size : 32,
     paddingLeft: 10,
