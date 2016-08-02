@@ -30,6 +30,12 @@
       }, this));
     }
 
+    function _updateUniformValues () {
+      if (this.mappingMaterial) {
+        this.mappingMaterial.needsUniformValuesUpdate = true;
+      }
+    }
+
     function _update () {
       var buildMapping,
           buildMappingMaterial,
@@ -162,9 +168,14 @@
         this._materialEventBinding = new Blotter.ModelEventBinding(material, {
           update : _.bind(function () {
             _update.call(this);
-          }, this)
+          }, this),
+
+          updateUniformValues : _.bind(function () {
+            _updateUniformValues.call(this);
+          }, this),
         });
         material.on("update", this._materialEventBinding.eventCallbacks.update);
+        material.on("updateUniformValues", this._materialEventBinding.eventCallbacks.updateUniformValues);
       },
 
       addText : function (text) {

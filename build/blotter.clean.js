@@ -51,6 +51,12 @@
       }, this));
     }
 
+    function _updateUniformValues () {
+      if (this.mappingMaterial) {
+        this.mappingMaterial.needsUniformValuesUpdate = true;
+      }
+    }
+
     function _update () {
       var buildMapping,
           buildMappingMaterial,
@@ -183,9 +189,14 @@
         this._materialEventBinding = new Blotter.ModelEventBinding(material, {
           update : _.bind(function () {
             _update.call(this);
-          }, this)
+          }, this),
+
+          updateUniformValues : _.bind(function () {
+            _updateUniformValues.call(this);
+          }, this),
         });
         material.on("update", this._materialEventBinding.eventCallbacks.update);
+        material.on("updateUniformValues", this._materialEventBinding.eventCallbacks.updateUniformValues);
       },
 
       addText : function (text) {
@@ -596,19 +607,19 @@
 
     extractValidUniforms : function (uniforms) {
       uniforms = uniforms || {};
-      return _.reduce(uniforms, function (memo, uniformObject, uniformName) {
-        if (Blotter.UniformUtils.UniformTypes.indexOf(uniformObject.type) == -1) {
+      return _.reduce(uniforms, function (memo, uniformDescription, uniformName) {
+        if (Blotter.UniformUtils.UniformTypes.indexOf(uniformDescription.type) == -1) {
           Blotter.Messaging.logError("Blotter.UniformUtils", "extractValidUniforms", "uniforms must be one of type: " +
             Blotter.UniformUtils.UniformTypes.join(", "));
           return memo;
         }
 
-        if (!Blotter.UniformUtils.validValueForUniformType(uniformObject.type, uniformObject.value)) {
-          Blotter.Messaging.logError("Blotter.UniformUtils", "extractValidUniforms", "uniform value for " + uniformName + " is incorrect for type: " + uniformObject.type);
+        if (!Blotter.UniformUtils.validValueForUniformType(uniformDescription.type, uniformDescription.value)) {
+          Blotter.Messaging.logError("Blotter.UniformUtils", "extractValidUniforms", "uniform value for " + uniformName + " is incorrect for type: " + uniformDescription.type);
           return memo;
         }
 
-        memo[uniformName] = _.pick(uniformObject, "type", "value");
+        memo[uniformName] = _.pick(uniformDescription, "type", "value");
         return memo;
       }, {});
     }
@@ -786,14 +797,54 @@
 
   Blotter.MappingMaterial.prototype = (function() {
 
+    function _updateAllUniformValues (material, dataTextureObjects, uniformInterfaces) {
+      _.each(material.uniforms, function (materialUniform, materialUniformName) {
+        var value = materialUniform.value,
+            dataTextureObject = dataTextureObjects[materialUniformName],
+            type = dataTextureObject.userUniform.type,
+            data = dataTextureObject.data;
+
+        for (var i = 0; i < dataTextureObject.data.length / 4; i++) {
+          if (type == "1f") {
+            data[4*i]   = value;    // x (r)
+            data[4*i+1] = 0.0;
+            data[4*i+2] = 0.0;
+            data[4*i+3] = 0.0;
+          } else if (type == "2f") {
+            data[4*i]   = value[0]; // x (r)
+            data[4*i+1] = value[1]; // y (g)
+            data[4*i+2] = 0.0;
+            data[4*i+3] = 0.0;
+          } else if (type == "3f") {
+            data[4*i]   = value[0]; // x (r)
+            data[4*i+1] = value[1]; // y (g)
+            data[4*i+2] = value[2]; // z (b)
+            data[4*i+3] = 0.0;
+          } else if (type == "4f") {
+            data[4*i]   = value[0]; // x (r)
+            data[4*i+1] = value[1]; // y (g)
+            data[4*i+2] = value[2]; // z (b)
+            data[4*i+3] = value[3]; // w (a)
+          } else {
+            data[4*i]   = 0.0;
+            data[4*i+1] = 0.0;
+            data[4*i+2] = 0.0;
+            data[4*i+3] = 0.0;
+          }
+        }
+
+        // Update existing uniform interface, bypassing setter. Gross.
+        _.each(uniformInterfaces, function (interface, textId) {
+          uniformInterfaces[textId][materialUniformName]._value = value;
+        });
+
+        dataTextureObject.texture.needsUpdate = true;
+      });
+    }
+
     function _setValueAtIndexInDataTextureObject (value, i, dataTextureObject) {
         var type = dataTextureObject.userUniform.type,
             data = dataTextureObject.data;
-
-        if (!Blotter.UniformUtils.validValueForUniformType(type, value)) {
-          Blotter.Messaging.logError("Blotter.MappingMaterial", "uniform value not valid for uniform type: " + this._type);
-          return;
-        }
 
         if (type == "1f") {
           data[4*i]   = value;    // x (r)
@@ -835,7 +886,7 @@
         },
 
         set type (v) {
-          Blotter.Messaging.logError("Blotter.MappingMaterial", false, "uniform types may not be updated");
+          Blotter.Messaging.logError("Blotter.MappingMaterial", false, "uniform types may not be updated through a text scope");
         },
 
         get value () {
@@ -868,6 +919,14 @@
     return {
 
       constructor : Blotter.MappingMaterial,
+
+      get needsUniformValuesUpdate () { }, // jshint
+
+      set needsUniformValuesUpdate (value) {
+        if (value === true) {
+          _updateAllUniformValues(this.material, this._userUniformDataTextureObjects, this._uniforms);
+        }
+      },
 
       get mainImage () {
         return this.material.mainImage;
@@ -926,6 +985,42 @@
       return mainImage.join("\n");
     }
 
+    function _getUniformInterfaceForUniformDescription (uniformDescription) {
+      var self = this;
+      return {
+        _type : uniformDescription.type,
+        _value : uniformDescription.value,
+
+        get type () {
+          return this._type;
+        },
+
+        set type (v) {
+          this._type = v;
+        },
+
+        get value () {
+          return this._value;
+        },
+
+        set value (v) {
+          if (!Blotter.UniformUtils.validValueForUniformType(this._type, v)) {
+            Blotter.Messaging.logError("Blotter.Material", false, "uniform value not valid for uniform type: " + this._type);
+            return;
+          }
+          this._value = v;
+          self.needsUniformValuesUpdate = true;
+        }
+      };
+    }
+
+    function _getUniformInterface (uniforms) {
+      return _.reduce(uniforms, _.bind(function (memo, uniformDescription, uniformName) {
+        memo[uniformName] = _getUniformInterfaceForUniformDescription.call(this, uniformDescription);
+        return memo;
+      }, this), {});
+    }
+
     return {
 
       constructor : Blotter.Material,
@@ -935,6 +1030,14 @@
       set needsUpdate (value) {
         if (value === true) {
           this.trigger("update");
+        }
+      },
+
+      get needsUniformValuesUpdate () { }, // jshint
+
+      set needsUniformValuesUpdate (value) {
+        if (value === true) {
+          this.trigger("updateUniformValues");
         }
       },
 
@@ -951,7 +1054,7 @@
       },
 
       set uniforms (uniforms) {
-        this._uniforms = Blotter.UniformUtils.extractValidUniforms(uniforms);
+        this._uniforms = _getUniformInterface.call(this, Blotter.UniformUtils.extractValidUniforms(uniforms));
       },
 
       init : function () {
@@ -971,16 +1074,24 @@
 
   Blotter.ShaderMaterial = function(mainImage, options) {
     Blotter.Material.apply(this, arguments);
-
-    _.defaults(this, options, {
-      uniforms : {}
-    });
-
-    this.mainImage = mainImage;
   };
 
   Blotter.ShaderMaterial.prototype = Object.create(Blotter.Material.prototype);
-  Blotter.ShaderMaterial.prototype.constructor = Blotter.ShaderMaterial;
+
+  _.extend(Blotter.ShaderMaterial.prototype, (function () {
+
+    return {
+
+      constructor : Blotter.RGBSplitMaterial,
+
+      init : function (mainImage, options) {
+        _.defaults(this, options);
+
+        this.mainImage = mainImage;
+      }
+    };
+
+  })());
 
 })(
   this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
@@ -1408,7 +1519,7 @@
         var loader = new THREE.TextureLoader();
 
         loader.load(mapping.toDataURL(), _.bind(function(texture) {
-          texture.generateMipmaps = false;
+          texture.generateMipmaps = true; // TODO: Make optional.
           texture.minFilter = THREE.LinearFilter;
           texture.magFilter = THREE.LinearFilter;
           texture.needsUpdate = true;
