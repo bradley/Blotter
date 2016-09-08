@@ -58,20 +58,27 @@
     // Determines size of text within the document given certain style properties
 
     sizeForText : function(textValue, properties) {
-      var el = document.createElement('p'),
+      // Using a <span> here may not be the best approach. In theory a user's stylesheet
+      //   could override the necessary styling for determining sizes below. With growing
+      //   support for custom tags in html, we may consider using them if this raises problems.
+      var el = document.createElement("span"),
           size;
 
       properties = this.ensurePropertyValues(properties);
 
       el.innerHTML = textValue;
+      el.style.display = "inline-block";
       el.style.fontFamily = properties.family;
       el.style.fontSize = properties.size + "px";
       el.style.fontWeight = properties.weight;
       el.style.fontStyle = properties.style;
-      el.style.padding = this.stringifiedPadding(properties);
       el.style.lineHeight = properties.leading;
+      el.style.maxWidth = "none";
+      el.style.padding = this.stringifiedPadding(properties);
+      el.style.position = "absolute";
+      el.style.width = "auto";
       el.style.visibility = "hidden";
-      el.style.display = "inline-block";
+
 
       document.body.appendChild(el);
 
