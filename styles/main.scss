@@ -1,6 +1,24 @@
 @import "variables";
 @import "codemirror_custom";
 
+/*  Typography
+    ------------------------------------- */
+
+@font-face{
+  font-family: "Garamond";
+  src: url('fonts/EBGaramond12-Regular.ttf');
+}
+
+@font-face{
+  font-family: "Garamond";
+  src: url('fonts/EBGaramond12-Italic.ttf');
+  font-style: italic;
+}
+
+
+/*  Base
+    ------------------------------------- */
+
 * {
   margin: 0;
   padding: 0;
@@ -16,7 +34,7 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: "utopia-std", serif;
+  font-family: $h-font-stack;
   vertical-align: top;
   color: tint($black, 20%);
   line-height: 1.5;
@@ -120,7 +138,7 @@ li.horizon {
 
 
 /* logo */
-#introduction {
+#logo {
   height: 80px;
   margin-bottom: $line-height;
 

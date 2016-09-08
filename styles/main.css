@@ -380,12 +380,23 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
 .CodeMirror-focused .CodeMirror-selected {
   background: #fff45f; }
 
+/*  Typography
+    ------------------------------------- */
+@font-face {
+  font-family: "Garamond";
+  src: url("fonts/EBGaramond12-Regular.ttf"); }
+@font-face {
+  font-family: "Garamond";
+  src: url("fonts/EBGaramond12-Italic.ttf");
+  font-style: italic; }
+/*  Base
+    ------------------------------------- */
 * {
   margin: 0;
   padding: 0; }
 
 body {
-  font-family: "adobe-garamond-pro", serif;
+  font-family: "Garamond", serif;
   font-size: 16px;
   line-height: 24px;
   color: #171717;
@@ -393,7 +404,7 @@ body {
   vertical-align: top; }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: "utopia-std", serif;
+  font-family: "SerapionPro", "Garamond", serif;
   vertical-align: top;
   color: tint(#171717, 20%);
   line-height: 1.5;
@@ -465,11 +476,11 @@ li.horizon {
   margin: 1.5em 0 !important; }
 
 /* logo */
-#introduction {
+#logo {
   height: 80px;
   margin-bottom: 24px;
   /* temporary until we replace it with webgl */ }
-  #introduction img {
+  #logo img {
     height: 100%;
     margin-left: -16px; }
 
@@ -707,3 +718,5 @@ p.static, p.static + p {
 ::-moz-selection {
   background: tint(#fff45f, 25%);
   /* Firefox */ }
+
+/*# sourceMappingURL=main.css.map */

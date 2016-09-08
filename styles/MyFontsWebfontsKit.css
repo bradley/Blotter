@@ -1,0 +1,27 @@
+/**
+ * @license
+ * MyFonts Webfont Build ID 3278924, 2016-09-05T18:45:54-0400
+ *
+ * The fonts listed in this notice are subject to the End User License
+ * Agreement(s) entered into by the website owner. All other parties are
+ * explicitly restricted from using the Licensed Webfonts(s).
+ *
+ * You may obtain a valid license at the URLs below.
+ *
+ * Webfont: SerapionPro by Storm
+ * URL: http://www.myfonts.com/fonts/storm/serapion/regular/
+ * Copyright: Copyright (c) Frantisek Storm. www.stormtype.com, 2005. All rights reserved.
+ * Licensed pageviews: 10,000
+ *
+ *
+ * License: http://www.myfonts.com/viewlicense?type=web&buildid=3278924
+ *
+ * © 2016 MyFonts Inc
+*/
+
+
+/* @import must be at top of file, otherwise CSS will not work */
+@import url("http://hello.myfonts.net/count/32084c");
+
+
+@font-face {font-family: 'SerapionPro';src: url('webfonts/32084C_0_0.eot');src: url('webfonts/32084C_0_0.eot?#iefix') format('embedded-opentype'),url('webfonts/32084C_0_0.woff2') format('woff2'),url('webfonts/32084C_0_0.woff') format('woff'),url('webfonts/32084C_0_0.ttf') format('truetype');}
