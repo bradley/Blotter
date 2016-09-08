@@ -477,11 +477,10 @@ li.horizon {
 
 /* logo */
 #logo {
-  margin-bottom: 24px;
-  /* temporary until we replace it with webgl */ }
-  #logo img {
-    height: 100%;
-    margin-left: -16px; }
+  height: 103px;
+  margin-bottom: 24px; }
+  #logo canvas {
+    vertical-align: top; }
 
 #content {
   padding: 25px 25px 50px 25px;

@@ -139,12 +139,11 @@ li.horizon {
 
 /* logo */
 #logo {
+  height: 103px;
   margin-bottom: $line-height;
 
-  /* temporary until we replace it with webgl */
-  img {
-    height: 100%;
-    margin-left: -16px;
+  canvas {
+    vertical-align: top;
   }
 }
 

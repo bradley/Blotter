@@ -95,8 +95,9 @@ $(document).ready(function () {
     family : "'SerapionPro', sans-serif",
     size : 96,
     weight : 100,
-    leading : 1,
-    paddingLeft : 10,
+    leading : "70px",
+    paddingTop : 32,
+    paddingLeft : 5,
     paddingRight : 10,
     fill : "#171717"
   });
