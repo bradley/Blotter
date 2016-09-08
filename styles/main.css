@@ -477,7 +477,6 @@ li.horizon {
 
 /* logo */
 #logo {
-  height: 80px;
   margin-bottom: 24px;
   /* temporary until we replace it with webgl */ }
   #logo img {

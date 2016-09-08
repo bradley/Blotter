@@ -11,23 +11,32 @@
 
     <link rel="shortcut icon" type="image/gif" href="./images/favicon.ico">
 
-    <script src="https://use.typekit.net/akc6qok.js"></script>
-    <script type="text/javascript">
-      var BlotterSite = {};
-
-      try {
-        Typekit.load({
-          async : true,
-          active : function() {
-            try {
-              BlotterSite.editors.update();
-            } catch(e) {};
-          }
-        })
-      } catch(e) {}
-    </script>
-
     <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,400i" rel="stylesheet">
+
+    <!--
+    /**
+     * @license
+     * MyFonts Webfont Build ID 3278924, 2016-09-05T18:45:54-0400
+     *
+     * The fonts listed in this notice are subject to the End User License
+     * Agreement(s) entered into by the website owner. All other parties are
+     * explicitly restricted from using the Licensed Webfonts(s).
+     *
+     * You may obtain a valid license at the URLs below.
+     *
+     * Webfont: SerapionPro by Storm
+     * URL: http://www.myfonts.com/fonts/storm/serapion/regular/
+     * Copyright: Copyright (c) Frantisek Storm. www.stormtype.com, 2005. All rights reserved.
+     * Licensed pageviews: 10,000
+     *
+     *
+     * License: http://www.myfonts.com/viewlicense?type=web&buildid=3278924
+     *
+     * © 2016 MyFonts Inc
+    */
+
+    -->
+    <link rel="stylesheet" type="text/css" href="./styles/MyFontsWebfontsKit.css">
     <link rel="stylesheet" type="text/css" href="./styles/main.css">
 
     <script src="./third_party/jquery.min.js"></script>
@@ -101,6 +110,8 @@
 
         // });
       // });
+
+      var BlotterSite = {};
 
       $(function() {
 
@@ -212,9 +223,8 @@
   </head>
   <body>
     <div id="content">
-      <div id="introduction">
-        <script src="./src/logo.js"></script>
-      </div>
+      <div id="logo"></div>
+      <script src="./src/logo.js"></script>
       <p>
         When applying effects to text on the web, designers have traditionally been constrained to those provided by <code>css</code>. In the majority of cases this is entirely suitable – text is text right? Yet still, there exist numerous examples of designers combining <code>css</code> properties or gifs and images to create effects that evoke something more playful. Precisely here, Blotter exists to provide an alternative.
       </p>
@@ -300,7 +310,7 @@
           </div>
 
           <script class="js-code"  type="application/json">var text = new Blotter.Text("observation", {
-  family : "'adobe-garamond-pro', serif",
+  family : "'Garamond', serif",
   size : 27,
   fill : "#171717"
 });
@@ -376,7 +386,7 @@ blotter.on("ready", function () {
 ].join("\n");
 
 var text = new Blotter.Text("observation", {
-  family : "'adobe-garamond-pro', serif",
+  family : "'Garamond', serif",
   size : 27,
   fill : "#171717"
 });
@@ -506,7 +516,7 @@ var blotter = new Blotter(material, {
 });
 
 var properties = {
-  family : "'adobe-garamond-pro', serif",
+  family : "'Garamond', serif",
   size : 27,
   fill : "#171717"
 };

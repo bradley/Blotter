@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=400">
+    <meta name="description" content="DESCRIPTION HERE">
+    <meta name="keywords" content="blotter.js, blotter, javascript, library, graphics, text, rendering, effects, styles, web, html5">
+    <meta name="author" content="bradley">
+    <link rel="image_src" href="./images/logo.gif" />
+    <title>Blotter.js</title>
+
+    <link rel="shortcut icon" type="image/gif" href="./images/favicon.ico">
+
+    <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,400i" rel="stylesheet">
+
+    <!--
+    /**
+     * @license
+     * MyFonts Webfont Build ID 3278924, 2016-09-05T18:45:54-0400
+     *
+     * The fonts listed in this notice are subject to the End User License
+     * Agreement(s) entered into by the website owner. All other parties are
+     * explicitly restricted from using the Licensed Webfonts(s).
+     *
+     * You may obtain a valid license at the URLs below.
+     *
+     * Webfont: SerapionPro by Storm
+     * URL: http://www.myfonts.com/fonts/storm/serapion/regular/
+     * Copyright: Copyright (c) Frantisek Storm. www.stormtype.com, 2005. All rights reserved.
+     * Licensed pageviews: 10,000
+     *
+     *
+     * License: http://www.myfonts.com/viewlicense?type=web&buildid=3278924
+     *
+     * © 2016 MyFonts Inc
+    */
+
+    -->
+    <link rel="stylesheet" type="text/css" href="./styles/MyFontsWebfontsKit.css">
+    <link rel="stylesheet" type="text/css" href="./styles/main.css">
+
+    <script src="./third_party/jquery.min.js"></script>
+    <script src="./third_party/blotter.min.js"></script>
+    <script src="./third_party/codemirror.min.js"></script>
+    <script src="./third_party/javascript.js"></script>
+
+    <script>
+
+      var BlotterSite = {};
+
+      $(function() {
+
+        BlotterSite.Editor = function (el) {
+          this.init.apply(this, arguments);
+        };
+
+        BlotterSite.Editor.prototype = (function () {
+
+          function _buildJSMirror (el, code) {
+            return CodeMirror(el, {
+              value: code,
+              mode: "javascript",
+              tabSize: 2,
+              lineWrapping: true,
+              lineNumbers: true
+            });
+          }
+
+          function _buildHTMLMirror (el, code) {
+            return CodeMirror(el, {
+              value: code,
+              mode: "html",
+              tabSize: 2,
+              lineWrapping: true,
+              lineNumbers: true
+            });
+          }
+
+          return {
+
+            constructor : BlotterSite.Editor,
+
+            init : function (el) {
+              this.el = el;
+              this.outputEl = el.find(".output");
+
+              this.jsCode = el.find("script.js-code").html();
+              this.htmlCode = this.outputEl.html();
+              this.jsContent = el.find(".js-content");
+              this.htmlContent = el.find(".html-content");
+
+              this.jsMirror = _buildJSMirror(this.jsContent[0], this.jsCode);
+              this.htmlMirror = _buildHTMLMirror(this.htmlContent[0], this.htmlCode);
+
+              this.jsMirror.on("change", _.bind(_.debounce(this.update, 1000), this));
+              this.htmlMirror.on("change", _.bind(_.debounce(this.update, 1000), this));
+
+              this.htmlDoc = this.htmlMirror.getDoc();
+              this.jsDoc = this.jsMirror.getDoc();
+
+              el.find(".js-tab").on("click", _.bind(this.showJSContent, this));
+              el.find(".html-tab").on("click", _.bind(this.showHTMLContent, this));
+
+              this.update();
+              this.showJSContent();
+            },
+
+            update : function() {
+              this.htmlCode = this.htmlDoc.getValue();
+              try {
+                this.outputEl.html(unescape(this.htmlCode));
+              } catch (e) {
+                console.log(e);
+              }
+
+              this.jsCode = this.jsDoc.getValue();
+              try {
+                eval(this.jsCode); // yikes!
+              } catch (e) {
+                console.log(e);
+              }
+            },
+
+            showJSContent : function () {
+              this.htmlContent.hide();
+              this.jsContent.show();
+            },
+
+            showHTMLContent : function () {
+              this.jsContent.hide();
+              this.htmlContent.show();
+            }
+          }
+        })();
+
+        $(document).ready(function () {
+
+          BlotterSite.editors = (function (editors) {
+            return {
+              editors : editors,
+
+              update : function () {
+                _.each(this.editors, function (editor) {
+                  editor.update();
+                });
+              }
+            }
+          })(_.reduce($(".tabbed-editor"), function (m, el) {
+            m.push(new BlotterSite.Editor($(el)));
+            return m;
+          }, []));
+
+        });
+
+      });
+
+    </script>
+  </head>
+  <body>
+    <div id="content">
+      <div id="logo"></div>
+      <script src="./src/logo.js"></script>
+      <h1>Test</h1>
+      <p>
+        When applying effects to text on the web, designers have traditionally been constrained to those provided by <code>css</code>. In the majority of cases this is entirely suitable – text is text right? Yet still, there exist numerous examples of designers combining <code>css</code> properties or gifs and images to create effects that evoke something more playful. Precisely here, Blotter exists to provide an alternative.
+      </p>
+      <p>
+        <strong>Blotter</strong> is a <code>webgl</code> backed JavaScript api geared towards allowing designers to easily draw both pre-made and custom text effects using <code>glsl</code> shaders.
+      </p>
+  </body>
+</html>
