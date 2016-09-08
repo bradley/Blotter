@@ -6,85 +6,8 @@ $(document).ready(function () {
     "#endif",
 
 
-    "vec4 when_eq(vec4 x, vec4 y) {",
-    "  return 1.0 - abs(sign(x - y));",
-    "}",
-
-    "vec4 when_neq(vec4 x, vec4 y) {",
-    "  return abs(sign(x - y));",
-    "}",
-
-    "vec4 when_gt(vec4 x, vec4 y) {",
-    "  return max(sign(x - y), 0.0);",
-    "}",
-
-    "vec4 when_lt(vec4 x, vec4 y) {",
-    "  return max(sign(y - x), 0.0);",
-    "}",
-
-    "vec4 when_ge(vec4 x, vec4 y) {",
-    "  return 1.0 - when_lt(x, y);",
-    "}",
-
-    "vec4 when_le(vec4 x, vec4 y) {",
-    "  return 1.0 - when_gt(x, y);",
-    "}",
-
-
-    "float when_eq(float x, float y) {",
-    "  return 1.0 - abs(sign(x - y));",
-    "}",
-
-    "float when_neq(float x, float y) {",
-    "  return abs(sign(x - y));",
-    "}",
-
-    "float when_gt(float x, float y) {",
-    "  return max(sign(x - y), 0.0);",
-    "}",
-
-    "float when_lt(float x, float y) {",
-    "  return max(sign(y - x), 0.0);",
-    "}",
-
-    "float when_ge(float x, float y) {",
-    "  return 1.0 - when_lt(x, y);",
-    "}",
-
-    "float when_le(float x, float y) {",
-    "  return 1.0 - when_gt(x, y);",
-    "}",
-
-
-    "vec4 and(vec4 a, vec4 b) {",
-    "  return a * b;",
-    "}",
-
-    "vec4 or(vec4 a, vec4 b) {",
-    "  return min(a + b, 1.0);",
-    "}",
-
-    "vec4 not(vec4 a) {",
-    "  return 1.0 - a;",
-    "}",
-
-
-    "float and(float a, float b) {",
-    "  return a * b;",
-    "}",
-
-    "float or(float a, float b) {",
-    "  return min(a + b, 1.0);",
-    "}",
-
-    "float not(float a) {",
-    "  return 1.0 - a;",
-    "}",
-
-
-    "float normpdf( in float x, in float sigma )",
-    "{",
-    "  return 0.39894*exp(-0.5*x*x/(sigma*sigma))/sigma;",
+    "float rand(vec2 co){",
+    "    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);",
     "}",
 
 
@@ -95,36 +18,32 @@ $(document).ready(function () {
     "    // Setup ========================================================================",
 
     "    vec2 uv = fragCoord.xy / uResolution.xy;",
-    "    float time = uTime / 2.5;",
+    "    float time = uTime / 4.0;",
 
     "    vec4 finalColour = vec4(0.0);",
 
 
     "    // Create Heat Points ===========================================================",
 
-    "    float heatDistanceScale = 2.0; // Larger equates to smaller spread",
+    "    float heatDistanceScale = 35.0; // Larger value equates to smaller spread",
 
-    "    // Define 3 heat points",
-    "    float heatPoint1X = 0.5 + (sin(time) / 2.5);",
-    "    float heatPoint1Y = 0.5 - (cos(time) / 3.5);",
-    "    vec2 heatPoint1Uv = vec2(heatPoint1X, heatPoint1Y);",
+    "    // Define 2 heat points",
+    "    float heatPoint1X = 0.5 - (sin(time) / 2.0);",
+    "    float heatPoint1Y = 0.5 - ((cos(time) * abs(cos(time))) / 1.5);",
+    "    vec2 heatPoint1Uv = vec2(heatPoint1X, heatPoint1Y) * uResolution.xy;",
 
-    "    float heatPoint2X = 0.5 + (sin(time - 1.15) / 2.5);",
-    "    float heatPoint2Y = 0.5 - (cos(time - 1.15) / 3.5);",
-    "    vec2 heatPoint2Uv = vec2(heatPoint2X, heatPoint2Y);",
-
-    "    float heatPoint3X = 0.5 + (sin(time - 3.25) / 2.5);",
-    "    float heatPoint3Y = 0.5 - (cos(time - 3.25) / 3.5);",
-    "    vec2 heatPoint3Uv = vec2(heatPoint3X, heatPoint3Y);",
+    "    float heatPoint2X = 0.5 - (sin(time - 1.0) / 2.0);",
+    "    float heatPoint2Y = 0.5 - ((cos(time - 1.0) * abs(cos(time))) / 1.0);",
+    "    vec2 heatPoint2Uv = vec2(heatPoint2X, heatPoint2Y) * uResolution.xy;",
 
     "    // Calculate distances from current UV and combine",
-    "    float heatPoint1Dist = distance(uv, heatPoint1Uv);",
-    "    float heatPoint2Dist = distance(uv, heatPoint2Uv);",
-    "    float heatPoint3Dist = distance(uv, heatPoint3Uv);",
-    "    float combinedDist = (heatPoint1Dist * heatPoint3Dist);",
+    "    float heatPoint1Dist = smoothstep(0.0, 1.4, distance(fragCoord, heatPoint1Uv) / uResolution.y);",
+    "    float heatPoint2Dist = smoothstep(0.0, 1.25, distance(fragCoord, heatPoint2Uv) / uResolution.y);",
+    "    float combinedDist = (heatPoint1Dist * heatPoint2Dist);",
 
     "    // Invert and scale",
-    "    float amount = 1.0 - smoothstep(0.175, 0.666, combinedDist * heatDistanceScale);",
+    "    float amount = 1.0 - smoothstep(0.15, 25.0, combinedDist * heatDistanceScale);",
+    "    amount = smoothstep(-1.0, 1.0, amount);",
 
 
     "    // Create Darkness ==============================================================",
@@ -143,6 +62,8 @@ $(document).ready(function () {
     "    vec2 maxDistanceUV = maxDistanceCoord.xy / uResolution.xy;",
     "    float maxDistance = distance(fragCoord, maxDistanceCoord);",
 
+    "    float randNoise = rand(uv * sin(time * 0.025)) * 0.15;",
+
     "    // Find the darkest sample and some relevant meta data within a radius.",
     "    //   Note: You may notice some artifacts in our darkness. This is due to",
     "    //   us making steps on a `+=2` basis in the interest of performance. Play!",
@@ -153,11 +74,12 @@ $(document).ready(function () {
     "            stepSample = textTexture(stepUV);",
     "            vec4 sampleOnWhite = vec4(0.0);",
     "            combineColors(sampleOnWhite, vec4(1.0), stepSample);",
-    "            stepDistance = distance(fragCoord, stepCoord) / amount;",
+    "            stepDistance = distance(fragCoord, stepCoord) / smoothstep(-1.0, 1.0, amount);",
 
-    "            float stepDarkestSampleWeight = 1.0 - smoothstep(0.0, 1.0, (stepDistance / maxDistance));",
+    "            float stepDarkestSampleWeight = 1.0 - clamp((stepDistance / maxDistance), 0.0, 1.0) + randNoise;",
+    "            stepDarkestSampleWeight *= smoothstep(0.0, 7.5, amount);",
 
-    "            vec4 mixedStep = mix(darkestSample, sampleOnWhite, (stepDarkestSampleWeight * 0.5) * smoothstep(0.35, 1.4, amount));",
+    "            vec4 mixedStep = mix(darkestSample, sampleOnWhite, stepDarkestSampleWeight);",
 
     "            if (mixedStep == min(mixedStep, darkestSample) && stepDistance <= maxDistance) {",
     "                darkestSample = mixedStep;",
@@ -166,13 +88,13 @@ $(document).ready(function () {
     "    }",
 
     "    mainImage = darkestSample;",
-    "    //mainImage = vec4(vec3(amount), 1.0);",
     "}"
   ].join("\n");
 
-  var text = new Blotter.Text("テスト", {
-    family : "sans-serif",
-    size : 32,
+  var text = new Blotter.Text("Blotter", {
+    family : "'SerapionPro', sans-serif",
+    size : 96,
+    weight: 100,
     paddingLeft: 10,
     paddingRight: 10,
     fill : "#171717"
@@ -192,11 +114,11 @@ $(document).ready(function () {
   var startTime = new Date().getTime();
 
   blotter.on("ready", function () {
-    elem.html(myScope.domElement);
+    elem.append(myScope.domElement);
   });
 
   myScope.on("render", function () {
     var time = (new Date().getTime() - startTime) / 1000;
-    myScope.material.uniforms.uTime.value = time;
+    material.uniforms.uTime.value = time;
   });
 });
