@@ -48,13 +48,13 @@ $(document).ready(function () {
 
     "    // Create Darkness ==============================================================",
 
-    "    const int darknessRadius = 10;",
+    "    const int darknessRadius = 12;",
 
     "    vec2 stepCoord = vec2(0.0);",
     "    vec2 stepUV = vec2(0.0);",
 
     "    vec4 stepSample = vec4(1.0);",
-    "    vec4 darkestSample = vec4(1.0);",
+    "    vec4 darkestSample = vec4(1.0, 1.0, 1.0, 1.0);",
 
     "    float stepDistance = 1.0;",
 
@@ -87,7 +87,7 @@ $(document).ready(function () {
     "        }",
     "    }",
 
-    "    mainImage = darkestSample;",
+    "    rgbaFromRgb(mainImage, vec3(darkestSample.r, darkestSample.g, darkestSample.b));",
     "}"
   ].join("\n");
 
