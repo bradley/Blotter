@@ -338,48 +338,27 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
   .CodeMirror-linenumbers,
   .CodeMirror-linenumber {
     display: none; } }
-.cm-s-default .cm-keyword {
-  color: #1fd49d; }
-
-.cm-s-default .cm-number {
-  color: #ee1919; }
-
-.cm-s-default .cm-def {
-  color: #171717; }
-
-.cm-s-default .cm-variable {
-  color: #171717; }
-
-.cm-s-default .cm-variable-2 {
-  color: #3b3fe2; }
-
-.cm-s-default .cm-property {
-  color: #ec1d80; }
-
-.cm-s-default .cm-variable + .cm-property {
-  color: #3b3fe2; }
-
-.cm-s-default .cm-comment {
-  color: #c7c7c7;
-  font-style: italic; }
-
-.cm-s-default .cm-string {
-  color: #5a4f90; }
-
-.cm-s-default .cm-string-2 {
-  color: #5a4f90; }
+/*
+.cm-s-default .cm-keyword {color: $turquoise;}
+.cm-s-default .cm-number {color: $red;}
+.cm-s-default .cm-def {color: $black;}
+.cm-s-default .cm-variable {color: $black;}
+.cm-s-default .cm-variable-2 {color: $purple;}
+.cm-s-default .cm-property {color: $fuscia;}
+.cm-s-default .cm-variable + .cm-property {color: $purple}
+.cm-s-default .cm-comment {color: #c7c7c7; font-style: italic;}
+.cm-s-default .cm-string {color: $dark-soft-blue;}
+.cm-s-default .cm-string-2 {color: $dark-soft-blue;}
 
 .CodeMirror pre {
-  font-size: 16px;
-  line-height: 24px;
-  color: #bc4eed; }
+  font-size: $font-size;
+  line-height: $line-height;
+  color: $violet;
+}
 
-.CodeMirror-selected {
-  background: #fff45f; }
-
-.CodeMirror-focused .CodeMirror-selected {
-  background: #fff45f; }
-
+.CodeMirror-selected { background: $yellow; }
+.CodeMirror-focused .CodeMirror-selected { background: $yellow; }
+*/
 /*  Typography
     ------------------------------------- */
 @font-face {
@@ -389,6 +368,9 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
   font-family: "Garamond";
   src: url("fonts/EBGaramond12-Italic.ttf");
   font-style: italic; }
+@font-face {
+  font-family: "Avenir";
+  src: url("fonts/Avenir-Next.ttf"); }
 /*  Base
     ------------------------------------- */
 * {
@@ -397,28 +379,77 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
 
 body {
   font-family: "Garamond", serif;
-  font-size: 16px;
-  line-height: 24px;
-  color: #171717;
-  padding: 25px;
+  font-size: 18px;
+  line-height: 27px;
+  color: #1F1F1F;
+  padding: 0;
   vertical-align: top; }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: "SerapionPro", "Garamond", serif;
   vertical-align: top;
-  color: tint(#171717, 20%);
+  color: tint(#1F1F1F, 20%);
   line-height: 1.5;
-  margin-bottom: 24px;
+  margin-bottom: 27px;
   font-weight: 400;
   letter-spacing: 0.015em;
   word-spacing: 0.15em; }
 
 /* Used for main section headings. */
 h2 {
-  font-size: 32px; }
-  @media screen and (max-width: 400px), screen and (max-device-width: 640px) {
-    h2 {
-      text-align: center; } }
+  font-size: 27px; }
+
+/*  Utilities
+    ------------------------------------- */
+.contain-floats {
+  overflow: hidden; }
+
+.left {
+  float: left; }
+
+.right {
+  float: right; }
+
+/*  Layout
+    ------------------------------------- */
+#content {
+  padding: 27px 27px 54px 27px;
+  background: #fff; }
+
+/*  Header
+    ------------------------------------- */
+#masthead {
+  margin-bottom: 27px; }
+  #masthead #logo {
+    display: inline-block;
+    height: 54px; }
+    #masthead #logo canvas {
+      vertical-align: top;
+      margin-top: -4px;
+      margin-left: -14px; }
+  #masthead ul#nav {
+    display: block;
+    list-style: none;
+    margin: 0;
+    padding: 0; }
+    #masthead ul#nav li {
+      display: inline-block;
+      padding: 0 13.5px;
+      margin-left: 27px; }
+      #masthead ul#nav li:first-child {
+        margin-left: 0;
+        padding-left: 0; }
+      #masthead ul#nav li:last-child {
+        padding-right: 0; }
+      #masthead ul#nav li a {
+        color: #1F1F1F;
+        font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
+        font-size: 18px;
+        line-height: 54px;
+        text-decoration: none;
+        text-transform: uppercase; }
+        #masthead ul#nav li a:hover {
+          text-decoration: none; }
 
 code {
   font-family: 'Ubuntu Mono', monospace;
@@ -428,29 +459,15 @@ code {
   border-radius: 3px; }
 
 p {
-  max-width: 580px; }
+  max-width: 567px; }
   @media screen and (device-aspect-ratio: 2 / 3), screen and (device-aspect-ratio: 40 / 71) {
     p {
       max-width: 100%; } }
   p + p {
-    margin-top: 24px; }
+    margin-top: 27px; }
 
 a {
   text-decoration: underline; }
-  a:link {
-    color: #00bfa8; }
-  a:visited {
-    color: #ff8000; }
-  a:hover, a:active {
-    color: #ee1919; }
-
-ul {
-  max-width: 580px; }
-  @media screen and (max-width: 400px) {
-    ul {
-      list-style: none; } }
-  ul li:not(:first-child) {
-    margin-top: 24px; }
 
 sup {
   font-size: 85%;
@@ -469,22 +486,11 @@ sup {
 .horizon {
   list-style: none;
   height: 0;
-  margin: 24px 0;
+  margin: 27px 0;
   border-bottom: 1px solid #eee; }
 
 li.horizon {
   margin: 1.5em 0 !important; }
-
-/* logo */
-#logo {
-  height: 103px;
-  margin-bottom: 24px; }
-  #logo canvas {
-    vertical-align: top; }
-
-#content {
-  padding: 25px 25px 50px 25px;
-  background: #fff; }
 
 /* documentation-toc is used by Two to do the sections of documentation specifically. may not need this but nice that it's the same styling */
 #toc, #documentation-toc {
@@ -508,15 +514,15 @@ li.horizon {
       margin: 8px 8px 0; }
 
 #documentation-toc {
-  max-width: 580px; }
+  max-width: 567px; }
 
 .basic-usage canvas {
   /* border: 1px solid $grey; */ }
 .basic-usage .blotter-container {
-  margin-top: 24px; }
+  margin-top: 27px; }
 
 .basic-usage + .basic-usage {
-  margin-top: 24px; }
+  margin-top: 27px; }
 
 .tabbed-editor {
   max-width: 750px;
@@ -630,7 +636,7 @@ li.horizon {
       p {
         position: absolute;
         top: 50%;
-        margin-top: - $line-height;
+        margin-top: - $leading;
         color: $white;
         padding: 0 8px;
       }
@@ -646,13 +652,13 @@ ul.documentation {
   ul.documentation li.description {
     margin-top: 0; }
   ul.documentation ul {
-    margin-top: 24px;
+    margin-top: 27px;
     list-style: none;
-    margin-left: 24px;
+    margin-left: 27px;
     font-size: 80%;
-    line-height: 24px; }
+    line-height: 27px; }
     ul.documentation ul li:not(:first-child) {
-      margin-top: 18px; }
+      margin-top: 20.25px; }
     ul.documentation ul li p {
       margin-top: 0; }
 
@@ -665,44 +671,26 @@ p.property, p.method, p.construction {
   margin-left: -16px;
   padding-left: 12px; }
 
-p.construction {
-  border-left-color: #fff45f; }
-
-p.boolean {
-  border-left-color: #00c8ff; }
-
-p.number {
-  border-left-color: #ee1919; }
-
-p.string {
-  border-left-color: #ff8000; }
-
-p.function {
-  border-left-color: #3b3fe2; }
-
-p.object, p.array {
-  border-left-color: #00bfa8; }
-
 /* Actual description following property name and code line */
 p.description {
-  margin-top: 6px; }
+  margin-top: 6.75px; }
 
 /* Further explaination for when necessary (beyond brief description) */
 p.detail {
-  margin-top: 6px;
-  padding-left: 12px;
+  margin-top: 6.75px;
+  padding-left: 13.5px;
   margin-left: 3px;
   border-left: 3px solid shade(#f3f3f3, 10%); }
 
 /* Used for properties and objects that are static. This would be like Blotter.UniformUtils.UniformTypes */
 p.static, p.static + p {
-  color: tint(#171717, 33%); }
+  color: tint(#1F1F1F, 33%); }
 
 /* --------------------------------------------------------------------------------------------*/
 /* SOURCE PROPERTY TYPE DESIGNATORS */
 /*
 .credits {
-  margin-top: $line-height / 2;
+  margin-top: $leading / 2;
   li:not(:first-child) {
     margin-top: 0;
   }
@@ -710,11 +698,11 @@ p.static, p.static + p {
 */
 /* Highlight colors */
 ::selection {
-  background: tint(#fff45f, 25%);
+  background: tint(#fff700, 25%);
   /* Safari */ }
 
 ::-moz-selection {
-  background: tint(#fff45f, 25%);
+  background: tint(#fff700, 25%);
   /* Firefox */ }
 
 /*# sourceMappingURL=main.css.map */

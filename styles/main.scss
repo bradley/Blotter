@@ -15,6 +15,11 @@
   font-style: italic;
 }
 
+@font-face{
+  font-family: "Avenir";
+  src: url('fonts/Avenir-Next.ttf');
+}
+
 
 /*  Base
     ------------------------------------- */
@@ -27,9 +32,9 @@
 body {
   font-family: $font-stack;
   font-size: $font-size;
-  line-height: $line-height;
+  line-height: $leading;
   color: $black;
-  padding: 25px;
+  padding: 0;
   vertical-align: top;
 }
 
@@ -38,7 +43,7 @@ h1, h2, h3, h4, h5, h6 {
   vertical-align: top;
   color: tint($black, 20%);
   line-height: 1.5;
-  margin-bottom: $line-height;
+  margin-bottom: $leading;
   font-weight: 400;
   letter-spacing: 0.015em;
   word-spacing: 0.15em;
@@ -46,13 +51,133 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Used for main section headings. */
 h2 {
-  font-size: $font-size * 2;
+  font-size: $leading;
 
   @media screen and (max-width: $min-screen-width),
   screen and (max-device-width: $min-device-width) {
-    text-align: center;
+    //text-align: center;
   }
 }
+
+
+/*  Utilities
+    ------------------------------------- */
+
+.contain-floats {
+  overflow: hidden;
+}
+
+.left {
+  float: left;
+}
+
+.right {
+  float: right;
+}
+
+
+/*  Layout
+    ------------------------------------- */
+
+#content {
+  padding: $leading $leading ($leading * 2) $leading;
+  background: $white;
+}
+
+
+/*  Header
+    ------------------------------------- */
+
+#masthead {
+  margin-bottom: $leading;
+
+  #logo {
+    display: inline-block;
+    height: $leading * 2;
+
+    canvas {
+      vertical-align: top;
+      margin-top: -4px;
+      margin-left: -14px;
+    }
+  }
+
+  ul#nav {
+    display: block;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+
+    li {
+      display: inline-block;
+      padding: 0 ($leading / 2);
+      margin-left: $leading;
+
+      &:first-child {
+        margin-left: 0;
+        padding-left: 0;
+      }
+
+      &:last-child {
+        padding-right: 0;
+      }
+
+      a {
+        color: $black;
+        font-family: $grotesque-font-stack;
+        font-size: $font-size;
+        line-height: $leading * 2;
+        text-decoration: none;
+        text-transform: uppercase;
+
+        &:hover {
+          text-decoration: none;
+        }
+      }
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 code {
   font-family: 'Ubuntu Mono', monospace;
@@ -71,33 +196,20 @@ p {
   }
 
   + p {
-    margin-top: $line-height;
+    margin-top: $leading;
   }
 }
 
 a {
   text-decoration: underline;
   &:link {
-    color: $green;
+    //color: $green;
   }
   &:visited {
-    color: $orange;
+    //color: $orange;
   }
   &:hover, &:active {
-    color: $red;
-  }
-}
-
-ul {
-  max-width: $max-content-width;
-
-  @media screen and (max-width: $min-screen-width) {
-    list-style: none;
-  }
-  li {
-    &:not(:first-child) {
-      margin-top: $line-height;
-    }
+    //color: $red;
   }
 }
 
@@ -124,7 +236,7 @@ sup {
 .horizon {
   list-style: none;
   height: 0;
-  margin: $line-height 0;
+  margin: $leading 0;
   border-bottom: 1px solid #eee;
 }
 
@@ -136,21 +248,6 @@ li.horizon {
 
 
 
-
-/* logo */
-#logo {
-  height: 103px;
-  margin-bottom: $line-height;
-
-  canvas {
-    vertical-align: top;
-  }
-}
-
-#content {
-  padding: 25px 25px 50px 25px;
-  background: $white;
-}
 
 
 
@@ -197,12 +294,12 @@ li.horizon {
     /* border: 1px solid $grey; */
   }
   .blotter-container {
-    margin-top: $line-height;
+    margin-top: $leading;
   }
 }
 
 .basic-usage + .basic-usage {
-  margin-top: $line-height;
+  margin-top: $leading;
 }
 
 
@@ -349,7 +446,7 @@ li.horizon {
       p {
         position: absolute;
         top: 50%;
-        margin-top: - $line-height;
+        margin-top: - $leading;
         color: $white;
         padding: 0 8px;
       }
@@ -376,14 +473,14 @@ ul.documentation {
 
   /* mostly for describing sub properties. look at Two's anchor.controls */
   ul {
-    margin-top: $line-height;
+    margin-top: $leading;
     list-style: none;
-    margin-left: $line-height;
+    margin-left: $leading;
     font-size: 80%;
-    line-height: $line-height;
+    line-height: $leading;
     li {
       &:not(:first-child) {
-        margin-top: $line-height * 0.75;
+        margin-top: $leading * 0.75;
       }
       p {
         margin-top: 0;
@@ -405,38 +502,38 @@ p.property, p.method, p.construction {
 }
 
 p.construction {
-  border-left-color: $yellow;
+  //border-left-color: $yellow;
 }
 
 p.boolean {
-  border-left-color: $blue;
+  //border-left-color: $blue;
 }
 
 p.number {
-  border-left-color: $red;
+  //border-left-color: $red;
 }
 
 p.string {
-  border-left-color: $orange;
+  //border-left-color: $orange;
 }
 
 p.function {
-  border-left-color: $purple;
+  //border-left-color: $purple;
 }
 
 p.object, p.array {
-  border-left-color: $green;
+  //border-left-color: $green;
 }
 
 /* Actual description following property name and code line */
 p.description {
-  margin-top: $line-height / 4;
+  margin-top: $leading / 4;
 }
 
 /* Further explaination for when necessary (beyond brief description) */
 p.detail {
-  margin-top: $line-height / 4;
-  padding-left: $line-height / 2;
+  margin-top: $leading / 4;
+  padding-left: $leading / 2;
   margin-left: 3px;
   border-left: 3px solid shade($grey, 10%);
 }
@@ -457,7 +554,7 @@ p.static, p.static + p {
 
 /*
 .credits {
-  margin-top: $line-height / 2;
+  margin-top: $leading / 2;
   li:not(:first-child) {
     margin-top: 0;
   }

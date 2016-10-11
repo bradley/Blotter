@@ -313,7 +313,7 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
   /* Horizontal padding of content */ }
 
 .CodeMirror-gutters {
-  border-right: 1px solid #eee;
+  border-right: 1px solid #f3f3f3;
   background-color: #f7f7f7; }
 
 .CodeMirror-linenumber {
@@ -329,55 +329,35 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
 
 @media screen and (min-width: 400px) {
   .CodeMirror {
-    border-right: 1px solid #eee; } }
+    border-right: 1px solid #f3f3f3; } }
 @media screen and (max-width: 400px) {
   .CodeMirror {
-    border-left: em(2) solid #eee; }
+    border-left: em(2) solid #f3f3f3; }
 
   .CodeMirror-gutters,
   .CodeMirror-linenumbers,
   .CodeMirror-linenumber {
     display: none; } }
-.cm-s-default .cm-keyword {
-  color: #1fd49d; }
-
-.cm-s-default .cm-number {
-  color: #ee1919; }
-
-.cm-s-default .cm-def {
-  color: #171717; }
-
-.cm-s-default .cm-variable {
-  color: #171717; }
-
-.cm-s-default .cm-variable-2 {
-  color: #3b3fe2; }
-
-.cm-s-default .cm-property {
-  color: #ec1d80; }
-
-.cm-s-default .cm-variable + .cm-property {
-  color: #3b3fe2; }
-
-.cm-s-default .cm-comment {
-  color: #c7c7c7;
-  font-style: italic; }
-
-.cm-s-default .cm-string {
-  color: #5a4f90; }
-
-.cm-s-default .cm-string-2 {
-  color: #5a4f90; }
+/*
+.cm-s-default .cm-keyword {color: $turquoise;}
+.cm-s-default .cm-number {color: $red;}
+.cm-s-default .cm-def {color: $black;}
+.cm-s-default .cm-variable {color: $black;}
+.cm-s-default .cm-variable-2 {color: $purple;}
+.cm-s-default .cm-property {color: $fuscia;}
+.cm-s-default .cm-variable + .cm-property {color: $purple}
+.cm-s-default .cm-comment {color: #c7c7c7; font-style: italic;}
+.cm-s-default .cm-string {color: $dark-soft-blue;}
+.cm-s-default .cm-string-2 {color: $dark-soft-blue;}
 
 .CodeMirror pre {
-  font-size: 16px;
-  line-height: 24px;
-  color: #bc4eed; }
+  font-size: $font-size;
+  line-height: $line-height;
+  color: $violet;
+}
 
-.CodeMirror-selected {
-  background: #fff45f; }
-
-.CodeMirror-focused .CodeMirror-selected {
-  background: #fff45f; }
+.CodeMirror-selected { background: $yellow; }
+.CodeMirror-focused .CodeMirror-selected { background: $yellow; }
+*/
 
 /*# sourceMappingURL=codemirror_custom.css.map */
