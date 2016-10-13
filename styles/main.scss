@@ -30,33 +30,67 @@
 }
 
 body {
+  color: $black;
   font-family: $font-stack;
   font-size: $font-size;
   line-height: $leading;
-  color: $black;
-  padding: 0;
+  padding: $leading $leading ($leading * 2) $leading;
   vertical-align: top;
 }
 
 h1, h2, h3, h4, h5, h6 {
+  color: $black;
   font-family: $h-font-stack;
-  vertical-align: top;
-  color: tint($black, 20%);
-  line-height: 1.5;
-  margin-bottom: $leading;
   font-weight: 400;
   letter-spacing: 0.015em;
+  line-height: 1.5;
+  margin-bottom: $leading;
+  vertical-align: top;
   word-spacing: 0.15em;
 }
 
 /* Used for main section headings. */
 h2 {
-  font-size: $leading;
+  /* Serapion is a weird font.
+     These settings basically make it the font-size equal to our $leading */
+  font-size: 32px;
+  line-height: 16px;
+  padding-top: 10px;
 
   @media screen and (max-width: $min-screen-width),
   screen and (max-device-width: $min-device-width) {
     //text-align: center;
   }
+}
+
+p {
+
+}
+
+aside {
+  font-size: 12px;
+  line-height: 12px * 1.5;
+  position: relative;
+  width: ($col-width * 2) + $gutter-width;
+  margin: $leading 0;
+
+  &::before {
+    content: "[" attr(data-number) "]";
+    font-size: 14px;
+    left: -($leading * 2);
+    position: absolute;
+    text-align: center;
+    top: 0;
+    width: $leading * 2;
+  }
+}
+
+/* Highlight colors. */
+::-moz-selection {
+  background: $yellow;
+}
+::selection {
+  background: $yellow;
 }
 
 
@@ -80,8 +114,20 @@ h2 {
     ------------------------------------- */
 
 #content {
-  padding: $leading $leading ($leading * 2) $leading;
-  background: $white;
+  margin: ($leading * 7) auto 0;
+  width: $layout-width;
+}
+
+.content-right, .content-left {
+  width: $max-content-width;
+}
+
+.content-right {
+  margin-left: $col-width;
+}
+
+.content-left {
+  margin-right: $col-width;
 }
 
 
@@ -89,7 +135,22 @@ h2 {
     ------------------------------------- */
 
 #masthead {
-  margin-bottom: $leading;
+
+  background: white;
+  background: rgba(255,255,255,1);
+  background: -moz-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%);
+  background: -webkit-gradient(left top, left bottom, color-stop(0%, rgba(255,255,255,1)), color-stop(100%, rgba(255,255,255,0)));
+  background: -webkit-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%);
+  background: -o-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%);
+  background: -ms-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%);
+  background: linear-gradient(to bottom, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#ffffff', GradientType=0 );filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f85032', endColorstr='#e73827', GradientType=1 );
+  height: $leading * 2;
+  left: 0;
+  padding: $leading;
+  position: fixed;
+  right: 0;
+  top: 0;
 
   #logo {
     display: inline-block;
@@ -128,7 +189,7 @@ h2 {
         font-size: $font-size;
         line-height: $leading * 2;
         text-decoration: none;
-        text-transform: uppercase;
+        //text-transform: uppercase;
 
         &:hover {
           text-decoration: none;
@@ -139,13 +200,14 @@ h2 {
 }
 
 
+/*  Documentation
+    ------------------------------------- */
 
-
-
-
-
-
-
+.content-right {
+  aside {
+    left: -($col-width);
+  }
+}
 
 
 
@@ -562,10 +624,3 @@ p.static, p.static + p {
 */
 
 
-/* Highlight colors */
-::selection {
-  background: tint($yellow, 25%); /* Safari */
-}
-::-moz-selection {
-  background: tint($yellow, 25%); /* Firefox */
-}

@@ -378,26 +378,52 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
   padding: 0; }
 
 body {
-  font-family: "Garamond", serif;
-  font-size: 18px;
-  line-height: 27px;
   color: #1F1F1F;
-  padding: 0;
+  font-family: "Garamond", serif;
+  font-size: 17px;
+  line-height: 26px;
+  padding: 26px 26px 52px 26px;
   vertical-align: top; }
 
 h1, h2, h3, h4, h5, h6 {
+  color: #1F1F1F;
   font-family: "SerapionPro", "Garamond", serif;
-  vertical-align: top;
-  color: tint(#1F1F1F, 20%);
-  line-height: 1.5;
-  margin-bottom: 27px;
   font-weight: 400;
   letter-spacing: 0.015em;
+  line-height: 1.5;
+  margin-bottom: 26px;
+  vertical-align: top;
   word-spacing: 0.15em; }
 
 /* Used for main section headings. */
 h2 {
-  font-size: 27px; }
+  /* Serapion is a weird font.
+     These settings basically make it the font-size equal to our $leading */
+  font-size: 32px;
+  line-height: 16px;
+  padding-top: 10px; }
+
+aside {
+  font-size: 12px;
+  line-height: 18px;
+  position: relative;
+  width: 312px;
+  margin: 26px 0; }
+  aside::before {
+    content: "[" attr(data-number) "]";
+    font-size: 14px;
+    left: -52px;
+    position: absolute;
+    text-align: center;
+    top: 0;
+    width: 52px; }
+
+/* Highlight colors. */
+::-moz-selection {
+  background: #fff700; }
+
+::selection {
+  background: #fff700; }
 
 /*  Utilities
     ------------------------------------- */
@@ -413,16 +439,40 @@ h2 {
 /*  Layout
     ------------------------------------- */
 #content {
-  padding: 27px 27px 54px 27px;
-  background: #fff; }
+  margin: 182px auto 0;
+  width: 676px; }
+
+.content-right, .content-left {
+  width: 546px; }
+
+.content-right {
+  margin-left: 130px; }
+
+.content-left {
+  margin-right: 130px; }
 
 /*  Header
     ------------------------------------- */
 #masthead {
-  margin-bottom: 27px; }
+  background: white;
+  background: white;
+  background: -moz-linear-gradient(top, white 0%, rgba(255, 255, 255, 0) 100%);
+  background: -webkit-gradient(left top, left bottom, color-stop(0%, white), color-stop(100%, rgba(255, 255, 255, 0)));
+  background: -webkit-linear-gradient(top, white 0%, rgba(255, 255, 255, 0) 100%);
+  background: -o-linear-gradient(top, white 0%, rgba(255, 255, 255, 0) 100%);
+  background: -ms-linear-gradient(top, white 0%, rgba(255, 255, 255, 0) 100%);
+  background: linear-gradient(to bottom, white 0%, rgba(255, 255, 255, 0) 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#ffffff', GradientType=0 );
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f85032', endColorstr='#e73827', GradientType=1 );
+  height: 52px;
+  left: 0;
+  padding: 26px;
+  position: fixed;
+  right: 0;
+  top: 0; }
   #masthead #logo {
     display: inline-block;
-    height: 54px; }
+    height: 52px; }
     #masthead #logo canvas {
       vertical-align: top;
       margin-top: -4px;
@@ -434,8 +484,8 @@ h2 {
     padding: 0; }
     #masthead ul#nav li {
       display: inline-block;
-      padding: 0 13.5px;
-      margin-left: 27px; }
+      padding: 0 13px;
+      margin-left: 26px; }
       #masthead ul#nav li:first-child {
         margin-left: 0;
         padding-left: 0; }
@@ -444,12 +494,16 @@ h2 {
       #masthead ul#nav li a {
         color: #1F1F1F;
         font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
-        font-size: 18px;
-        line-height: 54px;
-        text-decoration: none;
-        text-transform: uppercase; }
+        font-size: 17px;
+        line-height: 52px;
+        text-decoration: none; }
         #masthead ul#nav li a:hover {
           text-decoration: none; }
+
+/*  Documentation
+    ------------------------------------- */
+.content-right aside {
+  left: -130px; }
 
 code {
   font-family: 'Ubuntu Mono', monospace;
@@ -459,12 +513,12 @@ code {
   border-radius: 3px; }
 
 p {
-  max-width: 567px; }
+  max-width: 546px; }
   @media screen and (device-aspect-ratio: 2 / 3), screen and (device-aspect-ratio: 40 / 71) {
     p {
       max-width: 100%; } }
   p + p {
-    margin-top: 27px; }
+    margin-top: 26px; }
 
 a {
   text-decoration: underline; }
@@ -486,7 +540,7 @@ sup {
 .horizon {
   list-style: none;
   height: 0;
-  margin: 27px 0;
+  margin: 26px 0;
   border-bottom: 1px solid #eee; }
 
 li.horizon {
@@ -514,15 +568,15 @@ li.horizon {
       margin: 8px 8px 0; }
 
 #documentation-toc {
-  max-width: 567px; }
+  max-width: 546px; }
 
 .basic-usage canvas {
   /* border: 1px solid $grey; */ }
 .basic-usage .blotter-container {
-  margin-top: 27px; }
+  margin-top: 26px; }
 
 .basic-usage + .basic-usage {
-  margin-top: 27px; }
+  margin-top: 26px; }
 
 .tabbed-editor {
   max-width: 750px;
@@ -652,13 +706,13 @@ ul.documentation {
   ul.documentation li.description {
     margin-top: 0; }
   ul.documentation ul {
-    margin-top: 27px;
+    margin-top: 26px;
     list-style: none;
-    margin-left: 27px;
+    margin-left: 26px;
     font-size: 80%;
-    line-height: 27px; }
+    line-height: 26px; }
     ul.documentation ul li:not(:first-child) {
-      margin-top: 20.25px; }
+      margin-top: 19.5px; }
     ul.documentation ul li p {
       margin-top: 0; }
 
@@ -673,12 +727,12 @@ p.property, p.method, p.construction {
 
 /* Actual description following property name and code line */
 p.description {
-  margin-top: 6.75px; }
+  margin-top: 6.5px; }
 
 /* Further explaination for when necessary (beyond brief description) */
 p.detail {
-  margin-top: 6.75px;
-  padding-left: 13.5px;
+  margin-top: 6.5px;
+  padding-left: 13px;
   margin-left: 3px;
   border-left: 3px solid shade(#f3f3f3, 10%); }
 
@@ -696,13 +750,5 @@ p.static, p.static + p {
   }
 }
 */
-/* Highlight colors */
-::selection {
-  background: tint(#fff700, 25%);
-  /* Safari */ }
-
-::-moz-selection {
-  background: tint(#fff700, 25%);
-  /* Firefox */ }
 
 /*# sourceMappingURL=main.css.map */

@@ -4,11 +4,13 @@ $white: #fff;
 
 $yellow: #fff700;
 
-$font-size: 18px;
-$leading: $font-size * 1.5;
+$font-size: 17px;
+$leading: round($font-size * 1.5);
 
-$layout-width: $leading * 26;
-$max-content-width: $leading * 21;
+$col-width: $leading * 5;
+$gutter-width: $leading * 2;
+$layout-width: ($col-width * 4) + ($gutter-width * 3);
+$max-content-width: ($col-width * 3) + ($gutter-width * 3);
 
 $min-screen-width: 400px;
 $min-device-width: 640px; // iPhone 5 portrait width
