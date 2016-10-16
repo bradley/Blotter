@@ -467,7 +467,10 @@ a {
 
 sup {
   font-size: 85%;
-  line-height: 85%; }
+  line-height: 85%;
+  margin-left: 1px; }
+  sup a:after {
+    display: none; }
 
 aside {
   font-size: 12px;
@@ -510,6 +513,14 @@ code {
 
 .right {
   float: right; }
+
+/* Used for allowing anchor links but accounting for fixed header */
+.anchor {
+  position: relative; }
+
+.anchor span {
+  position: absolute;
+  top: -208px; }
 
 /*  Layout
     ------------------------------------- */
