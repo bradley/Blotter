@@ -181,7 +181,7 @@
       <script src="./src/logo.js"></script>
       <div class="contain-floats right">
         <ul id="nav" class="right">
-          <li><a href="#">Introduction</a></li>
+          <li><a href="#overview">Overview</a></li>
           <li><a href="#basics">Basic Usage</a></li>
           <li><a href="#">Documentation</a></li>
           <li><a href="#">Packs</a></li>
@@ -190,9 +190,48 @@
     </div>
     <div id="content">
       <div class="content-right">
+        <h2 class="anchor"><span id="overview"></span>Overview</h2>
+        <p>
+          When applying effects to text on the web, designers have traditionally been constrained to those provided by <code>css</code>. In the majority of cases this is entirely suitable – text is text right? Yet still, there exist numerous examples of designers combining <code>css</code> properties or gifs and images to create effects that evoke something more playful. Precisely here, Blotter exists to provide an alternative.
+        </p>
+        <p>
+          <strong>Blotter</strong> is a <code>webgl</code> backed JavaScript api geared towards allowing designers to easily draw both pre-made and custom text effects using <code>glsl</code> shaders.
+        </p>
+        <ul class="bullet-list">
+          <li>
+            <h3>GLSL Backed Text Effects with Ease</h3>
+            <p>
+              Blotter provides a simple interface for building and manipulating text effects that utilize <code>glsl</code> shaders without requiring that the designer know <code>glsl</code>. Blotter has a growing library of configurable effects while also providing ways for student or experienced <code>glsl</code> programmers to quickly bootstrap new ones.
+            </p>
+          </li>
+          <li>
+            <h3>Atlasing Effects in a Single WebGL Back Buffer</h3>
+            <p>
+              Blotter bypasses the limit browsers place on the number of live <code>webgl</code> contexts in the document by using an atlas. This atlas maps elements that share the same effects so that they may be rendered together in a single <code>webgl</code> context. The resulting image data is then output to individual <code>2d</code> contexts for each element.
+            </p>
+          </li>
+          <li>
+            <h3>Animation Loop</h3>
+            <p>
+              Rather than executing on a time based interval, Blotter's internal animation loop uses <code>requestAnimationFrame</code> to match the browser's display refresh rate and pause when the user navigates to other browser tabs; improving performance and preserving the battery life on the user's device.
+            </p>
+          </li>
+          <li>
+            <h3>What Blotter Isn't</h3>
+            <p>
+              Any texts you pass to Blotter can be individually configured using familiar style properties. You can use custom font faces through the <code>@font-face</code> spec. However, Blotter ultimately renders the texts passed to it into <code>canvas</code> elements. This means rendered text won't be selectable. Blotter is great for elements like titles, headings, and texts used for graphic purposes. It's not recommended that Blotter be used for lengthy bodies of text.
+            </p>
+          </li>
+        </ul>
+      </div>
+
+      <div class="horizon"></div>
+
+      <div class="content-right">
+
         <h2 class="anchor"><span id="basics"></span>The Basics</h2>
         <p>
-          When applying effects to text on the web, designers have traditionally been constrained to those provided by  CSS. In the majority of cases this is entirely suitable – text is text, right? Yet still, there exist numerous examples of designers combining style properties or gifs and images to create effects that evoke something more playful. Precisely here, Blotter exists to provide an alternative.
+          When applying effects to text on the <code>WebGL</code>, designers have traditionally been constrained to those provided by  CSS. In the majority of cases this is entirely suitable – text is text, right? Yet still, there exist numerous examples of designers combining style properties or gifs and images to create effects that evoke something more playful. Precisely here, Blotter exists to provide an alternative.
         </p>
         <h3>All Together Now</h3>
         <p>

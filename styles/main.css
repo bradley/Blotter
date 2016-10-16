@@ -442,6 +442,7 @@ h3 {
   font-family: "SerapionPro-BoldItalic", "Garamond", serif;
   font-size: 20px;
   line-height: 23px;
+  margin-bottom: 13px;
   margin-top: 26px;
   padding-top: 3px; }
 
@@ -497,11 +498,14 @@ aside {
   background: #fff700; }
 
 code {
+  background: #f3f3f3;
+  border-radius: 4px;
+  color: #1F1F1F;
   font-family: 'Ubuntu Mono', monospace;
   font-size: 14px;
-  background: #f3f3f3;
-  padding: 2px 4px 4px;
-  border-radius: 3px; }
+  font-size: 14px;
+  line-height: 18px;
+  padding: 3px 4px 4px; }
 
 /*  Utilities
     ------------------------------------- */
@@ -521,6 +525,36 @@ code {
 .anchor span {
   position: absolute;
   top: -208px; }
+
+.horizon {
+  background: transparent;
+  height: 52px;
+  /* operates as margin-top */
+  margin: 0 0 104px;
+  /* margin-bottom must account for height of before/after */
+  position: relative;
+  z-index: 1; }
+  .horizon:before, .horizon:after {
+    content: "";
+    display: block;
+    left: 0;
+    position: absolute;
+    right: 0; }
+  .horizon:before {
+    background: linear-gradient(-135deg, #1F1F1F 13px, transparent 0) 0 13px, linear-gradient(135deg, #1F1F1F 13px, transparent 0) 0 13px;
+    background-position: top left;
+    background-repeat: repeat-x;
+    background-size: 26px 26px;
+    height: 26px;
+    top: 105%;
+    /* thickness. increase for thicker line */ }
+  .horizon:after {
+    background: linear-gradient(-135deg, white 13px, transparent 0) 0 13px, linear-gradient(135deg, white 13px, transparent 0) 0 13px;
+    background-position: top left;
+    background-repeat: repeat-x;
+    background-size: 26px 26px;
+    height: 26px;
+    top: 100%; }
 
 /*  Layout
     ------------------------------------- */
@@ -593,6 +627,20 @@ code {
     ------------------------------------- */
 .content-right aside {
   left: -130px; }
+
+.bullet-list {
+  list-style: none;
+  margin-top: 52px; }
+  .bullet-list li {
+    position: relative; }
+    .bullet-list li:before {
+      content: "⚬";
+      font-family: serif;
+      left: -52px;
+      position: absolute;
+      text-align: center;
+      top: 0;
+      width: 52px; }
 
 /*  Example Editor
     ------------------------------------- */
@@ -677,15 +725,6 @@ code {
   // font-style: italic;
 }
 */
-.horizon {
-  list-style: none;
-  height: 0;
-  margin: 26px 0;
-  border-bottom: 1px solid #eee; }
-
-li.horizon {
-  margin: 1.5em 0 !important; }
-
 /* documentation-toc is used by Two to do the sections of documentation specifically. may not need this but nice that it's the same styling */
 #toc, #documentation-toc {
   display: inline-block;

@@ -69,6 +69,7 @@ h3 {
   font-family: $h-font-stack-bold;
   font-size: 20px;
   line-height: 23px;
+  margin-bottom: $leading / 2;
   margin-top: $leading;
   padding-top: 3px;
 }
@@ -146,11 +147,14 @@ aside {
 }
 
 code {
+  background: $grey;
+  border-radius: 4px;
+  color: $black;
   font-family: 'Ubuntu Mono', monospace;
   font-size: 14px;
-  background: $grey;
-  padding: 2px 4px 4px;
-  border-radius: 3px;
+  font-size: 14px;
+  line-height: 18px;
+  padding: 3px 4px 4px;
 }
 
 
@@ -175,6 +179,40 @@ code {
 }
 .anchor span{
   position:absolute; top: -($leading * 8);
+}
+
+.horizon {
+  background: transparent;
+  height: $leading * 2; /* operates as margin-top */
+  margin: 0 0 ($leading * 4); /* margin-bottom must account for height of before/after */
+  position: relative;
+  z-index: 1;
+
+  &:before,
+  &:after {
+    content: "";
+    display: block;
+    left: 0;
+    position: absolute;
+    right: 0;
+  }
+
+  &:before {
+    background: linear-gradient(-135deg, $black ($leading / 2), transparent 0) 0 ($leading / 2), linear-gradient( 135deg, $black ($leading / 2), transparent 0) 0 ($leading / 2);
+    background-position: top left;
+    background-repeat: repeat-x;
+    background-size: $leading $leading;
+    height: $leading;
+    top: 105%; /* thickness. increase for thicker line */
+  }
+  &:after {
+    background: linear-gradient(-135deg, white ($leading / 2), transparent 0) 0 ($leading / 2), linear-gradient( 135deg, white ($leading / 2), transparent 0) 0 ($leading / 2);
+    background-position: top left;
+    background-repeat: repeat-x;
+    background-size: $leading $leading;
+    height: $leading;
+    top: 100%;
+  }
 }
 
 /*  Layout
@@ -277,6 +315,25 @@ code {
 .content-right {
   aside {
     left: -($col-width);
+  }
+}
+
+.bullet-list {
+  list-style: none;
+  margin-top: $leading * 2;
+
+  li {
+    position: relative;
+
+    &:before {
+      content: "⚬";
+      font-family: serif;
+      left: -($leading * 2);
+      position: absolute;
+      text-align: center;
+      top: 0;
+      width: $leading * 2;
+    }
   }
 }
 
@@ -428,16 +485,7 @@ code {
 
 
 
-.horizon {
-  list-style: none;
-  height: 0;
-  margin: $leading 0;
-  border-bottom: 1px solid #eee;
-}
 
-li.horizon {
-  margin: 1.5em 0 !important;
-}
 
 
 
