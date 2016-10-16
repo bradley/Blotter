@@ -442,7 +442,7 @@ h3 {
   font-family: "SerapionPro-BoldItalic", "Garamond", serif;
   font-size: 20px;
   line-height: 23px;
-  margin-bottom: 13px;
+  margin-bottom: 26px;
   margin-top: 26px;
   padding-top: 3px; }
 
@@ -636,10 +636,11 @@ code {
     .bullet-list li:before {
       content: "⚬";
       font-family: serif;
+      font-weight: 700;
       left: -52px;
       position: absolute;
       text-align: center;
-      top: 0;
+      top: -3px;
       width: 52px; }
 
 /*  Example Editor
@@ -691,6 +692,10 @@ code {
     text-align: center; }
 
 .output {
+  border: 2px solid #1F1F1F;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
   margin-top: 78px;
   position: relative;
   width: 546px; }
@@ -705,10 +710,6 @@ code {
     top: -52px;
     z-index: -1; }
   .output > div {
-    border: 2px solid #1F1F1F;
-    box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
     width: 100%;
     text-align: center; }
     .output > div canvas {

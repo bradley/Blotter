@@ -69,7 +69,7 @@ h3 {
   font-family: $h-font-stack-bold;
   font-size: 20px;
   line-height: 23px;
-  margin-bottom: $leading / 2;
+  margin-bottom: $leading;
   margin-top: $leading;
   padding-top: 3px;
 }
@@ -328,10 +328,11 @@ code {
     &:before {
       content: "⚬";
       font-family: serif;
+      font-weight: 700;
       left: -($leading * 2);
       position: absolute;
       text-align: center;
-      top: 0;
+      top: -3px;
       width: $leading * 2;
     }
   }
@@ -407,6 +408,10 @@ code {
 }
 
 .output {
+  border: 2px solid $black;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
   margin-top: $leading * 3;
   position: relative;
   width: $max-content-width;
@@ -424,10 +429,6 @@ code {
   }
 
   > div {
-    border: 2px solid $black;
-    box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
     width: 100%;
     text-align: center;
 
