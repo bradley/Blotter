@@ -63,8 +63,47 @@ h2 {
   }
 }
 
-p {
+h3 {
+  /* Serapion is a weird font.
+     These settings basically make it the font is vertically centered within a line-height of $leading */
+  font-family: $h-font-stack-bold;
+  font-size: 20px;
+  line-height: 23px;
+  margin-top: $leading;
+  padding-top: 3px;
+}
 
+p {
+  max-width: $max-content-width;
+
+  @media screen and (device-aspect-ratio: 2/3),
+  screen and (device-aspect-ratio: 40/71) {
+    max-width: 100%;
+  }
+
+  + p {
+    margin-top: $leading;
+  }
+}
+
+a {
+  color: black;
+  position: relative;
+  text-decoration: none;
+
+  &:after {
+    bottom: 2px;
+    border-bottom: 1px solid black;
+    content: "";
+    left: 0;
+    position: absolute;
+    width: 100%;
+  }
+}
+
+sup {
+  font-size: 85%;
+  line-height: 85%;
 }
 
 aside {
@@ -74,7 +113,7 @@ aside {
   width: ($col-width * 2) + $gutter-width;
   margin: $leading 0;
 
-  &::before {
+  &:before {
     content: "[" attr(data-number) "]";
     font-size: 14px;
     left: -($leading * 2);
@@ -82,6 +121,12 @@ aside {
     text-align: center;
     top: 0;
     width: $leading * 2;
+  }
+
+  a {
+    &:after {
+      bottom: 1px;
+    }
   }
 }
 
@@ -91,6 +136,14 @@ aside {
 }
 ::selection {
   background: $yellow;
+}
+
+code {
+  font-family: 'Ubuntu Mono', monospace;
+  font-size: 14px;
+  background: $grey;
+  padding: 2px 4px 4px;
+  border-radius: 3px;
 }
 
 
@@ -135,7 +188,6 @@ aside {
     ------------------------------------- */
 
 #masthead {
-
   background: white;
   background: rgba(255,255,255,1);
   background: -moz-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%);
@@ -151,6 +203,7 @@ aside {
   position: fixed;
   right: 0;
   top: 0;
+  z-index: 100;
 
   #logo {
     display: inline-block;
@@ -191,6 +244,10 @@ aside {
         text-decoration: none;
         //text-transform: uppercase;
 
+        &:after {
+          display: none;
+        }
+
         &:hover {
           text-decoration: none;
         }
@@ -210,75 +267,137 @@ aside {
 }
 
 
+/*  Example Editor
+    ------------------------------------- */
 
+.tabbed-editor {
+  float: none;
+  list-style: none;
+  margin-top: $leading * 2;
+  width: $max-content-width;
+  padding: 0;
+  position: relative;
 
+  .editable-content:after {
+    content: '';
+    display: table;
+    clear: both;
+  }
 
+  input[type=radio] {
+    display:none;
+  }
 
+  label {
+    display: block;
+    float: left;
+    height: $leading;
 
+    &:hover span {
+      background-color: $grey;
+    }
 
+    span {
+      border-radius: 4px 4px 0 0;
+      cursor: pointer;
+      color: $black;
+      font-family: $grotesque-font-stack;
+    }
+  }
 
+  .tab-content {
+    width: 100%;
+    float: left;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
 
+    > .CodeMirror {
+      height: auto;
+    }
+  }
 
+  .tab:checked + span {
+    background: $black;
+    color: $white;
+  }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-code {
-  font-family: 'Ubuntu Mono', monospace;
-  font-size: 14px;
-  background: $grey;
-  padding: 2px 4px 4px;
-  border-radius: 3px;
+  .label-text {
+    box-sizing: border-box;
+    display: inline-block;
+    font-size: 14px;
+    font-weight: normal;
+    height: $leading;
+    line-height: $leading;
+    padding: 1px $leading 0;
+    text-decoration: none;
+    text-align: center;
+  }
 }
 
-p {
-  max-width: $max-content-width;
+.output {
+  margin-top: $leading * 3;
+  position: relative;
+  width: $max-content-width;
 
-  @media screen and (device-aspect-ratio: 2/3),
-  screen and (device-aspect-ratio: 40/71) {
-    max-width: 100%;
+  &:before {
+    content: "↓";
+    font-family: $grotesque-font-stack;
+    font-size: $leading;
+    height: $leading;
+    left: calc(50% - 5px);
+    line-height: $leading;
+    position: absolute;
+    top: -($leading * 2);
+    z-index: -1;
   }
 
-  + p {
-    margin-top: $leading;
+  > div {
+    border: 2px solid $black;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    width: 100%;
+    text-align: center;
+
+    canvas {
+      margin: $leading auto;
+      vertical-align: top;
+    }
   }
 }
 
-a {
-  text-decoration: underline;
-  &:link {
-    //color: $green;
-  }
-  &:visited {
-    //color: $orange;
-  }
-  &:hover, &:active {
-    //color: $red;
-  }
-}
 
-sup {
-  font-size: 85%;
-  line-height: 85%;
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /*
 .nota-bene {
@@ -373,105 +492,7 @@ li.horizon {
 
 
 
-.tabbed-editor {
-  float: none;
-  list-style: none;
-  margin-top: $leading * 2;
-  width: $max-content-width;
-  padding: 0;
-  position: relative;
-  z-index: -1;
 
-  .editable-content:after {
-    content: '';
-    display: table;
-    clear: both;
-  }
-
-  input[type=radio] {
-    display:none;
-  }
-
-  label {
-    display: block;
-    float: left;
-    height: $leading;
-
-    &:hover span {
-      background-color: $grey;
-    }
-
-    span {
-      border-radius: 4px 4px 0 0;
-      cursor: pointer;
-      color: $black;
-      font-family: $grotesque-font-stack;
-    }
-  }
-
-  .tab-content {
-    width: 100%;
-    float: left;
-    box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-
-    > .CodeMirror {
-      height: auto;
-    }
-  }
-
-  .tab:checked + span {
-    background: $black;
-    color: $white;
-  }
-
-  .label-text {
-    box-sizing: border-box;
-    display: inline-block;
-    font-size: 14px;
-    font-weight: normal;
-    height: $leading;
-    line-height: $leading;
-    padding: 1px $leading 0;
-    text-decoration: none;
-    text-align: center;
-  }
-}
-
-.output {
-  margin-top: $leading * 3;
-  position: relative;
-  width: $max-content-width;
-
-  &:before {
-    content: "↓";
-    font-family: $grotesque-font-stack;
-    font-size: $leading;
-    height: $leading;
-    left: calc(50% - 5px);
-    line-height: $leading;
-    position: absolute;
-    top: -($leading * 2);
-    z-index: -1;
-  }
-
-  > div {
-    border: 2px solid $black;
-    box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-    width: 100%;
-    text-align: center;
-
-    canvas {
-      margin: $leading auto;
-      vertical-align: top;
-    }
-  }
-
-
-}
 
 
 /*

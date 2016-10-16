@@ -14,26 +14,30 @@
     <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,400i" rel="stylesheet">
 
     <!--
-    /**
-     * @license
-     * MyFonts Webfont Build ID 3278924, 2016-09-05T18:45:54-0400
-     *
-     * The fonts listed in this notice are subject to the End User License
-     * Agreement(s) entered into by the website owner. All other parties are
-     * explicitly restricted from using the Licensed Webfonts(s).
-     *
-     * You may obtain a valid license at the URLs below.
-     *
-     * Webfont: SerapionPro by Storm
-     * URL: http://www.myfonts.com/fonts/storm/serapion/regular/
-     * Copyright: Copyright (c) Frantisek Storm. www.stormtype.com, 2005. All rights reserved.
-     * Licensed pageviews: 10,000
-     *
-     *
-     * License: http://www.myfonts.com/viewlicense?type=web&buildid=3278924
-     *
-     * © 2016 MyFonts Inc
-    */
+      /**
+      * @license
+      * MyFonts Webfont Build ID 3296227, 2016-10-15T22:01:05-0400
+      *
+      * The fonts listed in this notice are subject to the End User License
+      * Agreement(s) entered into by the website owner. All other parties are
+      * explicitly restricted from using the Licensed Webfonts(s).
+      *
+      * You may obtain a valid license at the URLs below.
+      *
+      * Webfont: SerapionPro-BoldItalic by Storm
+      * URL: http://www.myfonts.com/fonts/storm/serapion/bold-italic/
+      *
+      * Webfont: SerapionPro by Storm
+      * URL: http://www.myfonts.com/fonts/storm/serapion/regular/
+      *
+      *
+      * License: http://www.myfonts.com/viewlicense?type=web&buildid=3296227
+      * Licensed pageviews: 10,000
+      * Webfonts copyright: Copyright (c) Frantisek Storm. www.stormtype.com, 2005. All
+      * rights reserved.
+      *
+      * © 2016 MyFonts Inc
+      */
 
     -->
     <link rel="stylesheet" type="text/css" href="./styles/MyFontsWebfontsKit.css">
@@ -107,6 +111,7 @@
             },
 
             update : function() {
+              this.htmlMirror.setSize("auto", "auto");
               this.htmlCode = this.htmlDoc.getValue();
               try {
                 this.outputEl.html(unescape(this.htmlCode));
@@ -114,6 +119,7 @@
                 console.log(e);
               }
 
+              this.jsMirror.setSize("auto", "auto");
               this.jsCode = this.jsDoc.getValue();
               try {
                 eval(this.jsCode); // yikes!
@@ -130,6 +136,17 @@
             showHTMLContent : function () {
               this.jsContent.hide();
               this.htmlContent.show();
+            },
+
+            largestSize : function () {
+              var htmlMirrorSize = this.htmlMirror.getScrollInfo(),
+                  jsMirrorSize = this.jsMirror.getScrollInfo(),
+                  size = {};
+
+              size.width = Math.max(jsMirrorSize.width, htmlMirrorSize.width);
+              size.height = Math.max(jsMirrorSize.height, htmlMirrorSize.height);
+
+              return size;
             }
           }
         })();
@@ -177,10 +194,11 @@
         <p>
           When applying effects to text on the web, designers have traditionally been constrained to those provided by  CSS. In the majority of cases this is entirely suitable – text is text, right? Yet still, there exist numerous examples of designers combining style properties or gifs and images to create effects that evoke something more playful. Precisely here, Blotter exists to provide an alternative.
         </p>
+        <h3>All Together Now</h3>
         <p>
-          When applying effects to text on the web, designers have traditionally been constrained to those provided by  CSS. In the majority of cases this is entirely suitable – text is text, right? Yet still, there exist numerous examples of designers combining style properties or gifs and images to create effects that evoke something more playful. Precisely here, Blotter exists to provide an alternative.
+          When applying effects to text on the web, designers have traditionally been constrained to those provided by  CSS. In the <a href="#">majority of</a> cases this is entirely suitable – text is text, right? Yet still, there exist numerous examples of designers combining style properties or gifs and images to create effects that evoke something more playful. Precisely here, Blotter exists to provide an alternative.
         </p>
-        <aside id="#1" data-number="4">This is an important line note that wraps multiple lines. These could be quite large.</aside>
+        <aside id="#1" data-number="4">This is an <a href="#">important</a> line note that wraps multiple lines. These could be quite large.</aside>
         <p>
           When applying effects to text on the web, designers have traditionally been constrained to those provided by  CSS. In the majority of cases this is entirely suitable – text is text, right? Yet still, there exist numerous examples of designers combining style properties or gifs and images to create effects that evoke something more playful. Precisely here, Blotter exists to provide an alternative.
         </p>
@@ -233,9 +251,7 @@ myScope.on("render", function () {
 });</script>
 
           <div class="output-container">
-            <div class="output">
-              <div id="draw-text">observation</div>
-            </div>
+            <div class="output"><div id="draw-text">observation</div></div>
           </div>
 
         </div>

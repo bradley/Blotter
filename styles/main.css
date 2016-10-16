@@ -436,13 +436,46 @@ h2 {
   line-height: 16px;
   padding-top: 10px; }
 
+h3 {
+  /* Serapion is a weird font.
+     These settings basically make it the font is vertically centered within a line-height of $leading */
+  font-family: "SerapionPro-BoldItalic", "Garamond", serif;
+  font-size: 20px;
+  line-height: 23px;
+  margin-top: 26px;
+  padding-top: 3px; }
+
+p {
+  max-width: 546px; }
+  @media screen and (device-aspect-ratio: 2 / 3), screen and (device-aspect-ratio: 40 / 71) {
+    p {
+      max-width: 100%; } }
+  p + p {
+    margin-top: 26px; }
+
+a {
+  color: black;
+  position: relative;
+  text-decoration: none; }
+  a:after {
+    bottom: 2px;
+    border-bottom: 1px solid black;
+    content: "";
+    left: 0;
+    position: absolute;
+    width: 100%; }
+
+sup {
+  font-size: 85%;
+  line-height: 85%; }
+
 aside {
   font-size: 12px;
   line-height: 18px;
   position: relative;
   width: 312px;
   margin: 26px 0; }
-  aside::before {
+  aside:before {
     content: "[" attr(data-number) "]";
     font-size: 14px;
     left: -52px;
@@ -450,6 +483,8 @@ aside {
     text-align: center;
     top: 0;
     width: 52px; }
+  aside a:after {
+    bottom: 1px; }
 
 /* Highlight colors. */
 ::-moz-selection {
@@ -457,6 +492,13 @@ aside {
 
 ::selection {
   background: #fff700; }
+
+code {
+  font-family: 'Ubuntu Mono', monospace;
+  font-size: 14px;
+  background: #f3f3f3;
+  padding: 2px 4px 4px;
+  border-radius: 3px; }
 
 /*  Utilities
     ------------------------------------- */
@@ -502,7 +544,8 @@ aside {
   padding: 26px;
   position: fixed;
   right: 0;
-  top: 0; }
+  top: 0;
+  z-index: 100; }
   #masthead #logo {
     display: inline-block;
     height: 52px; }
@@ -530,6 +573,8 @@ aside {
         font-size: 17px;
         line-height: 52px;
         text-decoration: none; }
+        #masthead ul#nav li a:after {
+          display: none; }
         #masthead ul#nav li a:hover {
           text-decoration: none; }
 
@@ -538,87 +583,15 @@ aside {
 .content-right aside {
   left: -130px; }
 
-code {
-  font-family: 'Ubuntu Mono', monospace;
-  font-size: 14px;
-  background: #f3f3f3;
-  padding: 2px 4px 4px;
-  border-radius: 3px; }
-
-p {
-  max-width: 546px; }
-  @media screen and (device-aspect-ratio: 2 / 3), screen and (device-aspect-ratio: 40 / 71) {
-    p {
-      max-width: 100%; } }
-  p + p {
-    margin-top: 26px; }
-
-a {
-  text-decoration: underline; }
-
-sup {
-  font-size: 85%;
-  line-height: 85%; }
-
-/*
-.nota-bene {
-  &:before {
-    content: 'N.B:';
-    font-weight: 700;
-  }
-  font-size: 75%;
-  // font-style: italic;
-}
-*/
-.horizon {
-  list-style: none;
-  height: 0;
-  margin: 26px 0;
-  border-bottom: 1px solid #eee; }
-
-li.horizon {
-  margin: 1.5em 0 !important; }
-
-/* documentation-toc is used by Two to do the sections of documentation specifically. may not need this but nice that it's the same styling */
-#toc, #documentation-toc {
-  display: inline-block;
-  margin-top: -8px;
-  list-style: none;
-  clear: both;
-  max-width: none; }
-  @media screen and (max-width: 400px), screen and (max-device-width: 640px) {
-    #toc, #documentation-toc {
-      text-align: center; } }
-  #toc li, #documentation-toc li {
-    margin-top: 0;
-    display: inline-block;
-    float: left; }
-    @media screen and (max-width: 400px), screen and (max-device-width: 640px) {
-      #toc li, #documentation-toc li {
-        float: none; } }
-    #toc li a, #documentation-toc li a {
-      display: block;
-      margin: 8px 8px 0; }
-
-#documentation-toc {
-  max-width: 546px; }
-
-.basic-usage canvas {
-  /* border: 1px solid $grey; */ }
-.basic-usage .blotter-container {
-  margin-top: 26px; }
-
-.basic-usage + .basic-usage {
-  margin-top: 26px; }
-
+/*  Example Editor
+    ------------------------------------- */
 .tabbed-editor {
   float: none;
   list-style: none;
   margin-top: 52px;
   width: 546px;
   padding: 0;
-  position: relative;
-  z-index: -1; }
+  position: relative; }
   .tabbed-editor .editable-content:after {
     content: '';
     display: table;
@@ -682,6 +655,57 @@ li.horizon {
     .output > div canvas {
       margin: 26px auto;
       vertical-align: top; }
+
+/*
+.nota-bene {
+  &:before {
+    content: 'N.B:';
+    font-weight: 700;
+  }
+  font-size: 75%;
+  // font-style: italic;
+}
+*/
+.horizon {
+  list-style: none;
+  height: 0;
+  margin: 26px 0;
+  border-bottom: 1px solid #eee; }
+
+li.horizon {
+  margin: 1.5em 0 !important; }
+
+/* documentation-toc is used by Two to do the sections of documentation specifically. may not need this but nice that it's the same styling */
+#toc, #documentation-toc {
+  display: inline-block;
+  margin-top: -8px;
+  list-style: none;
+  clear: both;
+  max-width: none; }
+  @media screen and (max-width: 400px), screen and (max-device-width: 640px) {
+    #toc, #documentation-toc {
+      text-align: center; } }
+  #toc li, #documentation-toc li {
+    margin-top: 0;
+    display: inline-block;
+    float: left; }
+    @media screen and (max-width: 400px), screen and (max-device-width: 640px) {
+      #toc li, #documentation-toc li {
+        float: none; } }
+    #toc li a, #documentation-toc li a {
+      display: block;
+      margin: 8px 8px 0; }
+
+#documentation-toc {
+  max-width: 546px; }
+
+.basic-usage canvas {
+  /* border: 1px solid $grey; */ }
+.basic-usage .blotter-container {
+  margin-top: 26px; }
+
+.basic-usage + .basic-usage {
+  margin-top: 26px; }
 
 /*
 .examples,
