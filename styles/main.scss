@@ -374,10 +374,13 @@ li.horizon {
 
 
 .tabbed-editor {
-  max-width: 750px;
   float: none;
   list-style: none;
+  margin-top: $leading * 2;
+  width: $max-content-width;
   padding: 0;
+  position: relative;
+  z-index: -1;
 
   .editable-content:after {
     content: '';
@@ -392,14 +395,17 @@ li.horizon {
   label {
     display: block;
     float: left;
+    height: $leading;
 
     &:hover span {
-      color: black;
+      background-color: $grey;
     }
 
     span {
+      border-radius: 4px 4px 0 0;
       cursor: pointer;
-      color: #ccc;
+      color: $black;
+      font-family: $grotesque-font-stack;
     }
   }
 
@@ -407,7 +413,8 @@ li.horizon {
     width: 100%;
     float: left;
     box-sizing: border-box;
-    background-color:#ffffff;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
 
     > .CodeMirror {
       height: auto;
@@ -415,28 +422,55 @@ li.horizon {
   }
 
   .tab:checked + span {
-    background: #FFF;
-    color: black;
+    background: $black;
+    color: $white;
   }
 
-  .section-label {
-    padding: 10px;
+  .label-text {
+    box-sizing: border-box;
     display: inline-block;
     font-size: 14px;
     font-weight: normal;
+    height: $leading;
+    line-height: $leading;
+    padding: 1px $leading 0;
     text-decoration: none;
     text-align: center;
-    line-height: 1.5;
   }
 }
 
 .output {
-  font-size: 27px;
-  line-height: 1.5;
+  margin-top: $leading * 3;
+  position: relative;
+  width: $max-content-width;
 
-  canvas {
-    vertical-align: top;
+  &:before {
+    content: "↓";
+    font-family: $grotesque-font-stack;
+    font-size: $leading;
+    height: $leading;
+    left: calc(50% - 5px);
+    line-height: $leading;
+    position: absolute;
+    top: -($leading * 2);
+    z-index: -1;
   }
+
+  > div {
+    border: 2px solid $black;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    width: 100%;
+    text-align: center;
+
+    canvas {
+      margin: $leading auto;
+      vertical-align: top;
+    }
+  }
+
+
 }
 
 

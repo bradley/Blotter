@@ -1,3 +1,4 @@
+@charset "UTF-8";
 /* BASICS */
 .CodeMirror {
   /* Set height, width, borders, and global font properties here */
@@ -300,65 +301,97 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
   /* Hide the cursor when printing */
   .CodeMirror div.CodeMirror-cursor {
     visibility: hidden; } }
+/* BASE */
 .CodeMirror {
+  background: #1F1F1F;
   font-family: "Ubuntu Mono", monospace;
-  padding-right: 8px; }
+  font-size: 14px;
+  line-height: 18px;
+  padding-right: 26px; }
 
 .CodeMirror-lines {
-  padding: 0;
-  /* Vertical padding around content */ }
+  /* Vertical padding around content */
+  padding: 26px 0; }
 
 .CodeMirror pre {
-  padding: 0 0 0 8px;
-  /* Horizontal padding of content */ }
+  /* Margin to right of line number border */
+  padding: 0 0 0 26px; }
 
+/* GUTTER */
 .CodeMirror-gutters {
-  border-right: 1px solid #f3f3f3;
-  background-color: #f7f7f7; }
+  border-right: 1px solid #B5B5B5;
+  background-color: #1F1F1F;
+  box-shadow: 1px 0 3px #6C6C6C, 1px 0 3px #6C6C6C;
+  min-width: 26px;
+  text-align: center;
+  margin-right: 26px;
+  padding-left: 0; }
 
 .CodeMirror-linenumber {
-  padding: 0 8px;
-  min-width: 20px;
+  color: #DCDCDC;
+  font-size: 14px;
+  left: 1px !important;
+  line-height: 18px;
   text-align: right;
-  color: #999;
-  font-size: 75%;
-  line-height: 24px; }
+  text-shadow: 0 0 4px #AAAAAA, 0 0 4px #AAAAAA;
+  padding-left: 0; }
 
-.CodeMirror-lines > div > div > div:nth-child(odd) .CodeMirror-linenumber {
-  /* background: red; */ }
-
-@media screen and (min-width: 400px) {
-  .CodeMirror {
-    border-right: 1px solid #f3f3f3; } }
 @media screen and (max-width: 400px) {
-  .CodeMirror {
-    border-left: em(2) solid #f3f3f3; }
-
   .CodeMirror-gutters,
   .CodeMirror-linenumbers,
   .CodeMirror-linenumber {
     display: none; } }
-/*
-.cm-s-default .cm-keyword {color: $turquoise;}
-.cm-s-default .cm-number {color: $red;}
-.cm-s-default .cm-def {color: $black;}
-.cm-s-default .cm-variable {color: $black;}
-.cm-s-default .cm-variable-2 {color: $purple;}
-.cm-s-default .cm-property {color: $fuscia;}
-.cm-s-default .cm-variable + .cm-property {color: $purple}
-.cm-s-default .cm-comment {color: #c7c7c7; font-style: italic;}
-.cm-s-default .cm-string {color: $dark-soft-blue;}
-.cm-s-default .cm-string-2 {color: $dark-soft-blue;}
+/* CURSOR */
+.CodeMirror div.CodeMirror-cursor {
+  border-left: 1px solid #DCDCDC;
+  box-shadow: 0 0 3px #979797, 0 0 3px #979797;
+  z-index: 3; }
 
+/* TEXT STYLING */
 .CodeMirror pre {
-  font-size: $font-size;
-  line-height: $line-height;
-  color: $violet;
-}
+  color: #DCDCDC;
+  font-size: 14px;
+  line-height: 18px;
+  text-shadow: 0 0 3px #979797, 0 0 3px #979797; }
 
-.CodeMirror-selected { background: $yellow; }
-.CodeMirror-focused .CodeMirror-selected { background: $yellow; }
-*/
+.cm-s-default .cm-keyword {
+  color: #DCDCDC;
+  text-shadow: 0 0 3px #979797, 0 0 3px #979797; }
+.cm-s-default .cm-number {
+  color: #DCDCDC;
+  text-shadow: 0 0 3px #979797, 0 0 3px #979797; }
+.cm-s-default .cm-def {
+  color: #DCDCDC;
+  text-shadow: 0 0 3px #979797, 0 0 3px #979797; }
+.cm-s-default .cm-variable {
+  color: #DCDCDC;
+  text-shadow: 0 0 3px #979797, 0 0 3px #979797; }
+.cm-s-default .cm-variable-2 {
+  color: #DCDCDC;
+  text-shadow: 0 0 3px #979797, 0 0 3px #979797; }
+.cm-s-default .cm-property {
+  color: #DCDCDC;
+  text-shadow: 0 0 3px #979797, 0 0 3px #979797; }
+.cm-s-default .cm-variable + .cm-property {
+  color: #DCDCDC;
+  text-shadow: 0 0 3px #979797, 0 0 3px #979797; }
+.cm-s-default .cm-string {
+  color: #DCDCDC;
+  text-shadow: 0 0 3px #979797, 0 0 3px #979797; }
+.cm-s-default .cm-string-2 {
+  color: #DCDCDC;
+  text-shadow: 0 0 3px #979797, 0 0 3px #979797; }
+.cm-s-default .cm-comment {
+  color: #8E8E8E;
+  text-shadow: 0 0 3px #979797; }
+
+/* HIGHLIGHT */
+.CodeMirror-selected {
+  background: #373737; }
+
+.CodeMirror-focused .CodeMirror-selected {
+  background: #373737; }
+
 /*  Typography
     ------------------------------------- */
 @font-face {
@@ -579,10 +612,13 @@ li.horizon {
   margin-top: 26px; }
 
 .tabbed-editor {
-  max-width: 750px;
   float: none;
   list-style: none;
-  padding: 0; }
+  margin-top: 52px;
+  width: 546px;
+  padding: 0;
+  position: relative;
+  z-index: -1; }
   .tabbed-editor .editable-content:after {
     content: '';
     display: table;
@@ -591,36 +627,61 @@ li.horizon {
     display: none; }
   .tabbed-editor label {
     display: block;
-    float: left; }
+    float: left;
+    height: 26px; }
     .tabbed-editor label:hover span {
-      color: black; }
+      background-color: #f3f3f3; }
     .tabbed-editor label span {
+      border-radius: 4px 4px 0 0;
       cursor: pointer;
-      color: #ccc; }
+      color: #1F1F1F;
+      font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif; }
   .tabbed-editor .tab-content {
     width: 100%;
     float: left;
     box-sizing: border-box;
-    background-color: #ffffff; }
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box; }
     .tabbed-editor .tab-content > .CodeMirror {
       height: auto; }
   .tabbed-editor .tab:checked + span {
-    background: #FFF;
-    color: black; }
-  .tabbed-editor .section-label {
-    padding: 10px;
+    background: #1F1F1F;
+    color: #fff; }
+  .tabbed-editor .label-text {
+    box-sizing: border-box;
     display: inline-block;
     font-size: 14px;
     font-weight: normal;
+    height: 26px;
+    line-height: 26px;
+    padding: 1px 26px 0;
     text-decoration: none;
-    text-align: center;
-    line-height: 1.5; }
+    text-align: center; }
 
 .output {
-  font-size: 27px;
-  line-height: 1.5; }
-  .output canvas {
-    vertical-align: top; }
+  margin-top: 78px;
+  position: relative;
+  width: 546px; }
+  .output:before {
+    content: "↓";
+    font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
+    font-size: 26px;
+    height: 26px;
+    left: calc(50% - 5px);
+    line-height: 26px;
+    position: absolute;
+    top: -52px;
+    z-index: -1; }
+  .output > div {
+    border: 2px solid #1F1F1F;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    width: 100%;
+    text-align: center; }
+    .output > div canvas {
+      margin: 26px auto;
+      vertical-align: top; }
 
 /*
 .examples,

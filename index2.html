@@ -188,6 +188,58 @@
           When applying effects to text on the web, designers have traditionally been constrained to those provided by  CSS. In the majority of cases this is entirely suitable – text is text, right? Yet still, there exist numerous examples of designers combining style properties or gifs and images to create effects that evoke something more playful. Precisely here, Blotter exists to provide an alternative.
         </p>
       </div>
+      <div class="content-left">
+
+        <div class="tabbed-editor">
+          <div class="editable-content">
+            <label>
+              <input type="radio" name="tabs" class="tab js-tab" checked="checked">
+              <span class="label-text">JavaScript</span>
+            </label>
+            <label>
+              <input type="radio" name="tabs" class="tab html-tab">
+              <span class="label-text">HTML</span>
+            </label>
+
+            <div class="tab-content js-content"></div>
+            <div class="tab-content html-content"></div>
+          </div>
+
+          <script class="js-code"  type="application/json">// BLOTTER - Example 1
+var text = new Blotter.Text("observation", {
+  family : "'Garamond', serif",
+  size : 27,
+  fill : "#171717"
+});
+
+var material = new Blotter.RollDistortMaterial();
+material.uniforms.uDistortion.value = 3.0;
+material.uniforms.uDistortion2.value = 5.0;
+var blotter = new Blotter(material, {
+  texts : text
+});
+
+var elem = $("#draw-text");
+var myScope = blotter.forText(text);
+var startTime = new Date().getTime()
+
+blotter.on("ready", function () {
+  elem.html(myScope.domElement);
+});
+
+myScope.on("render", function () {
+  var time = (new Date().getTime() - startTime) / 1000;
+  myScope.material.uniforms.uTime.value = time;
+});</script>
+
+          <div class="output-container">
+            <div class="output">
+              <div id="draw-text">observation</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
     </div>
   </body>
 </html>

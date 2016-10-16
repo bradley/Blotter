@@ -87,7 +87,7 @@ $(document).ready(function () {
     "        }",
     "    }",
 
-    "    mainImage = darkestSample;",
+    "    rgbaFromRgb(mainImage, darkestSample.rgb);",
     "}"
   ].join("\n");
 
