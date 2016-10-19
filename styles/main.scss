@@ -173,12 +173,63 @@ code {
   float: right;
 }
 
+.btn {
+  background: $black;
+  border-radius: 4px;
+  box-sizing: border-box;
+  color: $white;
+  display: inline-block;
+  font-family: $grotesque-font-stack;
+  font-size: 14px;
+  font-weight: normal;
+  height: $leading;
+  line-height: $leading * 2;
+  padding: 1px ($leading * 2) 0;
+  text-decoration: none;
+  text-align: center;
+  height: $leading * 2;
+
+  &:after {
+    display: none;
+  }
+}
+
+.dropdown-link {
+  font-family: $grotesque-font-stack;
+  font-size: 14px;
+  margin-right: 39px;
+  position: relative;
+
+
+  &:after {
+    content: "";
+    background: url(../images/down_arrow.png);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 100%;
+    font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
+    font-size: 18px;
+    height: 26px;
+    line-height: 26px;
+    position: absolute;
+    right: -16px;
+    top: -3px;
+    width: 10px;
+  }
+}
+
 /* Used for allowing anchor links but accounting for fixed header */
 .anchor {
   position: relative;
 }
 .anchor span{
   position:absolute; top: -($leading * 8);
+}
+.logo-anchor {
+
+  &:after {
+    display: none;
+  }
 }
 
 .horizon {
@@ -214,6 +265,12 @@ code {
     top: 100%;
   }
 }
+
+.small-text {
+  font-size: 12px;
+  line-height: 12px * 1.5;
+}
+
 
 /*  Layout
     ------------------------------------- */
@@ -251,7 +308,7 @@ code {
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#ffffff', GradientType=0 );filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f85032', endColorstr='#e73827', GradientType=1 );
   height: $leading * 2;
   left: 0;
-  padding: $leading;
+  padding: $leading ($leading * 2);
   position: fixed;
   right: 0;
   top: 0;
@@ -316,6 +373,15 @@ code {
   aside {
     left: -($col-width);
   }
+}
+
+.hero-text {
+  font-size: 20px;
+  line-height: 30px;
+}
+
+.download {
+  margin: $leading 0 ($leading * 3);
 }
 
 .bullet-list {

@@ -518,6 +518,44 @@ code {
 .right {
   float: right; }
 
+.btn {
+  background: #1F1F1F;
+  border-radius: 4px;
+  box-sizing: border-box;
+  color: #fff;
+  display: inline-block;
+  font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
+  font-size: 14px;
+  font-weight: normal;
+  height: 26px;
+  line-height: 52px;
+  padding: 1px 52px 0;
+  text-decoration: none;
+  text-align: center;
+  height: 52px; }
+  .btn:after {
+    display: none; }
+
+.dropdown-link {
+  font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
+  font-size: 14px;
+  margin-right: 39px;
+  position: relative; }
+  .dropdown-link:after {
+    content: "";
+    background: url(../images/down_arrow.png);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 100%;
+    font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
+    font-size: 18px;
+    height: 26px;
+    line-height: 26px;
+    position: absolute;
+    right: -16px;
+    top: -3px;
+    width: 10px; }
+
 /* Used for allowing anchor links but accounting for fixed header */
 .anchor {
   position: relative; }
@@ -525,6 +563,9 @@ code {
 .anchor span {
   position: absolute;
   top: -208px; }
+
+.logo-anchor:after {
+  display: none; }
 
 .horizon {
   background: transparent;
@@ -556,6 +597,10 @@ code {
     height: 26px;
     top: 100%; }
 
+.small-text {
+  font-size: 12px;
+  line-height: 18px; }
+
 /*  Layout
     ------------------------------------- */
 #content {
@@ -586,7 +631,7 @@ code {
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f85032', endColorstr='#e73827', GradientType=1 );
   height: 52px;
   left: 0;
-  padding: 26px;
+  padding: 26px 52px;
   position: fixed;
   right: 0;
   top: 0;
@@ -627,6 +672,13 @@ code {
     ------------------------------------- */
 .content-right aside {
   left: -130px; }
+
+.hero-text {
+  font-size: 20px;
+  line-height: 30px; }
+
+.download {
+  margin: 26px 0 78px; }
 
 .bullet-list {
   list-style: none;

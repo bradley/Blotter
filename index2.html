@@ -176,13 +176,14 @@
   </head>
   <body>
     <div id="masthead">
+      <!-- Preload Serapion -->
       <div style="font-family: 'SerapionPro', serif; height: 0;">&nbsp;</div>
-      <div id="logo"></div>
+      <a href="#" class="logo-anchor"><div id="logo"></div></a>
       <script src="./src/logo.js"></script>
       <div class="contain-floats right">
         <ul id="nav" class="right">
           <li><a href="#overview">Overview</a></li>
-          <li><a href="#basics">Basic Usage</a></li>
+          <li><a href="#basics">The Basics</a></li>
           <li><a href="#">Documentation</a></li>
           <li><a href="#">Packs</a></li>
         </ul>
@@ -190,12 +191,24 @@
     </div>
     <div id="content">
       <div class="content-right">
+        <p class="hero-text">
+          Blotter is a <code>webgl</code> backed JavaScript api geared towards allowing designers to easily draw both pre-made and custom text effects using <code>glsl</code> shaders.
+        </p>
+        <p class="small-text">
+           Two.js requires Underscore.js and Backbone.js Events. If you're already loading these files elsewhere then you can build the project yourself and get the file size even smaller. For more information on custom builds check out the source on github.
+        </p>
+        <div class="download contain-floats">
+          <div class="right">
+            <span class="download-options dropdown-link">Production Version</span>
+            <a href="#" class="btn">Download</a>
+          </div>
+        </div>
+      </div>
+      <div class="horizon"></div>
+      <div class="content-right">
         <h2 class="anchor"><span id="overview"></span>Overview</h2>
         <p>
           When applying effects to text on the web, designers have traditionally been constrained to those provided by <code>css</code>. In the majority of cases this is entirely suitable – text is text right? Yet still, there exist numerous examples of designers combining <code>css</code> properties or gifs and images to create effects that evoke something more playful. Precisely here, Blotter exists to provide an alternative.
-        </p>
-        <p>
-          <strong>Blotter</strong> is a <code>webgl</code> backed JavaScript api geared towards allowing designers to easily draw both pre-made and custom text effects using <code>glsl</code> shaders.
         </p>
         <ul class="bullet-list">
           <li>
