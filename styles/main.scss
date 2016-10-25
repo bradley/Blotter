@@ -234,10 +234,14 @@ code {
 
 .horizon {
   background: transparent;
-  height: $leading * 2; /* operates as margin-top */
-  margin: 0 0 ($leading * 4); /* margin-bottom must account for height of before/after */
+  border-color: transparent transparent $black transparent;
+  border-style: solid;
+  border-width: 0 13px 6.5px 13px;
+  box-sizing: border-box;
+  margin: 78px 0 91px;
   position: relative;
   z-index: 1;
+  width: 100%;
 
   &:before,
   &:after {
@@ -249,20 +253,22 @@ code {
   }
 
   &:before {
-    background: linear-gradient(-135deg, $black ($leading / 2), transparent 0) 0 ($leading / 2), linear-gradient( 135deg, $black ($leading / 2), transparent 0) 0 ($leading / 2);
-    background-position: top left;
-    background-repeat: repeat-x;
-    background-size: $leading $leading;
-    height: $leading;
-    top: 105%; /* thickness. increase for thicker line */
+    border-color: transparent transparent $white transparent;
+    border-style: solid;
+    border-width: 0 13px 6.5px 13px;
+    left: -13px;
+    top: calc(100% + 2px);
+    width: 100%;
   }
+
   &:after {
-    background: linear-gradient(-135deg, white ($leading / 2), transparent 0) 0 ($leading / 2), linear-gradient( 135deg, white ($leading / 2), transparent 0) 0 ($leading / 2);
-    background-position: top left;
-    background-repeat: repeat-x;
-    background-size: $leading $leading;
-    height: $leading;
-    top: 100%;
+    border-color: $black transparent transparent transparent;
+    border-style: solid;
+    border-width: 6.5px 13px 0 13px;
+    height: 26px;
+    left: -13px;
+    top: calc(100% + 6px);
+    width: 100%;
   }
 }
 
@@ -376,8 +382,8 @@ code {
 }
 
 .hero-text {
-  font-size: 20px;
-  line-height: 30px;
+  font-size: 26px !important;
+  line-height: 39px !important;
 }
 
 .download {
