@@ -115,8 +115,8 @@ sup {
 }
 
 aside {
-  font-size: 12px;
-  line-height: 12px * 1.5;
+  font-size: 13px;
+  line-height: 1.5;
   position: relative;
   width: ($col-width * 2) + $gutter-width;
   margin: $leading 0;
@@ -173,6 +173,19 @@ code {
   float: right;
 }
 
+.hidden {
+  display: none;
+}
+
+.noselect {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
 .btn {
   background: $black;
   border-radius: 4px;
@@ -194,27 +207,68 @@ code {
   }
 }
 
-.dropdown-link {
-  font-family: $grotesque-font-stack;
-  font-size: 14px;
-  margin-right: 39px;
+.dropdown-select {
+  display: inline-block;
   position: relative;
 
+  .dropdown-title {
+    font-family: $grotesque-font-stack;
+    font-size: 14px;
+    margin-right: 21px;
+    padding-right: 18px;
+    position: relative;
 
-  &:after {
-    content: "";
-    background: url(../images/down_arrow.png);
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: 100%;
-    font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
-    font-size: 18px;
-    height: 26px;
-    line-height: 26px;
+    &:hover {
+      cursor: pointer;
+    }
+
+    &:after {
+      content: "";
+      background: url(../images/down_arrow.png);
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: 100%;
+      font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
+      font-size: 18px;
+      height: 26px;
+      line-height: 26px;
+      position: absolute;
+      right: -0px;
+      top: -1px;
+      width: 10px;
+    }
+  }
+
+  .dropdown-options {
+    background: $white;
+    border-radius: 4px;
+    box-shadow: 0 0 10px 3px $grey;
+    box-sizing: border-box;
+    color: $black;
+    left: -32px;
+    list-style: none;
+    padding: 0;
     position: absolute;
-    right: -16px;
-    top: -3px;
-    width: 10px;
+    top: calc(100% + #{$leading / 2});
+    width: $leading * 7;
+    z-index: 100;
+
+    li {
+      padding: ($leading / 4) ($leading / 2);
+
+      &:hover {
+        cursor: pointer;
+        background: red;
+      }
+
+      &:first-child {
+        padding-top: $leading / 2;
+      }
+
+      &:last-child {
+        padding-bottom: $leading / 2;
+      }
+    }
   }
 }
 
@@ -273,8 +327,8 @@ code {
 }
 
 .small-text {
-  font-size: 12px;
-  line-height: 12px * 1.5;
+  font-size: 13px;
+  line-height: 1.5;
 }
 
 
@@ -386,7 +440,29 @@ code {
   line-height: 39px !important;
 }
 
+.download-options {
+
+  .dropdown-options {
+
+    li {
+
+      .download-title {
+        font-family: $grotesque-font-stack;
+        font-size: 14px;
+        line-height: 1.5;
+      }
+
+      .download-details {
+        font-size: 13px;
+        line-height: 1.5;
+        margin-top: 0px;
+      }
+    }
+  }
+}
+
 .download {
+  height: 52px;
   margin: $leading 0 ($leading * 3);
 }
 

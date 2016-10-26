@@ -477,8 +477,8 @@ sup {
     display: none; }
 
 aside {
-  font-size: 12px;
-  line-height: 18px;
+  font-size: 13px;
+  line-height: 1.5;
   position: relative;
   width: 312px;
   margin: 26px 0; }
@@ -521,6 +521,17 @@ code {
 .right {
   float: right; }
 
+.hidden {
+  display: none; }
+
+.noselect {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none; }
+
 .btn {
   background: #1e1a1b;
   border-radius: 4px;
@@ -539,25 +550,53 @@ code {
   .btn:after {
     display: none; }
 
-.dropdown-link {
-  font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
-  font-size: 14px;
-  margin-right: 39px;
+.dropdown-select {
+  display: inline-block;
   position: relative; }
-  .dropdown-link:after {
-    content: "";
-    background: url(../images/down_arrow.png);
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: 100%;
+  .dropdown-select .dropdown-title {
     font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
-    font-size: 18px;
-    height: 26px;
-    line-height: 26px;
+    font-size: 14px;
+    margin-right: 21px;
+    padding-right: 18px;
+    position: relative; }
+    .dropdown-select .dropdown-title:hover {
+      cursor: pointer; }
+    .dropdown-select .dropdown-title:after {
+      content: "";
+      background: url(../images/down_arrow.png);
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: 100%;
+      font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
+      font-size: 18px;
+      height: 26px;
+      line-height: 26px;
+      position: absolute;
+      right: 0px;
+      top: -1px;
+      width: 10px; }
+  .dropdown-select .dropdown-options {
+    background: white;
+    border-radius: 4px;
+    box-shadow: 0 0 10px 3px #f3f3f3;
+    box-sizing: border-box;
+    color: #1e1a1b;
+    left: -32px;
+    list-style: none;
+    padding: 0;
     position: absolute;
-    right: -16px;
-    top: -3px;
-    width: 10px; }
+    top: calc(100% + 13px);
+    width: 182px;
+    z-index: 100; }
+    .dropdown-select .dropdown-options li {
+      padding: 6.5px 13px; }
+      .dropdown-select .dropdown-options li:hover {
+        cursor: pointer;
+        background: red; }
+      .dropdown-select .dropdown-options li:first-child {
+        padding-top: 13px; }
+      .dropdown-select .dropdown-options li:last-child {
+        padding-bottom: 13px; }
 
 /* Used for allowing anchor links but accounting for fixed header */
 .anchor {
@@ -603,8 +642,8 @@ code {
     width: 100%; }
 
 .small-text {
-  font-size: 12px;
-  line-height: 18px; }
+  font-size: 13px;
+  line-height: 1.5; }
 
 /*  Layout
     ------------------------------------- */
@@ -682,7 +721,17 @@ code {
   font-size: 26px !important;
   line-height: 39px !important; }
 
+.download-options .dropdown-options li .download-title {
+  font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.5; }
+.download-options .dropdown-options li .download-details {
+  font-size: 13px;
+  line-height: 1.5;
+  margin-top: 0px; }
+
 .download {
+  height: 52px;
   margin: 26px 0 78px; }
 
 .bullet-list {

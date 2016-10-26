@@ -48,6 +48,7 @@
     <script src="./third_party/blotter.min.js"></script>
     <script src="./third_party/codemirror.min.js"></script>
     <script src="./third_party/javascript.js"></script>
+    <script src="./third_party/EventEmitter.js"></script>
 
     <script>
 
@@ -103,11 +104,14 @@
               this.htmlDoc = this.htmlMirror.getDoc();
               this.jsDoc = this.jsMirror.getDoc();
 
-              el.find(".js-tab").on("click", _.bind(this.showJSContent, this));
-              el.find(".html-tab").on("click", _.bind(this.showHTMLContent, this));
-
+              this.setupListeners();
               this.update();
               this.showJSContent();
+            },
+
+            setupListeners : function () {
+              this.el.find(".js-tab").on("click", _.bind(this.showJSContent, this));
+              this.el.find(".html-tab").on("click", _.bind(this.showHTMLContent, this));
             },
 
             update : function() {
@@ -151,8 +155,48 @@
           }
         })();
 
+
+        BlotterSite.DropdownSelect = function (el) {
+          this.init.apply(this, arguments);
+        };
+
+        BlotterSite.DropdownSelect.prototype = (function () {
+
+          return {
+            constructor : BlotterSite.DropdownSelect,
+
+            init : function (el) {
+              this.el = el;
+              this.titleEl = this.el.find(".dropdown-title");
+              this.dropdownEl = this.el.find(".dropdown-options");
+
+              this.setupListeners();
+            },
+
+            setupListeners : function () {
+              this.titleEl.on("click", _.bind(this.handleToggleClick, this));
+              this.dropdownEl.find("li").on("click", _.bind(this.handleSelectionMade, this));
+            },
+
+            handleToggleClick : function (e) {
+              e.preventDefault();
+              this.dropdownEl.toggleClass("hidden");
+            },
+
+            handleSelectionMade : function (e) {
+              e.preventDefault;
+              var target = $(e.currentTarget);
+
+              this.trigger("selectionMade", [target.data("value")]);
+            }
+          }
+        })();
+        _.extend(BlotterSite.DropdownSelect.prototype, EventEmitter.prototype);
+
+
         $(document).ready(function () {
 
+          // Setup editors
           BlotterSite.editors = (function (editors) {
             return {
               editors : editors,
@@ -168,8 +212,20 @@
             return m;
           }, []));
 
-        });
 
+          // Setup dropdowns
+          BlotterSite.dropdowns = _.reduce($(".dropdown-select"), function (m, el) {
+            m.push(new BlotterSite.DropdownSelect($(el)));
+            return m;
+          }, []);
+
+          // I don't love this but w/e.
+          BlotterSite.dropdowns[0].on("selectionMade", function (selectionData) {
+            console.log(selectionData);
+          });
+
+
+        });
       });
 
     </script>
@@ -197,10 +253,22 @@
         <p class="small-text">
            Two.js requires Underscore.js and Backbone.js Events. If you're already loading these files elsewhere then you can build the project yourself and get the file size even smaller. For more information on custom builds check out the source on github.
         </p>
-        <div class="download contain-floats">
+        <div class="download">
           <div class="right">
-            <span class="download-options dropdown-link">Production Version</span>
-            <a href="#" class="btn">Download</a>
+            <div class="download-options dropdown-select">
+              <div class="dropdown-title noselect">Production Version</div>
+              <ul class="dropdown-options hidden">
+                <li data-title="Production" data-value="http://">
+                  <p class="download-title">Production Version</p>
+                  <p class="download-details">Testing 23kb</p>
+                </li>
+                <li data-title="Development" data-value="http://">
+                  <p class="download-title">Development Version</p>
+                  <p class="download-details">Testing 420mb</p>
+                </li>
+              </ul>
+            </div>
+            <a href="#" class="btn download-btn">Download</a>
           </div>
         </div>
       </div>
