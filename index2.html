@@ -170,12 +170,16 @@
               this.titleEl = this.el.find(".dropdown-title");
               this.dropdownEl = this.el.find(".dropdown-options");
 
+              this.title = this.titleEl.html();
+
               this.setupListeners();
             },
 
             setupListeners : function () {
               this.titleEl.on("click", _.bind(this.handleToggleClick, this));
-              this.dropdownEl.find("li").on("click", _.bind(this.handleSelectionMade, this));
+              this.dropdownEl.find("li").on("mouseover", _.bind(this.handleSelectionHover, this));
+              this.dropdownEl.find("li").on("click", _.bind(this.handleSelectionClick, this));
+              this.on("selectionMade", _.bind(this.handleSelectionMade, this));
             },
 
             handleToggleClick : function (e) {
@@ -196,14 +200,27 @@
 
               this.boundBodyListener && $("html").off("mousedown", this.boundBodyListener);
               this.boundBodyListener = null;
+
+              this.titleEl.html(this.title);
             },
 
-            handleSelectionMade : function (e) {
-              e.preventDefault;
+            handleSelectionHover : function (e) {
               var target = $(e.currentTarget);
 
               this.titleEl.html(target.data("title"));
-              this.trigger("selectionMade", [target.data("value")]);
+            },
+
+            handleSelectionClick : function (e) {
+              e.preventDefault;
+              var target = $(e.currentTarget);
+
+              this.trigger("selectionMade", [target.data("value"), target.data("title")]);
+            },
+
+            handleSelectionMade : function (value, title) {
+              this.value = value;
+              this.title = title;
+
               this.hideDropdown();
             },
 
@@ -245,8 +262,8 @@
           }, []);
 
           // I don't love this but w/e.
-          BlotterSite.dropdowns[0].on("selectionMade", function (selectionData) {
-            $(".download-btn").attr("href", selectionData);
+          BlotterSite.dropdowns[0].on("selectionMade", function (value, title) {
+            $(".download-btn").attr("href", value);
           });
 
 

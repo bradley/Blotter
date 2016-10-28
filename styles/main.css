@@ -581,7 +581,7 @@ code {
     box-shadow: 0 0 10px 3px #f3f3f3;
     box-sizing: border-box;
     color: #1e1a1b;
-    left: -32px;
+    right: 26px;
     list-style: none;
     padding: 6.5px 0;
     position: absolute;
