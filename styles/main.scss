@@ -247,26 +247,20 @@ code {
     color: $black;
     left: -32px;
     list-style: none;
-    padding: 0;
+    padding: ($leading / 4) 0;
     position: absolute;
     top: calc(100% + #{$leading / 2});
     width: $leading * 7;
-    z-index: 100;
+    z-index: 50;
+    backface-visiblity: visible;
 
     li {
       padding: ($leading / 4) ($leading / 2);
 
       &:hover {
+        color: $white;
         cursor: pointer;
-        background: red;
-      }
-
-      &:first-child {
-        padding-top: $leading / 2;
-      }
-
-      &:last-child {
-        padding-bottom: $leading / 2;
+        background: $black;
       }
     }
   }

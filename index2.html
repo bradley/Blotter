@@ -180,14 +180,39 @@
 
             handleToggleClick : function (e) {
               e.preventDefault();
-              this.dropdownEl.toggleClass("hidden");
+              var hidden = this.dropdownEl.hasClass("hidden");
+              hidden ? this.showDropdown() : this.hideDropdown();
+            },
+
+            showDropdown : function () {
+              this.dropdownEl.removeClass("hidden");
+
+              this.boundBodyListener = this.boundBodyListener || _.bind(this.bodyListener, this);
+              $("html").on("mousedown", this.boundBodyListener);
+            },
+
+            hideDropdown : function () {
+              this.dropdownEl.addClass("hidden");
+
+              this.boundBodyListener && $("html").off("mousedown", this.boundBodyListener);
+              this.boundBodyListener = null;
             },
 
             handleSelectionMade : function (e) {
               e.preventDefault;
               var target = $(e.currentTarget);
 
+              this.titleEl.html(target.data("title"));
               this.trigger("selectionMade", [target.data("value")]);
+              this.hideDropdown();
+            },
+
+            bodyListener : function (e) {
+              var target = $(e.target);
+
+              if (!target.parents(".dropdown-select").length) {
+                this.hideDropdown();
+              }
             }
           }
         })();
@@ -221,7 +246,7 @@
 
           // I don't love this but w/e.
           BlotterSite.dropdowns[0].on("selectionMade", function (selectionData) {
-            console.log(selectionData);
+            $(".download-btn").attr("href", selectionData);
           });
 
 
@@ -258,17 +283,17 @@
             <div class="download-options dropdown-select">
               <div class="dropdown-title noselect">Production Version</div>
               <ul class="dropdown-options hidden">
-                <li data-title="Production" data-value="http://">
+                <li data-title="Production Version" data-value="http://production">
                   <p class="download-title">Production Version</p>
                   <p class="download-details">Testing 23kb</p>
                 </li>
-                <li data-title="Development" data-value="http://">
+                <li data-title="Development Version" data-value="http://download">
                   <p class="download-title">Development Version</p>
                   <p class="download-details">Testing 420mb</p>
                 </li>
               </ul>
             </div>
-            <a href="#" class="btn download-btn">Download</a>
+            <a href="http://production" class="btn download-btn">Download</a>
           </div>
         </div>
       </div>

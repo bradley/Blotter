@@ -583,20 +583,18 @@ code {
     color: #1e1a1b;
     left: -32px;
     list-style: none;
-    padding: 0;
+    padding: 6.5px 0;
     position: absolute;
     top: calc(100% + 13px);
     width: 182px;
-    z-index: 100; }
+    z-index: 50;
+    backface-visiblity: visible; }
     .dropdown-select .dropdown-options li {
       padding: 6.5px 13px; }
       .dropdown-select .dropdown-options li:hover {
+        color: white;
         cursor: pointer;
-        background: red; }
-      .dropdown-select .dropdown-options li:first-child {
-        padding-top: 13px; }
-      .dropdown-select .dropdown-options li:last-child {
-        padding-bottom: 13px; }
+        background: #1e1a1b; }
 
 /* Used for allowing anchor links but accounting for fixed header */
 .anchor {
