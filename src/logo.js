@@ -93,12 +93,12 @@ $(document).ready(function () {
 
   var text = new Blotter.Text("Blotter", {
     family : "'SerapionPro', sans-serif",
-    size : 52,
+    size : 48,
     weight : 100,
     leading : "52px",
-    paddingTop : 14,//32,
-    paddingLeft : 14,//5,
-    paddingRight : 14,//10,
+    paddingTop : 14,
+    paddingLeft : 14,
+    paddingRight : 14,
     fill : "#171717"
   });
 

@@ -683,7 +683,7 @@ code {
     height: 52px; }
     #masthead #logo canvas {
       vertical-align: top;
-      margin-top: -4px;
+      margin-top: -6px;
       margin-left: -14px; }
   #masthead ul#nav {
     display: block;

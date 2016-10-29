@@ -261,7 +261,7 @@
             return m;
           }, []);
 
-          // I don't love this but w/e.
+          // I don't love this but w/e moving on.
           BlotterSite.dropdowns[0].on("selectionMade", function (value, title) {
             $(".download-btn").attr("href", value);
           });
@@ -273,6 +273,7 @@
     </script>
   </head>
   <body>
+
     <div id="masthead">
       <!-- Preload Serapion -->
       <div style="font-family: 'SerapionPro', serif; height: 0;">&nbsp;</div>
@@ -282,12 +283,14 @@
         <ul id="nav" class="right">
           <li><a href="#overview">Overview</a></li>
           <li><a href="#basics">The Basics</a></li>
+          <li><a href="#packs">Packs</a></li>
           <li><a href="#">Documentation</a></li>
-          <li><a href="#">Packs</a></li>
         </ul>
       </div>
     </div>
+
     <div id="content">
+
       <div class="content-right">
         <p class="hero-text">
           Blotter is a WebGL backed JavaScript API geared towards allowing designers to easily draw both pre-made and custom text effects using GLSL shaders.
@@ -314,7 +317,9 @@
           </div>
         </div>
       </div>
+
       <div class="horizon"></div>
+
       <div class="content-right">
         <h2 class="anchor"><span id="overview"></span>Overview</h2>
         <p>
@@ -351,7 +356,6 @@
       <div class="horizon"></div>
 
       <div class="content-right">
-
         <h2 class="anchor"><span id="basics"></span>The Basics</h2>
         <p>
           When applying effects to text on the <code>WebGL</code>, designers have traditionally been constrained to those provided by  CSS. In the majority of cases this is entirely suitable – text is text, right? Yet still, there exist numerous examples of designers combining style properties or gifs and images to create effects that evoke something more playful. Precisely here, Blotter exists to provide an alternative.
@@ -369,7 +373,6 @@
         </p>
       </div>
       <div class="content-left">
-
         <div class="tabbed-editor">
           <div class="editable-content">
             <label>
@@ -380,11 +383,9 @@
               <input type="radio" name="tabs" class="tab html-tab">
               <span class="label-text">HTML</span>
             </label>
-
             <div class="tab-content js-content"></div>
             <div class="tab-content html-content"></div>
           </div>
-
           <script class="js-code"  type="application/json">// BLOTTER - Example 1
 var text = new Blotter.Text("observation", {
   family : "'Garamond', serif",
@@ -411,12 +412,23 @@ myScope.on("render", function () {
   var time = (new Date().getTime() - startTime) / 1000;
   myScope.material.uniforms.uTime.value = time;
 });</script>
-
           <div class="output-container">
             <div class="output"><div id="draw-text">observation</div></div>
           </div>
-
         </div>
+      </div>
+
+      <div class="horizon"></div>
+
+      <div class="content-right">
+        <h2 class="anchor"><span id="packs"></span>Shader Packs</h2>
+        <p>
+          When applying effects to text on the <code>WebGL</code>, designers have traditionally been constrained to those provided by  CSS. In the majority of cases this is entirely suitable – text is text, right? Yet still, there exist numerous examples of designers combining style properties or gifs and images to create effects that evoke something more playful. Precisely here, Blotter exists to provide an alternative.
+        </p>
+        <h3>All Together Now</h3>
+        <p>
+          When applying effects to text on the web, designers have traditionally been constrained to those provided by  CSS. In the <a href="#">majority of</a> cases this is entirely suitable – text is text, right? Yet still, there exist numerous examples of designers combining style properties or gifs and images to create effects that evoke something more playful<sup><a href="#1">4</a></sup>. Precisely here, Blotter exists to provide an alternative.
+        </p>
       </div>
     </div>
   </body>
