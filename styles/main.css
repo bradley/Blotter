@@ -536,6 +536,8 @@ code {
   background: #1e1a1b;
   border-radius: 4px;
   box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
   color: white;
   display: inline-block;
   font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
@@ -580,6 +582,8 @@ code {
     border-radius: 4px;
     box-shadow: 0 0 10px 3px #f3f3f3;
     box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
     color: #1e1a1b;
     right: 26px;
     list-style: none;
@@ -613,6 +617,8 @@ code {
   border-style: solid;
   border-width: 0 13px 6.5px 13px;
   box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
   margin: 78px 0 91px;
   position: relative;
   z-index: 1;
@@ -786,6 +792,8 @@ code {
     color: white; }
   .tabbed-editor .label-text {
     box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
     display: inline-block;
     font-size: 14px;
     font-weight: normal;
@@ -819,6 +827,27 @@ code {
     .output > div canvas {
       margin: 26px auto;
       vertical-align: top; }
+
+/*  Packs
+    ------------------------------------- */
+.pack .pack-shaders {
+  list-style: none; }
+  .pack .pack-shaders li {
+    border: 2px solid #1e1a1b;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    float: left;
+    font-family: "SerapionPro", "Garamond", serif;
+    font-size: 32px;
+    height: 104px;
+    line-height: 104px;
+    margin-bottom: 26px;
+    margin-right: 26px;
+    text-align: center;
+    width: 149.5px; }
+    .pack .pack-shaders li:nth-child(4) {
+      margin-right: 0; }
 
 /*
 .nota-bene {
