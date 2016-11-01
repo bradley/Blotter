@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+
+    <style type="text/css">
+      body {
+        padding: 20px;
+        font-family: serif;
+        font-size: 40px;
+        line-height: 1.5;
+        color: #0d0f17;
+      }
+
+      canvas {
+        padding: 0;
+        margin: 0;
+        vertical-align: top;
+      }
+    </style>
+
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-beta1/jquery.js"></script>
+    <script type="text/javascript" src="../build/blotter.js"></script>
+
+    <script type="text/javascript">
+
+      var BlotterSite = {};
+
+      BlotterSite.PackShader = function () {
+        this.init.apply(this, arguments);
+      }
+
+      BlotterSite.PackShader.prototype = (function () {
+        return {
+          constructor : BlotterSite.PackShader,
+
+          init : function () {
+
+            this.setListeners();
+          },
+
+          setListeners : function () {
+            this.on("render", _.bind(this.onRender, this));
+          },
+
+          onRender : function () {
+            console.log("base render");
+          }
+        }
+      })();
+      _.extend(BlotterSite.PackShader.prototype, EventEmitter.prototype);
+
+
+      var SpecialShader = function () { this.init.apply(this, arguments); };
+      _.extend(SpecialShader.prototype, BlotterSite.PackShader.prototype, {
+        onRender : function () {
+          console.log("special render");
+        }
+      });
+
+
+
+
+      BlotterSite.PackManager = function (el, shaderNames) {
+        this.init.apply(this, arguments);
+      }
+
+      BlotterSite.PackManager.prototype = (function () {
+
+        return {
+          constructor : BlotterSite.PackManager,
+
+          init : function (el, shaderNames) {
+            this.el = el;
+            this.shaderNames = shaderNames;
+
+            this.textStr = "observation";
+
+            this.styleProperties = {
+              family: "serif",
+              size: 40,
+              fill: "#0d0f17"
+            };
+
+            this.blotter = new Blotter(new Blotter.Material());
+
+            this.populatePack();
+          },
+
+          populatePack : function () {
+            _.each(this.shaderNames, _.bind(function (name) {
+              var packShader = new window["BlotterSite"]["PackShaders"][name](),
+                  material = packShader.material,
+                  text = new Blotter.Text(this.textStr, this.styleProperties);
+
+
+            }, this));
+          }
+
+
+        }
+      })();
+
+    </script>
+  </head>
+    <span id="glitch-target">observation</span>
+    <script>
+      $(document).ready(function() {
+
+        var styleProperties = {
+          family: "serif",
+          size: 40,
+          fill: "#0d0f17"
+        };
+
+        var text = new Blotter.Text("observation", styleProperties);
+
+        var material = new Blotter.RollDistortMaterial();
+        material.uniforms.uDistortion.value = 3.0;
+        material.uniforms.uDistortion2.value = 5.0;
+
+        var blotter = new Blotter(material, {
+          texts : text
+        });
+
+        var startTime = new Date().getTime(),
+            myScope = blotter.forText(text);
+
+        blotter.on("ready", function () {
+          $("#glitch-target").html(myScope.domElement)
+        });
+
+        var testing = new SpecialShader();
+
+        myScope.on("render", function () {
+          var time = (new Date().getTime() - startTime) / 1000;
+          myScope.material.uniforms.uTime.value = time;
+          testing.trigger("render");
+        });
+
+
+        window.tester = {
+          blotter: blotter,
+          myScope: myScope,
+          testing : testing
+        }
+      });
+    </script>
+  </body>
+</html>

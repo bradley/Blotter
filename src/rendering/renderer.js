@@ -14,7 +14,7 @@
     this._mesh = new THREE.Mesh(this._plane, this._material);
     this._scene.add(this._mesh);
 
-    this._renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, premultipliedAlpha : false });
+    this._threeRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, premultipliedAlpha : false });
 
     this._camera = new THREE.OrthographicCamera(0.5, 0.5, 0.5, 0.5, 0, 100);
 
@@ -38,9 +38,9 @@
     }
 
     function _loop () {
-      this._renderer.render(this._scene, this._camera, this._renderTarget);
+      this._threeRenderer.render(this._scene, this._camera, this._renderTarget);
 
-      this._renderer.readRenderTargetPixels(
+      this._threeRenderer.readRenderTargetPixels(
         this._renderTarget,
         0,
         0,
@@ -104,7 +104,7 @@
         this._width = width || 1;
         this._height = height || 1;
 
-        this._renderer.setSize(this._width, this._height);
+        this._threeRenderer.setSize(this._width, this._height);
 
         this._mesh.scale.set(this._width, this._height, 1);
 
@@ -125,7 +125,7 @@
 
       teardown : function () {
         this.stop();
-        this._renderer = null;
+        this._threeRenderer = null;
       }
     };
   })();
