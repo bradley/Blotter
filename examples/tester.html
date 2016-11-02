@@ -17,16 +17,36 @@
         margin: 0;
         vertical-align: top;
       }
+
+      .pack-shaders {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
     </style>
 
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-beta1/jquery.js"></script>
+    <script type="text/javascript" src="third_party/jquery.min.js"></script>
     <script type="text/javascript" src="../build/blotter.js"></script>
 
     <script type="text/javascript">
 
+      _.extend = function (obj) {
+        Array.prototype.slice.call(arguments, 1).forEach(function (source) {
+          var descriptor, prop;
+          if (source) {
+            for (prop in source) {
+              descriptor = Object.getOwnPropertyDescriptor(source, prop);
+              Object.defineProperty(obj, prop, descriptor);
+            }
+          }
+        });
+
+        return obj;
+      };
+
       var BlotterSite = {};
 
-      BlotterSite.PackShader = function () {
+      BlotterSite.PackShader = function (blotter, text) {
         this.init.apply(this, arguments);
       }
 
@@ -34,7 +54,23 @@
         return {
           constructor : BlotterSite.PackShader,
 
-          init : function () {
+          get shaderScope () {
+            this._scope = this._scope || this.blotter.forText(this.text);
+            return this._scope;
+          },
+
+          set shaderScope (_) { }, // jshint
+
+          get material () {
+            this._material = this._material || this._getMaterial();
+            return this._material;
+          },
+
+          set material (_) { }, // jshint
+
+          init : function (blotter, text) {
+            this.blotter = blotter;
+            this.text = text;
 
             this.setListeners();
           },
@@ -44,20 +80,60 @@
           },
 
           onRender : function () {
-            console.log("base render");
+            console.error("PackShader objects should override onRender");
+          },
+
+          _getMaterial : function () {
+            console.warn("PackShader objects should override _getMaterial and return a Blotter.Material object");
+            return new Blotter.Material();
           }
         }
       })();
       _.extend(BlotterSite.PackShader.prototype, EventEmitter.prototype);
 
 
-      var SpecialShader = function () { this.init.apply(this, arguments); };
-      _.extend(SpecialShader.prototype, BlotterSite.PackShader.prototype, {
+      BlotterSite.PackShaders = {};
+
+
+      BlotterSite.PackShaders.RollDistortMaterial = function (blotter, text) {
+        this.startTime = new Date().getTime();
+        this.init.apply(this, arguments);
+      };
+
+      _.extend(BlotterSite.PackShaders.RollDistortMaterial.prototype, BlotterSite.PackShader.prototype, {
         onRender : function () {
-          console.log("special render");
+          var time = (new Date().getTime() - this.startTime) / 1000;
+          this.material.uniforms.uTime.value = time;
+        },
+
+        _getMaterial : function () {
+          var material = new Blotter.RollDistortMaterial();
+          material.uniforms.uDistortion.value = 3.0;
+          material.uniforms.uDistortion2.value = 5.0;
+
+          return material;
         }
       });
 
+
+      BlotterSite.PackShaders.BubbleSplitMaterial = function (blotter, text) {
+        this.startTime = new Date().getTime();
+        this.init.apply(this, arguments);
+      };
+
+      _.extend(BlotterSite.PackShaders.BubbleSplitMaterial.prototype, BlotterSite.PackShader.prototype, {
+        onRender : function () {
+          var time = (new Date().getTime() - this.startTime) / 1000;
+          this.material.uniforms.uLenseWeight.value = Math.abs(Math.sin(time));
+        },
+
+        _getMaterial : function () {
+          var material = new Blotter.BubbleSplitMaterial();
+          material.uniforms.uLenseWeight.value = 0.25;
+
+          return material;
+        }
+      });
 
 
 
@@ -85,65 +161,78 @@
             this.blotter = new Blotter(new Blotter.Material());
 
             this.populatePack();
+            this.setListeners();
+          },
+
+          setListeners : function () {
+            this.el.find("li").on("mouseenter", _.bind(this._handleMouseEnter, this));
+            this.el.find("li").on("mouseleave", _.bind(this._handleMouseLeave, this));
+            this.blotter.on("render", _.bind(this._delegateRender, this));
           },
 
           populatePack : function () {
-            _.each(this.shaderNames, _.bind(function (name) {
-              var packShader = new window["BlotterSite"]["PackShaders"][name](),
-                  material = packShader.material,
-                  text = new Blotter.Text(this.textStr, this.styleProperties);
+            var texts = [];
 
+            this.packShaders = _.reduce(this.shaderNames, _.bind(function (memo, name) {
+              var text = new Blotter.Text(this.textStr, this.styleProperties),
+                  li = $("<li>"),
+                  packShader = new window["BlotterSite"]["PackShaders"][name](this.blotter, text);
 
-            }, this));
+              this.blotter.addText(text);
+              this.blotter.material = packShader.material;
+              this.blotter.needsUpdate = true;
+
+              li.data("reference", memo.length);
+              packShader.shaderScope.appendTo(li);
+
+              this.el.append(li);
+
+              //packShader.shaderScope.play();
+              packShader.trigger("render");
+              //packShader.shaderScope.pause();
+
+              memo.push(packShader);
+              return memo;
+            }, this), []);
+          },
+
+          _handleMouseEnter : function (e) {
+            var target = $(e.currentTarget);
+            this.currentReference = target.data("reference");
+          },
+
+          _handleMouseLeave : function (e) {
+            var target = $(e.currentTarget),
+                referencedShader = this.packShaders[this.currentReference];
+            referencedShader.shaderScope.pause();
+            this.currentReference = null;
+          },
+
+          _delegateRender : function () {
+            if (Number.isInteger(this.currentReference) && this.currentReference >= 0) {
+              var referencedShader = this.packShaders[this.currentReference];
+
+              referencedShader.shaderScope.pause();
+              this.blotter.material = referencedShader.material;
+              this.blotter.needsUpdate = true;
+              referencedShader.shaderScope.play();
+              referencedShader.trigger("render");
+            }
           }
-
 
         }
       })();
 
     </script>
   </head>
-    <span id="glitch-target">observation</span>
+    <ul id="pack" class="pack-shaders"></ul>
     <script>
       $(document).ready(function() {
+        var packEl = $("#pack"),
+            shaderNames = ["RollDistortMaterial", "BubbleSplitMaterial"];
 
-        var styleProperties = {
-          family: "serif",
-          size: 40,
-          fill: "#0d0f17"
-        };
+        new BlotterSite.PackManager(packEl, shaderNames)
 
-        var text = new Blotter.Text("observation", styleProperties);
-
-        var material = new Blotter.RollDistortMaterial();
-        material.uniforms.uDistortion.value = 3.0;
-        material.uniforms.uDistortion2.value = 5.0;
-
-        var blotter = new Blotter(material, {
-          texts : text
-        });
-
-        var startTime = new Date().getTime(),
-            myScope = blotter.forText(text);
-
-        blotter.on("ready", function () {
-          $("#glitch-target").html(myScope.domElement)
-        });
-
-        var testing = new SpecialShader();
-
-        myScope.on("render", function () {
-          var time = (new Date().getTime() - startTime) / 1000;
-          myScope.material.uniforms.uTime.value = time;
-          testing.trigger("render");
-        });
-
-
-        window.tester = {
-          blotter: blotter,
-          myScope: myScope,
-          testing : testing
-        }
       });
     </script>
   </body>

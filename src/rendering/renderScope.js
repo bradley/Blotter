@@ -135,7 +135,11 @@
       },
 
       appendTo : function (element) {
-        element.appendChild(this.domElement);
+        if (typeof element.append === "function") {
+          element.append(this.domElement);
+        } else {
+          element.appendChild(this.domElement);
+        }
 
         _setMouseEventListeners.call(this);
 

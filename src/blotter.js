@@ -27,6 +27,7 @@
         if (scope.playing) {
           scope.render();
         }
+        this.trigger("render");
       }, this));
     }
 
@@ -81,7 +82,7 @@
         if (this.autostart) {
           this._renderer.start();
         }
-        
+
         this.trigger(this.mappingMaterial ? "update" : "ready");
         this.mappingMaterial = mappingMaterial;
       }, this))();
@@ -121,6 +122,7 @@
       },
 
       init : function (material, options) {
+        options = options || {};
         _.defaults(this, options, {
           ratio  : Blotter.CanvasUtils.pixelRatio,
           autobuild : true,

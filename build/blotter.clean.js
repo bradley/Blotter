@@ -48,6 +48,7 @@
         if (scope.playing) {
           scope.render();
         }
+        this.trigger("render");
       }, this));
     }
 
@@ -102,7 +103,7 @@
         if (this.autostart) {
           this._renderer.start();
         }
-        
+
         this.trigger(this.mappingMaterial ? "update" : "ready");
         this.mappingMaterial = mappingMaterial;
       }, this))();
@@ -142,6 +143,7 @@
       },
 
       init : function (material, options) {
+        options = options || {};
         _.defaults(this, options, {
           ratio  : Blotter.CanvasUtils.pixelRatio,
           autobuild : true,
@@ -1379,7 +1381,11 @@
       },
 
       appendTo : function (element) {
-        element.appendChild(this.domElement);
+        if (typeof element.append === "function") {
+          element.append(this.domElement);
+        } else {
+          element.appendChild(this.domElement);
+        }
 
         _setMouseEventListeners.call(this);
 
