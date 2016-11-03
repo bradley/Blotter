@@ -43425,6 +43425,9 @@ GrowingPacker.prototype = {
 
   _.extend(Blotter.prototype, EventEmitter.prototype);
 
+  // Use a single webgl context regardless of number of blotter instances.
+  Blotter.webglRenderer = Blotter.webglRenderer || new THREE.WebGLRenderer({ antialias: true, alpha: true, premultipliedAlpha : false });
+
 })(
   this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
 );
@@ -44278,8 +44281,6 @@ GrowingPacker.prototype = {
     this._mesh = new THREE.Mesh(this._plane, this._material);
     this._scene.add(this._mesh);
 
-    this._threeRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, premultipliedAlpha : false });
-
     this._camera = new THREE.OrthographicCamera(0.5, 0.5, 0.5, 0.5, 0, 100);
 
     this.init.apply(this, arguments);
@@ -44302,9 +44303,9 @@ GrowingPacker.prototype = {
     }
 
     function _loop () {
-      this._threeRenderer.render(this._scene, this._camera, this._renderTarget);
+      Blotter.webglRenderer.render(this._scene, this._camera, this._renderTarget);
 
-      this._threeRenderer.readRenderTargetPixels(
+      Blotter.webglRenderer.readRenderTargetPixels(
         this._renderTarget,
         0,
         0,
@@ -44368,7 +44369,7 @@ GrowingPacker.prototype = {
         this._width = width || 1;
         this._height = height || 1;
 
-        this._threeRenderer.setSize(this._width, this._height);
+        //Blotter.webglRenderer.setSize(this._width, this._height);
 
         this._mesh.scale.set(this._width, this._height, 1);
 
@@ -44389,7 +44390,7 @@ GrowingPacker.prototype = {
 
       teardown : function () {
         this.stop();
-        this._threeRenderer = null;
+        Blotter.webglRenderer = null;
       }
     };
   })();

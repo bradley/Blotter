@@ -248,6 +248,9 @@
 
   _.extend(Blotter.prototype, EventEmitter.prototype);
 
+  // Use a single webgl context regardless of number of blotter instances.
+  Blotter.webglRenderer = Blotter.webglRenderer || new THREE.WebGLRenderer({ antialias: true, alpha: true, premultipliedAlpha : false });
+
 })(
   this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
 );
