@@ -594,9 +594,11 @@ code {
     ------------------------------------- */
 
 .pack {
+  margin-top: $leading * 2;
 
   .pack-shaders  {
     list-style: none;
+    overflow: hidden;
 
     li {
       border: 2px solid $black;
@@ -605,16 +607,57 @@ code {
       -webkit-box-sizing: border-box;
       float: left;
       font-family: $h-font-stack;
-      font-size: 32px;
+      font-size: 68px;
       height: $leading * 4;
-      line-height: $leading * 4;
+      line-height: 123px;
       margin-bottom: $leading;
       margin-right: $leading;
+      position: relative;
       text-align: center;
-      width: ($layout-width - ($leading * 3)) / 4;
+      width: ($layout-width - ($leading * 2)) / 3;
 
-      &:nth-child(4) {
+      &:nth-child(3n + 3) {
         margin-right: 0;
+      }
+
+      &:hover {
+
+        .pack-shader-overlay {
+          cursor: pointer;
+          display: block;
+        }
+      }
+
+      .pack-shader-overlay {
+        background: $black;
+        bottom: 0;
+        box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        -webkit-box-sizing: border-box;
+        display: none;
+        left: 0;
+        padding: $leading / 2;
+        position: absolute;
+        right: 0;
+        text-align: left;
+        top: 0;
+
+        .pack-shader-name {
+          color: $white;
+          display: block;
+          font-family: $grotesque-font-stack;
+          font-size: 17px;
+          font-weight: normal;
+          line-height: 1.5;
+        }
+        .pack-name {
+          color: $white;
+          display: block;
+          font-family: $font-stack;
+          font-size: 14px;
+          font-weight: normal;
+          line-height: 1.5;
+        }
       }
     }
   }
