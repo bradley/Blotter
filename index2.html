@@ -44,15 +44,22 @@
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
     <link rel="stylesheet" type="text/css" href="./styles/main.css">
 
+    <script type="text/javascript">
+      var BlotterSite = {};
+    </script>
+
     <script src="./third_party/jquery.min.js"></script>
     <script src="./third_party/blotter.min.js"></script>
     <script src="./third_party/codemirror.min.js"></script>
     <script src="./third_party/javascript.js"></script>
     <script src="./third_party/EventEmitter.js"></script>
 
-    <script>
+    <script src="./src/pack_shaders/PackShader.js"></script>
+    <script src="./src/pack_shaders/glitch_pack_1/RollDistortMaterial.js"></script>
+    <script src="./src/pack_shaders/glitch_pack_1/RGBSplitMaterial.js"></script>
+    <script src="./src/pack_shaders/glitch_pack_1/BubbleSplitMaterial.js"></script>
 
-      var BlotterSite = {};
+    <script type="text/javascript">
 
       $(function() {
 
@@ -236,6 +243,71 @@
         _.extend(BlotterSite.DropdownSelect.prototype, EventEmitter.prototype);
 
 
+        BlotterSite.PackShadersIndex = function (el) {
+          this.init.apply(this, arguments);
+        };
+
+        BlotterSite.PackShadersIndex.prototype = (function () {
+          var packShaders = {
+            glich_pack_1 : ["RollDistortMaterial", "RGBSplitMaterial", "BubbleSplitMaterial"]
+          }
+
+          function _getListItem (textStr, packName, materialName) {
+            var li = $("<li>"),
+                overlay = $("<div class='pack-shader-overlay'>");
+
+            overlay.append($("<span class='pack-shader-name'>" + materialName + "</span>"));
+            overlay.append($("<span class='pack-name'>" + packName + "</span>"));
+
+            li.append(overlay);
+
+            return li;
+          }
+
+          function _buildListItems (el, textStr, textProperties) {
+            var ul = $("<ul class='pack-shaders'>");
+
+            el.append(ul);
+
+            _.each(packShaders, function (materialNames, packName) {
+              _.each(materialNames, function (materialName) {
+                var li = _getListItem(textStr, packName, materialName),
+                    text = new Blotter.Text(textStr, textProperties);
+
+                ul.append(li);
+
+                new window["BlotterSite"]["PackShaders"][materialName](li, text);
+
+                li.on("click", function () {
+                  window.location.href = "./shaders/" + materialName + ".html";
+                });
+              });
+            });
+          }
+
+          return {
+            constructor : BlotterSite.PackShadersIndex,
+
+            init : function (el) {
+              this.el = el;
+
+              this.textStr = "B"
+
+              this.textProperties = {
+                family : "'SerapionPro', sans-serif",
+                size : 68,
+                leading : "123px",
+                paddingLeft : 40,
+                paddingRight: 40,
+                fill : "#1E1A1B"
+              };
+
+              _buildListItems(this.el, this.textStr, this.textProperties);
+            }
+          }
+        })();
+
+
         $(document).ready(function () {
 
           // Setup editors
@@ -265,6 +337,10 @@
           BlotterSite.dropdowns[0].on("selectionMade", function (value, title) {
             $(".download-btn").attr("href", value);
           });
+
+
+          // Setup Pack Shaders
+          new BlotterSite.PackShadersIndex($(".pack-shaders-region"));
 
 
         });
@@ -426,22 +502,7 @@ myScope.on("render", function () {
           When applying effects to text on the <code>WebGL</code>, designers have traditionally been constrained to those provided by  CSS.
         </p>
       </div>
-      <div class="pack">
-        <ul class="pack-shaders">
-          <li>B
-            <div class="pack-shader-overlay">
-              <span class="pack-shader-name">RollDistort</span>
-              <span class="pack-name">Glitch Pack 1</span>
-            </div>
-          </li>
-          <li>B</li>
-          <li>B</li>
-          <li>B</li>
-          <li>B</li>
-          <li>B</li>
-          <li>B</li>
-        </ul>
-      </div>
+      <div class="pack-shaders-region"></div>
     </div>
   </body>
 </html>

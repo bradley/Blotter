@@ -99,7 +99,7 @@ $(document).ready(function () {
     paddingTop : 14,
     paddingLeft : 14,
     paddingRight : 14,
-    fill : "#171717"
+    fill : "#1E1A1B"
   });
 
   var material = new Blotter.ShaderMaterial(mainImage, {

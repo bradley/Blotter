@@ -307,6 +307,7 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
   font-family: "Ubuntu Mono", monospace;
   font-size: 14px;
   line-height: 18px;
+  max-width: 100%;
   padding-right: 26px; }
 
 .CodeMirror-lines {
@@ -403,7 +404,7 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
   font-style: italic; }
 @font-face {
   font-family: "Avenir";
-  src: url("fonts/Avenir-Next.ttf"); }
+  src: url("fonts/REPLACE_ME_WITH_SOMETHING_REAL.ttf"); }
 /*  Base
     ------------------------------------- */
 * {
@@ -756,7 +757,7 @@ code {
   float: none;
   list-style: none;
   margin-top: 52px;
-  width: 546px;
+  width: 100%;
   padding: 0;
   position: relative; }
   .tabbed-editor .editable-content:after {
@@ -807,7 +808,7 @@ code {
   -webkit-box-sizing: border-box;
   margin-top: 78px;
   position: relative;
-  width: 546px; }
+  width: 100%; }
   .output:before {
     content: "↓";
     font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
@@ -827,58 +828,58 @@ code {
 
 /*  Packs
     ------------------------------------- */
-.pack {
-  margin-top: 52px; }
-  .pack .pack-shaders {
-    list-style: none;
-    overflow: hidden; }
-    .pack .pack-shaders li {
-      border: 2px solid #1E1A1B;
+.pack-shaders {
+  list-style: none;
+  margin-top: 52px;
+  overflow: hidden; }
+  .pack-shaders li {
+    border: 2px solid #1E1A1B;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    float: left;
+    font-family: "SerapionPro", "Garamond", serif;
+    font-size: 68px;
+    height: 104px;
+    line-height: 123px;
+    margin-bottom: 26px;
+    margin-right: 26px;
+    overflow: hidden;
+    position: relative;
+    text-align: center;
+    width: 208px; }
+    .pack-shaders li:nth-child(3n + 3) {
+      margin-right: 0; }
+    .pack-shaders li:hover .pack-shader-overlay {
+      cursor: pointer;
+      display: block; }
+    .pack-shaders li .pack-shader-overlay {
+      background: rgba(255, 255, 255, 0.9);
+      bottom: 0;
       box-sizing: border-box;
       -moz-box-sizing: border-box;
       -webkit-box-sizing: border-box;
-      float: left;
-      font-family: "SerapionPro", "Garamond", serif;
-      font-size: 68px;
-      height: 104px;
-      line-height: 123px;
-      margin-bottom: 26px;
-      margin-right: 26px;
-      position: relative;
-      text-align: center;
-      width: 208px; }
-      .pack .pack-shaders li:nth-child(3n + 3) {
-        margin-right: 0; }
-      .pack .pack-shaders li:hover .pack-shader-overlay {
-        cursor: pointer;
-        display: block; }
-      .pack .pack-shaders li .pack-shader-overlay {
-        background: #1E1A1B;
-        bottom: 0;
-        box-sizing: border-box;
-        -moz-box-sizing: border-box;
-        -webkit-box-sizing: border-box;
-        display: none;
-        left: 0;
-        padding: 13px;
-        position: absolute;
-        right: 0;
-        text-align: left;
-        top: 0; }
-        .pack .pack-shaders li .pack-shader-overlay .pack-shader-name {
-          color: #fff;
-          display: block;
-          font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
-          font-size: 17px;
-          font-weight: normal;
-          line-height: 1.5; }
-        .pack .pack-shaders li .pack-shader-overlay .pack-name {
-          color: #fff;
-          display: block;
-          font-family: "Garamond", serif;
-          font-size: 14px;
-          font-weight: normal;
-          line-height: 1.5; }
+      display: none;
+      left: 0;
+      padding: 13px;
+      position: absolute;
+      right: 0;
+      text-align: left;
+      top: 0; }
+      .pack-shaders li .pack-shader-overlay .pack-shader-name {
+        color: #1E1A1B;
+        display: block;
+        font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
+        font-size: 17px;
+        font-weight: normal;
+        line-height: 1.5; }
+      .pack-shaders li .pack-shader-overlay .pack-name {
+        color: #1E1A1B;
+        display: block;
+        font-family: "Garamond", serif;
+        font-size: 14px;
+        font-weight: normal;
+        line-height: 1.5; }
 
 /*
 .nota-bene {

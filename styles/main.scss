@@ -17,7 +17,7 @@
 
 @font-face{
   font-family: "Avenir";
-  src: url('fonts/Avenir-Next.ttf');
+  src: url('fonts/REPLACE_ME_WITH_SOMETHING_REAL.ttf');
 }
 
 
@@ -494,7 +494,7 @@ code {
   float: none;
   list-style: none;
   margin-top: $leading * 2;
-  width: $max-content-width;
+  width: 100%;
   padding: 0;
   position: relative;
 
@@ -564,7 +564,7 @@ code {
   -webkit-box-sizing: border-box;
   margin-top: $leading * 3;
   position: relative;
-  width: $max-content-width;
+  width: 100%;
 
   &:before {
     content: "↓";
@@ -593,71 +593,69 @@ code {
 /*  Packs
     ------------------------------------- */
 
-.pack {
+.pack-shaders  {
+  list-style: none;
   margin-top: $leading * 2;
+  overflow: hidden;
 
-  .pack-shaders  {
-    list-style: none;
+  li {
+    border: 2px solid $black;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    float: left;
+    font-family: $h-font-stack;
+    font-size: 68px;
+    height: $leading * 4;
+    line-height: 123px;
+    margin-bottom: $leading;
+    margin-right: $leading;
     overflow: hidden;
+    position: relative;
+    text-align: center;
+    width: ($layout-width - ($leading * 2)) / 3;
 
-    li {
-      border: 2px solid $black;
+    &:nth-child(3n + 3) {
+      margin-right: 0;
+    }
+
+    &:hover {
+
+      .pack-shader-overlay {
+        cursor: pointer;
+        display: block;
+      }
+    }
+
+    .pack-shader-overlay {
+      background: rgba(255, 255, 255, 0.9);
+      bottom: 0;
       box-sizing: border-box;
       -moz-box-sizing: border-box;
       -webkit-box-sizing: border-box;
-      float: left;
-      font-family: $h-font-stack;
-      font-size: 68px;
-      height: $leading * 4;
-      line-height: 123px;
-      margin-bottom: $leading;
-      margin-right: $leading;
-      position: relative;
-      text-align: center;
-      width: ($layout-width - ($leading * 2)) / 3;
+      display: none;
+      left: 0;
+      padding: $leading / 2;
+      position: absolute;
+      right: 0;
+      text-align: left;
+      top: 0;
 
-      &:nth-child(3n + 3) {
-        margin-right: 0;
+      .pack-shader-name {
+        color: $black;
+        display: block;
+        font-family: $grotesque-font-stack;
+        font-size: 17px;
+        font-weight: normal;
+        line-height: 1.5;
       }
-
-      &:hover {
-
-        .pack-shader-overlay {
-          cursor: pointer;
-          display: block;
-        }
-      }
-
-      .pack-shader-overlay {
-        background: $black;
-        bottom: 0;
-        box-sizing: border-box;
-        -moz-box-sizing: border-box;
-        -webkit-box-sizing: border-box;
-        display: none;
-        left: 0;
-        padding: $leading / 2;
-        position: absolute;
-        right: 0;
-        text-align: left;
-        top: 0;
-
-        .pack-shader-name {
-          color: $white;
-          display: block;
-          font-family: $grotesque-font-stack;
-          font-size: 17px;
-          font-weight: normal;
-          line-height: 1.5;
-        }
-        .pack-name {
-          color: $white;
-          display: block;
-          font-family: $font-stack;
-          font-size: 14px;
-          font-weight: normal;
-          line-height: 1.5;
-        }
+      .pack-name {
+        color: $black;
+        display: block;
+        font-family: $font-stack;
+        font-size: 14px;
+        font-weight: normal;
+        line-height: 1.5;
       }
     }
   }
