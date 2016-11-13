@@ -88,18 +88,10 @@ p {
 }
 
 a {
+  border-bottom: 2px solid black;
   color: black;
   position: relative;
   text-decoration: none;
-
-  &:after {
-    bottom: 2px;
-    border-bottom: 1px solid black;
-    content: "";
-    left: 0;
-    position: absolute;
-    width: 100%;
-  }
 }
 
 sup {
@@ -108,9 +100,7 @@ sup {
   margin-left: 1px;
 
   a {
-    &:after {
-      display: none;
-    }
+    border: none;
   }
 }
 
@@ -132,9 +122,7 @@ aside {
   }
 
   a {
-    &:after {
-      bottom: 1px;
-    }
+    border-width: 1px;
   }
 }
 
@@ -274,14 +262,11 @@ code {
 .anchor {
   position: relative;
 }
-.anchor span{
+.anchor > span {
   position:absolute; top: -($leading * 8);
 }
 .logo-anchor {
-
-  &:after {
-    display: none;
-  }
+  border: none;
 }
 
 .horizon {
@@ -406,20 +391,11 @@ code {
       }
 
       a {
+        border: none;
         color: $black;
         font-family: $grotesque-font-stack;
         font-size: $font-size;
         line-height: $leading * 2;
-        text-decoration: none;
-        //text-transform: uppercase;
-
-        &:after {
-          display: none;
-        }
-
-        &:hover {
-          text-decoration: none;
-        }
       }
     }
   }
@@ -466,9 +442,12 @@ code {
   margin: $leading 0 ($leading * 4);
 }
 
+.introduction {
+  margin-bottom: $leading * 2;
+}
+
 .bullet-list {
   list-style: none;
-  margin-top: $leading * 2;
 
   li {
     position: relative;
@@ -482,6 +461,69 @@ code {
       text-align: center;
       top: -3px;
       width: $leading * 2;
+    }
+  }
+}
+
+ul.documentation {
+  list-style: none;
+
+  li {
+    margin-top: $leading;
+
+    p {
+
+      &.property, &.method, &.construction {
+        border-left: 2px solid $black;
+        margin-left: -($leading / 2);
+        padding-left: $leading / 2;
+
+        > strong {
+          font-family: $grotesque-font-stack;
+          font-weight: 500;
+
+          + code {
+            margin-left: $leading / 2;
+          }
+        }
+      }
+    }
+
+    > ul {
+      font-size: 14px;
+      list-style: none;
+      line-height: 1.5;
+      margin-left: $leading;
+
+      + li {
+        margin-top: $leading;
+
+        &:not(:first-child) {
+          margin-top: $leading;
+        }
+
+        p {
+          margin-top: $leading / 4;
+        }
+      }
+
+      ul {
+        list-style: none;
+        line-height: 1.5;
+        margin-left: $leading;
+
+        li {
+          margin-top: $leading / 2;
+
+          p {
+            margin-top: $leading / 4;
+
+            &.property, &.method, &.construction {
+              border-left: none;
+            }
+          }
+        }
+      }
     }
   }
 }
@@ -686,19 +728,6 @@ code {
 
 
 
-/*
-.nota-bene {
-  &:before {
-    content: 'N.B:';
-    font-weight: 700;
-  }
-  font-size: 75%;
-  // font-style: italic;
-}
-*/
-
-
-
 
 
 
@@ -742,35 +771,6 @@ code {
 #documentation-toc {
   max-width: $max-content-width;
 }
-
-
-
-
-
-
-.basic-usage {
-  canvas {
-    /* border: 1px solid $grey; */
-  }
-  .blotter-container {
-    margin-top: $leading;
-  }
-}
-
-.basic-usage + .basic-usage {
-  margin-top: $leading;
-}
-
-
-
-
-
-
-
-
-
-
-
 
 
 /*
@@ -853,48 +853,6 @@ code {
 
 
 
-
-
-
-/* Everything under documentation is in a list */
-ul.documentation {
-
-  list-style: none;
-
-  /* not same as p description. this is for description of a class and follows li.title elements */
-  li.description {
-    margin-top: 0;
-  }
-
-  /* mostly for describing sub properties. look at Two's anchor.controls */
-  ul {
-    margin-top: $leading;
-    list-style: none;
-    margin-left: $leading;
-    font-size: 80%;
-    line-height: $leading;
-    li {
-      &:not(:first-child) {
-        margin-top: $leading * 0.75;
-      }
-      p {
-        margin-top: 0;
-      }
-    }
-  }
-}
-
-/* SOURCE PROPERTY TYPE DESIGNATORS */
-/* --------------------------------------------------------------------------------------------*/
-
-/* property and construction are obvious. method is for "class methods" (also functions right?). */
-p.property, p.method, p.construction {
-  $border-width: 4px;
-  border-left-width: $border-width;
-  border-left-style: solid;
-  margin-left: - $border-width * 4;
-  padding-left: $border-width * 3;
-}
 
 p.construction {
   //border-left-color: $yellow;

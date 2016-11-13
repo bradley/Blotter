@@ -191,44 +191,124 @@
     </div>
 
     <div id="content">
-      <div class="content-right">
-        <h2>RollDistortMaterial</h2>
-        <p>
-          When applying effects to text on the <code>WebGL</code>, designers have traditionally been constrained to those provided by  CSS. In the majority of cases this is entirely suitable – text is text, right? Yet still, there exist numerous examples of designers combining style properties or gifs and images to create effects that evoke something more playful. Precisely here, Blotter exists to provide an alternative.
-        </p>
-      </div>
+<!--
       <div class="output-container">
         <div class="output"><div id="draw-text">observation</div></div>
       </div>
       <script type="text/javascript">
-      // BLOTTER - Example 1
-      var text = new Blotter.Text("observation", {
-        family : "'Garamond', serif",
-        size : 27,
-        fill : "#171717"
-      });
+        // BLOTTER - Example 1
+        var text = new Blotter.Text("observation", {
+          family : "'Garamond', serif",
+          size : 27,
+          fill : "#171717"
+        });
 
-      var material = new Blotter.RollDistortMaterial();
-      material.uniforms.uDistortion.value = 3.0;
-      material.uniforms.uDistortion2.value = 5.0;
-      var blotter = new Blotter(material, {
-        texts : text
-      });
+        var material = new Blotter.RollDistortMaterial();
+        material.uniforms.uDistortion.value = 3.0;
+        material.uniforms.uDistortion2.value = 5.0;
+        var blotter = new Blotter(material, {
+          texts : text
+        });
 
-      var elem = $("#draw-text");
-      var myScope = blotter.forText(text);
-      var startTime = new Date().getTime()
+        var elem = $("#draw-text");
+        var myScope = blotter.forText(text);
+        var startTime = new Date().getTime()
 
-      blotter.on("ready", function () {
-        elem.html(myScope.domElement);
-      });
+        blotter.on("ready", function () {
+          elem.html(myScope.domElement);
+        });
 
-      myScope.on("render", function () {
-      var time = (new Date().getTime() - startTime) / 1000;
-        myScope.material.uniforms.uTime.value = time;
-      });
-    </script>
-
+        myScope.on("render", function () {
+        var time = (new Date().getTime() - startTime) / 1000;
+          myScope.material.uniforms.uTime.value = time;
+        });
+      </script>
+-->
+      <div class="content-right">
+        <div class="introduction">
+          <h2>RollDistortMaterial</h2>
+          <p>
+            Class for creating a rolling distortion effect using Blotter.js. It inherits from <code>Blotter.Material</code>, and therefore has the same properties and functions as <code>Blotter.Material</code>.
+          </p>
+        </div>
+        <ul class="documentation">
+          <li id="roll-distort-material-construction">
+            <p class="construction">
+              <strong>construction</strong>
+              <code>var material = new Blotter.RollDistortMaterial();</code>
+            </p>
+          </li>
+          <li id="roll-distort-material-uniforms">
+            <p class="property object">
+              <strong>uniforms</strong>
+              <code>material.uniforms</code>
+            </p>
+            <p class="description">
+              An object that holds the uniforms that describe how the material's effects should be rendered.
+            </p>
+            <ul>
+              <li class="roll-distort-material-uniforms-u-time">
+                <p class="property object">
+                  <strong>uTime</strong>
+                  <code>material.uniforms.uTime</code>
+                </p>
+                <p class="description">
+                  Represents how much time has elapsed since the last frame in milliseconds.
+                </p>
+                <ul class="properties">
+                  <li class="roll-distort-material-uniforms-u-time-properties">
+                    <p class="property float">
+                      <strong>value</strong>
+                      <code>material.uniforms.uTime.value</code>
+                    </p>
+                    <p class="description">
+                      A floating point number representing how much time has elapsed since the last frame in milliseconds. Default value is 0.0.
+                    </p>
+                  </li>
+                  <li class="roll-distort-material-uniforms-u-time-properties static">
+                    <p class="property string">
+                      <strong>type</strong>
+                      <code>material.uniforms.uTime.type</code>
+                    </p>
+                    <p class="description">
+                      The uniform type of the value being passed to the shader. This value is a static "1f".
+                    </p>
+                  </li>
+                </ul>
+              </li>
+              <li class="roll-distort-material-uniforms-u-distorition">
+                <p class="property object">
+                  <strong>uDistortion</strong>
+                  <code>material.uniforms.uDistortion</code>
+                </p>
+                <p class="description">
+                  Represents the predominant distortion to apply to texts.
+                </p>
+                <ul class="properties">
+                  <li class="roll-distort-material-uniforms-u-distorition-properties">
+                    <p class="property float">
+                      <strong>value</strong>
+                      <code>material.uniforms.uDistortion.value</code>
+                    </p>
+                    <p class="description">
+                      A floating point number representing the predominant distortion to apply to texts. Default value is 0.0.
+                    </p>
+                  </li>
+                  <li class="roll-distort-material-uniforms-u-distorition-properties static">
+                    <p class="property string">
+                      <strong>type</strong>
+                      <code>material.uniforms.uDistortion.type</code>
+                    </p>
+                    <p class="description">
+                      The uniform type of the value being passed to the shader. This value is a static "1f".
+                    </p>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
     </div>
   </body>
 </html>

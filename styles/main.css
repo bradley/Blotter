@@ -456,23 +456,17 @@ p {
     margin-top: 26px; }
 
 a {
+  border-bottom: 2px solid black;
   color: black;
   position: relative;
   text-decoration: none; }
-  a:after {
-    bottom: 2px;
-    border-bottom: 1px solid black;
-    content: "";
-    left: 0;
-    position: absolute;
-    width: 100%; }
 
 sup {
   font-size: 85%;
   line-height: 85%;
   margin-left: 1px; }
-  sup a:after {
-    display: none; }
+  sup a {
+    border: none; }
 
 aside {
   font-size: 13px;
@@ -488,8 +482,8 @@ aside {
     text-align: center;
     top: 0;
     width: 52px; }
-  aside a:after {
-    bottom: 1px; }
+  aside a {
+    border-width: 1px; }
 
 /* Highlight colors. */
 ::-moz-selection {
@@ -602,12 +596,12 @@ code {
 .anchor {
   position: relative; }
 
-.anchor span {
+.anchor > span {
   position: absolute;
   top: -208px; }
 
-.logo-anchor:after {
-  display: none; }
+.logo-anchor {
+  border: none; }
 
 .horizon {
   background: transparent;
@@ -704,15 +698,11 @@ code {
       #masthead ul#nav li:last-child {
         padding-right: 0; }
       #masthead ul#nav li a {
+        border: none;
         color: #1E1A1B;
         font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
         font-size: 17px;
-        line-height: 52px;
-        text-decoration: none; }
-        #masthead ul#nav li a:after {
-          display: none; }
-        #masthead ul#nav li a:hover {
-          text-decoration: none; }
+        line-height: 52px; }
 
 /*  Documentation
     ------------------------------------- */
@@ -736,9 +726,11 @@ code {
   height: 52px;
   margin: 26px 0 104px; }
 
+.introduction {
+  margin-bottom: 52px; }
+
 .bullet-list {
-  list-style: none;
-  margin-top: 52px; }
+  list-style: none; }
   .bullet-list li {
     position: relative; }
     .bullet-list li:before {
@@ -750,6 +742,41 @@ code {
       text-align: center;
       top: -3px;
       width: 52px; }
+
+ul.documentation {
+  list-style: none; }
+  ul.documentation li {
+    margin-top: 26px; }
+    ul.documentation li p.property, ul.documentation li p.method, ul.documentation li p.construction {
+      border-left: 2px solid #1E1A1B;
+      margin-left: -13px;
+      padding-left: 13px; }
+      ul.documentation li p.property > strong, ul.documentation li p.method > strong, ul.documentation li p.construction > strong {
+        font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
+        font-weight: 500; }
+        ul.documentation li p.property > strong + code, ul.documentation li p.method > strong + code, ul.documentation li p.construction > strong + code {
+          margin-left: 13px; }
+    ul.documentation li > ul {
+      font-size: 14px;
+      list-style: none;
+      line-height: 1.5;
+      margin-left: 26px; }
+      ul.documentation li > ul + li {
+        margin-top: 26px; }
+        ul.documentation li > ul + li:not(:first-child) {
+          margin-top: 26px; }
+        ul.documentation li > ul + li p {
+          margin-top: 6.5px; }
+      ul.documentation li > ul ul {
+        list-style: none;
+        line-height: 1.5;
+        margin-left: 26px; }
+        ul.documentation li > ul ul li {
+          margin-top: 13px; }
+          ul.documentation li > ul ul li p {
+            margin-top: 6.5px; }
+            ul.documentation li > ul ul li p.property, ul.documentation li > ul ul li p.method, ul.documentation li > ul ul li p.construction {
+              border-left: none; }
 
 /*  Example Editor
     ------------------------------------- */
@@ -881,16 +908,6 @@ code {
         font-weight: normal;
         line-height: 1.5; }
 
-/*
-.nota-bene {
-  &:before {
-    content: 'N.B:';
-    font-weight: 700;
-  }
-  font-size: 75%;
-  // font-style: italic;
-}
-*/
 /* documentation-toc is used by Two to do the sections of documentation specifically. may not need this but nice that it's the same styling */
 #toc, #documentation-toc {
   display: inline-block;
@@ -914,14 +931,6 @@ code {
 
 #documentation-toc {
   max-width: 546px; }
-
-.basic-usage canvas {
-  /* border: 1px solid $grey; */ }
-.basic-usage .blotter-container {
-  margin-top: 26px; }
-
-.basic-usage + .basic-usage {
-  margin-top: 26px; }
 
 /*
 .examples,
@@ -999,33 +1008,6 @@ code {
   }
 }
 */
-/* Everything under documentation is in a list */
-ul.documentation {
-  list-style: none;
-  /* not same as p description. this is for description of a class and follows li.title elements */
-  /* mostly for describing sub properties. look at Two's anchor.controls */ }
-  ul.documentation li.description {
-    margin-top: 0; }
-  ul.documentation ul {
-    margin-top: 26px;
-    list-style: none;
-    margin-left: 26px;
-    font-size: 80%;
-    line-height: 26px; }
-    ul.documentation ul li:not(:first-child) {
-      margin-top: 19.5px; }
-    ul.documentation ul li p {
-      margin-top: 0; }
-
-/* SOURCE PROPERTY TYPE DESIGNATORS */
-/* --------------------------------------------------------------------------------------------*/
-/* property and construction are obvious. method is for "class methods" (also functions right?). */
-p.property, p.method, p.construction {
-  border-left-width: 4px;
-  border-left-style: solid;
-  margin-left: -16px;
-  padding-left: 12px; }
-
 /* Actual description following property name and code line */
 p.description {
   margin-top: 6.5px; }
