@@ -83,10 +83,13 @@ module.exports = function(grunt) {
     },
 
     uglify: {
-       release: {
-         src: ["build/blotter.js"],
+      options: {
+        preserveComments: "some"
+      },
+      release: {
+        src: ["build/blotter.js"],
         dest: "build/blotter.min.js"
-       }
+      }
     }
   });
 
