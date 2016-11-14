@@ -443,8 +443,8 @@ h3 {
   font-family: "SerapionPro-BoldItalic", "Garamond", serif;
   font-size: 20px;
   line-height: 23px;
-  margin-bottom: 26px;
   margin-top: 26px;
+  margin-bottom: 0;
   padding-top: 3px; }
 
 p {
@@ -857,7 +857,6 @@ ul.documentation {
     ------------------------------------- */
 .pack-shaders {
   list-style: none;
-  margin-top: 52px;
   overflow: hidden; }
   .pack-shaders li {
     border: 2px solid #1E1A1B;

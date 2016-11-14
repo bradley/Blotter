@@ -69,8 +69,8 @@ h3 {
   font-family: $h-font-stack-bold;
   font-size: 20px;
   line-height: 23px;
-  margin-bottom: $leading;
   margin-top: $leading;
+  margin-bottom: 0;
   padding-top: 3px;
 }
 
@@ -637,7 +637,6 @@ ul.documentation {
 
 .pack-shaders  {
   list-style: none;
-  margin-top: $leading * 2;
   overflow: hidden;
 
   li {
