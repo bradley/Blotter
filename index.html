@@ -14,544 +14,228 @@
     <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,400i" rel="stylesheet">
 
     <!--
-    /**
-     * @license
-     * MyFonts Webfont Build ID 3278924, 2016-09-05T18:45:54-0400
-     *
-     * The fonts listed in this notice are subject to the End User License
-     * Agreement(s) entered into by the website owner. All other parties are
-     * explicitly restricted from using the Licensed Webfonts(s).
-     *
-     * You may obtain a valid license at the URLs below.
-     *
-     * Webfont: SerapionPro by Storm
-     * URL: http://www.myfonts.com/fonts/storm/serapion/regular/
-     * Copyright: Copyright (c) Frantisek Storm. www.stormtype.com, 2005. All rights reserved.
-     * Licensed pageviews: 10,000
-     *
-     *
-     * License: http://www.myfonts.com/viewlicense?type=web&buildid=3278924
-     *
-     * © 2016 MyFonts Inc
-    */
+      /**
+      * @license
+      * MyFonts Webfont Build ID 3296227, 2016-10-15T22:01:05-0400
+      *
+      * The fonts listed in this notice are subject to the End User License
+      * Agreement(s) entered into by the website owner. All other parties are
+      * explicitly restricted from using the Licensed Webfonts(s).
+      *
+      * You may obtain a valid license at the URLs below.
+      *
+      * Webfont: SerapionPro-BoldItalic by Storm
+      * URL: http://www.myfonts.com/fonts/storm/serapion/bold-italic/
+      *
+      * Webfont: SerapionPro by Storm
+      * URL: http://www.myfonts.com/fonts/storm/serapion/regular/
+      *
+      *
+      * License: http://www.myfonts.com/viewlicense?type=web&buildid=3296227
+      * Licensed pageviews: 10,000
+      * Webfonts copyright: Copyright (c) Frantisek Storm. www.stormtype.com, 2005. All
+      * rights reserved.
+      *
+      * © 2016 MyFonts Inc
+      */
 
     -->
     <link rel="stylesheet" type="text/css" href="./styles/MyFontsWebfontsKit.css">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
     <link rel="stylesheet" type="text/css" href="./styles/main.css">
+
+    <script type="text/javascript">
+      window.BlotterSite = {};
+    </script>
 
     <script src="./third_party/jquery.min.js"></script>
     <script src="./third_party/blotter.min.js"></script>
     <script src="./third_party/codemirror.min.js"></script>
     <script src="./third_party/javascript.js"></script>
+    <script src="./third_party/EventEmitter.js"></script>
+    <script src="./third_party/velocity.min.js"></script>
+    <script src="./third_party/velocity.ui.min.js"></script>
+    <script src="./third_party/backbone-min.js"></script>
+    <script src="./third_party/backbone.marionette.min.js"></script>
 
-    <script>
+    <script src="./src/pack_shaders/PackShader.js"></script>
+    <script src="./src/pack_shaders/glitch_pack_1/RollDistortMaterial.js"></script>
+    <script src="./src/pack_shaders/glitch_pack_1/RGBSplitMaterial.js"></script>
+    <script src="./src/pack_shaders/glitch_pack_1/BubbleSplitMaterial.js"></script>
 
-      // $(function() {
-
-        // var totalColors = 5;
-        // var chosen = [];
-        // var colors = [
-        //   'red',
-        //   'orange',
-        //   'green',
-        //   'blue',
-        //   'purple'
-        // ];
-
-        // var $examples = $('.examples');
-        // var $projects = $('.projects');
-
-        // $.getJSON('./data/examples.json', function(resp) {
-
-        //   var html = resp.template;
-
-        //   $examples.html(
-        //     _.map(resp.items.splice(0, 6), function(data, i) {
-        //       data.href = './' + data.href;
-        //       data.img = './' + data.img;
-        //       return _.template(html)(data);
-        //     }).join('\n')
-        //   );
-
-        //   $examples.children().each(function(i, child) {
-        //     var index = Math.floor(Math.random() * colors.length);
-        //     var color = colors.splice(index, 1);
-        //     child.className = color;
-        //     chosen.push(color);
-        //     if (chosen.length >= totalColors) {
-        //       colors = chosen.slice(0);
-        //       chosen.length = 0;
-        //     }
-        //   });
-
-        // });
-
-        // $.getJSON('./data/projects.json', function(resp) {
-
-        //   var html = resp.template;
-
-        //   $projects.html(
-        //     _.map(resp.items.splice(0, 6), function(data, i) {
-        //       data.img = './' + data.img;
-        //       return _.template(html)(data);
-        //     }).join('\n')
-        //   );
-
-        //   $projects.children().each(function(i, child) {
-        //     var index = Math.floor(Math.random() * colors.length);
-        //     var color = colors.splice(index, 1);
-        //     child.className = color;
-        //     chosen.push(color);
-        //     if (chosen.length >= totalColors) {
-        //       colors = chosen.slice(0);
-        //       chosen.length = 0;
-        //     }
-        //   });
-
-        // });
-      // });
-
-      var BlotterSite = {};
-
-      $(function() {
-
-        BlotterSite.Editor = function (el) {
-          this.init.apply(this, arguments);
-        };
-
-        BlotterSite.Editor.prototype = (function () {
-
-          function _buildJSMirror (el, code) {
-            return CodeMirror(el, {
-              value: code,
-              mode: "javascript",
-              tabSize: 2,
-              lineWrapping: true,
-              lineNumbers: true
-            });
-          }
-
-          function _buildHTMLMirror (el, code) {
-            return CodeMirror(el, {
-              value: code,
-              mode: "html",
-              tabSize: 2,
-              lineWrapping: true,
-              lineNumbers: true
-            });
-          }
-
-          return {
-
-            constructor : BlotterSite.Editor,
-
-            init : function (el) {
-              this.el = el;
-              this.outputEl = el.find(".output");
-
-              this.jsCode = el.find("script.js-code").html();
-              this.htmlCode = this.outputEl.html();
-              this.jsContent = el.find(".js-content");
-              this.htmlContent = el.find(".html-content");
-
-              this.jsMirror = _buildJSMirror(this.jsContent[0], this.jsCode);
-              this.htmlMirror = _buildHTMLMirror(this.htmlContent[0], this.htmlCode);
-
-              this.jsMirror.on("change", _.bind(_.debounce(this.update, 1000), this));
-              this.htmlMirror.on("change", _.bind(_.debounce(this.update, 1000), this));
-
-              this.htmlDoc = this.htmlMirror.getDoc();
-              this.jsDoc = this.jsMirror.getDoc();
-
-              el.find(".js-tab").on("click", _.bind(this.showJSContent, this));
-              el.find(".html-tab").on("click", _.bind(this.showHTMLContent, this));
-
-              this.update();
-              this.showJSContent();
-            },
-
-            update : function() {
-              this.htmlCode = this.htmlDoc.getValue();
-              try {
-                this.outputEl.html(unescape(this.htmlCode));
-              } catch (e) {
-                console.log(e);
-              }
-
-              this.jsCode = this.jsDoc.getValue();
-              try {
-                eval(this.jsCode); // yikes!
-              } catch (e) {
-                console.log(e);
-              }
-            },
-
-            showJSContent : function () {
-              this.htmlContent.hide();
-              this.jsContent.show();
-            },
-
-            showHTMLContent : function () {
-              this.jsContent.hide();
-              this.htmlContent.show();
-            }
-          }
-        })();
-
-        $(document).ready(function () {
-
-          BlotterSite.editors = (function (editors) {
-            return {
-              editors : editors,
-
-              update : function () {
-                _.each(this.editors, function (editor) {
-                  editor.update();
-                });
-              }
-            }
-          })(_.reduce($(".tabbed-editor"), function (m, el) {
-            m.push(new BlotterSite.Editor($(el)));
-            return m;
-          }, []));
-
-        });
-
-      });
-
-    </script>
   </head>
   <body>
-    <div id="content">
-      <div id="logo"></div>
+    <div id="top" class="anchor"></div>
+    <div id="masthead">
+      <!-- Preload Serapion -->
+      <div style="font-family: 'SerapionPro', serif; height: 0;">&nbsp;</div>
+      <a href="#" class="logo-anchor"><div id="logo"></div></a>
       <script src="./src/logo.js"></script>
-      <p>
-        When applying effects to text on the web, designers have traditionally been constrained to those provided by <code>css</code>. In the majority of cases this is entirely suitable – text is text right? Yet still, there exist numerous examples of designers combining <code>css</code> properties or gifs and images to create effects that evoke something more playful. Precisely here, Blotter exists to provide an alternative.
-      </p>
-      <p>
-        <strong>Blotter</strong> is a <code>webgl</code> backed JavaScript api geared towards allowing designers to easily draw both pre-made and custom text effects using <code>glsl</code> shaders.
-      </p>
-      <div class="horizon"></div>
-      <ul id="toc">
-        <li><a href="#introduction">Introduction</a></li>
-        <li><a href="#download">Download</a></li>
-        <li><a href="#overview">Overview</a></li>
-        <li><a href="#basic-usage">Basic Usage</a></li>
-        <li><a href="./examples/">Examples</a></li>
-        <li><a href="./projects/">Projects</a></li>
-        <li><a href="#documentation">Documentation</a></li>
-        <li><a href="http://github.com/bradley/blotter" target="_blank">Source</a></li>
-        <li><a href="#credits">Credits</a></li>
-      </ul>
-      <div id="download" class="horizon"></div>
-      <h2>Download</h2>
-      <p class="download">
-        <a href="https://raw.github.com/bradley/blotter/master/build/two.js">Development Version</a>
-      </p>
-      <p class="download">
-        <a href="https://raw.github.com/bradley/blotter/master/build/two.min.js">Production Version</a>
-      </p>
-      <p class="download nota-bene">
-        Blotter requires <a href="http://underscorejs.org">Underscore.js</a> and <a href="http://threejs.org/">Three.js</a>. If you&apos;re already loading these files elsewhere then you can build the project yourself and get the file size even smaller. For more information on <em>custom builds</em> check out the source on <a href="http://github.com/bradley/blotter#custom-build">github</a>.
-      </p>
-      <div id="overview" class="horizon"></div>
-      <h2>Overview</h2>
-      <ul>
-        <li>
-          <h3>GLSL Backed Text Effects with Ease</h3>
-          <p>
-            Blotter provides a simple interface for building and manipulating text effects that utilize <code>glsl</code> shaders without requiring that the designer know <code>glsl</code>. Blotter has a growing library of configurable effects while also providing ways for student or experienced <code>glsl</code> programmers to quickly bootstrap new ones.
-          </p>
-        </li>
-        <li>
-          <h3>Atlasing Effects in a Single WebGL Back Buffer</h3>
-          <p>
-            Blotter bypasses the limit browsers place on the number of live <code>webgl</code> contexts in the document by using an atlas. This atlas maps elements that share the same effects so that they may be rendered together in a single <code>webgl</code> context. The resulting image data is then output to individual <code>2d</code> contexts for each element.
-          </p>
-        </li>
-        <li>
-          <h3>Animation Loop</h3>
-          <p>
-            Rather than executing on a time based interval, Blotter's internal animation loop uses <code>requestAnimationFrame</code> to match the browser's display refresh rate and pause when the user navigates to other browser tabs; improving performance and preserving the battery life on the user's device.
-          </p>
-        </li>
-        <li>
-          <h3>What Blotter Isn't</h3>
-          <p>
-            Any texts you pass to Blotter can be individually configured using familiar style properties. You can use custom font faces through the <code>@font-face</code> spec. However, Blotter ultimately renders the texts passed to it into <code>canvas</code> elements. This means rendered text won't be selectable. Blotter is great for elements like titles, headings, and texts used for graphic purposes. It's not recommended that Blotter be used for lengthy bodies of text.
-          </p>
-      </ul>
-      <div id="basic-usage" class="horizon"></div>
-      <h2>The Basics</h2>
-      <p>
-        To get started with Blotter, <a href="#download">download</a> blotter.js and include it in the <code>head</code> of your <code>html</code> document.
-      </p>
-      <br />
-      <div class="basic-usage">
-        <h3>Drawing Text</h3>
-        <p>
-          Before adding any effects, you should learn how to draw plain, boring old text using Blotter. To do so, you'll need at least one Text, a Material, and an instance of Blotter.
-        </p>
-        <br />
-
-        <div class="tabbed-editor">
-          <div class="editable-content">
-            <label>
-              <input type="radio" name="tabs" class="tab js-tab" checked="checked">
-              <span class="section-label">JavaScript</span>
-            </label>
-            <label>
-              <input type="radio" name="tabs" class="tab html-tab">
-              <span class="section-label">HTML</span>
-            </label>
-
-            <div class="tab-content js-content"></div>
-            <div class="tab-content html-content"></div>
-          </div>
-
-          <script class="js-code"  type="application/json">var text = new Blotter.Text("observation", {
-  family : "'Garamond', serif",
-  size : 27,
-  fill : "#171717"
-});
-
-var material = new Blotter.Material();
-var blotter = new Blotter(material, {
-  texts : text
-});
-
-blotter.on("ready", function () {
-  var elem = $("#draw-text");
-  var myScope = blotter.forText(text);
-
-  //myScope.appendTo(elem);
-  elem.html(myScope.domElement);
-});</script>
-
-          <div class="output-container">
-            <span class="section-label">Output</span>
-            <div class="output"><span id="draw-text">observation</span></div>
-          </div>
-
-        </div>
-      </div>
-
-      <div class="basic-usage">
-        <h3>Custom Effects</h3>
-        <p>
-          In the previous example, we saw how to draw text as it may appear in the browser using normal <code>css</code>. Now let's see how we might apply a custom effect using a <code>glsl</code> shader. We'll learn how to use Blotter's <a href="#">ShaderMaterial</a> and how one might write the shader on which it depends.
-        </p>
-        <p>
-          Blotter's <code>ShaderMaterial</code> takes a string repr
-        </p>
-        <p>
-          [ASIDE] If you don't intend to write your own custom effects at this time, you can skip this section and go right to reading about how to apply pre-made Blotter effects to your texts.
-        </p>
-
-        <br />
-
-        <div class="tabbed-editor">
-          <div class="editable-content">
-            <label>
-              <input type="radio" name="tabs" class="tab js-tab" checked="checked">
-              <span class="section-label">JavaScript</span>
-            </label>
-            <label>
-              <input type="radio" name="tabs" class="tab html-tab">
-              <span class="section-label">HTML</span>
-            </label>
-
-            <div class="tab-content js-content"></div>
-            <div class="tab-content html-content"></div>
-          </div>
-
-          <script class="js-code"  type="application/json">var mainImage = [
-  "void mainImage( out vec4 mainImage, in vec2 fragCoord ) {",
-  "   vec2 uv = fragCoord / uResolution;",
-
-  "   float amount = 10.0;",
-  "   float angle = 0.25;",
-  "   vec2 offset = (amount / uResolution) * vec2(cos(angle), sin(angle));",
-
-  "   vec4 cr = textTexture(uv + offset);",
-  "   vec4 cga = textTexture(uv);",
-  "   vec4 cb = textTexture(uv - offset);",
-
-  "   combineColors(cr, vec4(1.0, 1.0, 1.0, 1.0), cr);",
-  "   combineColors(cga, vec4(1.0, 1.0, 1.0, 1.0), cga);",
-  "   combineColors(cb, vec4(1.0, 1.0, 1.0, 1.0), cb);",
-
-  "   rgbaFromRgb(mainImage, vec3(cr.r, cga.g, cb.b));",
-  "}"
-].join("\n");
-
-var text = new Blotter.Text("observation", {
-  family : "'Garamond', serif",
-  size : 27,
-  fill : "#171717"
-});
-
-var material = new Blotter.ShaderMaterial(mainImage);
-var blotter = new Blotter(material, {
-  texts : text
-});
-
-blotter.on("ready", function () {
-  var elem = $("#custom-effect-text");
-  var myScope = blotter.forText(text);
-
-  elem.html(myScope.domElement)
-});</script>
-
-          <div class="output-container">
-            <span class="section-label">Output</span>
-            <div class="output">An <span id="custom-effect-text">observation</span> is a set of limitations.</div>
-          </div>
-
-        </div>
-      </div>
-
-      <div class="basic-usage">
-        <h3>Custom Effects</h3>
-        <p>badasdasd</p>
-
-        <br />
-
-        <div class="tabbed-editor">
-          <div class="editable-content">
-            <label>
-              <input type="radio" name="tabs" class="tab js-tab" checked="checked">
-              <span class="section-label">JavaScript</span>
-            </label>
-            <label>
-              <input type="radio" name="tabs" class="tab html-tab">
-              <span class="section-label">HTML</span>
-            </label>
-
-            <div class="tab-content js-content"></div>
-            <div class="tab-content html-content"></div>
-          </div>
-
-          <script class="js-code"  type="application/json">var mainImage = [
-  "void mainImage( out vec4 mainImage, in vec2 fragCoord ) {",
-  "   vec2 uv = fragCoord / uResolution;",
-
-  "   float amount = 10.0;",
-  "   float angle = 0.25;",
-  "   vec2 offset = (amount / uResolution) * vec2(cos(angle), sin(angle));",
-
-  "   vec4 cr = textTexture(uv + offset);",
-  "   vec4 cga = textTexture(uv);",
-  "   vec4 cb = textTexture(uv - offset);",
-
-  "   combineColors(cr, vec4(1.0, 1.0, 1.0, 1.0), cr);",
-  "   combineColors(cga, vec4(1.0, 1.0, 1.0, 1.0), cga);",
-  "   combineColors(cb, vec4(1.0, 1.0, 1.0, 1.0), cb);",
-
-  "   rgbaFromRgb(mainImage, vec3(cr.r, cga.g, cb.b));",
-  "}"
-].join("\n");
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-vec2 centerPoint = vec2(0.5);
-
-const int mSize = 11;
-const int kSize = (mSize - 1) / 2;
-float kernel[mSize];
-
-vec2 uv = fragCoord / uResolution;
-// uv.x += cos(uv.y* (uv.x + 1.0) * 3.) * 0.003;
-// uv.y += cos(uv.x * 6.) * 0.0007;
-vec3 c = texture2D(iChannel0, uv).rgb;
-
-vec3 finalColour = vec3(0.0);
-
-//create the 1-D kernel
-float sigma = 7.0;
-float Z = 0.0;
-
-for (int j = 0; j <= kSize; ++j)
-{
-  kernel[kSize+j] = kernel[kSize-j] = normpdf(float(j), sigma);
-}
-
-//get the normalization factor (as the gaussian has been clamped)
-for (int j = 0; j < mSize; ++j)
-{
-  Z += kernel[j];
-}
-
-//read out the texels
-for (int i=-kSize; i <= kSize; ++i)
-{
-  for (int j=-kSize; j <= kSize; ++j)
-  {
-      final_colour += kernel[kSize+j]*kernel[kSize+i]*texture2D(iChannel0, (fragCoord.xy+vec2(float(i),float(j))) / iResolution.xy).rgb;
-  }
-}
-
-fragColor = vec4(final_colour/(Z*Z), 1.0);
-
-
-
-
-
-
-var material = new Blotter.ShaderMaterial(mainImage);
-var blotter = new Blotter(material, {
-  texts : [] // optional
-});
-
-var properties = {
-  family : "'Garamond', serif",
-  size : 27,
-  fill : "#171717"
-};
-var texts = [];
-
-$.each($(".shared-custom-effect-text"), function (_, textEl) {
-  var textStr = $(textEl).text(),
-      text = new Blotter.Text(textStr, properties);
-
-  texts.push(text);
-
-  blotter.on("ready", function () {
-    var textScope = blotter.forText(text);
-    $(textEl).html(textScope.domElement);
-  });
-});
-
-blotter.addTexts(texts);
-blotter.needsUpdate = true;</script>
-
-          <div class="output-container">
-            <span class="section-label">Output</span>
-            <div class="output"><p>
-An <span class="shared-custom-effect-text">observation</span> is a set of limitations.
-</p>
-<p>
-Victory is to be avoided for it ceases the <span class="shared-custom-effect-text">play</span>.
-</p></div>
-          </div>
-
-        </div>
+      <div class="contain-floats right">
+        <ul id="nav" class="right">
+          <li><a href="#/overview">Overview</a></li>
+          <li><a href="#/basics">The Basics</a></li>
+          <li><a href="#/packs">Packs</a></li>
+          <li><a href="#/documentation">Documentation</a></li>
+        </ul>
       </div>
     </div>
-    <script>
-      // Analytics code here
-    </script>
+
+    <div id="layout">
+      <div class="content-region"></div>
+    </div>
+
+    <template name="home">
+      <div>
+        <div class="content-right">
+          <p class="hero-text">
+            Blotter is a WebGL backed JavaScript API geared towards allowing designers to easily draw both pre-made and custom text effects using GLSL shaders.
+          </p>
+          <p class="small-text">
+             Two.js requires Underscore.js and Backbone.js Events. If you're already loading these files elsewhere then you can build the project yourself and get the file size even smaller. For more information on custom builds check out the source on github.
+          </p>
+          <div class="download">
+            <div class="right">
+              <div class="download-options dropdown-select">
+                <div class="dropdown-title noselect">Production Version</div>
+                <ul class="dropdown-options hidden">
+                  <li data-title="Production Version" data-value="http://production">
+                    <p class="download-title">Production Version</p>
+                    <p class="download-details">Testing 23kb</p>
+                  </li>
+                  <li data-title="Development Version" data-value="http://download">
+                    <p class="download-title">Development Version</p>
+                    <p class="download-details">Testing 420mb</p>
+                  </li>
+                </ul>
+              </div>
+              <a href="http://production" class="btn download-btn">Download</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </template>
+
+    <template name="overview">
+      <div>
+        <div class="content-right">
+          <div class="introduction">
+            <h2 class="anchor"><span id="overview"></span>Overview</h2>
+            <p>
+              When applying effects to text on the web, designers have traditionally been constrained to those provided by <code>css</code>. In the majority of cases this is entirely suitable – text is text right? Yet still, there exist numerous examples of designers combining <code>css</code> properties or gifs and images to create effects that evoke something more playful. Precisely here, Blotter exists to provide an alternative.
+            </p>
+          </div>
+          <ul class="bullet-list">
+            <li>
+              <h3>GLSL Backed Text Effects with Ease</h3>
+              <p>
+                Blotter provides a simple interface for building and manipulating text effects that utilize <code>glsl</code> shaders without requiring that the designer know <code>glsl</code>. Blotter has a growing library of configurable effects while also providing ways for student or experienced <code>glsl</code> programmers to quickly bootstrap new ones.
+              </p>
+            </li>
+            <li>
+              <h3>Atlasing Effects in a Single WebGL Back Buffer</h3>
+              <p>
+                Blotter bypasses the limit browsers place on the number of live <code>webgl</code> contexts in the document by using an atlas. This atlas maps elements that share the same effects so that they may be rendered together in a single <code>webgl</code> context. The resulting image data is then output to individual <code>2d</code> contexts for each element.
+              </p>
+            </li>
+            <li>
+              <h3>Animation Loop</h3>
+              <p>
+                Rather than executing on a time based interval, Blotter's internal animation loop uses <code>requestAnimationFrame</code> to match the browser's display refresh rate and pause when the user navigates to other browser tabs; improving performance and preserving the battery life on the user's device.
+              </p>
+            </li>
+            <li>
+              <h3>What Blotter Isn't</h3>
+              <p>
+                Any texts you pass to Blotter can be individually configured using familiar style properties. You can use custom font faces through the <code>@font-face</code> spec. However, Blotter ultimately renders the texts passed to it into <code>canvas</code> elements. This means rendered text won't be selectable. Blotter is great for elements like titles, headings, and texts used for graphic purposes. It's not recommended that Blotter be used for lengthy bodies of text.
+              </p>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </template>
+
+    <template name="basics">
+      <div>
+        <div class="content-right">
+          <h2 class="anchor"><span id="basics"></span>The Basics</h2>
+          <p>
+            When applying effects to text on the <code>WebGL</code>, designers have traditionally been constrained to those provided by  CSS. In the majority of cases this is entirely suitable – text is text, right? Yet still, there exist numerous examples of designers combining style properties or gifs and images to create effects that evoke something more playful. Precisely here, Blotter exists to provide an alternative.
+          </p>
+          <h3>All Together Now</h3>
+          <p>
+            When applying effects to text on the web, designers have traditionally been constrained to those provided by  CSS. In the <a href="#"><span>majority of</span></a> cases this is entirely suitable – text is text, right? Yet still, there exist numerous examples of designers combining style properties or gifs and images to create effects that evoke something more playful<sup><a href="#1">4</a></sup>. Precisely here, Blotter exists to provide an alternative.
+          </p>
+          <aside data-number="4" class="anchor"><span id="1"></span>This is an <a href="#"><span>important</span></a> line note that wraps multiple lines. These could be quite large.</aside>
+          <p>
+            When applying effects to text on the web, designers have traditionally been constrained to those provided by  CSS. In the majority of cases this is entirely suitable – text is text, right? Yet still, there exist numerous examples of designers combining style properties or gifs and images to create effects that evoke something more playful. Precisely here, Blotter exists to provide an alternative.
+          </p>
+          <p>
+            When applying effects to text on the web, designers have traditionally been constrained to those provided by  CSS. In the majority of cases this is entirely suitable – text is text, right? Yet still, there exist numerous examples of designers combining style properties or gifs and images to create effects that evoke something more playful. Precisely here, Blotter exists to provide an alternative.
+          </p>
+        </div>
+        <div class="content-left">
+          <div class="tabbed-editor">
+            <div class="editable-content">
+              <label>
+                <input type="radio" name="tabs" class="tab js-tab" checked="checked">
+                <span class="label-text">JavaScript</span>
+              </label>
+              <label>
+                <input type="radio" name="tabs" class="tab html-tab">
+                <span class="label-text">HTML</span>
+              </label>
+              <div class="tab-content js-content"></div>
+              <div class="tab-content html-content"></div>
+            </div>
+            <script class="js-code"  type="application/json">// BLOTTER - Example 1
+  var text = new Blotter.Text("observation", {
+    family : "'Garamond', serif",
+    size : 27,
+    fill : "#171717"
+  });
+
+  var material = new Blotter.RollDistortMaterial();
+  material.uniforms.uDistortion.value = 3.0;
+  material.uniforms.uDistortion2.value = 5.0;
+  var blotter = new Blotter(material, {
+    texts : text
+  });
+
+  var elem = $("#draw-text");
+  var myScope = blotter.forText(text);
+  var startTime = new Date().getTime()
+
+  blotter.on("ready", function () {
+    elem.html(myScope.domElement);
+  });
+
+  myScope.on("render", function () {
+    var time = (new Date().getTime() - startTime) / 1000;
+    myScope.material.uniforms.uTime.value = time;
+  });</script>
+            <div class="output-container">
+              <div class="output"><div id="draw-text">observation</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </template>
+
+    <template name="packs">
+      <div>
+        <div class="content-right">
+          <div class="introduction">
+            <h2 class="anchor"><span id="packs"></span>Shader Packs</h2>
+            <p>
+              When applying effects to text on the <code>WebGL</code>, designers have traditionally been constrained to those provided by  CSS.
+            </p>
+          </div>
+        </div>
+        <div class="packs-list-region"></div>
+      </div>
+    </template>
+
+    <script src="src/app.js"></script>
   </body>
 </html>
