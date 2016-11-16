@@ -409,7 +409,19 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
     ------------------------------------- */
 * {
   margin: 0;
-  padding: 0; }
+  padding: 0;
+  word-wrap: break-word;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -ms-box-sizing: border-box;
+  -o-box-sizing: border-box;
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-font-smoothing: antialiased;
+  -ms-font-smoothing: antialiased;
+  -o-font-smoothing: antialiased;
+  font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent; }
 
 body {
   color: #1E1A1B;
@@ -429,7 +441,6 @@ h1, h2, h3, h4, h5, h6 {
   vertical-align: top;
   word-spacing: 0.15em; }
 
-/* Used for main section headings. */
 h2 {
   /* Serapion is a weird font.
      These settings basically make it the font-size equal to our $leading */
@@ -534,7 +545,7 @@ code {
   display: inline-block;
   font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
   font-size: 14px;
-  font-weight: normal;
+  font-weight: 500;
   height: 26px;
   line-height: 52px;
   padding: 1px 52px 0;
@@ -590,15 +601,12 @@ code {
       .dropdown-select .dropdown-options li:hover {
         color: #fff;
         cursor: pointer;
-        background: #1E1A1B; }
+        background: #1E1A1B;
+        font-weight: 500; }
 
 /* Used for allowing anchor links but accounting for fixed header */
 .anchor {
   position: relative; }
-
-.anchor > span {
-  position: absolute;
-  top: -208px; }
 
 .logo-anchor {
   border: none; }
@@ -747,15 +755,11 @@ ul.documentation {
   list-style: none; }
   ul.documentation li {
     margin-top: 26px; }
-    ul.documentation li p.property, ul.documentation li p.method, ul.documentation li p.construction {
-      border-left: 2px solid #1E1A1B;
-      margin-left: -13px;
-      padding-left: 13px; }
-      ul.documentation li p.property > strong, ul.documentation li p.method > strong, ul.documentation li p.construction > strong {
-        font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
-        font-weight: 500; }
-        ul.documentation li p.property > strong + code, ul.documentation li p.method > strong + code, ul.documentation li p.construction > strong + code {
-          margin-left: 13px; }
+    ul.documentation li p.property > strong, ul.documentation li p.method > strong, ul.documentation li p.construction > strong {
+      font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
+      font-weight: 500; }
+      ul.documentation li p.property > strong + code, ul.documentation li p.method > strong + code, ul.documentation li p.construction > strong + code {
+        margin-left: 13px; }
     ul.documentation li > ul {
       font-size: 14px;
       list-style: none;
@@ -814,7 +818,8 @@ ul.documentation {
       height: auto; }
   .tabbed-editor .tab:checked + span {
     background: #1E1A1B;
-    color: #fff; }
+    color: #fff;
+    font-weight: 500; }
   .tabbed-editor .label-text {
     box-sizing: border-box;
     -moz-box-sizing: border-box;

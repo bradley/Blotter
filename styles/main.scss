@@ -27,6 +27,18 @@
 * {
   margin: 0;
   padding: 0;
+  word-wrap: break-word;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -ms-box-sizing: border-box;
+  -o-box-sizing: border-box;
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-font-smoothing: antialiased;
+  -ms-font-smoothing: antialiased;
+  -o-font-smoothing: antialiased;
+  font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -49,7 +61,6 @@ h1, h2, h3, h4, h5, h6 {
   word-spacing: 0.15em;
 }
 
-/* Used for main section headings. */
 h2 {
   /* Serapion is a weird font.
      These settings basically make it the font-size equal to our $leading */
@@ -184,7 +195,7 @@ code {
   display: inline-block;
   font-family: $grotesque-font-stack;
   font-size: 14px;
-  font-weight: normal;
+  font-weight: 500;
   height: $leading;
   line-height: $leading * 2;
   padding: 1px ($leading * 2) 0;
@@ -253,6 +264,7 @@ code {
         color: $white;
         cursor: pointer;
         background: $black;
+        font-weight: 500;
       }
     }
   }
@@ -263,7 +275,8 @@ code {
   position: relative;
 }
 .anchor > span {
-  position:absolute; top: -($leading * 8);
+  //position:absolute;
+  //top: -($leading * 8);
 }
 .logo-anchor {
   border: none;
@@ -474,9 +487,9 @@ ul.documentation {
     p {
 
       &.property, &.method, &.construction {
-        border-left: 2px solid $black;
-        margin-left: -($leading / 2);
-        padding-left: $leading / 2;
+        //border-left: 2px solid $black;
+        //margin-left: -($leading / 2);
+        //padding-left: $leading / 2;
 
         > strong {
           font-family: $grotesque-font-stack;
@@ -582,6 +595,7 @@ ul.documentation {
   .tab:checked + span {
     background: $black;
     color: $white;
+    font-weight: 500;
   }
 
   .label-text {
