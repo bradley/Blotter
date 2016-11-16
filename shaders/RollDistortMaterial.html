@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=400">
+    <meta name="description" content="DESCRIPTION HERE">
+    <meta name="keywords" content="blotter.js, blotter, javascript, library, graphics, text, rendering, effects, styles, web, html5">
+    <meta name="author" content="bradley">
+    <link rel="image_src" href="../images/logo.gif" />
+    <title>Blotter.js</title>
+
+    <link rel="shortcut icon" type="image/gif" href="../images/favicon.ico">
+
+    <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,400i" rel="stylesheet">
+
+    <!--
+      /**
+      * @license
+      * MyFonts Webfont Build ID 3296227, 2016-10-15T22:01:05-0400
+      *
+      * The fonts listed in this notice are subject to the End User License
+      * Agreement(s) entered into by the website owner. All other parties are
+      * explicitly restricted from using the Licensed Webfonts(s).
+      *
+      * You may obtain a valid license at the URLs below.
+      *
+      * Webfont: SerapionPro-BoldItalic by Storm
+      * URL: http://www.myfonts.com/fonts/storm/serapion/bold-italic/
+      *
+      * Webfont: SerapionPro by Storm
+      * URL: http://www.myfonts.com/fonts/storm/serapion/regular/
+      *
+      *
+      * License: http://www.myfonts.com/viewlicense?type=web&buildid=3296227
+      * Licensed pageviews: 10,000
+      * Webfonts copyright: Copyright (c) Frantisek Storm. www.stormtype.com, 2005. All
+      * rights reserved.
+      *
+      * © 2016 MyFonts Inc
+      */
+
+    -->
+    <link rel="stylesheet" type="text/css" href="../styles/MyFontsWebfontsKit.css">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+    <link rel="stylesheet" type="text/css" href="../styles/main.css">
+
+    <script type="text/javascript">
+      var BlotterSite = {};
+    </script>
+
+    <script src="../third_party/jquery.min.js"></script>
+    <script src="../third_party/blotter.min.js"></script>
+    <script src="../third_party/codemirror.min.js"></script>
+    <script src="../third_party/javascript.js"></script>
+    <script src="../third_party/EventEmitter.js"></script>
+
+    <script type="text/javascript">
+
+      $(function() {
+
+        BlotterSite.Editor = function (el) {
+          this.init.apply(this, arguments);
+        };
+
+        BlotterSite.Editor.prototype = (function () {
+
+          function _buildJSMirror (el, code) {
+            return CodeMirror(el, {
+              value: code,
+              mode: "javascript",
+              tabSize: 2,
+              lineWrapping: true,
+              lineNumbers: true
+            });
+          }
+
+          function _buildHTMLMirror (el, code) {
+            return CodeMirror(el, {
+              value: code,
+              mode: "html",
+              tabSize: 2,
+              lineWrapping: true,
+              lineNumbers: true
+            });
+          }
+
+          return {
+
+            constructor : BlotterSite.Editor,
+
+            init : function (el) {
+              this.el = el;
+              this.outputEl = el.find(".output");
+
+              this.jsCode = el.find("script.js-code").html();
+              this.htmlCode = this.outputEl.html();
+              this.jsContent = el.find(".js-content");
+              this.htmlContent = el.find(".html-content");
+
+              this.jsMirror = _buildJSMirror(this.jsContent[0], this.jsCode);
+              this.htmlMirror = _buildHTMLMirror(this.htmlContent[0], this.htmlCode);
+
+              this.jsMirror.on("change", _.bind(_.debounce(this.update, 1000), this));
+              this.htmlMirror.on("change", _.bind(_.debounce(this.update, 1000), this));
+
+              this.htmlDoc = this.htmlMirror.getDoc();
+              this.jsDoc = this.jsMirror.getDoc();
+
+              this.setupListeners();
+              this.update();
+              this.showJSContent();
+            },
+
+            setupListeners : function () {
+              this.el.find(".js-tab").on("click", _.bind(this.showJSContent, this));
+              this.el.find(".html-tab").on("click", _.bind(this.showHTMLContent, this));
+            },
+
+            update : function() {
+              this.htmlMirror.setSize("auto", "auto");
+              this.htmlCode = this.htmlDoc.getValue();
+              try {
+                this.outputEl.html(unescape(this.htmlCode));
+              } catch (e) {
+                console.log(e);
+              }
+
+              this.jsMirror.setSize("auto", "auto");
+              this.jsCode = this.jsDoc.getValue();
+              try {
+                eval(this.jsCode); // yikes!
+              } catch (e) {
+                console.log(e);
+              }
+            },
+
+            showJSContent : function () {
+              this.htmlContent.hide();
+              this.jsContent.show();
+            },
+
+            showHTMLContent : function () {
+              this.jsContent.hide();
+              this.htmlContent.show();
+            },
+
+            largestSize : function () {
+              var htmlMirrorSize = this.htmlMirror.getScrollInfo(),
+                  jsMirrorSize = this.jsMirror.getScrollInfo(),
+                  size = {};
+
+              size.width = Math.max(jsMirrorSize.width, htmlMirrorSize.width);
+              size.height = Math.max(jsMirrorSize.height, htmlMirrorSize.height);
+
+              return size;
+            }
+          }
+        })();
+
+
+        $(document).ready(function () {
+
+          // Setup editors
+          BlotterSite.editors = (function (editors) {
+            return {
+              editors : editors,
+
+              update : function () {
+                _.each(this.editors, function (editor) {
+                  editor.update();
+                });
+              }
+            }
+          })(_.reduce($(".tabbed-editor"), function (m, el) {
+            m.push(new BlotterSite.Editor($(el)));
+            return m;
+          }, []));
+
+        });
+      });
+
+    </script>
+  </head>
+  <body>
+
+    <div id="masthead">
+      <!-- Preload Serapion -->
+      <div style="font-family: 'SerapionPro', serif; height: 0;">&nbsp;</div>
+      <a href="../index2.html" class="logo-anchor"><div id="logo"></div></a>
+      <script src="../src/logo.js"></script>
+    </div>
+
+    <div id="content">
+<!--
+      <div class="output-container">
+        <div class="output"><div id="draw-text">observation</div></div>
+      </div>
+      <script type="text/javascript">
+        // BLOTTER - Example 1
+        var text = new Blotter.Text("observation", {
+          family : "'Garamond', serif",
+          size : 27,
+          fill : "#171717"
+        });
+
+        var material = new Blotter.RollDistortMaterial();
+        material.uniforms.uDistortion.value = 3.0;
+        material.uniforms.uDistortion2.value = 5.0;
+        var blotter = new Blotter(material, {
+          texts : text
+        });
+
+        var elem = $("#draw-text");
+        var myScope = blotter.forText(text);
+        var startTime = new Date().getTime()
+
+        blotter.on("ready", function () {
+          elem.html(myScope.domElement);
+        });
+
+        myScope.on("render", function () {
+        var time = (new Date().getTime() - startTime) / 1000;
+          myScope.material.uniforms.uTime.value = time;
+        });
+      </script>
+-->
+      <div class="content-right">
+        <div class="introduction">
+          <h2>RollDistortMaterial</h2>
+          <p>
+            Class for creating a rolling distortion effect using Blotter.js. It inherits from <code>Blotter.Material</code>, and therefore has the same properties and functions as <code>Blotter.Material</code>.
+          </p>
+        </div>
+        <ul class="documentation">
+          <li id="roll-distort-material-construction">
+            <p class="construction">
+              <strong>construction</strong>
+              <code>var material = new Blotter.RollDistortMaterial();</code>
+            </p>
+          </li>
+          <li id="roll-distort-material-uniforms">
+            <p class="property object">
+              <strong>uniforms</strong>
+              <code>material.uniforms</code>
+            </p>
+            <p class="description">
+              An object that holds the uniforms that describe how the material's effects should be rendered.
+            </p>
+            <ul>
+              <li class="roll-distort-material-uniforms-u-time">
+                <p class="property object">
+                  <strong>uTime</strong>
+                  <code>material.uniforms.uTime</code>
+                </p>
+                <p class="description">
+                  Represents how much time has elapsed since the last frame in milliseconds.
+                </p>
+                <ul class="properties">
+                  <li class="roll-distort-material-uniforms-u-time-properties">
+                    <p class="property float">
+                      <strong>value</strong>
+                      <code>material.uniforms.uTime.value</code>
+                    </p>
+                    <p class="description">
+                      A floating point number representing how much time has elapsed since the last frame in milliseconds. Default value is 0.0.
+                    </p>
+                  </li>
+                  <li class="roll-distort-material-uniforms-u-time-properties static">
+                    <p class="property string">
+                      <strong>type</strong>
+                      <code>material.uniforms.uTime.type</code>
+                    </p>
+                    <p class="description">
+                      The uniform type of the value being passed to the shader. This value is a static "1f".
+                    </p>
+                  </li>
+                </ul>
+              </li>
+              <li class="roll-distort-material-uniforms-u-distorition">
+                <p class="property object">
+                  <strong>uDistortion</strong>
+                  <code>material.uniforms.uDistortion</code>
+                </p>
+                <p class="description">
+                  Represents the predominant distortion to apply to texts.
+                </p>
+                <ul class="properties">
+                  <li class="roll-distort-material-uniforms-u-distorition-properties">
+                    <p class="property float">
+                      <strong>value</strong>
+                      <code>material.uniforms.uDistortion.value</code>
+                    </p>
+                    <p class="description">
+                      A floating point number representing the predominant distortion to apply to texts. Default value is 0.0.
+                    </p>
+                  </li>
+                  <li class="roll-distort-material-uniforms-u-distorition-properties static">
+                    <p class="property string">
+                      <strong>type</strong>
+                      <code>material.uniforms.uDistortion.type</code>
+                    </p>
+                    <p class="description">
+                      The uniform type of the value being passed to the shader. This <strong>value</strong> is a static "1f".
+                    </p>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </body>
+</html>

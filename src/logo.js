@@ -87,19 +87,19 @@ $(document).ready(function () {
     "        }",
     "    }",
 
-    "    mainImage = darkestSample;",
+    "    rgbaFromRgb(mainImage, darkestSample.rgb);",
     "}"
   ].join("\n");
 
   var text = new Blotter.Text("Blotter", {
     family : "'SerapionPro', sans-serif",
-    size : 96,
+    size : 48,
     weight : 100,
-    leading : "70px",
-    paddingTop : 32,
-    paddingLeft : 5,
-    paddingRight : 10,
-    fill : "#171717"
+    leading : "52px",
+    paddingTop : 14,
+    paddingLeft : 14,
+    paddingRight : 14,
+    fill : "#1E1A1B"
   });
 
   var material = new Blotter.ShaderMaterial(mainImage, {

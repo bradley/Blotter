@@ -1,32 +1,21 @@
-$black: #171717;
+$black: #1E1A1B;//#1F1F1F;
 $grey: #f3f3f3;
 $white: #fff;
 
-$red: rgb(255, 64, 64);
-$orange: rgb(255, 128, 0);
-$blue: rgb(0, 200, 255);
-$green: rgb(0, 191, 168);
-$purple: rgb(153, 102, 255);
-$yellow: rgb(255, 244, 95);
+$yellow: #fff700;
 
-$turquoise: rgb(31, 212, 157);
-$fuscia: rgb(236, 29, 128);
-$purple: rgb(59, 63, 226);
-$red: rgb(238, 25, 25);
-$violet: rgb(188, 78, 237);
-$dark-soft-blue: rgb(90, 79, 144);
-$soft-pink: rgb(255, 247, 245);
+$font-size: 17px;
+$leading: round($font-size * 1.5);
 
-$font-size: 16px;
-$line-height: 24px;
-
-$max-content-width: 580px;
+$col-width: $leading * 5;
+$gutter-width: $leading * 2;
+$layout-width: ($col-width * 4) + ($gutter-width * 3);
+$max-content-width: ($col-width * 3) + ($gutter-width * 3);
 
 $min-screen-width: 400px;
 $min-device-width: 640px; // iPhone 5 portrait width
 
-$thumbnail-width: 143px;
-$thumbnail-height: 100px;
-
 $font-stack: "Garamond", serif;
 $h-font-stack: "SerapionPro", "Garamond", serif;
+$h-font-stack-bold: "SerapionPro-BoldItalic", "Garamond", serif;
+$grotesque-font-stack: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif

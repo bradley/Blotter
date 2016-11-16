@@ -1,3 +1,4 @@
+@charset "UTF-8";
 /* BASICS */
 .CodeMirror {
   /* Set height, width, borders, and global font properties here */
@@ -300,85 +301,97 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
   /* Hide the cursor when printing */
   .CodeMirror div.CodeMirror-cursor {
     visibility: hidden; } }
+/* BASE */
 .CodeMirror {
+  background: #1E1A1B;
   font-family: "Ubuntu Mono", monospace;
-  padding-right: 8px; }
+  font-size: 14px;
+  line-height: 18px;
+  max-width: 100%;
+  padding-right: 26px; }
 
 .CodeMirror-lines {
-  padding: 0;
-  /* Vertical padding around content */ }
+  /* Vertical padding around content */
+  padding: 26px 0; }
 
 .CodeMirror pre {
-  padding: 0 0 0 8px;
-  /* Horizontal padding of content */ }
+  /* Margin to right of line number border */
+  padding: 0 0 0 26px; }
 
+/* GUTTER */
 .CodeMirror-gutters {
-  border-right: 1px solid #f3f3f3;
-  background-color: #f7f7f7; }
+  border-right: 1px solid #B5B5B5;
+  background-color: #1E1A1B;
+  box-shadow: 1px 0 3px #6C6C6C, 1px 0 3px #6C6C6C;
+  min-width: 26px;
+  text-align: center;
+  margin-right: 26px;
+  padding-left: 0; }
 
 .CodeMirror-linenumber {
-  padding: 0 8px;
-  min-width: 20px;
+  color: #DCDCDC;
+  font-size: 14px;
+  left: 1px !important;
+  line-height: 18px;
   text-align: right;
-  color: #999;
-  font-size: 75%;
-  line-height: 24px; }
+  text-shadow: 0 0 4px #AAAAAA, 0 0 4px #AAAAAA;
+  padding-left: 0; }
 
-.CodeMirror-lines > div > div > div:nth-child(odd) .CodeMirror-linenumber {
-  /* background: red; */ }
-
-@media screen and (min-width: 400px) {
-  .CodeMirror {
-    border-right: 1px solid #f3f3f3; } }
 @media screen and (max-width: 400px) {
-  .CodeMirror {
-    border-left: em(2) solid #f3f3f3; }
-
   .CodeMirror-gutters,
   .CodeMirror-linenumbers,
   .CodeMirror-linenumber {
     display: none; } }
-.cm-s-default .cm-keyword {
-  color: #1fd49d; }
+/* CURSOR */
+.CodeMirror div.CodeMirror-cursor {
+  border-left: 1px solid #DCDCDC;
+  box-shadow: 0 0 3px #979797, 0 0 3px #979797;
+  z-index: 3; }
 
-.cm-s-default .cm-number {
-  color: #ee1919; }
-
-.cm-s-default .cm-def {
-  color: #171717; }
-
-.cm-s-default .cm-variable {
-  color: #171717; }
-
-.cm-s-default .cm-variable-2 {
-  color: #3b3fe2; }
-
-.cm-s-default .cm-property {
-  color: #ec1d80; }
-
-.cm-s-default .cm-variable + .cm-property {
-  color: #3b3fe2; }
-
-.cm-s-default .cm-comment {
-  color: #c7c7c7;
-  font-style: italic; }
-
-.cm-s-default .cm-string {
-  color: #5a4f90; }
-
-.cm-s-default .cm-string-2 {
-  color: #5a4f90; }
-
+/* TEXT STYLING */
 .CodeMirror pre {
-  font-size: 16px;
-  line-height: 24px;
-  color: #bc4eed; }
+  color: #DCDCDC;
+  font-size: 14px;
+  line-height: 18px;
+  text-shadow: 0 0 3px #979797, 0 0 3px #979797; }
 
+.cm-s-default .cm-keyword {
+  color: #DCDCDC;
+  text-shadow: 0 0 3px #979797, 0 0 3px #979797; }
+.cm-s-default .cm-number {
+  color: #DCDCDC;
+  text-shadow: 0 0 3px #979797, 0 0 3px #979797; }
+.cm-s-default .cm-def {
+  color: #DCDCDC;
+  text-shadow: 0 0 3px #979797, 0 0 3px #979797; }
+.cm-s-default .cm-variable {
+  color: #DCDCDC;
+  text-shadow: 0 0 3px #979797, 0 0 3px #979797; }
+.cm-s-default .cm-variable-2 {
+  color: #DCDCDC;
+  text-shadow: 0 0 3px #979797, 0 0 3px #979797; }
+.cm-s-default .cm-property {
+  color: #DCDCDC;
+  text-shadow: 0 0 3px #979797, 0 0 3px #979797; }
+.cm-s-default .cm-variable + .cm-property {
+  color: #DCDCDC;
+  text-shadow: 0 0 3px #979797, 0 0 3px #979797; }
+.cm-s-default .cm-string {
+  color: #DCDCDC;
+  text-shadow: 0 0 3px #979797, 0 0 3px #979797; }
+.cm-s-default .cm-string-2 {
+  color: #DCDCDC;
+  text-shadow: 0 0 3px #979797, 0 0 3px #979797; }
+.cm-s-default .cm-comment {
+  color: #8E8E8E;
+  text-shadow: 0 0 3px #979797; }
+
+/* HIGHLIGHT */
 .CodeMirror-selected {
-  background: #fff45f; }
+  background: #373737; }
 
 .CodeMirror-focused .CodeMirror-selected {
-  background: #fff45f; }
+  background: #373737; }
 
 /*  Typography
     ------------------------------------- */
@@ -389,102 +402,515 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
   font-family: "Garamond";
   src: url("fonts/EBGaramond12-Italic.ttf");
   font-style: italic; }
+@font-face {
+  font-family: "Avenir";
+  src: url("fonts/REPLACE_ME_WITH_SOMETHING_REAL.ttf"); }
 /*  Base
     ------------------------------------- */
 * {
   margin: 0;
-  padding: 0; }
+  padding: 0;
+  word-wrap: break-word;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -ms-box-sizing: border-box;
+  -o-box-sizing: border-box;
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-font-smoothing: antialiased;
+  -ms-font-smoothing: antialiased;
+  -o-font-smoothing: antialiased;
+  font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent; }
 
 body {
+  color: #1E1A1B;
   font-family: "Garamond", serif;
-  font-size: 16px;
-  line-height: 24px;
-  color: #171717;
-  padding: 25px;
+  font-size: 17px;
+  line-height: 26px;
+  padding: 26px 26px 52px 26px;
   vertical-align: top; }
 
 h1, h2, h3, h4, h5, h6 {
+  color: #1E1A1B;
   font-family: "SerapionPro", "Garamond", serif;
-  vertical-align: top;
-  color: tint(#171717, 20%);
-  line-height: 1.5;
-  margin-bottom: 24px;
   font-weight: 400;
   letter-spacing: 0.015em;
+  line-height: 1.5;
+  margin-bottom: 26px;
+  vertical-align: top;
   word-spacing: 0.15em; }
 
-/* Used for main section headings. */
 h2 {
-  font-size: 32px; }
-  @media screen and (max-width: 400px), screen and (max-device-width: 640px) {
-    h2 {
-      text-align: center; } }
+  /* Serapion is a weird font.
+     These settings basically make it the font-size equal to our $leading */
+  font-size: 32px;
+  line-height: 16px;
+  padding-top: 10px; }
 
-code {
-  font-family: 'Ubuntu Mono', monospace;
-  font-size: 14px;
-  background: #f3f3f3;
-  padding: 2px 4px 4px;
-  border-radius: 3px; }
+h3 {
+  /* Serapion is a weird font.
+     These settings basically make it the font is vertically centered within a line-height of $leading */
+  font-family: "SerapionPro-BoldItalic", "Garamond", serif;
+  font-size: 20px;
+  line-height: 23px;
+  margin-top: 26px;
+  margin-bottom: 0;
+  padding-top: 3px; }
 
 p {
-  max-width: 580px; }
+  max-width: 546px; }
   @media screen and (device-aspect-ratio: 2 / 3), screen and (device-aspect-ratio: 40 / 71) {
     p {
       max-width: 100%; } }
   p + p {
-    margin-top: 24px; }
+    margin-top: 26px; }
 
 a {
-  text-decoration: underline; }
-  a:link {
-    color: #00bfa8; }
-  a:visited {
-    color: #ff8000; }
-  a:hover, a:active {
-    color: #ee1919; }
-
-ul {
-  max-width: 580px; }
-  @media screen and (max-width: 400px) {
-    ul {
-      list-style: none; } }
-  ul li:not(:first-child) {
-    margin-top: 24px; }
+  border-bottom: 2px solid black;
+  color: black;
+  position: relative;
+  text-decoration: none; }
 
 sup {
   font-size: 85%;
-  line-height: 85%; }
+  line-height: 85%;
+  margin-left: 1px; }
+  sup a {
+    border: none; }
 
-/*
-.nota-bene {
-  &:before {
-    content: 'N.B:';
-    font-weight: 700;
-  }
-  font-size: 75%;
-  // font-style: italic;
-}
-*/
+aside {
+  font-size: 13px;
+  line-height: 1.5;
+  position: relative;
+  width: 312px;
+  margin: 26px 0; }
+  aside:before {
+    content: "[" attr(data-number) "]";
+    font-size: 14px;
+    left: -52px;
+    position: absolute;
+    text-align: center;
+    top: 0;
+    width: 52px; }
+  aside a {
+    border-width: 1px; }
+
+/* Highlight colors. */
+::-moz-selection {
+  background: #fff700; }
+
+::selection {
+  background: #fff700; }
+
+code {
+  background: #f3f3f3;
+  border-radius: 4px;
+  color: #1E1A1B;
+  font-family: 'Ubuntu Mono', monospace;
+  font-size: 14px;
+  font-size: 14px;
+  line-height: 18px;
+  padding: 3px 4px 4px; }
+
+/*  Utilities
+    ------------------------------------- */
+.contain-floats {
+  overflow: hidden; }
+
+.left {
+  float: left; }
+
+.right {
+  float: right; }
+
+.hidden {
+  display: none; }
+
+.noselect {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none; }
+
+.btn {
+  background: #1E1A1B;
+  border-radius: 4px;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  color: #fff;
+  display: inline-block;
+  font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  height: 26px;
+  line-height: 52px;
+  padding: 1px 52px 0;
+  text-decoration: none;
+  text-align: center;
+  height: 52px; }
+  .btn:after {
+    display: none; }
+
+.dropdown-select {
+  display: inline-block;
+  position: relative; }
+  .dropdown-select .dropdown-title {
+    font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
+    font-size: 14px;
+    margin-right: 21px;
+    padding-right: 18px;
+    position: relative; }
+    .dropdown-select .dropdown-title:hover {
+      cursor: pointer; }
+    .dropdown-select .dropdown-title:after {
+      content: "";
+      background: url(../images/down_arrow.png);
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: 100%;
+      font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
+      font-size: 18px;
+      height: 26px;
+      line-height: 26px;
+      position: absolute;
+      right: -0px;
+      top: -1px;
+      width: 10px; }
+  .dropdown-select .dropdown-options {
+    background: #fff;
+    border-radius: 4px;
+    box-shadow: 0 0 10px 3px #f3f3f3;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    color: #1E1A1B;
+    right: 26px;
+    list-style: none;
+    padding: 6.5px 0;
+    position: absolute;
+    top: calc(100% + 13px);
+    width: 182px;
+    z-index: 50;
+    backface-visiblity: visible; }
+    .dropdown-select .dropdown-options li {
+      padding: 6.5px 13px; }
+      .dropdown-select .dropdown-options li:hover {
+        color: #fff;
+        cursor: pointer;
+        background: #1E1A1B;
+        font-weight: 500; }
+
+/* Used for allowing anchor links but accounting for fixed header */
+.anchor {
+  position: relative; }
+
+.logo-anchor {
+  border: none; }
+
 .horizon {
-  list-style: none;
-  height: 0;
-  margin: 24px 0;
-  border-bottom: 1px solid #eee; }
+  background: transparent;
+  border-color: transparent transparent #1E1A1B transparent;
+  border-style: solid;
+  border-width: 0 13px 6.5px 13px;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  margin: 78px 0 91px;
+  position: relative;
+  z-index: 1;
+  width: 100%; }
+  .horizon:before, .horizon:after {
+    content: "";
+    display: block;
+    left: 0;
+    position: absolute;
+    right: 0; }
+  .horizon:before {
+    border-color: transparent transparent #fff transparent;
+    border-style: solid;
+    border-width: 0 13px 6.5px 13px;
+    left: -13px;
+    top: calc(100% + 2px);
+    width: 100%; }
+  .horizon:after {
+    border-color: #1E1A1B transparent transparent transparent;
+    border-style: solid;
+    border-width: 6.5px 13px 0 13px;
+    height: 26px;
+    left: -13px;
+    top: calc(100% + 6px);
+    width: 100%; }
 
-li.horizon {
-  margin: 1.5em 0 !important; }
+.small-text {
+  font-size: 13px;
+  line-height: 1.5; }
 
-/* logo */
-#logo {
-  height: 103px;
-  margin-bottom: 24px; }
-  #logo canvas {
-    vertical-align: top; }
-
+/*  Layout
+    ------------------------------------- */
 #content {
-  padding: 25px 25px 50px 25px;
-  background: #fff; }
+  margin: 182px auto 0;
+  width: 676px; }
+
+.content-right, .content-left {
+  width: 546px; }
+
+.content-right {
+  margin-left: 130px; }
+
+.content-left {
+  margin-right: 130px; }
+
+/*  Header
+    ------------------------------------- */
+#masthead {
+  background: white;
+  background: white;
+  background: -moz-linear-gradient(top, white 0%, rgba(255, 255, 255, 0) 100%);
+  background: -webkit-gradient(left top, left bottom, color-stop(0%, white), color-stop(100%, rgba(255, 255, 255, 0)));
+  background: -webkit-linear-gradient(top, white 0%, rgba(255, 255, 255, 0) 100%);
+  background: -o-linear-gradient(top, white 0%, rgba(255, 255, 255, 0) 100%);
+  background: -ms-linear-gradient(top, white 0%, rgba(255, 255, 255, 0) 100%);
+  background: linear-gradient(to bottom, white 0%, rgba(255, 255, 255, 0) 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#ffffff', GradientType=0 );
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f85032', endColorstr='#e73827', GradientType=1 );
+  height: 52px;
+  left: 0;
+  padding: 26px 52px;
+  position: fixed;
+  right: 0;
+  top: 0;
+  z-index: 100; }
+  #masthead #logo {
+    display: inline-block;
+    height: 52px; }
+    #masthead #logo canvas {
+      vertical-align: top;
+      margin-top: -6px;
+      margin-left: -14px; }
+  #masthead ul#nav {
+    display: block;
+    list-style: none;
+    margin: 0;
+    padding: 0; }
+    #masthead ul#nav li {
+      display: inline-block;
+      padding: 0 13px;
+      margin-left: 26px; }
+      #masthead ul#nav li:first-child {
+        margin-left: 0;
+        padding-left: 0; }
+      #masthead ul#nav li:last-child {
+        padding-right: 0; }
+      #masthead ul#nav li a {
+        border: none;
+        color: #1E1A1B;
+        font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
+        font-size: 17px;
+        line-height: 52px; }
+
+/*  Documentation
+    ------------------------------------- */
+.content-right aside {
+  left: -130px; }
+
+.hero-text {
+  font-size: 26px !important;
+  line-height: 39px !important; }
+
+.download-options .dropdown-options li .download-title {
+  font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.5; }
+.download-options .dropdown-options li .download-details {
+  font-size: 13px;
+  line-height: 1.5;
+  margin-top: 0px; }
+
+.download {
+  height: 52px;
+  margin: 26px 0 104px; }
+
+.introduction {
+  margin-bottom: 52px; }
+
+.bullet-list {
+  list-style: none; }
+  .bullet-list li {
+    position: relative; }
+    .bullet-list li:before {
+      content: "⚬";
+      font-family: serif;
+      font-weight: 700;
+      left: -52px;
+      position: absolute;
+      text-align: center;
+      top: -3px;
+      width: 52px; }
+
+ul.documentation {
+  list-style: none; }
+  ul.documentation li {
+    margin-top: 26px; }
+    ul.documentation li p.property > strong, ul.documentation li p.method > strong, ul.documentation li p.construction > strong {
+      font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
+      font-weight: 500; }
+      ul.documentation li p.property > strong + code, ul.documentation li p.method > strong + code, ul.documentation li p.construction > strong + code {
+        margin-left: 13px; }
+    ul.documentation li > ul {
+      font-size: 14px;
+      list-style: none;
+      line-height: 1.5;
+      margin-left: 26px; }
+      ul.documentation li > ul + li {
+        margin-top: 26px; }
+        ul.documentation li > ul + li:not(:first-child) {
+          margin-top: 26px; }
+        ul.documentation li > ul + li p {
+          margin-top: 6.5px; }
+      ul.documentation li > ul ul {
+        list-style: none;
+        line-height: 1.5;
+        margin-left: 26px; }
+        ul.documentation li > ul ul li {
+          margin-top: 13px; }
+          ul.documentation li > ul ul li p {
+            margin-top: 6.5px; }
+            ul.documentation li > ul ul li p.property, ul.documentation li > ul ul li p.method, ul.documentation li > ul ul li p.construction {
+              border-left: none; }
+
+/*  Example Editor
+    ------------------------------------- */
+.tabbed-editor {
+  float: none;
+  list-style: none;
+  margin-top: 52px;
+  width: 100%;
+  padding: 0;
+  position: relative; }
+  .tabbed-editor .editable-content:after {
+    content: '';
+    display: table;
+    clear: both; }
+  .tabbed-editor input[type=radio] {
+    display: none; }
+  .tabbed-editor label {
+    display: block;
+    float: left;
+    height: 26px; }
+    .tabbed-editor label:hover span {
+      background-color: #f3f3f3; }
+    .tabbed-editor label span {
+      border-radius: 4px 4px 0 0;
+      cursor: pointer;
+      color: #1E1A1B;
+      font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif; }
+  .tabbed-editor .tab-content {
+    width: 100%;
+    float: left;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box; }
+    .tabbed-editor .tab-content > .CodeMirror {
+      height: auto; }
+  .tabbed-editor .tab:checked + span {
+    background: #1E1A1B;
+    color: #fff;
+    font-weight: 500; }
+  .tabbed-editor .label-text {
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    display: inline-block;
+    font-size: 14px;
+    font-weight: normal;
+    height: 26px;
+    line-height: 26px;
+    padding: 1px 26px 0;
+    text-decoration: none;
+    text-align: center; }
+
+.output {
+  border: 2px solid #1E1A1B;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  margin-top: 78px;
+  position: relative;
+  width: 100%; }
+  .output:before {
+    content: "↓";
+    font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
+    font-size: 26px;
+    height: 26px;
+    left: calc(50% - 5px);
+    line-height: 26px;
+    position: absolute;
+    top: -52px;
+    z-index: -1; }
+  .output > div {
+    width: 100%;
+    text-align: center; }
+    .output > div canvas {
+      margin: 26px auto;
+      vertical-align: top; }
+
+/*  Packs
+    ------------------------------------- */
+.pack-shaders {
+  list-style: none;
+  overflow: hidden; }
+  .pack-shaders li {
+    border: 2px solid #1E1A1B;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    float: left;
+    font-family: "SerapionPro", "Garamond", serif;
+    font-size: 68px;
+    height: 104px;
+    line-height: 123px;
+    margin-bottom: 26px;
+    margin-right: 26px;
+    overflow: hidden;
+    position: relative;
+    text-align: center;
+    width: 208px; }
+    .pack-shaders li:nth-child(3n + 3) {
+      margin-right: 0; }
+    .pack-shaders li:hover .pack-shader-overlay {
+      cursor: pointer;
+      display: block; }
+    .pack-shaders li .pack-shader-overlay {
+      background: rgba(255, 255, 255, 0.9);
+      bottom: 0;
+      box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      -webkit-box-sizing: border-box;
+      display: none;
+      left: 0;
+      padding: 13px;
+      position: absolute;
+      right: 0;
+      text-align: left;
+      top: 0; }
+      .pack-shaders li .pack-shader-overlay .pack-shader-name {
+        color: #1E1A1B;
+        display: block;
+        font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
+        font-size: 17px;
+        font-weight: normal;
+        line-height: 1.5; }
+      .pack-shaders li .pack-shader-overlay .pack-name {
+        color: #1E1A1B;
+        display: block;
+        font-family: "Garamond", serif;
+        font-size: 14px;
+        font-weight: normal;
+        line-height: 1.5; }
 
 /* documentation-toc is used by Two to do the sections of documentation specifically. may not need this but nice that it's the same styling */
 #toc, #documentation-toc {
@@ -508,59 +934,7 @@ li.horizon {
       margin: 8px 8px 0; }
 
 #documentation-toc {
-  max-width: 580px; }
-
-.basic-usage canvas {
-  /* border: 1px solid $grey; */ }
-.basic-usage .blotter-container {
-  margin-top: 24px; }
-
-.basic-usage + .basic-usage {
-  margin-top: 24px; }
-
-.tabbed-editor {
-  max-width: 750px;
-  float: none;
-  list-style: none;
-  padding: 0; }
-  .tabbed-editor .editable-content:after {
-    content: '';
-    display: table;
-    clear: both; }
-  .tabbed-editor input[type=radio] {
-    display: none; }
-  .tabbed-editor label {
-    display: block;
-    float: left; }
-    .tabbed-editor label:hover span {
-      color: black; }
-    .tabbed-editor label span {
-      cursor: pointer;
-      color: #ccc; }
-  .tabbed-editor .tab-content {
-    width: 100%;
-    float: left;
-    box-sizing: border-box;
-    background-color: #ffffff; }
-    .tabbed-editor .tab-content > .CodeMirror {
-      height: auto; }
-  .tabbed-editor .tab:checked + span {
-    background: #FFF;
-    color: black; }
-  .tabbed-editor .section-label {
-    padding: 10px;
-    display: inline-block;
-    font-size: 14px;
-    font-weight: normal;
-    text-decoration: none;
-    text-align: center;
-    line-height: 1.5; }
-
-.output {
-  font-size: 27px;
-  line-height: 1.5; }
-  .output canvas {
-    vertical-align: top; }
+  max-width: 546px; }
 
 /*
 .examples,
@@ -630,7 +1004,7 @@ li.horizon {
       p {
         position: absolute;
         top: 50%;
-        margin-top: - $line-height;
+        margin-top: - $leading;
         color: $white;
         padding: 0 8px;
       }
@@ -638,83 +1012,30 @@ li.horizon {
   }
 }
 */
-/* Everything under documentation is in a list */
-ul.documentation {
-  list-style: none;
-  /* not same as p description. this is for description of a class and follows li.title elements */
-  /* mostly for describing sub properties. look at Two's anchor.controls */ }
-  ul.documentation li.description {
-    margin-top: 0; }
-  ul.documentation ul {
-    margin-top: 24px;
-    list-style: none;
-    margin-left: 24px;
-    font-size: 80%;
-    line-height: 24px; }
-    ul.documentation ul li:not(:first-child) {
-      margin-top: 18px; }
-    ul.documentation ul li p {
-      margin-top: 0; }
-
-/* SOURCE PROPERTY TYPE DESIGNATORS */
-/* --------------------------------------------------------------------------------------------*/
-/* property and construction are obvious. method is for "class methods" (also functions right?). */
-p.property, p.method, p.construction {
-  border-left-width: 4px;
-  border-left-style: solid;
-  margin-left: -16px;
-  padding-left: 12px; }
-
-p.construction {
-  border-left-color: #fff45f; }
-
-p.boolean {
-  border-left-color: #00c8ff; }
-
-p.number {
-  border-left-color: #ee1919; }
-
-p.string {
-  border-left-color: #ff8000; }
-
-p.function {
-  border-left-color: #3b3fe2; }
-
-p.object, p.array {
-  border-left-color: #00bfa8; }
-
 /* Actual description following property name and code line */
 p.description {
-  margin-top: 6px; }
+  margin-top: 6.5px; }
 
 /* Further explaination for when necessary (beyond brief description) */
 p.detail {
-  margin-top: 6px;
-  padding-left: 12px;
+  margin-top: 6.5px;
+  padding-left: 13px;
   margin-left: 3px;
   border-left: 3px solid shade(#f3f3f3, 10%); }
 
 /* Used for properties and objects that are static. This would be like Blotter.UniformUtils.UniformTypes */
 p.static, p.static + p {
-  color: tint(#171717, 33%); }
+  color: tint(#1E1A1B, 33%); }
 
 /* --------------------------------------------------------------------------------------------*/
 /* SOURCE PROPERTY TYPE DESIGNATORS */
 /*
 .credits {
-  margin-top: $line-height / 2;
+  margin-top: $leading / 2;
   li:not(:first-child) {
     margin-top: 0;
   }
 }
 */
-/* Highlight colors */
-::selection {
-  background: tint(#fff45f, 25%);
-  /* Safari */ }
-
-::-moz-selection {
-  background: tint(#fff45f, 25%);
-  /* Firefox */ }
 
 /*# sourceMappingURL=main.css.map */

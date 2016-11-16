@@ -15,6 +15,11 @@
   font-style: italic;
 }
 
+@font-face{
+  font-family: "Avenir";
+  src: url('fonts/REPLACE_ME_WITH_SOMETHING_REAL.ttf');
+}
+
 
 /*  Base
     ------------------------------------- */
@@ -22,44 +27,62 @@
 * {
   margin: 0;
   padding: 0;
+  word-wrap: break-word;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -ms-box-sizing: border-box;
+  -o-box-sizing: border-box;
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-font-smoothing: antialiased;
+  -ms-font-smoothing: antialiased;
+  -o-font-smoothing: antialiased;
+  font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
+  color: $black;
   font-family: $font-stack;
   font-size: $font-size;
-  line-height: $line-height;
-  color: $black;
-  padding: 25px;
+  line-height: $leading;
+  padding: $leading $leading ($leading * 2) $leading;
   vertical-align: top;
 }
 
 h1, h2, h3, h4, h5, h6 {
+  color: $black;
   font-family: $h-font-stack;
-  vertical-align: top;
-  color: tint($black, 20%);
-  line-height: 1.5;
-  margin-bottom: $line-height;
   font-weight: 400;
   letter-spacing: 0.015em;
+  line-height: 1.5;
+  margin-bottom: $leading;
+  vertical-align: top;
   word-spacing: 0.15em;
 }
 
-/* Used for main section headings. */
 h2 {
-  font-size: $font-size * 2;
+  /* Serapion is a weird font.
+     These settings basically make it the font-size equal to our $leading */
+  font-size: 32px;
+  line-height: 16px;
+  padding-top: 10px;
 
   @media screen and (max-width: $min-screen-width),
   screen and (max-device-width: $min-device-width) {
-    text-align: center;
+    //text-align: center;
   }
 }
 
-code {
-  font-family: 'Ubuntu Mono', monospace;
-  font-size: 14px;
-  background: $grey;
-  padding: 2px 4px 4px;
-  border-radius: 3px;
+h3 {
+  /* Serapion is a weird font.
+     These settings basically make it the font is vertically centered within a line-height of $leading */
+  font-family: $h-font-stack-bold;
+  font-size: 20px;
+  line-height: 23px;
+  margin-top: $leading;
+  margin-bottom: 0;
+  padding-top: 3px;
 }
 
 p {
@@ -71,86 +94,661 @@ p {
   }
 
   + p {
-    margin-top: $line-height;
+    margin-top: $leading;
   }
 }
 
 a {
-  text-decoration: underline;
-  &:link {
-    color: $green;
-  }
-  &:visited {
-    color: $orange;
-  }
-  &:hover, &:active {
-    color: $red;
-  }
-}
-
-ul {
-  max-width: $max-content-width;
-
-  @media screen and (max-width: $min-screen-width) {
-    list-style: none;
-  }
-  li {
-    &:not(:first-child) {
-      margin-top: $line-height;
-    }
-  }
+  border-bottom: 2px solid black;
+  color: black;
+  position: relative;
+  text-decoration: none;
 }
 
 sup {
   font-size: 85%;
   line-height: 85%;
-}
+  margin-left: 1px;
 
-/*
-.nota-bene {
-  &:before {
-    content: 'N.B:';
-    font-weight: 700;
+  a {
+    border: none;
   }
-  font-size: 75%;
-  // font-style: italic;
 }
-*/
+
+aside {
+  font-size: 13px;
+  line-height: 1.5;
+  position: relative;
+  width: ($col-width * 2) + $gutter-width;
+  margin: $leading 0;
+
+  &:before {
+    content: "[" attr(data-number) "]";
+    font-size: 14px;
+    left: -($leading * 2);
+    position: absolute;
+    text-align: center;
+    top: 0;
+    width: $leading * 2;
+  }
+
+  a {
+    border-width: 1px;
+  }
+}
+
+/* Highlight colors. */
+::-moz-selection {
+  background: $yellow;
+}
+::selection {
+  background: $yellow;
+}
+
+code {
+  background: $grey;
+  border-radius: 4px;
+  color: $black;
+  font-family: 'Ubuntu Mono', monospace;
+  font-size: 14px;
+  font-size: 14px;
+  line-height: 18px;
+  padding: 3px 4px 4px;
+}
 
 
+/*  Utilities
+    ------------------------------------- */
 
+.contain-floats {
+  overflow: hidden;
+}
 
+.left {
+  float: left;
+}
+
+.right {
+  float: right;
+}
+
+.hidden {
+  display: none;
+}
+
+.noselect {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.btn {
+  background: $black;
+  border-radius: 4px;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  color: $white;
+  display: inline-block;
+  font-family: $grotesque-font-stack;
+  font-size: 14px;
+  font-weight: 500;
+  height: $leading;
+  line-height: $leading * 2;
+  padding: 1px ($leading * 2) 0;
+  text-decoration: none;
+  text-align: center;
+  height: $leading * 2;
+
+  &:after {
+    display: none;
+  }
+}
+
+.dropdown-select {
+  display: inline-block;
+  position: relative;
+
+  .dropdown-title {
+    font-family: $grotesque-font-stack;
+    font-size: 14px;
+    margin-right: 21px;
+    padding-right: 18px;
+    position: relative;
+
+    &:hover {
+      cursor: pointer;
+    }
+
+    &:after {
+      content: "";
+      background: url(../images/down_arrow.png);
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: 100%;
+      font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
+      font-size: 18px;
+      height: 26px;
+      line-height: 26px;
+      position: absolute;
+      right: -0px;
+      top: -1px;
+      width: 10px;
+    }
+  }
+
+  .dropdown-options {
+    background: $white;
+    border-radius: 4px;
+    box-shadow: 0 0 10px 3px $grey;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    color: $black;
+    right: 26px;
+    list-style: none;
+    padding: ($leading / 4) 0;
+    position: absolute;
+    top: calc(100% + #{$leading / 2});
+    width: $leading * 7;
+    z-index: 50;
+    backface-visiblity: visible;
+
+    li {
+      padding: ($leading / 4) ($leading / 2);
+
+      &:hover {
+        color: $white;
+        cursor: pointer;
+        background: $black;
+        font-weight: 500;
+      }
+    }
+  }
+}
+
+/* Used for allowing anchor links but accounting for fixed header */
+.anchor {
+  position: relative;
+}
+.anchor > span {
+  //position:absolute;
+  //top: -($leading * 8);
+}
+.logo-anchor {
+  border: none;
+}
 
 .horizon {
-  list-style: none;
-  height: 0;
-  margin: $line-height 0;
-  border-bottom: 1px solid #eee;
-}
+  background: transparent;
+  border-color: transparent transparent $black transparent;
+  border-style: solid;
+  border-width: 0 13px 6.5px 13px;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  margin: 78px 0 91px;
+  position: relative;
+  z-index: 1;
+  width: 100%;
 
-li.horizon {
-  margin: 1.5em 0 !important;
-}
+  &:before,
+  &:after {
+    content: "";
+    display: block;
+    left: 0;
+    position: absolute;
+    right: 0;
+  }
 
+  &:before {
+    border-color: transparent transparent $white transparent;
+    border-style: solid;
+    border-width: 0 13px 6.5px 13px;
+    left: -13px;
+    top: calc(100% + 2px);
+    width: 100%;
+  }
 
-
-
-
-
-/* logo */
-#logo {
-  height: 103px;
-  margin-bottom: $line-height;
-
-  canvas {
-    vertical-align: top;
+  &:after {
+    border-color: $black transparent transparent transparent;
+    border-style: solid;
+    border-width: 6.5px 13px 0 13px;
+    height: 26px;
+    left: -13px;
+    top: calc(100% + 6px);
+    width: 100%;
   }
 }
 
-#content {
-  padding: 25px 25px 50px 25px;
-  background: $white;
+.small-text {
+  font-size: 13px;
+  line-height: 1.5;
 }
+
+
+/*  Layout
+    ------------------------------------- */
+
+#content {
+  margin: ($leading * 7) auto 0;
+  width: $layout-width;
+}
+
+.content-right, .content-left {
+  width: $max-content-width;
+}
+
+.content-right {
+  margin-left: $col-width;
+}
+
+.content-left {
+  margin-right: $col-width;
+}
+
+
+/*  Header
+    ------------------------------------- */
+
+#masthead {
+  background: white;
+  background: rgba(255,255,255,1);
+  background: -moz-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%);
+  background: -webkit-gradient(left top, left bottom, color-stop(0%, rgba(255,255,255,1)), color-stop(100%, rgba(255,255,255,0)));
+  background: -webkit-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%);
+  background: -o-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%);
+  background: -ms-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%);
+  background: linear-gradient(to bottom, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#ffffff', GradientType=0 );filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f85032', endColorstr='#e73827', GradientType=1 );
+  height: $leading * 2;
+  left: 0;
+  padding: $leading ($leading * 2);
+  position: fixed;
+  right: 0;
+  top: 0;
+  z-index: 100;
+
+  #logo {
+    display: inline-block;
+    height: $leading * 2;
+
+    canvas {
+      vertical-align: top;
+      margin-top: -6px;
+      margin-left: -14px;
+    }
+  }
+
+  ul#nav {
+    display: block;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+
+    li {
+      display: inline-block;
+      padding: 0 ($leading / 2);
+      margin-left: $leading;
+
+      &:first-child {
+        margin-left: 0;
+        padding-left: 0;
+      }
+
+      &:last-child {
+        padding-right: 0;
+      }
+
+      a {
+        border: none;
+        color: $black;
+        font-family: $grotesque-font-stack;
+        font-size: $font-size;
+        line-height: $leading * 2;
+      }
+    }
+  }
+}
+
+
+/*  Documentation
+    ------------------------------------- */
+
+.content-right {
+  aside {
+    left: -($col-width);
+  }
+}
+
+.hero-text {
+  font-size: 26px !important;
+  line-height: 39px !important;
+}
+
+.download-options {
+
+  .dropdown-options {
+
+    li {
+
+      .download-title {
+        font-family: $grotesque-font-stack;
+        font-size: 14px;
+        line-height: 1.5;
+      }
+
+      .download-details {
+        font-size: 13px;
+        line-height: 1.5;
+        margin-top: 0px;
+      }
+    }
+  }
+}
+
+.download {
+  height: 52px;
+  margin: $leading 0 ($leading * 4);
+}
+
+.introduction {
+  margin-bottom: $leading * 2;
+}
+
+.bullet-list {
+  list-style: none;
+
+  li {
+    position: relative;
+
+    &:before {
+      content: "⚬";
+      font-family: serif;
+      font-weight: 700;
+      left: -($leading * 2);
+      position: absolute;
+      text-align: center;
+      top: -3px;
+      width: $leading * 2;
+    }
+  }
+}
+
+ul.documentation {
+  list-style: none;
+
+  li {
+    margin-top: $leading;
+
+    p {
+
+      &.property, &.method, &.construction {
+        //border-left: 2px solid $black;
+        //margin-left: -($leading / 2);
+        //padding-left: $leading / 2;
+
+        > strong {
+          font-family: $grotesque-font-stack;
+          font-weight: 500;
+
+          + code {
+            margin-left: $leading / 2;
+          }
+        }
+      }
+    }
+
+    > ul {
+      font-size: 14px;
+      list-style: none;
+      line-height: 1.5;
+      margin-left: $leading;
+
+      + li {
+        margin-top: $leading;
+
+        &:not(:first-child) {
+          margin-top: $leading;
+        }
+
+        p {
+          margin-top: $leading / 4;
+        }
+      }
+
+      ul {
+        list-style: none;
+        line-height: 1.5;
+        margin-left: $leading;
+
+        li {
+          margin-top: $leading / 2;
+
+          p {
+            margin-top: $leading / 4;
+
+            &.property, &.method, &.construction {
+              border-left: none;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+
+/*  Example Editor
+    ------------------------------------- */
+
+.tabbed-editor {
+  float: none;
+  list-style: none;
+  margin-top: $leading * 2;
+  width: 100%;
+  padding: 0;
+  position: relative;
+
+  .editable-content:after {
+    content: '';
+    display: table;
+    clear: both;
+  }
+
+  input[type=radio] {
+    display:none;
+  }
+
+  label {
+    display: block;
+    float: left;
+    height: $leading;
+
+    &:hover span {
+      background-color: $grey;
+    }
+
+    span {
+      border-radius: 4px 4px 0 0;
+      cursor: pointer;
+      color: $black;
+      font-family: $grotesque-font-stack;
+    }
+  }
+
+  .tab-content {
+    width: 100%;
+    float: left;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+
+    > .CodeMirror {
+      height: auto;
+    }
+  }
+
+  .tab:checked + span {
+    background: $black;
+    color: $white;
+    font-weight: 500;
+  }
+
+  .label-text {
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    display: inline-block;
+    font-size: 14px;
+    font-weight: normal;
+    height: $leading;
+    line-height: $leading;
+    padding: 1px $leading 0;
+    text-decoration: none;
+    text-align: center;
+  }
+}
+
+.output {
+  border: 2px solid $black;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  margin-top: $leading * 3;
+  position: relative;
+  width: 100%;
+
+  &:before {
+    content: "↓";
+    font-family: $grotesque-font-stack;
+    font-size: $leading;
+    height: $leading;
+    left: calc(50% - 5px);
+    line-height: $leading;
+    position: absolute;
+    top: -($leading * 2);
+    z-index: -1;
+  }
+
+  > div {
+    width: 100%;
+    text-align: center;
+
+    canvas {
+      margin: $leading auto;
+      vertical-align: top;
+    }
+  }
+}
+
+
+/*  Packs
+    ------------------------------------- */
+
+.pack-shaders  {
+  list-style: none;
+  overflow: hidden;
+
+  li {
+    border: 2px solid $black;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    float: left;
+    font-family: $h-font-stack;
+    font-size: 68px;
+    height: $leading * 4;
+    line-height: 123px;
+    margin-bottom: $leading;
+    margin-right: $leading;
+    overflow: hidden;
+    position: relative;
+    text-align: center;
+    width: ($layout-width - ($leading * 2)) / 3;
+
+    &:nth-child(3n + 3) {
+      margin-right: 0;
+    }
+
+    &:hover {
+
+      .pack-shader-overlay {
+        cursor: pointer;
+        display: block;
+      }
+    }
+
+    .pack-shader-overlay {
+      background: rgba(255, 255, 255, 0.9);
+      bottom: 0;
+      box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      -webkit-box-sizing: border-box;
+      display: none;
+      left: 0;
+      padding: $leading / 2;
+      position: absolute;
+      right: 0;
+      text-align: left;
+      top: 0;
+
+      .pack-shader-name {
+        color: $black;
+        display: block;
+        font-family: $grotesque-font-stack;
+        font-size: 17px;
+        font-weight: normal;
+        line-height: 1.5;
+      }
+      .pack-name {
+        color: $black;
+        display: block;
+        font-family: $font-stack;
+        font-size: 14px;
+        font-weight: normal;
+        line-height: 1.5;
+      }
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -185,99 +783,6 @@ li.horizon {
 
 #documentation-toc {
   max-width: $max-content-width;
-}
-
-
-
-
-
-
-.basic-usage {
-  canvas {
-    /* border: 1px solid $grey; */
-  }
-  .blotter-container {
-    margin-top: $line-height;
-  }
-}
-
-.basic-usage + .basic-usage {
-  margin-top: $line-height;
-}
-
-
-
-
-
-
-
-
-
-
-.tabbed-editor {
-  max-width: 750px;
-  float: none;
-  list-style: none;
-  padding: 0;
-
-  .editable-content:after {
-    content: '';
-    display: table;
-    clear: both;
-  }
-
-  input[type=radio] {
-    display:none;
-  }
-
-  label {
-    display: block;
-    float: left;
-
-    &:hover span {
-      color: black;
-    }
-
-    span {
-      cursor: pointer;
-      color: #ccc;
-    }
-  }
-
-  .tab-content {
-    width: 100%;
-    float: left;
-    box-sizing: border-box;
-    background-color:#ffffff;
-
-    > .CodeMirror {
-      height: auto;
-    }
-  }
-
-  .tab:checked + span {
-    background: #FFF;
-    color: black;
-  }
-
-  .section-label {
-    padding: 10px;
-    display: inline-block;
-    font-size: 14px;
-    font-weight: normal;
-    text-decoration: none;
-    text-align: center;
-    line-height: 1.5;
-  }
-}
-
-.output {
-  font-size: 27px;
-  line-height: 1.5;
-
-  canvas {
-    vertical-align: top;
-  }
 }
 
 
@@ -349,7 +854,7 @@ li.horizon {
       p {
         position: absolute;
         top: 50%;
-        margin-top: - $line-height;
+        margin-top: - $leading;
         color: $white;
         padding: 0 8px;
       }
@@ -362,81 +867,39 @@ li.horizon {
 
 
 
-
-
-/* Everything under documentation is in a list */
-ul.documentation {
-
-  list-style: none;
-
-  /* not same as p description. this is for description of a class and follows li.title elements */
-  li.description {
-    margin-top: 0;
-  }
-
-  /* mostly for describing sub properties. look at Two's anchor.controls */
-  ul {
-    margin-top: $line-height;
-    list-style: none;
-    margin-left: $line-height;
-    font-size: 80%;
-    line-height: $line-height;
-    li {
-      &:not(:first-child) {
-        margin-top: $line-height * 0.75;
-      }
-      p {
-        margin-top: 0;
-      }
-    }
-  }
-}
-
-/* SOURCE PROPERTY TYPE DESIGNATORS */
-/* --------------------------------------------------------------------------------------------*/
-
-/* property and construction are obvious. method is for "class methods" (also functions right?). */
-p.property, p.method, p.construction {
-  $border-width: 4px;
-  border-left-width: $border-width;
-  border-left-style: solid;
-  margin-left: - $border-width * 4;
-  padding-left: $border-width * 3;
-}
-
 p.construction {
-  border-left-color: $yellow;
+  //border-left-color: $yellow;
 }
 
 p.boolean {
-  border-left-color: $blue;
+  //border-left-color: $blue;
 }
 
 p.number {
-  border-left-color: $red;
+  //border-left-color: $red;
 }
 
 p.string {
-  border-left-color: $orange;
+  //border-left-color: $orange;
 }
 
 p.function {
-  border-left-color: $purple;
+  //border-left-color: $purple;
 }
 
 p.object, p.array {
-  border-left-color: $green;
+  //border-left-color: $green;
 }
 
 /* Actual description following property name and code line */
 p.description {
-  margin-top: $line-height / 4;
+  margin-top: $leading / 4;
 }
 
 /* Further explaination for when necessary (beyond brief description) */
 p.detail {
-  margin-top: $line-height / 4;
-  padding-left: $line-height / 2;
+  margin-top: $leading / 4;
+  padding-left: $leading / 2;
   margin-left: 3px;
   border-left: 3px solid shade($grey, 10%);
 }
@@ -457,7 +920,7 @@ p.static, p.static + p {
 
 /*
 .credits {
-  margin-top: $line-height / 2;
+  margin-top: $leading / 2;
   li:not(:first-child) {
     margin-top: 0;
   }
@@ -465,10 +928,3 @@ p.static, p.static + p {
 */
 
 
-/* Highlight colors */
-::selection {
-  background: tint($yellow, 25%); /* Safari */
-}
-::-moz-selection {
-  background: tint($yellow, 25%); /* Firefox */
-}
