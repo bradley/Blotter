@@ -423,12 +423,16 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
   font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent; }
 
+html {
+  height: 100%; }
+
 body {
   color: #1E1A1B;
   font-family: "Garamond", serif;
   font-size: 17px;
+  height: 100%;
   line-height: 26px;
-  padding: 26px 26px 52px 26px;
+  padding: 26px;
   vertical-align: top; }
 
 h1, h2, h3, h4, h5, h6 {
@@ -652,8 +656,28 @@ code {
 /*  Layout
     ------------------------------------- */
 #layout {
-  margin: 182px auto 0;
+  height: 100%;
+  margin: 0 auto;
   width: 676px; }
+  #layout .content-region {
+    height: 100%; }
+    #layout .content-region > div {
+      height: 100%; }
+
+.hero-content-wrap {
+  display: table;
+  height: calc(100% - 182px);
+  width: 100%; }
+  .hero-content-wrap .hero-content {
+    display: table-cell;
+    padding-top: 182px;
+    text-align: center;
+    vertical-align: middle; }
+    .hero-content-wrap .hero-content > * {
+      text-align: left; }
+
+.content {
+  margin-top: 182px; }
 
 .content-right, .content-left {
   width: 546px; }
@@ -677,7 +701,7 @@ code {
   background: linear-gradient(to bottom, white 0%, rgba(255, 255, 255, 0) 100%);
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#ffffff', GradientType=0 );
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f85032', endColorstr='#e73827', GradientType=1 );
-  height: 52px;
+  height: 104px;
   left: 0;
   padding: 26px 52px;
   position: fixed;
@@ -699,7 +723,7 @@ code {
     #masthead ul#nav li {
       display: inline-block;
       padding: 0 13px;
-      margin-left: 26px; }
+      margin-left: 13px; }
       #masthead ul#nav li:first-child {
         margin-left: 0;
         padding-left: 0; }
@@ -732,7 +756,7 @@ code {
 
 .download {
   height: 52px;
-  margin: 26px 0 104px; }
+  margin: 26px 0 0; }
 
 .introduction {
   margin-bottom: 52px; }

@@ -41,12 +41,17 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+html {
+  height: 100%;
+}
+
 body {
   color: $black;
   font-family: $font-stack;
   font-size: $font-size;
+  height: 100%;
   line-height: $leading;
-  padding: $leading $leading ($leading * 2) $leading;
+  padding: $leading;
   vertical-align: top;
 }
 
@@ -334,8 +339,38 @@ code {
     ------------------------------------- */
 
 #layout {
-  margin: ($leading * 7) auto 0;
+  height: 100%;
+  margin: 0 auto;
   width: $layout-width;
+
+  .content-region {
+    height: 100%;
+
+    > div {
+      height: 100%;
+    }
+  }
+}
+
+.hero-content-wrap {
+  display: table;
+  height: calc(100% - #{$leading * 7});
+  width: 100%;
+
+  .hero-content {
+    display: table-cell;
+    padding-top: $leading * 7;
+    text-align: center;
+    vertical-align: middle;
+
+    > * {
+      text-align: left;
+    }
+  }
+}
+
+.content {
+  margin-top: $leading * 7;
 }
 
 .content-right, .content-left {
@@ -364,7 +399,7 @@ code {
   background: -ms-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%);
   background: linear-gradient(to bottom, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%);
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#ffffff', GradientType=0 );filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f85032', endColorstr='#e73827', GradientType=1 );
-  height: $leading * 2;
+  height: $leading * 4;
   left: 0;
   padding: $leading ($leading * 2);
   position: fixed;
@@ -392,7 +427,7 @@ code {
     li {
       display: inline-block;
       padding: 0 ($leading / 2);
-      margin-left: $leading;
+      margin-left: ($leading / 2);
 
       &:first-child {
         margin-left: 0;
@@ -452,7 +487,7 @@ code {
 
 .download {
   height: 52px;
-  margin: $leading 0 ($leading * 4);
+  margin: $leading 0 0;
 }
 
 .introduction {
