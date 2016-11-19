@@ -656,17 +656,12 @@ code {
 /*  Layout
     ------------------------------------- */
 #layout {
-  height: 100%;
   margin: 0 auto;
   width: 676px; }
-  #layout .content-region {
-    height: 100%; }
-    #layout .content-region > div {
-      height: 100%; }
 
 .hero-content-wrap {
   display: table;
-  height: calc(100% - 182px);
+  height: calc(100vh - 182px);
   width: 100%; }
   .hero-content-wrap .hero-content {
     display: table-cell;

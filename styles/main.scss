@@ -339,22 +339,13 @@ code {
     ------------------------------------- */
 
 #layout {
-  height: 100%;
   margin: 0 auto;
   width: $layout-width;
-
-  .content-region {
-    height: 100%;
-
-    > div {
-      height: 100%;
-    }
-  }
 }
 
 .hero-content-wrap {
   display: table;
-  height: calc(100% - #{$leading * 7});
+  height: calc(100vh - #{$leading * 7});
   width: 100%;
 
   .hero-content {
