@@ -347,9 +347,10 @@
       "    float ditherSpeed = 0.5;",
       "    float fogSpeed = 0.7;",
       "    float spread = 2.0;",
+      "    float mipLevel = 0.0;",
 
       "    float its = mix(0.0, 1.0 / c0, 0.985 + (0.015 * sin(ditherSpeed * offsetTime)));",
-      "    float ofs = texture2D(uSampler, gl_FragCoord.xy / uSamplerResolution / spread, 1.0).r;",
+      "    float ofs = texture2D(uSampler, gl_FragCoord.xy / uSamplerResolution / spread, mipLevel).r;",
 
       "    vec3 ditherColor;",
       "    ditherColor = vec3(its + (ofs / 255.0));",
@@ -668,7 +669,18 @@
 
         this.sizes = [
           [26, 26],
-          [26, 400],
+          [26, 104],
+          [26, 208],
+          [26, 260],
+          [26, 312],
+          [26, 364],
+          [26, 416],
+          [52, 104],
+          [52, 208],
+          [52, 260],
+          [52, 312],
+          [52, 364],
+          [52, 416],
           [104, 104],
           [104, 208],
           [104, 260],
@@ -742,7 +754,7 @@
         this.canvasCount = canvasCount || 2;
 
         this.lifecycles = [1000, 1500, 2000, 2500, 3000, 4000];
-        this.deathcycles = [0, 500, 1000, 1500, 2000, 2500, 3000, 4000, 6000];
+        this.deathcycles = [0, 500, 1000, 1500, 2000, 2500, 3000, 4000, 6000, 6500, 7000, 7500, 8000, 9000, 9500];
         this.generator = new BlotterSite.Helpers.GlitchMarginaliaCanvasGenerator(this.$container);
 
         this.generateMarginalia();
