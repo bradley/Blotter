@@ -49,9 +49,9 @@ body {
   color: $black;
   font-family: $font-stack;
   font-size: $font-size;
-  height: 100%;
   line-height: $leading;
   padding: $leading;
+  position: relative;
   vertical-align: top;
 }
 
@@ -381,7 +381,7 @@ code {
     ------------------------------------- */
 
 #masthead {
-  background: white;
+  background: $white;
   background: rgba(255,255,255,1);
   background: -moz-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%);
   background: -webkit-gradient(left top, left bottom, color-stop(0%, rgba(255,255,255,1)), color-stop(100%, rgba(255,255,255,0)));
@@ -437,6 +437,25 @@ code {
         line-height: $leading * 2;
       }
     }
+  }
+}
+
+
+/*  Documentation
+    ------------------------------------- */
+
+#marginalia-container {
+  bottom: 0;
+  left: 0;
+  min-height: 100vh;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: -1;
+
+  .marginalia {
+    pointer-events: none;
+    position: absolute;
   }
 }
 
@@ -640,6 +659,7 @@ ul.documentation {
 }
 
 .output {
+  background: $white;
   border: 2px solid $black;
   box-sizing: border-box;
   -moz-box-sizing: border-box;
@@ -680,6 +700,7 @@ ul.documentation {
   overflow: hidden;
 
   li {
+    background: $white;
     border: 2px solid $black;
     box-sizing: border-box;
     -moz-box-sizing: border-box;

@@ -430,9 +430,9 @@ body {
   color: #1E1A1B;
   font-family: "Garamond", serif;
   font-size: 17px;
-  height: 100%;
   line-height: 26px;
   padding: 26px;
+  position: relative;
   vertical-align: top; }
 
 h1, h2, h3, h4, h5, h6 {
@@ -686,7 +686,7 @@ code {
 /*  Header
     ------------------------------------- */
 #masthead {
-  background: white;
+  background: #fff;
   background: white;
   background: -moz-linear-gradient(top, white 0%, rgba(255, 255, 255, 0) 100%);
   background: -webkit-gradient(left top, left bottom, color-stop(0%, white), color-stop(100%, rgba(255, 255, 255, 0)));
@@ -730,6 +730,20 @@ code {
         font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
         font-size: 17px;
         line-height: 52px; }
+
+/*  Documentation
+    ------------------------------------- */
+#marginalia-container {
+  bottom: 0;
+  left: 0;
+  min-height: 100vh;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: -1; }
+  #marginalia-container .marginalia {
+    pointer-events: none;
+    position: absolute; }
 
 /*  Documentation
     ------------------------------------- */
@@ -853,6 +867,7 @@ ul.documentation {
     text-align: center; }
 
 .output {
+  background: #fff;
   border: 2px solid #1E1A1B;
   box-sizing: border-box;
   -moz-box-sizing: border-box;
@@ -883,6 +898,7 @@ ul.documentation {
   list-style: none;
   overflow: hidden; }
   .pack-shaders li {
+    background: #fff;
     border: 2px solid #1E1A1B;
     box-sizing: border-box;
     -moz-box-sizing: border-box;
