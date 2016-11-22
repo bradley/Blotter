@@ -258,39 +258,6 @@
   })();
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  // shim layer with setTimeout fallback
-  window.requestAnimFrame = (function(){
-    return  window.requestAnimationFrame       ||
-      window.webkitRequestAnimationFrame ||
-      window.mozRequestAnimationFrame    ||
-      function( callback ){
-      window.setTimeout(callback, 1000 / 60);
-    };
-  })();
-
-
   BlotterSite.Helpers.GlitchMarginalia = function (canvas) {
     this.init.apply(this, arguments);
   }
@@ -700,6 +667,7 @@
         this.padding = 52;
 
         this.sizes = [
+          [26, 26],
           [26, 400],
           [104, 104],
           [104, 208],

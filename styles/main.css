@@ -740,6 +740,7 @@ code {
   position: absolute;
   right: 0;
   top: 0;
+  will-change: transform;
   z-index: -1; }
   #marginalia-container .marginalia {
     pointer-events: none;
