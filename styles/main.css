@@ -397,14 +397,14 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
     ------------------------------------- */
 @font-face {
   font-family: "Garamond";
-  src: url("fonts/EBGaramond12-Regular.ttf"); }
+  src: url("./fonts/EBGaramond12-Regular.ttf"); }
 @font-face {
   font-family: "Garamond";
-  src: url("fonts/EBGaramond12-Italic.ttf");
+  src: url("./fonts/EBGaramond12-Italic.ttf");
   font-style: italic; }
 @font-face {
   font-family: "Avenir";
-  src: url("fonts/REPLACE_ME_WITH_SOMETHING_REAL.ttf"); }
+  src: url("./fonts/REPLACE_ME_WITH_SOMETHING_REAL.ttf"); }
 /*  Base
     ------------------------------------- */
 * {

@@ -403,6 +403,19 @@
       "  rgba = vec4(r, g, b, a);",
       "}",
 
+      "vec3 gamma(vec3 value, float param) {",
+      "  return vec3(pow(abs(value.r), param),pow(abs(value.g), param),pow(abs(value.b), param));",
+      "}",
+
+      "vec4 invert(vec4 color) {",
+      "  return vec4(",
+      "    1.0 - color.r,",
+      "    1.0 - color.g,",
+      "    1.0 - color.b,",
+      "    color.a",
+      "  );",
+      "}",
+
       "void main () {",
       "    vec2 uv = _vTexCoord;",
       "    float offsetTime = (uTime + uTimeOffset);",
@@ -426,7 +439,13 @@
       "    outColor.r = texture2D(uSampler, uv_r).r;",
       "    outColor.g = texture2D(uSampler, uv_g).g;",
       "    outColor.b = texture2D(uSampler, uv_b).b;",
-      "    rgbaFromRgb(gl_FragColor, outColor.rgb);",
+
+      "    rgbaFromRgb(outColor, outColor.rgb);",
+      "    gl_FragColor = outColor;",
+
+      "    // Uncomment to invert.",
+      "    //rgbaFromRgb(outColor, gamma(outColor.rgb, 10.0));",
+      "    //gl_FragColor = invert(outColor);",
       "}"
 
     ].join("\n");
