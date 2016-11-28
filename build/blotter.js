@@ -43596,7 +43596,7 @@ GrowingPacker.prototype = {
     leading      : 1.5,
     fill         : '#000',
     style        : 'normal',
-    weight       : 500,
+    weight       : 400,
     padding      : 0,
     paddingTop   : 0,
     paddingRight : 0,
