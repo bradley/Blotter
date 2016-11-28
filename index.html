@@ -66,20 +66,21 @@
 
   </head>
   <body>
+    <!-- Preload Serapion -->
+    <div style="font-family: 'SerapionPro', serif; height: 0;">&nbsp;</div>
+    <!-- Preload Avenir -->
+    <div style="font-family: 'Avenir', serif; height: 0;">&nbsp;</div>
     <div id="top" class="anchor"></div>
     <div id="masthead">
-      <!-- Preload Serapion -->
-      <div style="font-family: 'SerapionPro', serif; height: 0;">&nbsp;</div>
       <a href="#" class="logo-anchor"><div id="logo"></div></a>
       <script src="./src/logo.js"></script>
-      <div class="contain-floats right">
-        <ul id="nav" class="right">
-          <li><a href="#/overview">Overview</a></li>
-          <li><a href="#/basics">The Basics</a></li>
-          <li><a href="#/packs">Packs</a></li>
-          <li><a href="#/documentation">Documentation</a></li>
-        </ul>
-      </div>
+      <ul id="nav" class="right">
+        <li><a href="#/overview" data-text="Overview" data-reference-id="overview"></a></li>
+        <li><a href="#/basics" data-text="The Basics" data-reference-id="basics"></a></li>
+        <li><a href="#/packs" data-text="Packs" data-reference-id="packs"></a></li>
+        <li><a href="#/documentation" data-text="Documentation" data-reference-id="documentation"></a></li>
+      </ul>
+      <script src="./src/nav.js"></script>
     </div>
 
     <div id="marginalia-container"></div>

@@ -108,6 +108,10 @@ a {
   color: black;
   position: relative;
   text-decoration: none;
+
+  &:hover {
+    border-color: black;
+  }
 }
 
 sup {
@@ -417,7 +421,7 @@ code {
 
     li {
       display: inline-block;
-      padding: 0 ($leading / 2);
+      padding: 0 ($leading);
       margin-left: ($leading / 2);
 
       &:first-child {
@@ -435,6 +439,42 @@ code {
         font-family: $grotesque-font-stack;
         font-size: $font-size;
         line-height: $leading * 2;
+        position: relative;
+
+/*        &:after {
+          background: $black;
+          border-radius: 4px;
+          content: "";
+          display: inline-block;
+          height: 4px;
+          left: -(($leading / 2) + ($leading / 4) + $leading);
+          opacity: 0;
+          position: absolute;
+          top: 9.5px;
+          -webkit-transform: rotate(180deg);
+          -moz-transform: rotate(180deg);
+          -o-transform: rotate(180deg);
+          -ms-transform: rotate(180deg);
+          transform: rotate(180deg);
+          -webkit-transform-origin: ($leading / 2) + ($leading / 4);
+          -moz-transform-origin: ($leading / 2) + ($leading / 4);
+          -o-transform-origin: ($leading / 2) + ($leading / 4);
+          -ms-transform-origin: ($leading / 2) + ($leading / 4);
+          transform-origin: ($leading / 2) + ($leading / 4);
+          width: 4px;
+          transition: all 100ms ease-in;
+        }
+
+        &:hover::after {
+          opacity: 1;
+          width: ($leading / 2);
+        }*/
+
+        canvas {
+          margin-left: -13px;
+          margin-right: -13px;
+          vertical-align: top;
+        }
       }
     }
   }

@@ -1,4 +1,4 @@
-(function () {
+$(document).ready(function () {
 
   /*  Initialization
     ------------------------------------- */
@@ -18,6 +18,18 @@
       this.marginaliaManager = new BlotterSite.Helpers.GlitchMarginaliaCanvasManager($("#marginalia-container"));
 
       Backbone.history.start();
+
+      this.initRoute = /\#\/(.*)/.exec(Backbone.history.location.hash)[1];
+
+      this.setListeners();
+    },
+
+    setListeners : function () {
+      $("body").on("navReady", _.bind(this.handleNavReady, this));
+    },
+
+    handleNavReady : function () {
+      $("body").trigger("pathChange",  this.initRoute);
     }
   });
 
@@ -40,11 +52,15 @@
     home : function () {
       var view = new BlotterSite.Views.Home();
 
+      $("body").trigger("pathChange");
+
       BlotterSite.instance.goto(view);
     },
 
     overview : function () {
       var view = new BlotterSite.Views.Overview();
+
+      $("body").trigger("pathChange", ["overview"]);
 
       BlotterSite.instance.goto(view);
     },
@@ -52,11 +68,15 @@
     basics : function () {
       var view = new BlotterSite.Views.Basics();
 
+      $("body").trigger("pathChange", ["basics"]);
+
       BlotterSite.instance.goto(view);
     },
 
     packs : function () {
       var view = new BlotterSite.Views.Packs();
+
+      $("body").trigger("pathChange", ["packs"]);
 
       BlotterSite.instance.goto(view);
     }
@@ -104,7 +124,7 @@
         if (!this.dropdownEl.is(":visible")) {
           this.dropdownEl.velocity('transition.slideDownIn', {
             duration : 150,
-            easing : [ 0.645, 0.045, 0.355, 1 ]
+            easing : [0.645, 0.045, 0.355, 1.0]
           });
 
           this.boundBodyListener = this.boundBodyListener || _.bind(this.bodyListener, this);
