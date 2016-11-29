@@ -212,8 +212,8 @@ $(document).ready(function () {
         this.el = el;
         this.outputEl = el.find(".output");
 
-        this.jsCode = el.find("script.js-code").html();
-        this.htmlCode = this.outputEl.html();
+        this.jsCode = el.find("script.js-code").html().trim();
+        this.htmlCode = this.outputEl.html().trim();
         this.jsContent = el.find(".js-content");
         this.htmlContent = el.find(".html-content");
 

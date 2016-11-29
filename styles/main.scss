@@ -104,7 +104,7 @@ p {
 }
 
 a {
-  border-bottom: 2px solid black;
+  border-bottom: 1px solid black;
   color: black;
   position: relative;
   text-decoration: none;
@@ -208,8 +208,9 @@ code {
   height: $leading;
   line-height: $leading * 2;
   padding: 1px ($leading * 2) 0;
-  text-decoration: none;
   text-align: center;
+  text-decoration: none;
+  text-transform: uppercase;
   height: $leading * 2;
 
   &:after {
@@ -474,6 +475,7 @@ code {
           margin-left: -13px;
           margin-right: -13px;
           vertical-align: top;
+          will-change: transform;
         }
       }
     }
@@ -696,6 +698,7 @@ ul.documentation {
     padding: 1px $leading 0;
     text-decoration: none;
     text-align: center;
+    text-transform: uppercase;
   }
 }
 

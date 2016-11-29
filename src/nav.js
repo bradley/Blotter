@@ -31,11 +31,12 @@ $(document).ready(function () {
 
   var properties = {
     family : "'Avenir', sans-serif",
-    size : 17,
+    size : 14,
     weight : 100,
-    leading : "52px",
+    leading : "50px",
     paddingLeft : 13,
     paddingRight : 13,
+    paddingTop: 2,
     fill : "#1E1A1B"
   };
 

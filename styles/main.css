@@ -305,8 +305,8 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
 .CodeMirror {
   background: #1e1a1b;
   font-family: "Ubuntu Mono", monospace;
-  font-size: 14px;
-  line-height: 18px;
+  font-size: 16px;
+  line-height: 20px;
   max-width: 100%;
   padding-right: 26px; }
 
@@ -326,16 +326,16 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
   min-width: 26px;
   text-align: center;
   margin-right: 26px;
-  padding-left: 0; }
+  padding-left: 2px; }
 
 .CodeMirror-linenumber {
   color: #DCDCDC;
-  font-size: 14px;
+  font-size: 16px;
   left: 1px !important;
-  line-height: 18px;
+  line-height: 20px;
   text-align: right;
   text-shadow: 0 0 4px #AAAAAA, 0 0 4px #AAAAAA;
-  padding-left: 0; }
+  padding: 0; }
 
 @media screen and (max-width: 400px) {
   .CodeMirror-gutters,
@@ -351,8 +351,8 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
 /* TEXT STYLING */
 .CodeMirror pre {
   color: #DCDCDC;
-  font-size: 14px;
-  line-height: 18px;
+  font-size: 16px;
+  line-height: 20px;
   text-shadow: 0 0 3px #979797, 0 0 3px #979797; }
 
 .cm-s-default .cm-keyword {
@@ -471,7 +471,7 @@ p {
     margin-top: 26px; }
 
 a {
-  border-bottom: 2px solid black;
+  border-bottom: 1px solid black;
   color: black;
   position: relative;
   text-decoration: none; }
@@ -555,8 +555,9 @@ code {
   height: 26px;
   line-height: 52px;
   padding: 1px 52px 0;
-  text-decoration: none;
   text-align: center;
+  text-decoration: none;
+  text-transform: uppercase;
   height: 52px; }
   .btn:after {
     display: none; }
@@ -764,7 +765,8 @@ code {
         #masthead ul#nav li a canvas {
           margin-left: -13px;
           margin-right: -13px;
-          vertical-align: top; }
+          vertical-align: top;
+          will-change: transform; }
 
 /*  Documentation
     ------------------------------------- */
@@ -900,7 +902,8 @@ ul.documentation {
     line-height: 26px;
     padding: 1px 26px 0;
     text-decoration: none;
-    text-align: center; }
+    text-align: center;
+    text-transform: uppercase; }
 
 .output {
   background: #fff;
