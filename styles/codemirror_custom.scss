@@ -6,7 +6,7 @@
 
 .CodeMirror {
   background: $black;
-  font-family: "Ubuntu Mono", monospace;
+  font-family: $code-font-stack;
   font-size: 16px;
   line-height: 20px;
   max-width: 100%;
@@ -32,7 +32,11 @@
   min-width: $leading;
   text-align: center;
   margin-right: $leading;
-  padding-left: 2px;
+  padding-left: 0;
+}
+
+.CodeMirror-gutter {
+  padding-bottom: 0;
 }
 
 .CodeMirror-linenumber {
@@ -67,8 +71,8 @@
 
 .CodeMirror pre {
   color: #DCDCDC;
-  font-size: 16px;
-  line-height: 20px;
+/*  font-size: 16px;
+    line-height: 20px;*/
   text-shadow: 0 0 3px #979797, 0 0 3px #979797;
 }
 

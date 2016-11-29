@@ -19,7 +19,8 @@ $(document).ready(function () {
 
       Backbone.history.start();
 
-      this.initRoute = /\#\/(.*)/.exec(Backbone.history.location.hash)[1];
+      var historyMatch = /\#\/(.*)/.exec(Backbone.history.location.hash);
+      this.initRoute = historyMatch && historyMatch[1];
 
       this.setListeners();
     },
@@ -974,7 +975,7 @@ $(document).ready(function () {
     template : _.template($("template[name=basics]").html())(),
 
     onShow : function () {
-      this.setupEditors();
+      _.delay(_.bind(this.setupEditors, this), 100);
     },
 
     setupEditors : function () {

@@ -325,7 +325,10 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
   min-width: 26px;
   text-align: center;
   margin-right: 26px;
-  padding-left: 2px; }
+  padding-left: 0; }
+
+.CodeMirror-gutter {
+  padding-bottom: 0; }
 
 .CodeMirror-linenumber {
   color: #DCDCDC;
@@ -350,8 +353,8 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
 /* TEXT STYLING */
 .CodeMirror pre {
   color: #DCDCDC;
-  font-size: 16px;
-  line-height: 20px;
+  /*  font-size: 16px;
+      line-height: 20px;*/
   text-shadow: 0 0 3px #979797, 0 0 3px #979797; }
 
 .cm-s-default .cm-keyword {

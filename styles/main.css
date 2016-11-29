@@ -326,7 +326,10 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
   min-width: 26px;
   text-align: center;
   margin-right: 26px;
-  padding-left: 2px; }
+  padding-left: 0; }
+
+.CodeMirror-gutter {
+  padding-bottom: 0; }
 
 .CodeMirror-linenumber {
   color: #DCDCDC;
@@ -351,8 +354,8 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
 /* TEXT STYLING */
 .CodeMirror pre {
   color: #DCDCDC;
-  font-size: 16px;
-  line-height: 20px;
+  /*  font-size: 16px;
+      line-height: 20px;*/
   text-shadow: 0 0 3px #979797, 0 0 3px #979797; }
 
 .cm-s-default .cm-keyword {
@@ -499,6 +502,9 @@ aside {
     text-align: center;
     top: 0;
     width: 52px; }
+    aside:before::first-letter {
+      font-size: 200%;
+      color: #8A2BE2; }
   aside a {
     border-width: 1px; }
 
@@ -513,7 +519,7 @@ code {
   background: #f3f3f3;
   border-radius: 4px;
   color: #1e1a1b;
-  font-family: 'Ubuntu Mono', monospace;
+  font-family: "Ubuntu Mono", monospace;
   font-size: 14px;
   font-size: 14px;
   line-height: 18px;
@@ -655,6 +661,9 @@ code {
 .small-text {
   font-size: 13px;
   line-height: 1.5; }
+
+.number {
+  font-family: "Ubuntu Mono", monospace; }
 
 /*  Layout
     ------------------------------------- */
