@@ -70,24 +70,31 @@
     <div style="font-family: 'SerapionPro', serif; height: 0;">&nbsp;</div>
     <!-- Preload Avenir -->
     <div style="font-family: 'Avenir', serif; height: 0;">&nbsp;</div>
-    <div id="top" class="anchor"></div>
-    <div id="masthead">
-      <a href="#" class="logo-anchor"><div id="logo"></div></a>
-      <script src="./src/logo.js"></script>
-      <ul id="nav" class="right">
-        <li><a href="#/overview" data-text="OVERVIEW" data-reference-id="overview"></a></li>
-        <li><a href="#/basics" data-text="BASICS" data-reference-id="basics"></a></li>
-        <li><a href="#/packs" data-text="PACKS" data-reference-id="packs"></a></li>
-        <li><a href="#/documentation" data-text="DOCUMENTATION" data-reference-id="documentation"></a></li>
-      </ul>
-      <script src="./src/nav.js"></script>
+
+    <div id="content">
+      <div class="navigation-region"></div>
+      
+      <div id="marginalia-container"></div>
+      
+      <div id="layout">
+        <div class="content-region"></div>
+      </div>
     </div>
 
-    <div id="marginalia-container"></div>
-
-    <div id="layout">
-      <div class="content-region"></div>
-    </div>
+    <template name="navigation">
+      <div>
+        <div id="top" class="anchor"></div>
+        <div id="masthead">
+          <a href="#" class="logo-anchor"><div id="logo"></div></a>
+          <ul id="nav" class="right">
+            <li><a href="#/overview" data-text="OVERVIEW" data-reference-id="overview"></a></li>
+            <li><a href="#/basics" data-text="BASICS" data-reference-id="basics"></a></li>
+            <li><a href="#/packs" data-text="PACKS" data-reference-id="packs"></a></li>
+            <li><a href="#/documentation" data-text="DOCUMENTATION" data-reference-id="documentation"></a></li>
+          </ul>
+        </div>
+      </div>
+    </template>
 
     <template name="home">
       <div>
@@ -246,6 +253,98 @@ myScope.on("render", function () {
             </div>
           </div>
           <div class="packs-list-region"></div>
+        </div>
+      </div>
+    </template>
+
+    <template name="shader-roll-distort-material">
+      <div>
+        <div class="content">
+          <div class="content-right">
+            <div class="introduction">
+              <h2>RollDistortMaterial</h2>
+              <p>
+                Class for creating a rolling distortion effect using Blotter.js. It inherits from <code>Blotter.Material</code>, and therefore has the same properties and functions as <code>Blotter.Material</code>.
+              </p>
+            </div>
+            <ul class="documentation">
+              <li id="roll-distort-material-construction">
+                <p class="construction">
+                  <strong>construction</strong>
+                  <code>var material = new Blotter.RollDistortMaterial();</code>
+                </p>
+              </li>
+              <li id="roll-distort-material-uniforms">
+                <p class="property object">
+                  <strong>uniforms</strong>
+                  <code>material.uniforms</code>
+                </p>
+                <p class="description">
+                  An object that holds the uniforms that describe how the material's effects should be rendered.
+                </p>
+                <ul>
+                  <li class="roll-distort-material-uniforms-u-time">
+                    <p class="property object">
+                      <strong>uTime</strong>
+                      <code>material.uniforms.uTime</code>
+                    </p>
+                    <p class="description">
+                      Represents how much time has elapsed since the last frame in milliseconds.
+                    </p>
+                    <ul class="properties">
+                      <li class="roll-distort-material-uniforms-u-time-properties">
+                        <p class="property float">
+                          <strong>value</strong>
+                          <code>material.uniforms.uTime.value</code>
+                        </p>
+                        <p class="description">
+                          A floating point number representing how much time has elapsed since the last frame in milliseconds. Default value is 0.0.
+                        </p>
+                      </li>
+                      <li class="roll-distort-material-uniforms-u-time-properties static">
+                        <p class="property string">
+                          <strong>type</strong>
+                          <code>material.uniforms.uTime.type</code>
+                        </p>
+                        <p class="description">
+                          The uniform type of the value being passed to the shader. This value is a static "1f".
+                        </p>
+                      </li>
+                    </ul>
+                  </li>
+                  <li class="roll-distort-material-uniforms-u-distorition">
+                    <p class="property object">
+                      <strong>uDistortion</strong>
+                      <code>material.uniforms.uDistortion</code>
+                    </p>
+                    <p class="description">
+                      Represents the predominant distortion to apply to texts.
+                    </p>
+                    <ul class="properties">
+                      <li class="roll-distort-material-uniforms-u-distorition-properties">
+                        <p class="property float">
+                          <strong>value</strong>
+                          <code>material.uniforms.uDistortion.value</code>
+                        </p>
+                        <p class="description">
+                          A floating point number representing the predominant distortion to apply to texts. Default value is 0.0.
+                        </p>
+                      </li>
+                      <li class="roll-distort-material-uniforms-u-distorition-properties static">
+                        <p class="property string">
+                          <strong>type</strong>
+                          <code>material.uniforms.uDistortion.type</code>
+                        </p>
+                        <p class="description">
+                          The uniform type of the value being passed to the shader. This <strong>value</strong> is a static "1f".
+                        </p>
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
     </template>

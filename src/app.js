@@ -913,14 +913,21 @@ $(document).ready(function () {
     ------------------------------------- */
 
   BlotterSite.Views.App = Marionette.LayoutView.extend({
-    el : "#layout",
+    el : "#content",
 
     regions : {
+      "navigationRegion" : ".navigation-region",
       "contentRegion" : ".content-region"
     },
 
     initialize : function () {
       this.router = new BlotterSite.Router();
+      this.render();
+    },
+
+    render : function () {
+      this.navigationView = new BlotterSite.Views.Navigation();
+      this.navigationRegion.show(this.navigationView);
     },
 
     goto : function (view) {
@@ -939,6 +946,269 @@ $(document).ready(function () {
       BlotterSite.marginaliaManager.updateSize();
     }
   });
+
+  BlotterSite.Views.Navigation = Marionette.ItemView.extend((function () {
+    var _logoMainImage = [
+      "#ifdef GL_ES",
+      "precision mediump float;",
+      "#endif",
+
+
+      "float rand(vec2 co){",
+      "    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);",
+      "}",
+
+
+      "void mainImage( out vec4 mainImage, in vec2 fragCoord )",
+      "{",
+
+
+      "    // Setup ========================================================================",
+
+      "    vec2 uv = fragCoord.xy / uResolution.xy;",
+      "    float time = uTime / 4.0;",
+
+      "    vec4 finalColour = vec4(0.0);",
+
+
+      "    // Create Heat Points ===========================================================",
+
+      "    float heatDistanceScale = 35.0; // Larger value equates to smaller spread",
+
+      "    // Define 2 heat points",
+      "    float heatPoint1X = 0.5 - (sin(time) / 2.0);",
+      "    float heatPoint1Y = 0.5 - ((cos(time) * abs(cos(time))) / 1.5);",
+      "    vec2 heatPoint1Uv = vec2(heatPoint1X, heatPoint1Y) * uResolution.xy;",
+
+      "    float heatPoint2X = 0.5 - (sin(time - 1.0) / 2.0);",
+      "    float heatPoint2Y = 0.5 - ((cos(time - 1.0) * abs(cos(time))) / 1.0);",
+      "    vec2 heatPoint2Uv = vec2(heatPoint2X, heatPoint2Y) * uResolution.xy;",
+
+      "    // Calculate distances from current UV and combine",
+      "    float heatPoint1Dist = smoothstep(0.0, 1.4, distance(fragCoord, heatPoint1Uv) / uResolution.y);",
+      "    float heatPoint2Dist = smoothstep(0.0, 1.25, distance(fragCoord, heatPoint2Uv) / uResolution.y);",
+      "    float combinedDist = (heatPoint1Dist * heatPoint2Dist);",
+
+      "    // Invert and scale",
+      "    float amount = 1.0 - smoothstep(0.15, 25.0, combinedDist * heatDistanceScale);",
+      "    amount = smoothstep(-1.0, 1.0, amount);",
+
+
+      "    // Create Darkness ==============================================================",
+
+      "    const int darknessRadius = 10;",
+
+      "    vec2 stepCoord = vec2(0.0);",
+      "    vec2 stepUV = vec2(0.0);",
+
+      "    vec4 stepSample = vec4(1.0);",
+      "    vec4 darkestSample = vec4(1.0);",
+
+      "    float stepDistance = 1.0;",
+
+      "    vec2 maxDistanceCoord = fragCoord.xy + vec2(float(darknessRadius), 0.0);",
+      "    vec2 maxDistanceUV = maxDistanceCoord.xy / uResolution.xy;",
+      "    float maxDistance = distance(fragCoord, maxDistanceCoord);",
+
+      "    float randNoise = rand(uv * sin(time * 0.025)) * 0.15;",
+
+      "    // Find the darkest sample and some relevant meta data within a radius.",
+      "    //   Note: You may notice some artifacts in our darkness. This is due to",
+      "    //   us making steps on a `+=2` basis in the interest of performance. Play!",
+      "    for (int i = -darknessRadius; i <= darknessRadius; i += 1) {",
+      "        for (int j = -darknessRadius; j <= darknessRadius; j += 1) {",
+      "            stepCoord = fragCoord + vec2(float(i), float(j));",
+      "            stepUV = stepCoord / uResolution.xy;",
+      "            stepSample = textTexture(stepUV);",
+      "            vec4 sampleOnWhite = vec4(0.0);",
+      "            combineColors(sampleOnWhite, vec4(1.0), stepSample);",
+      "            stepDistance = distance(fragCoord, stepCoord) / smoothstep(-1.0, 1.0, amount);",
+
+      "            float stepDarkestSampleWeight = 1.0 - clamp((stepDistance / maxDistance), 0.0, 1.0) + randNoise;",
+      "            stepDarkestSampleWeight *= smoothstep(0.0, 7.5, amount);",
+
+      "            vec4 mixedStep = mix(darkestSample, sampleOnWhite, stepDarkestSampleWeight);",
+
+      "            if (mixedStep == min(mixedStep, darkestSample) && stepDistance <= maxDistance) {",
+      "                darkestSample = mixedStep;",
+      "            }",
+      "        }",
+      "    }",
+
+      "    rgbaFromRgb(mainImage, darkestSample.rgb);",
+      "}"
+    ].join("\n");
+
+    var _navMainImage = [
+      "float when_gt(float x, float y) {",
+      "  return max(sign(x - y), 0.0);",
+      "}",
+
+      "float when_lt(float x, float y) {",
+      "  return max(sign(y - x), 0.0);",
+      "}",
+
+      "void mainImage(out vec4 mainImage, in vec2 fragCoord) {",
+      "    vec2 uv = fragCoord.xy / uResolution.xy;",
+      "    vec2 p = vec2(1.0) / uResolution.xy;",
+      
+      "    float stepDistance = 6.5 * p.y;",
+
+      "    vec2 thresholdCenter = vec2(0.5);",
+      "    float slope = 0.1;",
+      "    float threshold = (slope * (uv.x - thresholdCenter.x)) + (thresholdCenter.y);",
+      
+      "    uv.x += (stepDistance * when_gt(uv.y, threshold) * hovering); // Shift right",
+      "    uv.x -= (stepDistance * when_lt(uv.y, threshold) * hovering); // Shift left",
+      
+      "    mainImage = textTexture(uv);",
+      "}"
+    ].join("\n");
+
+    return {
+      template : _.template($("template[name=navigation]").html())(),
+
+      initialize : function (options) {
+        _.defaults(this, options);
+
+        this.startTime = new Date().getTime();
+      },
+
+      onRender : function () {
+        this.prepareLogo();
+        this.prepareNav();
+        
+        this.setListeners();
+      },
+
+      setListeners : function () {
+        this.logoScope.on("render", _.bind(this.updateLogo, this));
+
+        $("body").on("pathChange", _.bind(this.handlePathChange, this));
+      },
+
+      updateLogo : function () {
+        var time = (new Date().getTime() - this.startTime) / 1000;
+        this.logoScope.material.uniforms.uTime.value = time;
+      },
+
+      handlePathChange : function (e, dataId) {
+        this.dataId = dataId;
+        this.setNavForDataId();
+      },
+
+      setNavForDataId : function () {
+        this.navEls.removeClass("active");
+        this.navBlotter.material.uniforms.hovering.value = 0.0;
+
+        if (this.dataId && this.navBlotterReady) {
+          var el = this.$("#nav li a[data-reference-id='" + this.dataId + "']"),
+              li = el.parent("li"),
+              i = this.$("#nav li").index(li);
+
+          el.addClass("active");
+          this.navBlotter.forText(this.navTexts[i]).material.uniforms.hovering.value = 1.0;
+        }
+      },
+
+      prepareLogo : function () {
+        var text = new Blotter.Text("Blotter", {
+              family : "'SerapionPro', sans-serif",
+              size : 48,
+              weight : 100,
+              leading : "52px",
+              paddingTop : 14,
+              paddingLeft : 14,
+              paddingRight : 14,
+              fill : "#202020"
+            });
+
+        var material = new Blotter.ShaderMaterial(_logoMainImage, {
+          uniforms : {
+            uTime : { type : "1f", value : 0.0 }
+          }
+        });
+        
+        this.logoBlotter = new Blotter(material, {
+          texts : text
+        });
+
+        this.logoScope = this.logoBlotter.forText(text);
+
+        this.logoBlotter.on("ready", _.bind(function () {
+          this.$("#logo").append(this.logoScope.domElement);
+        }, this));
+      },
+
+      prepareNav : function () {
+        this.navEls = this.$("#nav li a");
+
+        var properties = {
+              family : "'Avenir', sans-serif",
+              size : 14,
+              weight : 100,
+              leading : "50px",
+              paddingLeft : 13,
+              paddingRight : 13,
+              paddingTop: 2,
+              fill : "#202020"
+            };
+
+        this.navTexts = _.reduce(this.navEls, function(m, elem) {
+          var text = new Blotter.Text($(elem).data("text"), properties);
+
+          m.push(text);
+          return m;
+        }, []);
+
+        var material = new Blotter.ShaderMaterial(_navMainImage, {
+          uniforms : {
+            hovering : { type : "1f", value : 0.0 }
+          }
+        });
+
+        this.navBlotter = new Blotter(material, {
+          texts : this.navTexts
+        });
+
+        this.navScopes = _.reduce(this.navEls, _.bind(function (m, elem) {
+          var scope = this.navBlotter.forText(this.navTexts[m.length]);
+          m.push(scope);
+          return m;
+        }, this), []);
+
+        this.navBlotter.on("ready", _.bind(function () {
+          _.each(this.navScopes, _.bind(function (scope, i) {
+            var el = this.navEls[i];
+
+            scope.appendTo(el);
+
+            scope.on("mouseenter", (function (scope) {
+              return function () {
+                scope.material.uniforms.hovering.value = 1.0;
+              }
+            })(scope));
+
+            scope.on("mouseleave", (function (scope) {
+              return function () {
+                var anchor = $(scope.domElement).parent("a");
+
+                if (!anchor.hasClass("active")) {
+                  scope.material.uniforms.hovering.value = 0.0;
+                }
+              }
+            })(scope));
+          }, this));
+
+          this.navBlotterReady = true;
+
+          this.setNavForDataId();
+
+          $("body").trigger("navReady");
+        }, this));
+      }
+    }
+  })());
 
 
   BlotterSite.Views.Home = BlotterSite.Extensions.View.extend({
@@ -1044,7 +1314,7 @@ $(document).ready(function () {
         leading : "123px",
         paddingLeft : 40,
         paddingRight: 40,
-        fill : "#1E1A1B"
+        fill : "#202020"
       };
 
       this.collection = new BlotterSite.Collections.PackShaders([

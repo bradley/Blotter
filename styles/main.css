@@ -303,7 +303,7 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
     visibility: hidden; } }
 /* BASE */
 .CodeMirror {
-  background: #1e1a1b;
+  background: #202020;
   font-family: "Ubuntu Mono", monospace;
   font-size: 16px;
   line-height: 20px;
@@ -321,7 +321,7 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
 /* GUTTER */
 .CodeMirror-gutters {
   border-right: 1px solid #B5B5B5;
-  background-color: #1e1a1b;
+  background-color: #202020;
   box-shadow: 1px 0 3px #6C6C6C, 1px 0 3px #6C6C6C;
   min-width: 26px;
   text-align: center;
@@ -430,7 +430,7 @@ html {
   height: 100%; }
 
 body {
-  color: #1e1a1b;
+  color: #202020;
   font-family: "Garamond", serif;
   font-size: 17px;
   line-height: 26px;
@@ -439,7 +439,7 @@ body {
   vertical-align: top; }
 
 h1, h2, h3, h4, h5, h6 {
-  color: #1e1a1b;
+  color: #202020;
   font-family: "SerapionPro", "Garamond", serif;
   font-weight: 400;
   letter-spacing: 0.015em;
@@ -518,7 +518,7 @@ aside {
 code {
   background: #f3f3f3;
   border-radius: 4px;
-  color: #1e1a1b;
+  color: #202020;
   font-family: "Ubuntu Mono", monospace;
   font-size: 14px;
   font-size: 14px;
@@ -548,7 +548,7 @@ code {
   user-select: none; }
 
 .btn {
-  background: #1e1a1b;
+  background: #202020;
   border-radius: 4px;
   box-sizing: border-box;
   -moz-box-sizing: border-box;
@@ -600,7 +600,7 @@ code {
     box-sizing: border-box;
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
-    color: #1e1a1b;
+    color: #202020;
     right: 26px;
     list-style: none;
     padding: 6.5px 0;
@@ -614,7 +614,7 @@ code {
       .dropdown-select .dropdown-options li:hover {
         color: #fff;
         cursor: pointer;
-        background: #1e1a1b;
+        background: #202020;
         font-weight: 500; }
 
 /* Used for allowing anchor links but accounting for fixed header */
@@ -626,7 +626,7 @@ code {
 
 .horizon {
   background: transparent;
-  border-color: transparent transparent #1e1a1b transparent;
+  border-color: transparent transparent #202020 transparent;
   border-style: solid;
   border-width: 0 13px 6.5px 13px;
   box-sizing: border-box;
@@ -650,7 +650,7 @@ code {
     top: calc(100% + 2px);
     width: 100%; }
   .horizon:after {
-    border-color: #1e1a1b transparent transparent transparent;
+    border-color: #202020 transparent transparent transparent;
     border-style: solid;
     border-width: 6.5px 13px 0 13px;
     height: 26px;
@@ -738,7 +738,7 @@ code {
         padding-right: 0; }
       #masthead ul#nav li a {
         border: none;
-        color: #1e1a1b;
+        color: #202020;
         font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
         font-size: 17px;
         line-height: 52px;
@@ -886,7 +886,7 @@ ul.documentation {
     .tabbed-editor label span {
       border-radius: 4px 4px 0 0;
       cursor: pointer;
-      color: #1e1a1b;
+      color: #202020;
       font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif; }
   .tabbed-editor .tab-content {
     width: 100%;
@@ -897,7 +897,7 @@ ul.documentation {
     .tabbed-editor .tab-content > .CodeMirror {
       height: auto; }
   .tabbed-editor .tab:checked + span {
-    background: #1e1a1b;
+    background: #202020;
     color: #fff;
     font-weight: 500; }
   .tabbed-editor .label-text {
@@ -916,7 +916,7 @@ ul.documentation {
 
 .output {
   background: #fff;
-  border: 2px solid #1e1a1b;
+  border: 2px solid #202020;
   box-sizing: border-box;
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
@@ -947,7 +947,7 @@ ul.documentation {
   overflow: hidden; }
   .pack-shaders li {
     background: #fff;
-    border: 2px solid #1e1a1b;
+    border: 2px solid #202020;
     box-sizing: border-box;
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
@@ -981,14 +981,14 @@ ul.documentation {
       text-align: left;
       top: 0; }
       .pack-shaders li .pack-shader-overlay .pack-shader-name {
-        color: #1e1a1b;
+        color: #202020;
         display: block;
         font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
         font-size: 17px;
         font-weight: normal;
         line-height: 1.5; }
       .pack-shaders li .pack-shader-overlay .pack-name {
-        color: #1e1a1b;
+        color: #202020;
         display: block;
         font-family: "Garamond", serif;
         font-size: 14px;
@@ -1108,7 +1108,7 @@ p.detail {
 
 /* Used for properties and objects that are static. This would be like Blotter.UniformUtils.UniformTypes */
 p.static, p.static + p {
-  color: tint(#1e1a1b, 33%); }
+  color: tint(#202020, 33%); }
 
 /* --------------------------------------------------------------------------------------------*/
 /* SOURCE PROPERTY TYPE DESIGNATORS */
