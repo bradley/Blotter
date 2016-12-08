@@ -123,7 +123,6 @@
 
       teardown : function () {
         this.stop();
-        Blotter.webglRenderer = null;
       }
     };
   })();
