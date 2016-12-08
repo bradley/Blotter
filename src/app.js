@@ -1300,7 +1300,6 @@ $(document).ready(function () {
     },
 
     onDestroy : function () {
-      console.log("closed");
       this.packShaderInstance.blotter.stop();
       this.packShaderInstance.blotter.teardown();
     },
