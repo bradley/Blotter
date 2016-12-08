@@ -1,5 +1,56 @@
 $(document).ready(function () {
 
+  /*  Underscore Mixins
+    ------------------------------------- */
+
+  function renderFromUrl (templateUrl, templateData) {
+    if (!renderFromUrl.tmplCache) { 
+      renderFromUrl.tmplCache = {};
+    }
+
+    if (!renderFromUrl.tmplCache[templateUrl]) {
+      var templateStr;
+
+      $.ajax({
+        url: templateUrl,
+        method: "GET",
+        dataType: "html",
+        async: false,
+        success: function (data) {
+          templateStr = data;
+        }
+      });
+
+      renderFromUrl.tmplCache[templateUrl] = _.template(templateStr);
+    }
+
+    return renderFromUrl.tmplCache[templateUrl](templateData);
+  }
+
+  // _.mixin({templateFromUrl : function (url, data, settings) {
+  //   var templateHtml = "";
+
+  //   this.cache = this.cache || {};
+
+  //   if (this.cache[url]) {
+  //     templateHtml = this.cache[url];
+  //   } else {
+  //     $.ajax({
+  //       url : url,
+  //       method : "GET",
+  //       async : false,
+  //       success : function (data) {
+  //         templateHtml = data;
+  //       }
+  //     });
+
+  //     this.cache[url] = templateHtml;
+  //   }
+
+  //   return _.template(templateHtml, data, settings);
+  // }});
+
+
   /*  Initialization
     ------------------------------------- */
 
@@ -47,6 +98,7 @@ $(document).ready(function () {
       "overview" : "overview",
       "basics" : "basics",
       "packs" : "packs",
+      "shaders/:shaderName" : "shaders",
       "" : "home"
     },
 
@@ -78,6 +130,14 @@ $(document).ready(function () {
       var view = new BlotterSite.Views.Packs();
 
       $("body").trigger("pathChange", ["packs"]);
+
+      BlotterSite.instance.goto(view);
+    },
+
+    shaders : function (shaderName) {
+      var view = new BlotterSite.Views.PackShader({ shaderName : shaderName });
+
+      $("body").trigger("pathChange");
 
       BlotterSite.instance.goto(view);
     }
@@ -843,45 +903,6 @@ $(document).ready(function () {
   })();
 
 
-  /*  Extensions
-    ------------------------------------- */
-
-  BlotterSite.Extensions.View = Marionette.ItemView.extend({
-    template : _.template("<div></div>")(),
-
-    initialize : function () {
-      this.router = new BlotterSite.Router();
-    },
-
-    transitionIn : function (callback) {
-      var view = this,
-          delay;
-
-      var transitionIn = function () {
-        view.$el.addClass("is-visible");
-        view.$el.on("transitionend", function () {
-          if (_.isFunction(callback)) {
-            callback();
-          }
-        })
-      };
-
-      _.delay(transitionIn, 20);
-    },
-
-    transitionOut : function (callback) {
-      var view = this;
-
-      view.$el.removeClass("is-visible");
-      view.$el.on("transitionend", function () {
-        if (_.isFunction(callback)) {
-          callback();
-        };
-      });
-    }
-  });
-
-
   /*  Models
     ------------------------------------- */
 
@@ -896,7 +917,7 @@ $(document).ready(function () {
     },
 
     path : function () {
-      return "./shaders/" + this.get("materialName") + ".html";
+      return "#/shaders/" + this.get("materialName");
     }
   });
 
@@ -934,14 +955,7 @@ $(document).ready(function () {
       var previous = this.currentPage || null,
           next = view;
 
-      if (this.contentRegion.currentView) {
-        //previous.transitionOut(function () {
-          this.contentRegion.empty();
-        //});
-      }
-
       this.contentRegion.show(next);
-      //next.transitionIn();
 
       BlotterSite.marginaliaManager.updateSize();
     }
@@ -1211,7 +1225,7 @@ $(document).ready(function () {
   })());
 
 
-  BlotterSite.Views.Home = BlotterSite.Extensions.View.extend({
+  BlotterSite.Views.Home = Marionette.ItemView.extend({
     className : "home",
     template : _.template($("template[name=home]").html())(),
 
@@ -1234,13 +1248,13 @@ $(document).ready(function () {
   });
 
 
-  BlotterSite.Views.Overview = BlotterSite.Extensions.View.extend({
+  BlotterSite.Views.Overview = Marionette.ItemView.extend({
     className : "overview",
     template : _.template($("template[name=overview]").html())()
   });
 
 
-  BlotterSite.Views.Basics = BlotterSite.Extensions.View.extend({
+  BlotterSite.Views.Basics = Marionette.ItemView.extend({
     className : "basics",
     template : _.template($("template[name=basics]").html())(),
 
@@ -1285,9 +1299,16 @@ $(document).ready(function () {
       this.packShaderInstance = new PackShader(this.$el, this.text);
     },
 
+    onDestroy : function () {
+      console.log("closed");
+      this.packShaderInstance.blotter.stop();
+      this.packShaderInstance.blotter.teardown();
+    },
+
     handleClick : function (e) {
       e && e.preventDefault();
-      window.location.href = this.model.path();
+      
+      Backbone.history.navigate(this.model.path());
     }
   });
 
@@ -1326,14 +1347,30 @@ $(document).ready(function () {
   });
 
 
-  BlotterSite.Views.Packs = BlotterSite.Extensions.View.extend({
+  BlotterSite.Views.Packs = Marionette.LayoutView.extend({
     className : "packs",
     template : _.template($("template[name=packs]").html())(),
+    regions : {
+      "packListRegion" : ".packs-list-region" 
+    },
 
     onRender : function () {
-      this.packsList = new BlotterSite.Views.PacksList();
-      this.packsList.render();
-      this.$el.find(".packs-list-region").html(this.packsList.$el);
+      this.packListView = new BlotterSite.Views.PacksList();
+      this.packListRegion.show(this.packListView);
+    }
+  });
+
+  BlotterSite.Views.PackShader = Marionette.ItemView.extend({
+    className : "packs",
+
+    initialize : function (options) {
+      _.defaults(this, options);
+
+      this.template = renderFromUrl("./shaders/" + this.shaderName + ".html", this.templateOptions);
+    },
+
+    onRender : function () {
+      console.log("shader rendered");
     }
   });
 
