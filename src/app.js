@@ -14,6 +14,8 @@ $(document).ready(function () {
     Extensions : {},
     Router : null,
 
+    navPaths : ["overview", "basics", "packs"],
+
     init : function () {
       this.instance = new BlotterSite.Views.App();
 
@@ -32,7 +34,9 @@ $(document).ready(function () {
     },
 
     handleNavReady : function () {
-      $("body").trigger("pathChange",  this.initRoute);
+      var path = _.include(BlotterSite.navPaths, this.initRoute) ? this.initRoute : false;
+
+      $("body").trigger("pathChange", path);
     }
   });
 
@@ -99,11 +103,11 @@ $(document).ready(function () {
     ------------------------------------- */
 
   BlotterSite.Utils.renderFromUrl = function (templateUrl, templateData) {
-    if (!renderFromUrl.tmplCache) {
-      renderFromUrl.tmplCache = {};
+    if (!BlotterSite.Utils.renderFromUrl.tmplCache) {
+      BlotterSite.Utils.renderFromUrl.tmplCache = {};
     }
 
-    if (!renderFromUrl.tmplCache[templateUrl]) {
+    if (!BlotterSite.Utils.renderFromUrl.tmplCache[templateUrl]) {
       var templateStr;
 
       $.ajax({
@@ -116,10 +120,10 @@ $(document).ready(function () {
         }
       });
 
-      renderFromUrl.tmplCache[templateUrl] = _.template(templateStr);
+      BlotterSite.Utils.renderFromUrl.tmplCache[templateUrl] = _.template(templateStr);
     }
 
-    return renderFromUrl.tmplCache[templateUrl](templateData);
+    return BlotterSite.Utils.renderFromUrl.tmplCache[templateUrl](templateData);
   }
 
 
@@ -213,6 +217,160 @@ $(document).ready(function () {
     }
   })();
   _.extend(BlotterSite.Helpers.DropdownSelect.prototype, EventEmitter.prototype);
+
+
+  BlotterSite.Helpers.Notation = function ($el, options) {
+    this.init.apply(this, arguments);
+  }
+
+  BlotterSite.Helpers.Notation.prototype = (function () {
+
+    return {
+      constructor : BlotterSite.Helpers.Notation,
+
+      arrowImageSrc : "https://i.imgur.com/OgvR2w5.png",
+
+      init : function ($el, options) {
+        _.defaults(this, options, {
+          baseWidth : 26,
+          lineHeight : 0,
+          entranceSpace : 26,
+          pixelRatio : Blotter.CanvasUtils.pixelRatio
+        });
+
+        this.$el = $el;
+
+        this.$ul = this.$el.find("ul");
+        this.$li = this.$ul.find("li");
+
+        this._setContent();
+        this._setCanvasSize();
+        this._setStrokeProperties();
+
+        this._readyImage(_.bind(function () {
+          this._setListeners();
+          this._setImageOffsets();
+          this._drawArrows();
+        }, this));
+      },
+
+      _setListeners : function () {
+        BlotterSite.instance.on("resize", _.bind(this._handleResize, this));
+      },
+
+      _handleResize : function () {
+        this._setCanvasSize();
+        this._drawArrows();
+      },
+
+      _setContent : function () {
+        this.$canvas = $("<canvas>");
+        this.ctx = this.$canvas[0].getContext("2d");
+        this.$el.prepend(this.$canvas);
+      },
+
+      _setImageOffsets : function () {
+        var arrowHeight = 10,
+            ratio = this.arrowImage.width / this.arrowImage.height;
+
+        this.arrowImageOffsets = {
+          w : arrowHeight * ratio,
+          h : arrowHeight,
+          x : -((arrowHeight * ratio) / 2),
+          y : -(arrowHeight / 2)
+        };
+      },
+
+      _setCanvasSize : function () {
+        this.width = this.baseWidth * this.pixelRatio;
+        this.height = this.$ul.height() * this.pixelRatio;
+
+        this.$canvas.attr("width", this.width);
+        this.$canvas.attr("height", this.height);
+        this.$canvas.css({
+          height : this.$ul.height(),
+          left : -this.baseWidth + "px",
+          position : "absolute",
+          top : -this.entranceSpace,
+          width : this.baseWidth,
+        });
+        this.ctx.setTransform(this.pixelRatio, 0, 0, this.pixelRatio, 0, 0);
+      },
+
+      _setStrokeProperties : function () {
+        this.ctx.lineWidth = 1;
+        this.ctx.strokeStyle = "black";
+      },
+
+      _readyImage : function (callback) {
+        this.arrowImage = new Image();
+
+        this.arrowImage.onload = callback;
+
+        this.arrowImage.src = this.arrowImageSrc;
+      },
+
+      _clearContext : function () {
+        this.ctx.clearRect(0, 0, this.width, this.height);
+      },
+
+      _drawArrows : function () {
+        var curveVariance = this.baseWidth,
+            origin = {
+              x : curveVariance / 4,
+              y : 0
+            };
+
+        this._clearContext();
+        this._setStrokeProperties();
+
+        _.each(this.$li, _.bind(function (li) {
+          var $li = $(li),
+              position = $li.position(),
+              destination = {
+                x : this.baseWidth - (this.arrowImageOffsets.w / 2),
+                y : position.top + (this.lineHeight / 2) + this.entranceSpace
+              },
+              length = destination.y - origin.y,
+              c1 = {
+                x : origin.x + origin.x,
+                y : destination.y - (length / 4)
+              },
+              c2 = {
+                x : origin.x - curveVariance,
+                y : destination.y - (length / 12)
+              };
+
+          // Begin Path
+          this.ctx.beginPath();
+          this.ctx.moveTo(origin.x, origin.y);
+
+          // Define Curve
+          this.ctx.bezierCurveTo(
+            c1.x,
+            c1.y,
+            c2.x,
+            c2.y,
+            destination.x,
+            destination.y
+          );
+
+          // Draw Line
+          this.ctx.stroke();
+
+          // Draw arrow head
+          this.ctx.drawImage(
+            this.arrowImage,
+            destination.x + this.arrowImageOffsets.x,
+            destination.y + this.arrowImageOffsets.y,
+            this.arrowImageOffsets.w,
+            this.arrowImageOffsets.h
+          );
+
+        }, this));
+      }
+    }
+  })();
 
 
   /*  Components
@@ -650,21 +808,6 @@ $(document).ready(function () {
 
   BlotterSite.Helpers.GlitchMarginaliaCanvas.prototype = (function () {
 
-    var _pixelRatio = (function () {
-      var vendorPrefixes = ["ms", "moz", "webkit", "o"],
-          ctx = document.createElement("canvas").getContext("2d"),
-          dpr = window.devicePixelRatio || 1,
-          bsr = ctx.backingStorePixelRatio;
-
-      for(var x = 0; x < vendorPrefixes.length && !bsr; ++x) {
-        bsr = ctx[vendorPrefixes[x]+"BackingStorePixelRatio"];
-      }
-
-      bsr = bsr || 1;
-
-      return (dpr / bsr);
-    })();
-
     function _buildCanvas () {
       var canvas = document.createElement("canvas");
 
@@ -692,7 +835,7 @@ $(document).ready(function () {
 
       init : function (generator, rect) {
         this.generator = generator;
-        this.pixelRatio = _pixelRatio;
+        this.pixelRatio = Blotter.CanvasUtils.pixelRatio;
         this.rect = rect;
 
         return this.domElement;
@@ -772,7 +915,7 @@ $(document).ready(function () {
       },
 
       setListeners : function () {
-        $(window).on("resize", _.bind(this.handleResize, this));
+        BlotterSite.instance.on("resize", _.bind(this.handleResize, this));
       },
 
       handleResize : _.debounce(function () {
@@ -922,7 +1065,14 @@ $(document).ready(function () {
 
     initialize : function () {
       this.router = new BlotterSite.Router();
+
+      this.setListeners();
+
       this.render();
+    },
+
+    setListeners : function () {
+      window.addEventListener("resize", _.bind(this._triggerResize, this), false);
     },
 
     render : function () {
@@ -937,7 +1087,11 @@ $(document).ready(function () {
       this.contentRegion.show(next);
 
       BlotterSite.marginaliaManager.updateSize();
-    }
+    },
+
+    _triggerResize : _.debounce(function(e) {
+      this.trigger("resize");
+    }, 250)
   });
 
   BlotterSite.Views.Navigation = Marionette.ItemView.extend((function () {
@@ -1100,6 +1254,7 @@ $(document).ready(function () {
               i = this.$("#nav li").index(li);
 
           el.addClass("active");
+
           this.navBlotter.forText(this.navTexts[i]).material.uniforms.hovering.value = 1.0;
         }
       },
@@ -1348,7 +1503,9 @@ $(document).ready(function () {
     },
 
     onRender : function () {
-      console.log("shader rendered");
+      new BlotterSite.Helpers.Notation($(".notated-list"), {
+        lineHeight: 26
+      });
     }
   });
 
