@@ -780,7 +780,7 @@ code {
           vertical-align: top;
           will-change: transform; }
 
-/*  Documentation
+/*  Beauty
     ------------------------------------- */
 #marginalia-container {
   bottom: 0;
@@ -794,6 +794,19 @@ code {
   #marginalia-container .marginalia {
     pointer-events: none;
     position: absolute; }
+
+.notated-list {
+  position: relative;
+  margin: 0 0 0 26px; }
+  .notated-list ul {
+    box-sizing: border-box;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: relative; }
+    .notated-list ul li {
+      line-height: 26px;
+      margin-bottom: 26px; }
 
 /*  Documentation
     ------------------------------------- */
@@ -864,6 +877,11 @@ ul.documentation {
             margin-top: 6.5px; }
             ul.documentation li > ul ul li p.property, ul.documentation li > ul ul li p.method, ul.documentation li > ul ul li p.construction {
               border-left: none; }
+  ul.documentation .notated-list ul {
+    margin: 39px 0 39px 13px; }
+    ul.documentation .notated-list ul li {
+      margin-bottom: 13px;
+      margin-top: 0; }
 
 /*  Example Editor
     ------------------------------------- */

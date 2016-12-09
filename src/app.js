@@ -14,8 +14,6 @@ $(document).ready(function () {
     Extensions : {},
     Router : null,
 
-    navPaths : ["overview", "basics", "packs"],
-
     init : function () {
       this.instance = new BlotterSite.Views.App();
 
@@ -34,9 +32,7 @@ $(document).ready(function () {
     },
 
     handleNavReady : function () {
-      var path = _.include(BlotterSite.navPaths, this.initRoute) ? this.initRoute : false;
-
-      $("body").trigger("pathChange", path);
+      $("body").trigger("pathChange", this.initRoute);
     }
   });
 
@@ -240,8 +236,8 @@ $(document).ready(function () {
 
         this.$el = $el;
 
-        this.$ul = this.$el.find("ul");
-        this.$li = this.$ul.find("li");
+        this.$ul = this.$el.find("> ul");
+        this.$li = this.$ul.find("> li");
 
         this._setContent();
         this._setCanvasSize();
@@ -250,7 +246,8 @@ $(document).ready(function () {
         this._readyImage(_.bind(function () {
           this._setListeners();
           this._setImageOffsets();
-          this._drawArrows();
+          
+          this._handleResize();
         }, this));
       },
 
@@ -259,6 +256,7 @@ $(document).ready(function () {
       },
 
       _handleResize : function () {
+        console.log("called");
         this._setCanvasSize();
         this._drawArrows();
       },
@@ -1215,6 +1213,8 @@ $(document).ready(function () {
     return {
       template : _.template($("template[name=navigation]").html())(),
 
+      navPathWhitelist : ["overview", "basics", "packs"],
+
       initialize : function (options) {
         _.defaults(this, options);
 
@@ -1236,11 +1236,14 @@ $(document).ready(function () {
 
       updateLogo : function () {
         var time = (new Date().getTime() - this.startTime) / 1000;
+
         this.logoScope.material.uniforms.uTime.value = time;
       },
 
       handlePathChange : function (e, dataId) {
-        this.dataId = dataId;
+        var nextPath = _.include(this.navPathWhitelist, dataId) ? dataId : false;
+
+        this.dataId = nextPath;
         this.setNavForDataId();
       },
 
@@ -1503,9 +1506,17 @@ $(document).ready(function () {
     },
 
     onRender : function () {
-      new BlotterSite.Helpers.Notation(this.$(".notated-list"), {
-        lineHeight: 26
-      });
+      this._setNotation();
+    },
+
+    _setNotation : function () {
+      var $notation = this.$(".notated-list");
+
+      _.each($notation, _.bind(function (el) {
+        new BlotterSite.Helpers.Notation($(el), {
+          lineHeight: 26
+        });
+      }, this));
     }
   });
 

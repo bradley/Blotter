@@ -492,7 +492,7 @@ code {
 }
 
 
-/*  Documentation
+/*  Beauty
     ------------------------------------- */
 
 #marginalia-container {
@@ -508,6 +508,24 @@ code {
   .marginalia {
     pointer-events: none;
     position: absolute;
+  }
+}
+
+.notated-list {
+  position: relative;
+  margin: 0 0 0 $leading;
+  
+  ul {
+    box-sizing: border-box;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: relative;
+    
+    li {
+      line-height: $leading;
+      margin-bottom: $leading;
+    }
   }
 }
 
@@ -633,6 +651,18 @@ ul.documentation {
             }
           }
         }
+      }
+    }
+  }
+
+  .notated-list {
+
+    ul {
+      margin: ($leading * 1.5) 0 ($leading * 1.5) ($leading / 2);
+
+      li {
+        margin-bottom: ($leading / 2);
+        margin-top: 0;
       }
     }
   }
