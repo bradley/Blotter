@@ -1503,7 +1503,7 @@ $(document).ready(function () {
     },
 
     onRender : function () {
-      new BlotterSite.Helpers.Notation($(".notated-list"), {
+      new BlotterSite.Helpers.Notation(this.$(".notated-list"), {
         lineHeight: 26
       });
     }
