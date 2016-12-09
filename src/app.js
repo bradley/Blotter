@@ -1,55 +1,5 @@
 $(document).ready(function () {
 
-  /*  Underscore Mixins
-    ------------------------------------- */
-
-  function renderFromUrl (templateUrl, templateData) {
-    if (!renderFromUrl.tmplCache) { 
-      renderFromUrl.tmplCache = {};
-    }
-
-    if (!renderFromUrl.tmplCache[templateUrl]) {
-      var templateStr;
-
-      $.ajax({
-        url: templateUrl,
-        method: "GET",
-        dataType: "html",
-        async: false,
-        success: function (data) {
-          templateStr = data;
-        }
-      });
-
-      renderFromUrl.tmplCache[templateUrl] = _.template(templateStr);
-    }
-
-    return renderFromUrl.tmplCache[templateUrl](templateData);
-  }
-
-  // _.mixin({templateFromUrl : function (url, data, settings) {
-  //   var templateHtml = "";
-
-  //   this.cache = this.cache || {};
-
-  //   if (this.cache[url]) {
-  //     templateHtml = this.cache[url];
-  //   } else {
-  //     $.ajax({
-  //       url : url,
-  //       method : "GET",
-  //       async : false,
-  //       success : function (data) {
-  //         templateHtml = data;
-  //       }
-  //     });
-
-  //     this.cache[url] = templateHtml;
-  //   }
-
-  //   return _.template(templateHtml, data, settings);
-  // }});
-
 
   /*  Initialization
     ------------------------------------- */
@@ -59,6 +9,7 @@ $(document).ready(function () {
     Models : {},
     Collections : {},
     Helpers : {},
+    Utils : {},
     Components : {},
     Extensions : {},
     Router : null,
@@ -142,6 +93,34 @@ $(document).ready(function () {
       BlotterSite.instance.goto(view);
     }
   });
+
+
+  /*  Utilities
+    ------------------------------------- */
+
+  BlotterSite.Utils.renderFromUrl = function (templateUrl, templateData) {
+    if (!renderFromUrl.tmplCache) {
+      renderFromUrl.tmplCache = {};
+    }
+
+    if (!renderFromUrl.tmplCache[templateUrl]) {
+      var templateStr;
+
+      $.ajax({
+        url: templateUrl,
+        method: "GET",
+        dataType: "html",
+        async: false,
+        success: function (data) {
+          templateStr = data;
+        }
+      });
+
+      renderFromUrl.tmplCache[templateUrl] = _.template(templateStr);
+    }
+
+    return renderFromUrl.tmplCache[templateUrl](templateData);
+  }
 
 
   /*  Helpers
@@ -1065,16 +1044,16 @@ $(document).ready(function () {
       "void mainImage(out vec4 mainImage, in vec2 fragCoord) {",
       "    vec2 uv = fragCoord.xy / uResolution.xy;",
       "    vec2 p = vec2(1.0) / uResolution.xy;",
-      
+
       "    float stepDistance = 6.5 * p.y;",
 
       "    vec2 thresholdCenter = vec2(0.5);",
       "    float slope = 0.1;",
       "    float threshold = (slope * (uv.x - thresholdCenter.x)) + (thresholdCenter.y);",
-      
+
       "    uv.x += (stepDistance * when_gt(uv.y, threshold) * hovering); // Shift right",
       "    uv.x -= (stepDistance * when_lt(uv.y, threshold) * hovering); // Shift left",
-      
+
       "    mainImage = textTexture(uv);",
       "}"
     ].join("\n");
@@ -1091,7 +1070,7 @@ $(document).ready(function () {
       onRender : function () {
         this.prepareLogo();
         this.prepareNav();
-        
+
         this.setListeners();
       },
 
@@ -1142,7 +1121,7 @@ $(document).ready(function () {
             uTime : { type : "1f", value : 0.0 }
           }
         });
-        
+
         this.logoBlotter = new Blotter(material, {
           texts : text
         });
@@ -1306,7 +1285,7 @@ $(document).ready(function () {
 
     handleClick : function (e) {
       e && e.preventDefault();
-      
+
       Backbone.history.navigate(this.model.path());
     }
   });
@@ -1350,7 +1329,7 @@ $(document).ready(function () {
     className : "packs",
     template : _.template($("template[name=packs]").html())(),
     regions : {
-      "packListRegion" : ".packs-list-region" 
+      "packListRegion" : ".packs-list-region"
     },
 
     onRender : function () {
@@ -1365,7 +1344,7 @@ $(document).ready(function () {
     initialize : function (options) {
       _.defaults(this, options);
 
-      this.template = renderFromUrl("./shaders/" + this.shaderName + ".html", this.templateOptions);
+      this.template = BlotterSite.Utils.renderFromUrl("./shaders/" + this.shaderName + ".html", this.templateOptions);
     },
 
     onRender : function () {
