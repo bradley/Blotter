@@ -224,7 +224,7 @@ $(document).ready(function () {
     return {
       constructor : BlotterSite.Helpers.Notation,
 
-      arrowImageSrc : "https://i.imgur.com/OgvR2w5.png",
+      arrowImageSrc : "images/right_arrow.png",
 
       init : function ($el, options) {
         _.defaults(this, options, {
@@ -675,9 +675,7 @@ $(document).ready(function () {
         this.width = this.$canvas.width();
         this.height = this.$canvas.height();
 
-        // Note: The imageSrc string is the base64 encoded version of the image at ./images/glitch_marginalia_texture.png
-        //   This allows us to dev locally without running a server and I'm mostly ok with it for this.
-        this.imageSrc = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAAAAADhZOFXAAAACXBIWXMAAAsTAAALEwEAmpwYAAAABGdBTUEAALGOfPtRkwAAACBjSFJNAAB6JQAAgIMAAPn/AACA6QAAdTAAAOpgAAA6mAAAF2+SX8VGAAAAZklEQVR42mJgaFRYyNGpsQoggBgOOTxKPOXxKhMggBgMNglMtNglMRMggBg+FV4K+FV5KxIggJikZKLiuHi8fAACiOGcz7vcYy7PUgECiMFmn8xck20iUwECiOnw/kMHDgExQIABABXjH1aG9oGDAAAAAElFTkSuQmCC";
+        this.imageSrc = "images/glitch_marginalia_texture.png";
         this.imageWidth = 8;
         this.imageHeight = 8;
 
