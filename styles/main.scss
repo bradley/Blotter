@@ -396,21 +396,22 @@ code {
 
 #masthead {
   background: $white;
-  background: rgba(255,255,255,1);
-  background: -moz-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%);
-  background: -webkit-gradient(left top, left bottom, color-stop(0%, rgba(255,255,255,1)), color-stop(100%, rgba(255,255,255,0)));
-  background: -webkit-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%);
-  background: -o-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%);
-  background: -ms-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%);
-  background: linear-gradient(to bottom, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#ffffff', GradientType=0 );filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f85032', endColorstr='#e73827', GradientType=1 );
+  background: -webkit-linear-gradient($white, rgba(255,255,255,0));  
+  background: -moz-linear-gradient($white, rgba(255,255,255,0));  
+  background: -o-linear-gradient($white, rgba(255,255,255,0));  
+  background: linear-gradient($white, rgba(255,255,255,0)); 
   height: $leading * 4;
   left: 0;
   padding: $leading ($leading * 2);
+  pointer-events: none;
   position: fixed;
   right: 0;
   top: 0;
   z-index: 100;
+
+  * {
+    pointer-events: all;
+  }
 
   #logo {
     display: inline-block;
