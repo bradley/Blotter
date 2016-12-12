@@ -575,6 +575,15 @@ code {
   margin-bottom: $leading * 2;
 }
 
+.pack-shader-example-wrap {
+  height: $leading * 3;
+  margin-bottom: $leading;
+
+  canvas {
+    vertical-align: top;
+  }
+}
+
 .bullet-list {
   list-style: none;
 

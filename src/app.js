@@ -1466,9 +1466,11 @@ $(document).ready(function () {
       this.textProperties = {
         family : "'SerapionPro', sans-serif",
         size : 68,
-        leading : "123px",
+        leading : "68px",
+        paddingBottom: 6,
         paddingLeft : 40,
         paddingRight: 40,
+        paddingTop : 26,
         fill : "#202020"
       };
 
@@ -1501,10 +1503,39 @@ $(document).ready(function () {
       _.defaults(this, options);
 
       this.template = BlotterSite.Utils.renderFromUrl("./shaders/" + this.shaderName + ".html", this.templateOptions);
+
+      this.textStr = "B";
+      this.textProperties = {
+        family : "'SerapionPro', sans-serif",
+        size : 68,
+        leading : "68px",
+        paddingBottom: 6,
+        paddingLeft : 40,
+        paddingRight: 40,
+        paddingTop : 4,
+        fill : "#202020"
+      };
     },
 
     onRender : function () {
+      this._setBlotter();
       this._setNotation();
+    },
+
+    onDestroy : function () {
+      this.packShaderInstance.blotter.stop();
+      this.packShaderInstance.blotter.teardown();
+    },
+
+    _setBlotter : function () {
+      var PackShader = window["BlotterSite"]["PackShaders"][this.shaderName],
+          $container = $("<div class='pack-shader-example-wrap'></div>");
+      
+      this.$(".content").prepend($container);
+      
+      this.blotterText = new Blotter.Text(this.textStr, this.textProperties);
+
+      this.packShaderInstance = new PackShader($container, this.blotterText);
     },
 
     _setNotation : function () {
@@ -1517,5 +1548,4 @@ $(document).ready(function () {
       }, this));
     }
   });
-
 }());

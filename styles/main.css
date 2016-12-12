@@ -831,6 +831,12 @@ code {
 .introduction {
   margin-bottom: 52px; }
 
+.pack-shader-example-wrap {
+  height: 78px;
+  margin-bottom: 26px; }
+  .pack-shader-example-wrap canvas {
+    vertical-align: top; }
+
 .bullet-list {
   list-style: none; }
   .bullet-list li {
