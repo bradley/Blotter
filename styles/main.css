@@ -668,6 +668,70 @@ code {
 .number {
   font-family: "Ubuntu Mono", monospace; }
 
+.arrow-up {
+  display: inline-block;
+  font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
+  font-size: 26px;
+  height: 26px;
+  line-height: 26px;
+  position: relative;
+  vertical-align: middle;
+  content: "↑"; }
+  .arrow-up:before {
+    position: absolute;
+    top: 0; }
+  .arrow-up:before {
+    content: "↑";
+    margin-left: -5px; }
+
+.arrow-down {
+  display: inline-block;
+  font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
+  font-size: 26px;
+  height: 26px;
+  line-height: 26px;
+  position: relative;
+  vertical-align: middle;
+  content: "↓"; }
+  .arrow-down:before {
+    position: absolute;
+    top: 0; }
+  .arrow-down:before {
+    content: "↑";
+    margin-left: -5px; }
+
+.arrow-left {
+  display: inline-block;
+  font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
+  font-size: 26px;
+  height: 26px;
+  line-height: 26px;
+  position: relative;
+  vertical-align: middle;
+  content: "←"; }
+  .arrow-left:before {
+    position: absolute;
+    top: 0; }
+  .arrow-left:before {
+    content: "←";
+    margin-top: -5px; }
+
+.arrow-right {
+  display: inline-block;
+  font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
+  font-size: 26px;
+  height: 26px;
+  line-height: 26px;
+  position: relative;
+  vertical-align: middle;
+  content: "→"; }
+  .arrow-right:before {
+    position: absolute;
+    top: 0; }
+  .arrow-right:before {
+    content: "→";
+    margin-top: -5px; }
+
 /*  Layout
     ------------------------------------- */
 #layout {
@@ -723,25 +787,25 @@ code {
       vertical-align: top;
       margin-top: -6px;
       margin-left: -14px; }
-  #masthead ul#nav {
+  #masthead ul.nav {
     display: block;
     list-style: none;
     margin: 0;
     padding: 0; }
-    #masthead ul#nav li {
+    #masthead ul.nav li {
       display: inline-block;
       padding: 0 26px;
       margin-left: 13px; }
-      #masthead ul#nav li:first-child {
+      #masthead ul.nav li:first-child {
         margin-left: 0;
         padding-left: 0; }
-      #masthead ul#nav li:last-child {
+      #masthead ul.nav li:last-child {
         padding-right: 0; }
-      #masthead ul#nav li a {
+      #masthead ul.nav li a {
         border: none;
         color: #202020;
         font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
-        font-size: 17px;
+        font-size: 14px;
         line-height: 52px;
         position: relative;
         /*        &:after {
@@ -772,11 +836,13 @@ code {
                   opacity: 1;
                   width: ($leading / 2);
                 }*/ }
-        #masthead ul#nav li a canvas {
+        #masthead ul.nav li a canvas {
           margin-left: -13px;
           margin-right: -13px;
           vertical-align: top;
           will-change: transform; }
+    #masthead ul.nav.back-nav li a .arrow-left {
+      margin-right: 39px; }
 
 /*  Beauty
     ------------------------------------- */
@@ -949,15 +1015,23 @@ ul.documentation {
   position: relative;
   width: 100%; }
   .output:before {
-    content: "↓";
+    display: inline-block;
     font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
     font-size: 26px;
     height: 26px;
-    left: calc(50% - 5px);
     line-height: 26px;
-    position: absolute;
+    position: relative;
+    vertical-align: middle;
+    content: "↓";
+    left: calc(50% - 5px);
     top: -52px;
     z-index: -1; }
+    .output:before:before {
+      position: absolute;
+      top: 0; }
+    .output:before:before {
+      content: "↑";
+      margin-left: -5px; }
   .output > div {
     width: 100%;
     text-align: center; }

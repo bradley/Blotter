@@ -90,7 +90,9 @@ $(document).ready(function () {
 
       $("body").trigger("pathChange");
 
-      BlotterSite.instance.goto(view);
+      BlotterSite.instance.goto(view, {
+        navView : new BlotterSite.Views.BackNavigation()
+      });
     }
   });
 
@@ -256,7 +258,6 @@ $(document).ready(function () {
       },
 
       _handleResize : function () {
-        console.log("called");
         this._setCanvasSize();
         this._drawArrows();
       },
@@ -797,7 +798,6 @@ $(document).ready(function () {
   })();
 
 
-
   BlotterSite.Helpers.GlitchMarginaliaCanvas = function (generator, rect) {
     this.init.apply(this, arguments);
   }
@@ -1076,19 +1076,42 @@ $(document).ready(function () {
       this.navigationRegion.show(this.navigationView);
     },
 
-    goto : function (view) {
+    detachNav : function () {
+      this.navigationRegion.empty({
+        preventDestroy : true
+      });
+    },
+
+    reattachNav : function () {
+      this.navigationRegion.show(this.navigationView);
+    },
+
+    goto : function (view, options) {
+      options = options || {};
+
       var previous = this.currentPage || null,
           next = view;
 
+      this.showSpecifiedNavView(options.navView);
       this.contentRegion.show(next);
 
       BlotterSite.marginaliaManager.updateSize();
+    },
+
+    showSpecifiedNavView : function (navView) {
+      if (navView) {
+        this.detachNav();
+        this.navigationRegion.show(navView);
+      } else {
+        this.reattachNav();
+      }
     },
 
     _triggerResize : _.debounce(function(e) {
       this.trigger("resize");
     }, 250)
   });
+
 
   BlotterSite.Views.Navigation = Marionette.ItemView.extend((function () {
     var _logoMainImage = [
@@ -1250,9 +1273,9 @@ $(document).ready(function () {
         this.navBlotter.material.uniforms.hovering.value = 0.0;
 
         if (this.dataId && this.navBlotterReady) {
-          var el = this.$("#nav li a[data-reference-id='" + this.dataId + "']"),
+          var el = this.$(".nav li a[data-reference-id='" + this.dataId + "']"),
               li = el.parent("li"),
-              i = this.$("#nav li").index(li);
+              i = this.$(".nav li").index(li);
 
           el.addClass("active");
 
@@ -1261,104 +1284,126 @@ $(document).ready(function () {
       },
 
       prepareLogo : function () {
-        var text = new Blotter.Text("Blotter", {
-              family : "'SerapionPro', sans-serif",
-              size : 48,
-              weight : 100,
-              leading : "52px",
-              paddingTop : 14,
-              paddingLeft : 14,
-              paddingRight : 14,
-              fill : "#202020"
-            });
+        if (!this.logoBlotter) {
+          var text = new Blotter.Text("Blotter", {
+                family : "'SerapionPro', sans-serif",
+                size : 48,
+                weight : 100,
+                leading : "52px",
+                paddingTop : 14,
+                paddingLeft : 14,
+                paddingRight : 14,
+                fill : "#202020"
+              });
 
-        var material = new Blotter.ShaderMaterial(_logoMainImage, {
-          uniforms : {
-            uTime : { type : "1f", value : 0.0 }
-          }
-        });
+          var material = new Blotter.ShaderMaterial(_logoMainImage, {
+            uniforms : {
+              uTime : { type : "1f", value : 0.0 }
+            }
+          });
 
-        this.logoBlotter = new Blotter(material, {
-          texts : text
-        });
+          this.logoBlotter = new Blotter(material, {
+            texts : text
+          });
 
-        this.logoScope = this.logoBlotter.forText(text);
+          this.logoScope = this.logoBlotter.forText(text);
 
-        this.logoBlotter.on("ready", _.bind(function () {
-          this.$("#logo").append(this.logoScope.domElement);
-        }, this));
+          this.logoBlotter.on("ready", _.bind(function () {
+            this.displayLogo();
+          }, this));
+        } else {
+          this.displayLogo();
+        }
       },
 
       prepareNav : function () {
-        this.navEls = this.$("#nav li a");
+        var navEls = this.$(".nav li a");
 
-        var properties = {
-              family : "'Avenir', sans-serif",
-              size : 14,
-              weight : 100,
-              leading : "50px",
-              paddingLeft : 13,
-              paddingRight : 13,
-              paddingTop: 2,
-              fill : "#202020"
-            };
+        if (!this.navBlotter || this.navEls != navEls) {
+          this.navEls = navEls;
 
-        this.navTexts = _.reduce(this.navEls, function(m, elem) {
-          var text = new Blotter.Text($(elem).data("text"), properties);
+          var properties = {
+                family : "'Avenir', sans-serif",
+                size : 14,
+                weight : 100,
+                leading : "50px",
+                paddingLeft : 13,
+                paddingRight : 13,
+                paddingTop: 2,
+                fill : "#202020"
+              };
 
-          m.push(text);
-          return m;
-        }, []);
+          this.navTexts = _.reduce(this.navEls, function(m, elem) {
+            var text = new Blotter.Text($(elem).data("text"), properties);
 
-        var material = new Blotter.ShaderMaterial(_navMainImage, {
-          uniforms : {
-            hovering : { type : "1f", value : 0.0 }
-          }
-        });
+            m.push(text);
+            return m;
+          }, []);
 
-        this.navBlotter = new Blotter(material, {
-          texts : this.navTexts
-        });
+          var material = new Blotter.ShaderMaterial(_navMainImage, {
+            uniforms : {
+              hovering : { type : "1f", value : 0.0 }
+            }
+          });
 
-        this.navScopes = _.reduce(this.navEls, _.bind(function (m, elem) {
-          var scope = this.navBlotter.forText(this.navTexts[m.length]);
-          m.push(scope);
-          return m;
-        }, this), []);
+          this.navBlotter = new Blotter(material, {
+            texts : this.navTexts
+          });
 
-        this.navBlotter.on("ready", _.bind(function () {
-          _.each(this.navScopes, _.bind(function (scope, i) {
-            var el = this.navEls[i];
+          this.navScopes = _.reduce(this.navEls, _.bind(function (m, elem) {
+            var scope = this.navBlotter.forText(this.navTexts[m.length]);
+            m.push(scope);
+            return m;
+          }, this), []);
 
-            scope.appendTo(el);
+          this.navBlotter.on("ready", _.bind(function () {
+            this.displayNav();
 
-            scope.on("mouseenter", (function (scope) {
-              return function () {
-                scope.material.uniforms.hovering.value = 1.0;
-              }
-            })(scope));
-
-            scope.on("mouseleave", (function (scope) {
-              return function () {
-                var anchor = $(scope.domElement).parent("a");
-
-                if (!anchor.hasClass("active")) {
-                  scope.material.uniforms.hovering.value = 0.0;
-                }
-              }
-            })(scope));
+            $("body").trigger("navReady");
           }, this));
+        } else {
+          this.displayNav();
+        }
+      },
 
-          this.navBlotterReady = true;
+      displayLogo : function () {
+        this.logoScope.appendTo(this.$("#logo"));
+      },
 
-          this.setNavForDataId();
+      displayNav : function () {
+        _.each(this.navScopes, _.bind(function (scope, i) {
+          var el = this.navEls[i];
 
-          $("body").trigger("navReady");
+          scope.appendTo(el);
+
+          scope.on("mouseenter", (function (scope) {
+            return function () {
+              scope.material.uniforms.hovering.value = 1.0;
+            }
+          })(scope));
+
+          scope.on("mouseleave", (function (scope) {
+            return function () {
+              var anchor = $(scope.domElement).parent("a");
+
+              if (!anchor.hasClass("active")) {
+                scope.material.uniforms.hovering.value = 0.0;
+              }
+            }
+          })(scope));
         }, this));
+
+        this.navBlotterReady = true;
+
+        this.setNavForDataId();
       }
     }
   })());
 
+
+  BlotterSite.Views.BackNavigation = Marionette.ItemView.extend({
+    template : _.template("<div><ul class='nav back-nav'><li><a href='#/'><span class='arrow-left'></span> FULL BLOTTER DOCUMENTATION</a></li></ul></div>")(),
+  })
 
   BlotterSite.Views.Home = Marionette.ItemView.extend({
     className : "home",

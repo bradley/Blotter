@@ -1,4 +1,5 @@
 @import "variables";
+@import "mixins";
 @import "codemirror_custom";
 
 /*  Typography
@@ -348,6 +349,22 @@ code {
   font-family: $code-font-stack;
 }
 
+.arrow-up {
+  @include arrow-up;
+}
+
+.arrow-down {
+  @include arrow-down;
+}
+
+.arrow-left {
+  @include arrow-left;
+}
+
+.arrow-right {
+  @include arrow-right;
+}
+
 
 /*  Layout
     ------------------------------------- */
@@ -424,7 +441,7 @@ code {
     }
   }
 
-  ul#nav {
+  ul.nav {
     display: block;
     list-style: none;
     margin: 0;
@@ -448,7 +465,7 @@ code {
         border: none;
         color: $black;
         font-family: $grotesque-font-stack;
-        font-size: $font-size;
+        font-size: 14px;
         line-height: $leading * 2;
         position: relative;
 
@@ -486,6 +503,16 @@ code {
           margin-right: -13px;
           vertical-align: top;
           will-change: transform;
+        }
+      }
+    }
+
+    &.back-nav {
+      li {
+        a {
+          .arrow-left {
+            margin-right: $leading * 1.5;
+          }          
         }
       }
     }
@@ -762,13 +789,8 @@ ul.documentation {
   width: 100%;
 
   &:before {
-    content: "↓";
-    font-family: $grotesque-font-stack;
-    font-size: $leading;
-    height: $leading;
+    @include arrow-down;
     left: calc(50% - 5px);
-    line-height: $leading;
-    position: absolute;
     top: -($leading * 2);
     z-index: -1;
   }
