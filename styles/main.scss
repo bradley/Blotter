@@ -799,6 +799,7 @@ ul.documentation {
   &:before {
     @include arrow-down;
     left: calc(50% - 5px);
+    position: absolute;
     top: -($leading * 2);
     z-index: -1;
   }

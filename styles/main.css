@@ -1028,6 +1028,7 @@ ul.documentation {
     vertical-align: middle;
     content: "↓";
     left: calc(50% - 5px);
+    position: absolute;
     top: -52px;
     z-index: -1; }
     .output:before:before {
