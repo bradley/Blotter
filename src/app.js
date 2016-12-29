@@ -913,11 +913,11 @@ $(document).ready(function () {
         BlotterSite.instance.on("resize", _.bind(this.handleResize, this));
       },
 
-      handleResize : _.debounce(function () {
+      handleResize : function () {
         this.width = this.container.width();
         this.height = this.container.height();
         this._updateMinMax();
-      }, 500),
+      },
 
       generate : function (append) {
         var marginaliaCanvas = new BlotterSite.Helpers.GlitchMarginaliaCanvas(this, this.randomRect());
@@ -1090,6 +1090,8 @@ $(document).ready(function () {
 
       var previous = this.currentPage || null,
           next = view;
+
+      $(window).scrollTop(0);
 
       this.showSpecifiedNavView(options.navView);
       this.contentRegion.show(next);
