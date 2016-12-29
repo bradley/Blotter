@@ -609,7 +609,7 @@ code {
     padding: 6.5px 0;
     position: absolute;
     top: calc(100% + 13px);
-    width: 182px;
+    width: 195px;
     z-index: 50;
     backface-visiblity: visible; }
     .dropdown-select .dropdown-options li {
@@ -751,7 +751,7 @@ code {
       text-align: left; }
 
 .content {
-  margin-top: 182px; }
+  margin: 182px 0; }
 
 .content-right, .content-left {
   width: 546px; }
@@ -883,10 +883,10 @@ code {
 
 .download-options .dropdown-options li .download-title {
   font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
-  font-size: 14px;
+  font-size: 17px;
   line-height: 1.5; }
 .download-options .dropdown-options li .download-details {
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1.5;
   margin-top: 0px; }
 
@@ -952,6 +952,10 @@ ul.documentation {
     ul.documentation .notated-list ul li {
       margin-bottom: 13px;
       margin-top: 0; }
+  ul.documentation > li:last-child ul > li:last-child .notated-list ul {
+    margin-bottom: 0; }
+    ul.documentation > li:last-child ul > li:last-child .notated-list ul > li:last-child {
+      margin-bottom: 0; }
 
 /*  Example Editor
     ------------------------------------- */

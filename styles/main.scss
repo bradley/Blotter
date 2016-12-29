@@ -269,7 +269,7 @@ code {
     padding: ($leading / 4) 0;
     position: absolute;
     top: calc(100% + #{$leading / 2});
-    width: $leading * 7;
+    width: $leading * 7.5;
     z-index: 50;
     backface-visiblity: visible;
 
@@ -392,7 +392,7 @@ code {
 }
 
 .content {
-  margin-top: $leading * 7;
+  margin: $leading * 7 0;
 }
 
 .content-right, .content-left {
@@ -580,12 +580,12 @@ code {
 
       .download-title {
         font-family: $grotesque-font-stack;
-        font-size: 14px;
+        font-size: 17px;
         line-height: 1.5;
       }
 
       .download-details {
-        font-size: 13px;
+        font-size: 14px;
         line-height: 1.5;
         margin-top: 0px;
       }
@@ -701,6 +701,14 @@ ul.documentation {
         margin-bottom: ($leading / 2);
         margin-top: 0;
       }
+    }
+  }
+
+  > li:last-child ul > li:last-child .notated-list ul {
+    margin-bottom: 0;
+
+    > li:last-child {
+      margin-bottom: 0;
     }
   }
 }
