@@ -21,8 +21,7 @@ $(document).ready(function () {
 
       Backbone.history.start();
 
-      var historyMatch = /\#\/(.*)/.exec(Backbone.history.location.hash);
-      this.initRoute = historyMatch && historyMatch[1];
+      this.initRoute = Backbone.history.fragment;
 
       this.setListeners();
     },
@@ -1402,7 +1401,20 @@ $(document).ready(function () {
 
 
   BlotterSite.Views.BackNavigation = Marionette.ItemView.extend({
-    template : _.template("<div><ul class='nav back-nav'><li><a href='#/'><span class='arrow-left'></span> FULL BLOTTER DOCUMENTATION</a></li></ul></div>")(),
+    template : _.template("<div><ul class='nav back-nav'><li><a href='#'><span class='arrow-left'></span> FULL BLOTTER DOCUMENTATION</a></li></ul></div>")(),
+    events : {
+      "click a" : "handleBackArrowClicked"
+    },
+
+    handleBackArrowClicked : function (e) {
+      e.preventDefault();
+
+      if (Backbone.history.history.length > 2) {
+        Backbone.history.history.back();
+      } else {
+        Backbone.history.navigate("#/", true);
+      }
+    }
   })
 
   BlotterSite.Views.Home = Marionette.ItemView.extend({
