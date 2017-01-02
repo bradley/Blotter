@@ -6,7 +6,7 @@
 
   Blotter.ShaderMaterial.prototype = Object.create(Blotter.Material.prototype);
 
-  _.extend(Blotter.ShaderMaterial.prototype, (function () {
+  Blotter._extendWithGettersSetters(Blotter.ShaderMaterial.prototype, (function () {
 
     return {
 

@@ -6,6 +6,10 @@
 
   Blotter.Material.prototype = (function() {
 
+    var _defaultUniforms = {
+      uBlendColor : { type : "4f", value : [1.0, 1.0, 1.0, 1.0] }
+    };
+
     function _defaultMainImageSrc () {
       var mainImage = [
 
@@ -89,7 +93,7 @@
       },
 
       set uniforms (uniforms) {
-        this._uniforms = _getUniformInterface.call(this, Blotter.UniformUtils.extractValidUniforms(uniforms));
+        this._uniforms = _getUniformInterface.call(this, Blotter.UniformUtils.extractValidUniforms(_.extend(uniforms, _defaultUniforms)));
       },
 
       init : function () {
@@ -99,7 +103,7 @@
     };
   })();
 
-  _.extend(Blotter.Material.prototype, EventEmitter.prototype);
+  Blotter._extendWithGettersSetters(Blotter.Material.prototype, EventEmitter.prototype);
 
 })(
   this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate

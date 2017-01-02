@@ -6,7 +6,7 @@
 
   Blotter.RGBSplitMaterial.prototype = Object.create(Blotter.Material.prototype);
 
-  _.extend(Blotter.RGBSplitMaterial.prototype, (function () {
+  Blotter._extendWithGettersSetters(Blotter.RGBSplitMaterial.prototype, (function () {
 
     function _mainImageSrc () {
       var mainImageSrc = [

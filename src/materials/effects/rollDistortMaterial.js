@@ -6,7 +6,7 @@
 
   Blotter.RollDistortMaterial.prototype = Object.create(Blotter.Material.prototype);
 
-  _.extend(Blotter.RollDistortMaterial.prototype, (function () {
+  Blotter._extendWithGettersSetters(Blotter.RollDistortMaterial.prototype, (function () {
 
     function _mainImageSrc () {
       var mainImageSrc = [

@@ -6,7 +6,7 @@
 
   Blotter.BubbleSplitMaterial.prototype = Object.create(Blotter.Material.prototype);
 
-  _.extend(Blotter.BubbleSplitMaterial.prototype, (function () {
+  Blotter._extendWithGettersSetters(Blotter.BubbleSplitMaterial.prototype, (function () {
 
     function _mainImageSrc () {
       var mainImageSrc = [

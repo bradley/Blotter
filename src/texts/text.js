@@ -26,7 +26,7 @@
     }
   };
 
-  _.extend(Blotter.Text.prototype, EventEmitter.prototype);
+  Blotter._extendWithGettersSetters(Blotter.Text.prototype, EventEmitter.prototype);
 
 })(
   this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate

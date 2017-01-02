@@ -148,7 +148,7 @@
     };
   })();
 
-  _.extend(Blotter.RenderScope.prototype, EventEmitter.prototype);
+  Blotter._extendWithGettersSetters(Blotter.RenderScope.prototype, EventEmitter.prototype);
 
 })(
   this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
