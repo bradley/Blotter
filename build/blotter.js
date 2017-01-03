@@ -43441,6 +43441,27 @@ GrowingPacker.prototype = {
   this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
 );
 
+(function(Blotter, _) {
+
+  Blotter._extendWithGettersSetters = function (obj) {
+    _.each(Array.prototype.slice.call(arguments, 1), function (source) {
+      if (source) {
+        for (var prop in source) {
+          if (obj[prop] && Object.getOwnPropertyDescriptor(obj, prop) && Object.getOwnPropertyDescriptor(obj, prop).set) {
+            Object.getOwnPropertyDescriptor(obj, prop).set(source[prop]);
+          } else {
+            obj[prop] = source[prop];
+          }
+        }
+      }
+    });
+    return obj;
+  };
+
+})(
+  this.Blotter, this._
+);
+
 (function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
 
   Blotter.Messaging = (function () {
@@ -43704,19 +43725,19 @@ GrowingPacker.prototype = {
           };
 
       switch (type) {
-        case '1f':
+        case "1f":
           valid = !isNaN(value) && [value].every(isValid);
           break;
 
-        case '2f':
+        case "2f":
           valid = _.isArray(value) && value.length == 2 && value.every(isValid);
           break;
 
-        case '3f':
+        case "3f":
           valid = _.isArray(value) && value.length == 3 && value.every(isValid);
           break;
 
-        case '4f':
+        case "4f":
           valid = _.isArray(value) && value.length == 4 && value.every(isValid);
           break;
 
@@ -43730,19 +43751,19 @@ GrowingPacker.prototype = {
     glslDataTypeForUniformType : function (type) {
       var dataType;
       switch (type) {
-        case '1f':
+        case "1f":
           dataType = "float";
           break;
 
-        case '2f':
+        case "2f":
           dataType = "vec2";
           break;
 
-        case '3f':
+        case "3f":
           dataType = "vec3";
           break;
 
-        case '4f':
+        case "4f":
           dataType = "vec4";
           break;
 
@@ -43757,19 +43778,19 @@ GrowingPacker.prototype = {
       var swizzleString;
 
       switch (type) {
-        case '1f':
+        case "1f":
           swizzleString = "x";
           break;
 
-        case '2f':
+        case "2f":
           swizzleString = "xy";
           break;
 
-        case '3f':
+        case "3f":
           swizzleString = "xyz";
           break;
 
-        case '4f':
+        case "4f":
           swizzleString = "xyzw";
           break;
 
@@ -43834,7 +43855,7 @@ GrowingPacker.prototype = {
     }
   };
 
-  _.extend(Blotter.Text.prototype, EventEmitter.prototype);
+  Blotter._extendWithGettersSetters(Blotter.Text.prototype, EventEmitter.prototype);
 
 })(
   this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
@@ -44148,6 +44169,10 @@ GrowingPacker.prototype = {
 
   Blotter.Material.prototype = (function() {
 
+    var _defaultUniforms = {
+      uBlendColor : { type : "4f", value : [1.0, 1.0, 1.0, 1.0] }
+    };
+
     function _defaultMainImageSrc () {
       var mainImage = [
 
@@ -44231,7 +44256,7 @@ GrowingPacker.prototype = {
       },
 
       set uniforms (uniforms) {
-        this._uniforms = _getUniformInterface.call(this, Blotter.UniformUtils.extractValidUniforms(uniforms));
+        this._uniforms = _getUniformInterface.call(this, Blotter.UniformUtils.extractValidUniforms(_.extend(uniforms, _defaultUniforms)));
       },
 
       init : function () {
@@ -44241,7 +44266,7 @@ GrowingPacker.prototype = {
     };
   })();
 
-  _.extend(Blotter.Material.prototype, EventEmitter.prototype);
+  Blotter._extendWithGettersSetters(Blotter.Material.prototype, EventEmitter.prototype);
 
 })(
   this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
@@ -44255,7 +44280,7 @@ GrowingPacker.prototype = {
 
   Blotter.ShaderMaterial.prototype = Object.create(Blotter.Material.prototype);
 
-  _.extend(Blotter.ShaderMaterial.prototype, (function () {
+  Blotter._extendWithGettersSetters(Blotter.ShaderMaterial.prototype, (function () {
 
     return {
 
@@ -44403,7 +44428,7 @@ GrowingPacker.prototype = {
     };
   })();
 
-  _.extend(Blotter.Renderer.prototype, EventEmitter.prototype);
+  Blotter._extendWithGettersSetters(Blotter.Renderer.prototype, EventEmitter.prototype);
 
 })(
   this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
@@ -44559,7 +44584,7 @@ GrowingPacker.prototype = {
     };
   })();
 
-  _.extend(Blotter.RenderScope.prototype, EventEmitter.prototype);
+  Blotter._extendWithGettersSetters(Blotter.RenderScope.prototype, EventEmitter.prototype);
 
 })(
   this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
@@ -45100,7 +45125,7 @@ GrowingPacker.prototype = {
 
   Blotter.BubbleSplitMaterial.prototype = Object.create(Blotter.Material.prototype);
 
-  _.extend(Blotter.BubbleSplitMaterial.prototype, (function () {
+  Blotter._extendWithGettersSetters(Blotter.BubbleSplitMaterial.prototype, (function () {
 
     function _mainImageSrc () {
       var mainImageSrc = [
@@ -45177,7 +45202,7 @@ GrowingPacker.prototype = {
 
   Blotter.RollDistortMaterial.prototype = Object.create(Blotter.Material.prototype);
 
-  _.extend(Blotter.RollDistortMaterial.prototype, (function () {
+  Blotter._extendWithGettersSetters(Blotter.RollDistortMaterial.prototype, (function () {
 
     function _mainImageSrc () {
       var mainImageSrc = [
@@ -45279,7 +45304,7 @@ GrowingPacker.prototype = {
 
   Blotter.RGBSplitMaterial.prototype = Object.create(Blotter.Material.prototype);
 
-  _.extend(Blotter.RGBSplitMaterial.prototype, (function () {
+  Blotter._extendWithGettersSetters(Blotter.RGBSplitMaterial.prototype, (function () {
 
     function _mainImageSrc () {
       var mainImageSrc = [
@@ -45311,6 +45336,158 @@ GrowingPacker.prototype = {
 
       init : function () {
         this.mainImage = _mainImageSrc();
+      }
+    };
+
+  })());
+
+})(
+  this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
+);
+
+(function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
+
+  Blotter.GhostBlurMaterial = function() {
+    Blotter.Material.apply(this, arguments);
+  };
+
+  Blotter.GhostBlurMaterial.prototype = Object.create(Blotter.Material.prototype);
+
+  Blotter._extendWithGettersSetters(Blotter.GhostBlurMaterial.prototype, (function () {
+
+    function _mainImageSrc () {
+      var mainImageSrc = [
+        "#ifdef GL_ES",
+        "precision mediump float;",
+        "#endif",
+
+        "#define PI 3.14159265358",
+
+        "//  `rand` and `noise` taken from ",
+        "//  http://thebookofshaders.com/",
+        "float rand (in float _x) {",
+        "    return fract(sin(_x)*1e4);",
+        "}",
+
+        "float rand(vec2 co){",
+        "    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);",
+        "}",
+
+        "float noise (in float _x) {",
+        "    float i = floor(_x);",
+        "    float f = fract(_x);",
+        "    float u = f * f * (3.0 - 2.0 * f);",
+        "    return mix(rand(i), rand(i + 1.0), u);",
+        "}",
+
+        "float noiseWave(vec2 uv, float y, float height, float volatility, float smoothing) {",
+        "    // Define wave ",
+        "    float variance = (height / 2.0) * -1.0;",
+        "      variance += noise((uv.x + (rand(y) * 1000.0)) * PI * volatility) * height;",
+
+        "    // Adjust y",
+        "    y += variance;",
+
+        "    return smoothstep(y - smoothing, y + smoothing, uv.y);",
+        "}",
+
+        "float distortionShape(vec2 uv, float y, float height, float dHeight, float smoothing) {",
+        "      // Define shape constraints",
+        "      float h = height / 2.0;",
+        "    float top = y + h;",
+        "    float bottom = y - h;",
+
+        "    // Define distortion",
+        "    float volatility = 40.0;",
+
+        "    float topWave = noiseWave(uv, top, dHeight, volatility, smoothing);",
+        "    float bottomWave = noiseWave(uv, bottom, dHeight, volatility, smoothing);",
+
+        "    return bottomWave - topWave;",
+        "}",
+
+
+        "void mainImage( out vec4 mainImage, in vec2 fragCoord )",
+        "{",
+        "    // Setup ========================================================================",
+
+        "    vec2 uv = fragCoord.xy / uResolution.xy;",
+        "    vec2 p = vec2(1.0) / uResolution.xy; // 1 pixel.",
+        
+        "    vec4 finalColour = vec4(0.0);",
+
+
+        "    // Create Distortion ============================================================",
+
+        "    float dY = 0.5;",
+        "    float dHeight = 0.606;",
+        "    float dWaveHeight = 0.4545;",
+        "    float distortion = distortionShape(uv, dY, dHeight, dWaveHeight, 0.429);",
+        "    float amount = smoothstep(-1.0, 1.0, distortion);",
+
+
+        "    // Create Darkness ==============================================================",
+
+        "    vec2 maxRadiusUv = vec2(0.0337, 0.0625 + (0.125 * amount));",
+        "    vec2 maxRadiusCoord = maxRadiusUv.xy * uResolution.xy;",
+        "    float maxDistance = distance(fragCoord, fragCoord + maxRadiusCoord);",
+
+        "    const int maxSteps = 120; // This kind of sucks but we cant use non constant values for our loops",
+
+        "    float stepDistance = 1.0;",
+        "    vec2 stepCoord = vec2(0.0);",
+        "    vec2 stepUv = vec2(0.0);",
+        "    vec4 stepSample = vec4(1.0);",
+        "    vec4 darkestSample = vec4(1.0);",
+
+        "    float randNoise = rand(uv * sin(uv.x * 0.025)) * 0.15;",
+
+        "    for (int i = -maxSteps; i <= maxSteps; i += 2) {",
+        "        if (abs(float(i) * p.x) >= maxRadiusUv.x) { continue; }",
+        "        for (int j = -maxSteps; j <= maxSteps; j += 2) {",
+        "            if (abs(float(j) * p.y) >= maxRadiusUv.y) { continue; }",
+
+        "            stepUv = uv + vec2(float(i) * p.x, float(j) * p.y);",
+        "            stepCoord = stepUv * uResolution.xy;",
+        "            stepSample = textTexture(stepUv);",
+
+        "            vec4 sampleOnBackground = vec4(0.0);",
+        "            combineColors(sampleOnBackground, uBlendColor, stepSample);",
+
+        "            stepDistance = distance(fragCoord, stepCoord) / smoothstep(-1.0, 1.0, amount);",
+
+        "            float stepDarkestSampleWeight = 1.0 - clamp((stepDistance / maxDistance), 0.0, 1.0) + randNoise;",
+        "            stepDarkestSampleWeight *= smoothstep(0.0, 7.5, amount);",
+
+        "            vec4 mixedStep = mix(darkestSample, sampleOnBackground, stepDarkestSampleWeight);",
+
+        "            if (mixedStep == min(mixedStep, darkestSample) && stepDistance <= maxDistance) {",
+        "                darkestSample = mixedStep;",
+        "            }",
+        "        }",
+        "    }",
+
+
+        "    // Create Glow ==================================================================",
+
+        "    float dropoff = smoothstep(0.25, 1.15, 1.0 - distance(vec2(0.0, 0.5), vec2(0.0, uv.y)));",
+        "    vec4 glow = vec4(0.22745, 0.30980, 1.0, (1.0 - max(max(darkestSample.r, darkestSample.g), darkestSample.b)) * dropoff);",
+
+
+        "    mainImage = glow;",
+        "}"
+      ].join("\n");
+
+      return mainImageSrc;
+    }
+
+    return {
+
+      constructor : Blotter.GhostBlurMaterial,
+
+      init : function () {
+        this.mainImage = _mainImageSrc();
+        this.uniforms = {};
       }
     };
 

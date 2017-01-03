@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+
+    <style type="text/css">
+      body {
+        background: #202020;
+        padding: 20px;
+        font-family: Charcoal, sans-serif;
+        font-size: 22px;
+        line-height: 1.5;
+        color: #0d0f17;
+      }
+
+      canvas {
+        padding: 0;
+        margin: 0;
+        vertical-align: top;
+      }
+    </style>
+
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-beta1/jquery.js"></script>
+    <script type="text/javascript" src="../build/blotter.js"></script>
+  </head>
+    <span id="glitch-target"></span>
+    <script>
+      $(document).ready(function() {
+
+        var styleProperties = {
+          family: "serif",
+          size : 48,
+          weight : 100,
+          paddingTop : 14,
+          paddingLeft : 14,
+          paddingRight : 14,
+          fill : "#202020"
+        };
+
+        var text = new Blotter.Text("Blotter", styleProperties);
+
+        var material = new Blotter.GhostBlurMaterial();
+
+        var blotter = new Blotter(material, {
+          texts : text
+        });
+
+        var myScope = blotter.forText(text);
+
+        blotter.on("ready", function () {
+          myScope.appendTo(document.getElementById("glitch-target"));
+        });
+      });
+    </script>
+  </body>
+</html>

@@ -21,6 +21,7 @@ module.exports = function(grunt) {
 
       srcFiles : [
         "src/blotter.js",
+        "src/extras/core/overrides.js",
         "src/extras/core/messaging.js",
         "src/extras/core/vendorPrefixes.js",
         "src/extras/objects/modelEventBinding.js",
@@ -42,7 +43,8 @@ module.exports = function(grunt) {
 
         "src/materials/effects/bubbleSplitMaterial.js",
         "src/materials/effects/rollDistortMaterial.js",
-        "src/materials/effects/rgbSplitMaterial.js"
+        "src/materials/effects/rgbSplitMaterial.js",
+        "src/materials/effects/ghostBlurMaterial.js"
       ]
     },
 
