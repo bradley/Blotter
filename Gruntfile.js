@@ -39,12 +39,7 @@ module.exports = function(grunt) {
         "src/builders/textures/indicesDataTextureBuilder.js",
         "src/builders/textures/textTextureBuilder.js",
         "src/builders/mappingBuilder.js",
-        "src/builders/mappingMaterialBuilder.js",
-
-        "src/materials/effects/bubbleSplitMaterial.js",
-        "src/materials/effects/rollDistortMaterial.js",
-        "src/materials/effects/rgbSplitMaterial.js",
-        "src/materials/effects/ghostBlurMaterial.js"
+        "src/builders/mappingMaterialBuilder.js"
       ]
     },
 

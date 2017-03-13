@@ -22,6 +22,7 @@
 
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-beta1/jquery.js"></script>
     <script type="text/javascript" src="../build/blotter.js"></script>
+    <script type="text/javascript" src="../build/filters/ghostBlurMaterial.js"></script>
   </head>
     <span id="glitch-target"></span>
     <script>
@@ -29,12 +30,12 @@
 
         var styleProperties = {
           family: "serif",
-          size : 48,
+          size : 64,
           weight : 100,
-          paddingTop : 14,
+          paddingTop : 0,
           paddingLeft : 14,
           paddingRight : 14,
-          fill : "#202020"
+          fill : "#ffffff"
         };
 
         var text = new Blotter.Text("Blotter", styleProperties);

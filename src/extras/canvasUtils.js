@@ -4,8 +4,12 @@
 
     // Creates and returns a high a canvas
 
-    canvas : function (w, h) {
+    canvas : function (w, h, options) {
+      options = options || {};
       var canvas = document.createElement("canvas");
+      
+      canvas.className = options.class;
+      canvas.innerHTML = options.html;
 
       canvas.width = w;
       canvas.height = h;
@@ -15,9 +19,13 @@
 
     // Creates and returns a high DPI canvas based on a device specific pixel ratio
 
-    hiDpiCanvas : function (w, h, ratio) {
+    hiDpiCanvas : function (w, h, ratio, options) {
       ratio = ratio || this.pixelRatio;
+      options = options || {};
       var canvas = document.createElement("canvas");
+      
+      canvas.className = options.class;
+      canvas.innerHTML = options.html;
 
       this.updateCanvasSize(canvas, w, h, ratio);
 

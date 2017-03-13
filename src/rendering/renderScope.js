@@ -15,8 +15,11 @@
     this.lastDrawTime = false;
     this.frameCount = 0;
 
-    this.domElement = Blotter.CanvasUtils.hiDpiCanvas(0, 0, this.blotter.ratio);
-    this.domElement.innerHTML = text.value;
+    this.domElement = Blotter.CanvasUtils.hiDpiCanvas(0, 0, this.blotter.ratio, {
+      class : "b-canvas",
+      html : text.value
+    });
+
     this.context = this.domElement.getContext("2d");
   };
 

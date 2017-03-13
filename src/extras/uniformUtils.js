@@ -10,7 +10,7 @@
 
     validValueForUniformType : function (type, value) {
       var valid = false,
-          isValid = function (element, _, _) {
+          isValid = function (element) {
             return !isNaN(element);
           };
 

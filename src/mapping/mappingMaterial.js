@@ -49,7 +49,7 @@
         }
 
         // Update existing uniform interface, bypassing setter. Gross.
-        _.each(uniformInterfaces, function (interface, textId) {
+        _.each(uniformInterfaces, function (uInterface, textId) {
           uniformInterfaces[textId][materialUniformName]._value = value;
         });
 

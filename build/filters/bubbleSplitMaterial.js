@@ -1,4 +1,4 @@
-(function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
+(function(Blotter, _) {
 
   Blotter.BubbleSplitMaterial = function() {
     Blotter.Material.apply(this, arguments);
@@ -45,11 +45,11 @@
         "   vec4 cga = textTexture(offsetUV);",
         "   vec4 cb = textTexture(offsetUV - offset);",
 
-        "   combineColors(cr, vec4(1.0, 1.0, 1.0, 1.0), cr);",
-        "   combineColors(cga, vec4(1.0, 1.0, 1.0, 1.0), cga);",
-        "   combineColors(cb, vec4(1.0, 1.0, 1.0, 1.0), cb);",
+        "   cr = normalBlend(cr, uBlendColor);",
+        "   cga = normalBlend(cga, uBlendColor);",
+        "   cb = normalBlend(cb, uBlendColor);",
 
-        "   rgbaFromRgb(mainImage, vec3(cr.r, cga.g, cb.b));",
+        "   mainImage = normalUnblend(vec3(cr.r, cga.g, cb.b, cga.a), uBlendColor);",
         "}"
       ].join("\n");
 
@@ -72,5 +72,5 @@
   })());
 
 })(
-  this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
+  this.Blotter, this._
 );

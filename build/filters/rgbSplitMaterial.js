@@ -1,4 +1,4 @@
-(function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
+(function(Blotter, _) {
 
   Blotter.RGBSplitMaterial = function() {
     Blotter.Material.apply(this, arguments);
@@ -17,15 +17,17 @@
         "   float angle = 0.25;",
         "   vec2 offset = (amount / uResolution) * vec2(cos(angle), sin(angle));",
 
-        "   vec4 cr = textTexture(p + offset);",
-        "   vec4 cga = textTexture(p);",
-        "   vec4 cb = textTexture(p - offset);",
+        "   highp vec4 cr = textTexture(p + offset);",
+        "   highp vec4 cg = textTexture(p);",
+        "   highp vec4 cb = textTexture(p - offset);",
 
-        "   combineColors(cr, vec4(1.0, 1.0, 1.0, 1.0), cr);",
-        "   combineColors(cga, vec4(1.0, 1.0, 1.0, 1.0), cga);",
-        "   combineColors(cb, vec4(1.0, 1.0, 1.0, 1.0), cb);",
+        "   cr = normalBlend(cr, uBlendColor);",
+        "   cg = normalBlend(cg, uBlendColor);",
+        "   cb = normalBlend(cb, uBlendColor);",
 
-        "   rgbaFromRgb(mainImage, vec3(cr.r, cga.g, cb.b));",
+        "   float a = max(cr.a, max(cg.a, cb.a));",
+
+        "   mainImage = normalUnblend(vec4(cr.r, cg.g, cb.b, a), uBlendColor);",
         "}"
       ].join("\n");
 
@@ -38,11 +40,12 @@
 
       init : function () {
         this.mainImage = _mainImageSrc();
+        this.uniforms = {};
       }
     };
 
   })());
 
 })(
-  this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
+  this.Blotter, this._
 );

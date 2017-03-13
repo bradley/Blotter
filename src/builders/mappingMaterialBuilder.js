@@ -66,11 +66,16 @@
         // Public versions of user defined uniforms.
         userDefinedUniforms.publicUniformDeclarations,
 
+        "float round(float n) {",
+        "  return sign(n) * floor(abs(n) + 0.5);",
+        "}",
+
         // Public helper function used by user programs to retrieve texel color information within the bounds of
         // any given text text. This is to be used instead of `texture2D`.
-        "vec4 textTexture( vec2 coord ) {",
+        "vec4 textTexture(vec2 coord) {",
         "   vec2 adjustedFragCoord = _textBounds.xy + vec2((_textBounds.z * coord.x), (_textBounds.w * coord.y));",
         "   vec2 uv = adjustedFragCoord.xy / _uCanvasResolution;",
+        
         //  If adjustedFragCoord falls outside the bounds of the current texel's text, return `vec4(0.0)`.
         "   if (adjustedFragCoord.x < _textBounds.x ||",
         "       adjustedFragCoord.x > _textBounds.x + _textBounds.z ||",
@@ -78,34 +83,78 @@
         "       adjustedFragCoord.y > _textBounds.y + _textBounds.w) {",
         "     return vec4(0.0);",
         "   }",
+
         "   return texture2D(_uSampler, uv);",
         "}",
 
-        "void combineColors( out vec4 adjustedColor, in vec4 bg, in vec4 color ) {",
-        "  float a = color.a;",
+        "// Returns the resulting blend color by blending a top color over a base color",
+        "highp vec4 normalBlend(highp vec4 topColor, highp vec4 baseColor) {",
+        "  highp vec4 blend = vec4(0.0);",
+          
+        "  // HACK",
+        "  // Cant divide by 0 (see the 'else' alpha) and after a lot of attempts",
+        "  // this simply seems like the only solution Im going to be able to come up with to get alpha back.",
+        "  if (baseColor.a == 1.0) {",
+        "    baseColor.a = 0.9999999;",
+        "  };",
 
-        "  float r = (1.0 - a) * bg.r + a * color.r;",
-        "  float g = (1.0 - a) * bg.g + a * color.g;",
-        "  float b = (1.0 - a) * bg.b + a * color.b;",
+        "  if (topColor.a >= 1.0) {",
+        "    blend.a = topColor.a;",
+        "    blend.r = topColor.r;",
+        "    blend.g = topColor.g;",
+        "    blend.b = topColor.b;",
+        "  } else if (topColor.a == 0.0) {",
+        "    blend.a = baseColor.a;",
+        "    blend.r = baseColor.r;",
+        "    blend.g = baseColor.g;",
+        "    blend.b = baseColor.b;",
+        "  } else {",
+        "    blend.a = 1.0 - (1.0 - topColor.a) * (1.0 - baseColor.a); // alpha",
+        "    blend.r = (topColor.r * topColor.a / blend.a) + (baseColor.r * baseColor.a * (1.0 - topColor.a) / blend.a);",
+        "    blend.g = (topColor.g * topColor.a / blend.a) + (baseColor.g * baseColor.a * (1.0 - topColor.a) / blend.a);",
+        "    blend.b = (topColor.b * topColor.a / blend.a) + (baseColor.b * baseColor.a * (1.0 - topColor.a) / blend.a);",
+        "  }",
 
-        "  adjustedColor = vec4(r, g, b, 1.0);",
+        "  return blend;",
         "}",
 
-        "void rgbaFromRgb( out vec4 rgba, in vec3 rgb ) {",
-        "  float a = 1.0 - min(rgb.r, min(rgb.g, rgb.b));",
+        "// Returns a vec4 representing the original top color that would have been needed to blend",
+        "//  against a passed in base color in order to result in the passed in blend color.",
+        "highp vec4 normalUnblend(highp vec4 blendColor, highp vec4 baseColor) {",
+        "  highp vec4 unblend = vec4(0.0);",
+          
+        "  // HACKY",
+        "  // Cant divide by 0 (see alpha) and after a lot of attempts",
+        "  // this simply seems like the only solution Im going to be able to come up with to get alpha back.",
+        "  if (baseColor.a == 1.0) {",
+        "    baseColor.a = 0.9999999;",
+        "  }",
 
-        "  float r = 1.0 - (1.0 - rgb.r) / a;",
-        "  float g = 1.0 - (1.0 - rgb.g) / a;",
-        "  float b = 1.0 - (1.0 - rgb.b) / a;",
+        "  unblend.a = 1.0 - ((1.0 - blendColor.a) / (1.0 - baseColor.a));",
+        "  unblend.a = round(100.0 * unblend.a) / 100.0;",
 
-        "  rgba = vec4(r, g, b, a);",
+        "  if (unblend.a >= 1.0) {",
+        "    unblend.r = blendColor.r;",
+        "    unblend.g = blendColor.g;",
+        "    unblend.b = blendColor.b;",
+        "  } else if (unblend.a == 0.0) {",
+        "    unblend.r = baseColor.r;",
+        "    unblend.g = baseColor.g;",
+        "    unblend.b = baseColor.b;",
+        "  } else {",
+        "    unblend.r = (blendColor.r - (baseColor.r * baseColor.a * (1.0 - unblend.a) / blendColor.a)) / (unblend.a / blendColor.a);",
+        "    unblend.g = (blendColor.g - (baseColor.g * baseColor.a * (1.0 - unblend.a) / blendColor.a)) / (unblend.a / blendColor.a);",
+        "    unblend.b = (blendColor.b - (baseColor.b * baseColor.a * (1.0 - unblend.a) / blendColor.a)) / (unblend.a / blendColor.a);",
+        "  }",
+        
+        "  return unblend;",
         "}",
 
-        "void mainImage( out vec4 mainImage, in vec2 fragCoord );",
+        "void mainImage(out vec4 mainImage, in vec2 fragCoord);",
 
         mainImageSrc,
 
-        "void main( void ) {",
+        "void main(void) {",
 
         //  Retrieve text index and text alpha for text bounds in which texel is contained.
         "   vec4 textIndexData = texture2D(_uTextIndicesTexture, _vTexCoord);",

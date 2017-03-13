@@ -380,8 +380,12 @@
 
     // Creates and returns a high a canvas
 
-    canvas : function (w, h) {
+    canvas : function (w, h, options) {
+      options = options || {};
       var canvas = document.createElement("canvas");
+      
+      canvas.className = options.class;
+      canvas.innerHTML = options.html;
 
       canvas.width = w;
       canvas.height = h;
@@ -391,9 +395,13 @@
 
     // Creates and returns a high DPI canvas based on a device specific pixel ratio
 
-    hiDpiCanvas : function (w, h, ratio) {
+    hiDpiCanvas : function (w, h, ratio, options) {
       ratio = ratio || this.pixelRatio;
+      options = options || {};
       var canvas = document.createElement("canvas");
+      
+      canvas.className = options.class;
+      canvas.innerHTML = options.html;
 
       this.updateCanvasSize(canvas, w, h, ratio);
 
@@ -564,7 +572,7 @@
 
     validValueForUniformType : function (type, value) {
       var valid = false,
-          isValid = function (element, _, _) {
+          isValid = function (element) {
             return !isNaN(element);
           };
 
@@ -876,7 +884,7 @@
         }
 
         // Update existing uniform interface, bypassing setter. Gross.
-        _.each(uniformInterfaces, function (interface, textId) {
+        _.each(uniformInterfaces, function (uInterface, textId) {
           uniformInterfaces[textId][materialUniformName]._value = value;
         });
 
@@ -1295,8 +1303,11 @@
     this.lastDrawTime = false;
     this.frameCount = 0;
 
-    this.domElement = Blotter.CanvasUtils.hiDpiCanvas(0, 0, this.blotter.ratio);
-    this.domElement.innerHTML = text.value;
+    this.domElement = Blotter.CanvasUtils.hiDpiCanvas(0, 0, this.blotter.ratio, {
+      class : "b-canvas",
+      html : text.value
+    });
+
     this.context = this.domElement.getContext("2d");
   };
 
@@ -1714,11 +1725,16 @@
         // Public versions of user defined uniforms.
         userDefinedUniforms.publicUniformDeclarations,
 
+        "float round(float n) {",
+        "  return sign(n) * floor(abs(n) + 0.5);",
+        "}",
+
         // Public helper function used by user programs to retrieve texel color information within the bounds of
         // any given text text. This is to be used instead of `texture2D`.
-        "vec4 textTexture( vec2 coord ) {",
+        "vec4 textTexture(vec2 coord) {",
         "   vec2 adjustedFragCoord = _textBounds.xy + vec2((_textBounds.z * coord.x), (_textBounds.w * coord.y));",
         "   vec2 uv = adjustedFragCoord.xy / _uCanvasResolution;",
+        
         //  If adjustedFragCoord falls outside the bounds of the current texel's text, return `vec4(0.0)`.
         "   if (adjustedFragCoord.x < _textBounds.x ||",
         "       adjustedFragCoord.x > _textBounds.x + _textBounds.z ||",
@@ -1726,34 +1742,78 @@
         "       adjustedFragCoord.y > _textBounds.y + _textBounds.w) {",
         "     return vec4(0.0);",
         "   }",
+
         "   return texture2D(_uSampler, uv);",
         "}",
 
-        "void combineColors( out vec4 adjustedColor, in vec4 bg, in vec4 color ) {",
-        "  float a = color.a;",
+        "// Returns the resulting blend color by blending a top color over a base color",
+        "highp vec4 normalBlend(highp vec4 topColor, highp vec4 baseColor) {",
+        "  highp vec4 blend = vec4(0.0);",
+          
+        "  // HACK",
+        "  // Cant divide by 0 (see the 'else' alpha) and after a lot of attempts",
+        "  // this simply seems like the only solution Im going to be able to come up with to get alpha back.",
+        "  if (baseColor.a == 1.0) {",
+        "    baseColor.a = 0.9999999;",
+        "  };",
 
-        "  float r = (1.0 - a) * bg.r + a * color.r;",
-        "  float g = (1.0 - a) * bg.g + a * color.g;",
-        "  float b = (1.0 - a) * bg.b + a * color.b;",
+        "  if (topColor.a >= 1.0) {",
+        "    blend.a = topColor.a;",
+        "    blend.r = topColor.r;",
+        "    blend.g = topColor.g;",
+        "    blend.b = topColor.b;",
+        "  } else if (topColor.a == 0.0) {",
+        "    blend.a = baseColor.a;",
+        "    blend.r = baseColor.r;",
+        "    blend.g = baseColor.g;",
+        "    blend.b = baseColor.b;",
+        "  } else {",
+        "    blend.a = 1.0 - (1.0 - topColor.a) * (1.0 - baseColor.a); // alpha",
+        "    blend.r = (topColor.r * topColor.a / blend.a) + (baseColor.r * baseColor.a * (1.0 - topColor.a) / blend.a);",
+        "    blend.g = (topColor.g * topColor.a / blend.a) + (baseColor.g * baseColor.a * (1.0 - topColor.a) / blend.a);",
+        "    blend.b = (topColor.b * topColor.a / blend.a) + (baseColor.b * baseColor.a * (1.0 - topColor.a) / blend.a);",
+        "  }",
 
-        "  adjustedColor = vec4(r, g, b, 1.0);",
+        "  return blend;",
         "}",
 
-        "void rgbaFromRgb( out vec4 rgba, in vec3 rgb ) {",
-        "  float a = 1.0 - min(rgb.r, min(rgb.g, rgb.b));",
+        "// Returns a vec4 representing the original top color that would have been needed to blend",
+        "//  against a passed in base color in order to result in the passed in blend color.",
+        "highp vec4 normalUnblend(highp vec4 blendColor, highp vec4 baseColor) {",
+        "  highp vec4 unblend = vec4(0.0);",
+          
+        "  // HACKY",
+        "  // Cant divide by 0 (see alpha) and after a lot of attempts",
+        "  // this simply seems like the only solution Im going to be able to come up with to get alpha back.",
+        "  if (baseColor.a == 1.0) {",
+        "    baseColor.a = 0.9999999;",
+        "  }",
 
-        "  float r = 1.0 - (1.0 - rgb.r) / a;",
-        "  float g = 1.0 - (1.0 - rgb.g) / a;",
-        "  float b = 1.0 - (1.0 - rgb.b) / a;",
+        "  unblend.a = 1.0 - ((1.0 - blendColor.a) / (1.0 - baseColor.a));",
+        "  unblend.a = round(100.0 * unblend.a) / 100.0;",
 
-        "  rgba = vec4(r, g, b, a);",
+        "  if (unblend.a >= 1.0) {",
+        "    unblend.r = blendColor.r;",
+        "    unblend.g = blendColor.g;",
+        "    unblend.b = blendColor.b;",
+        "  } else if (unblend.a == 0.0) {",
+        "    unblend.r = baseColor.r;",
+        "    unblend.g = baseColor.g;",
+        "    unblend.b = baseColor.b;",
+        "  } else {",
+        "    unblend.r = (blendColor.r - (baseColor.r * baseColor.a * (1.0 - unblend.a) / blendColor.a)) / (unblend.a / blendColor.a);",
+        "    unblend.g = (blendColor.g - (baseColor.g * baseColor.a * (1.0 - unblend.a) / blendColor.a)) / (unblend.a / blendColor.a);",
+        "    unblend.b = (blendColor.b - (baseColor.b * baseColor.a * (1.0 - unblend.a) / blendColor.a)) / (unblend.a / blendColor.a);",
+        "  }",
+        
+        "  return unblend;",
         "}",
 
-        "void mainImage( out vec4 mainImage, in vec2 fragCoord );",
+        "void mainImage(out vec4 mainImage, in vec2 fragCoord);",
 
         mainImageSrc,
 
-        "void main( void ) {",
+        "void main(void) {",
 
         //  Retrieve text index and text alpha for text bounds in which texel is contained.
         "   vec4 textIndexData = texture2D(_uTextIndicesTexture, _vTexCoord);",
@@ -1956,386 +2016,6 @@
       }
     };
   })();
-
-})(
-  this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
-);
-
-(function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
-
-  Blotter.BubbleSplitMaterial = function() {
-    Blotter.Material.apply(this, arguments);
-  };
-
-  Blotter.BubbleSplitMaterial.prototype = Object.create(Blotter.Material.prototype);
-
-  Blotter._extendWithGettersSetters(Blotter.BubbleSplitMaterial.prototype, (function () {
-
-    function _mainImageSrc () {
-      var mainImageSrc = [
-
-        "void mainImage( out vec4 mainImage, in vec2 fragCoord ) {",
-
-        "   // p = x, y percentage for texel position within total resolution.",
-        "   vec2 p = fragCoord / uResolution;",
-        "   // d = x, y percentage for texel position within total resolution relative to center point.",
-        "   vec2 d = p - uCenterPoint;",
-
-        "   // The dot function returns the dot product of the two",
-        "   // input parameters, i.e. the sum of the component-wise",
-        "   // products. If x and y are the same the square root of",
-        "   // the dot product is equivalent to the length of the vector.",
-        "   // Therefore, r = length of vector represented by d (the ",
-        "   // distance of the texel from center position).",
-        "   // ",
-        "   // In order to apply weights here, we add our weight to this distance",
-        "   // (pushing it closer to 1 - essentially giving no effect at all) and",
-        "   // find the min between our weighted distance and 1.0",
-        "   float inverseLenseWeight = 1.0 - uLenseWeight;",
-        "   float r = min(sqrt(dot(d, d)) + inverseLenseWeight, 1.0);",
-
-        "   vec2 offsetUV = uCenterPoint + (d * r);",
-
-        "   // RGB split",
-        "   vec2 offset = vec2(0.0);",
-        "   if (r < 1.0) {",
-        "     float amount = 0.012;",
-        "     float angle = 0.45;",
-        "     offset = (amount * (1.0 - r)) * vec2(cos(angle), sin(angle));",
-        "   }",
-
-        "   vec4 cr = textTexture(offsetUV + offset);",
-        "   vec4 cga = textTexture(offsetUV);",
-        "   vec4 cb = textTexture(offsetUV - offset);",
-
-        "   combineColors(cr, vec4(1.0, 1.0, 1.0, 1.0), cr);",
-        "   combineColors(cga, vec4(1.0, 1.0, 1.0, 1.0), cga);",
-        "   combineColors(cb, vec4(1.0, 1.0, 1.0, 1.0), cb);",
-
-        "   rgbaFromRgb(mainImage, vec3(cr.r, cga.g, cb.b));",
-        "}"
-      ].join("\n");
-
-      return mainImageSrc;
-    }
-
-    return {
-
-      constructor : Blotter.BubbleSplitMaterial,
-
-      init : function () {
-        this.mainImage = _mainImageSrc();
-        this.uniforms = {
-          uCenterPoint : { type : "2f", value : [0.5, 0.5] },
-          uLenseWeight : { type : "1f", value : 0.9 }
-        };
-      }
-    };
-
-  })());
-
-})(
-  this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
-);
-
-(function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
-
-  Blotter.RollDistortMaterial = function() {
-    Blotter.Material.apply(this, arguments);
-  };
-
-  Blotter.RollDistortMaterial.prototype = Object.create(Blotter.Material.prototype);
-
-  Blotter._extendWithGettersSetters(Blotter.RollDistortMaterial.prototype, (function () {
-
-    function _mainImageSrc () {
-      var mainImageSrc = [
-
-        "vec3 mod289(vec3 x) {",
-        "  return x - floor(x * (1.0 / 289.0)) * 289.0;",
-        "}",
-
-        "vec2 mod289(vec2 x) {",
-        "  return x - floor(x * (1.0 / 289.0)) * 289.0;",
-        "}",
-
-        "vec3 permute(vec3 x) {",
-        "  return mod289(((x * 34.0) + 1.0) * x);",
-        "}",
-
-        "float snoise(vec2 v) {",
-        "  const vec4 C = vec4(0.211324865405187,",
-        "                      0.366025403784439,",
-        "                     -0.577350269189626,",
-        "                      0.024390243902439);",
-        "  vec2 i  = floor(v + dot(v, C.yy) );",
-        "  vec2 x0 = v -   i + dot(i, C.xx);",
-
-        "  vec2 i1;",
-        "  i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);",
-        "  vec4 x12 = x0.xyxy + C.xxzz;",
-        "  x12.xy -= i1;",
-
-        "  i = mod289(i); // Avoid truncation effects in permutation",
-        "  vec3 p = permute( permute( i.y + vec3(0.0, i1.y, 1.0 )) + i.x + vec3(0.0, i1.x, 1.0 ));",
-
-        "  vec3 m = max(0.5 - vec3(dot(x0, x0), dot(x12.xy, x12.xy), dot(x12.zw, x12.zw)), 0.0);",
-        "  m = m*m ;",
-        "  m = m*m ;",
-
-        "  vec3 x = 2.0 * fract(p * C.www) - 1.0;",
-        "  vec3 h = abs(x) - 0.5;",
-        "  vec3 ox = floor(x + 0.5);",
-        "  vec3 a0 = x - ox;",
-
-        "  m *= 1.79284291400159 - 0.85373472095314 * ( a0 * a0 + h * h );",
-
-        "  vec3 g;",
-        "  g.x  = a0.x  * x0.x  + h.x  * x0.y;",
-        "  g.yz = a0.yz * x12.xz + h.yz * x12.yw;",
-        "  return 130.0 * dot(m, g);",
-        "}",
-
-        // End Ashima 2D Simplex Noise
-
-        "void mainImage( out vec4 mainImage, in vec2 fragCoord ) {",
-
-        "  vec2 p = fragCoord / uResolution;",
-        "  float ty = uTime * uSpeed;",
-        "  float yt = p.y - ty;",
-
-           //smooth distortion
-        "  float offset = snoise(vec2(yt * 3.0, 0.0)) * 0.2;",
-           // boost distortion
-        "  offset = offset * uDistortion * offset * uDistortion * offset;",
-           //add fine grain distortion
-        "  offset += snoise(vec2(yt * 50.0, 0.0)) * uDistortion2 * 0.001;",
-           //combine distortion on X with roll on Y
-        "  mainImage = textTexture(vec2(fract(p.x + offset), fract(p.y)));",
-
-        "}"
-      ].join("\n");
-
-      return mainImageSrc;
-    }
-
-    return {
-
-      constructor : Blotter.RollDistortMaterial,
-
-      init : function () {
-        this.mainImage = _mainImageSrc();
-        this.uniforms = {
-          uTime : { type : "1f", value : 0.0 },
-          uDistortion : { type : "1f", value : 0.0 },
-          uDistortion2 : { type : "1f", value : 0.0 },
-          uSpeed : { type : "1f", value : 0.1 }
-        };
-      }
-    };
-
-  })());
-
-})(
-  this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
-);
-
-(function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
-
-  Blotter.RGBSplitMaterial = function() {
-    Blotter.Material.apply(this, arguments);
-  };
-
-  Blotter.RGBSplitMaterial.prototype = Object.create(Blotter.Material.prototype);
-
-  Blotter._extendWithGettersSetters(Blotter.RGBSplitMaterial.prototype, (function () {
-
-    function _mainImageSrc () {
-      var mainImageSrc = [
-        "void mainImage( out vec4 mainImage, in vec2 fragCoord ) {",
-        "   vec2 p = fragCoord / uResolution;",
-
-        "   float amount = 10.0;",
-        "   float angle = 0.25;",
-        "   vec2 offset = (amount / uResolution) * vec2(cos(angle), sin(angle));",
-
-        "   vec4 cr = textTexture(p + offset);",
-        "   vec4 cga = textTexture(p);",
-        "   vec4 cb = textTexture(p - offset);",
-
-        "   combineColors(cr, vec4(1.0, 1.0, 1.0, 1.0), cr);",
-        "   combineColors(cga, vec4(1.0, 1.0, 1.0, 1.0), cga);",
-        "   combineColors(cb, vec4(1.0, 1.0, 1.0, 1.0), cb);",
-
-        "   rgbaFromRgb(mainImage, vec3(cr.r, cga.g, cb.b));",
-        "}"
-      ].join("\n");
-
-      return mainImageSrc;
-    }
-
-    return {
-
-      constructor : Blotter.RGBSplitMaterial,
-
-      init : function () {
-        this.mainImage = _mainImageSrc();
-      }
-    };
-
-  })());
-
-})(
-  this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
-);
-
-(function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
-
-  Blotter.GhostBlurMaterial = function() {
-    Blotter.Material.apply(this, arguments);
-  };
-
-  Blotter.GhostBlurMaterial.prototype = Object.create(Blotter.Material.prototype);
-
-  Blotter._extendWithGettersSetters(Blotter.GhostBlurMaterial.prototype, (function () {
-
-    function _mainImageSrc () {
-      var mainImageSrc = [
-        "#ifdef GL_ES",
-        "precision mediump float;",
-        "#endif",
-
-        "#define PI 3.14159265358",
-
-        "//  `rand` and `noise` taken from ",
-        "//  http://thebookofshaders.com/",
-        "float rand (in float _x) {",
-        "    return fract(sin(_x)*1e4);",
-        "}",
-
-        "float rand(vec2 co){",
-        "    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);",
-        "}",
-
-        "float noise (in float _x) {",
-        "    float i = floor(_x);",
-        "    float f = fract(_x);",
-        "    float u = f * f * (3.0 - 2.0 * f);",
-        "    return mix(rand(i), rand(i + 1.0), u);",
-        "}",
-
-        "float noiseWave(vec2 uv, float y, float height, float volatility, float smoothing) {",
-        "    // Define wave ",
-        "    float variance = (height / 2.0) * -1.0;",
-        "      variance += noise((uv.x + (rand(y) * 1000.0)) * PI * volatility) * height;",
-
-        "    // Adjust y",
-        "    y += variance;",
-
-        "    return smoothstep(y - smoothing, y + smoothing, uv.y);",
-        "}",
-
-        "float distortionShape(vec2 uv, float y, float height, float dHeight, float smoothing) {",
-        "      // Define shape constraints",
-        "      float h = height / 2.0;",
-        "    float top = y + h;",
-        "    float bottom = y - h;",
-
-        "    // Define distortion",
-        "    float volatility = 40.0;",
-
-        "    float topWave = noiseWave(uv, top, dHeight, volatility, smoothing);",
-        "    float bottomWave = noiseWave(uv, bottom, dHeight, volatility, smoothing);",
-
-        "    return bottomWave - topWave;",
-        "}",
-
-
-        "void mainImage( out vec4 mainImage, in vec2 fragCoord )",
-        "{",
-        "    // Setup ========================================================================",
-
-        "    vec2 uv = fragCoord.xy / uResolution.xy;",
-        "    vec2 p = vec2(1.0) / uResolution.xy; // 1 pixel.",
-        
-        "    vec4 finalColour = vec4(0.0);",
-
-
-        "    // Create Distortion ============================================================",
-
-        "    float dY = 0.5;",
-        "    float dHeight = 0.606;",
-        "    float dWaveHeight = 0.4545;",
-        "    float distortion = distortionShape(uv, dY, dHeight, dWaveHeight, 0.429);",
-        "    float amount = smoothstep(-1.0, 1.0, distortion);",
-
-
-        "    // Create Darkness ==============================================================",
-
-        "    vec2 maxRadiusUv = vec2(0.0337, 0.0625 + (0.125 * amount));",
-        "    vec2 maxRadiusCoord = maxRadiusUv.xy * uResolution.xy;",
-        "    float maxDistance = distance(fragCoord, fragCoord + maxRadiusCoord);",
-
-        "    const int maxSteps = 120; // This kind of sucks but we cant use non constant values for our loops",
-
-        "    float stepDistance = 1.0;",
-        "    vec2 stepCoord = vec2(0.0);",
-        "    vec2 stepUv = vec2(0.0);",
-        "    vec4 stepSample = vec4(1.0);",
-        "    vec4 darkestSample = vec4(1.0);",
-
-        "    float randNoise = rand(uv * sin(uv.x * 0.025)) * 0.15;",
-
-        "    for (int i = -maxSteps; i <= maxSteps; i += 2) {",
-        "        if (abs(float(i) * p.x) >= maxRadiusUv.x) { continue; }",
-        "        for (int j = -maxSteps; j <= maxSteps; j += 2) {",
-        "            if (abs(float(j) * p.y) >= maxRadiusUv.y) { continue; }",
-
-        "            stepUv = uv + vec2(float(i) * p.x, float(j) * p.y);",
-        "            stepCoord = stepUv * uResolution.xy;",
-        "            stepSample = textTexture(stepUv);",
-
-        "            vec4 sampleOnBackground = vec4(0.0);",
-        "            combineColors(sampleOnBackground, uBlendColor, stepSample);",
-
-        "            stepDistance = distance(fragCoord, stepCoord) / smoothstep(-1.0, 1.0, amount);",
-
-        "            float stepDarkestSampleWeight = 1.0 - clamp((stepDistance / maxDistance), 0.0, 1.0) + randNoise;",
-        "            stepDarkestSampleWeight *= smoothstep(0.0, 7.5, amount);",
-
-        "            vec4 mixedStep = mix(darkestSample, sampleOnBackground, stepDarkestSampleWeight);",
-
-        "            if (mixedStep == min(mixedStep, darkestSample) && stepDistance <= maxDistance) {",
-        "                darkestSample = mixedStep;",
-        "            }",
-        "        }",
-        "    }",
-
-
-        "    // Create Glow ==================================================================",
-
-        "    float dropoff = smoothstep(0.25, 1.15, 1.0 - distance(vec2(0.0, 0.5), vec2(0.0, uv.y)));",
-        "    vec4 glow = vec4(0.22745, 0.30980, 1.0, (1.0 - max(max(darkestSample.r, darkestSample.g), darkestSample.b)) * dropoff);",
-
-
-        "    mainImage = glow;",
-        "}"
-      ].join("\n");
-
-      return mainImageSrc;
-    }
-
-    return {
-
-      constructor : Blotter.GhostBlurMaterial,
-
-      init : function () {
-        this.mainImage = _mainImageSrc();
-        this.uniforms = {};
-      }
-    };
-
-  })());
 
 })(
   this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
