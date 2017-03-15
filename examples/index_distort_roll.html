@@ -45,16 +45,10 @@
           texts : [text2, text]
         });
 
-        var startTime = new Date().getTime(),
-            myScope = blotter.forText(text);
+        var myScope = blotter.forText(text);
 
         blotter.on("ready", function () {
           $("#glitch-target").html(myScope.domElement)
-        });
-
-        myScope.on("render", function () {
-          var time = (new Date().getTime() - startTime) / 1000;
-          myScope.material.uniforms.uTime.value = time;
         });
       });
     </script>

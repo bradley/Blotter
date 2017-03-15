@@ -47,10 +47,22 @@
 
     this._renderer = new Blotter.Renderer();
 
+    this._startTime = 0;
+    this._lastDrawTime = 0;
+
     this.init.apply(this, arguments);
   };
 
   Blotter.prototype = (function () {
+
+    function _rendererWillRender () {
+      var now = Date.now();
+
+      this._material.uniforms.uTimeDelta.value = (now - (this._lastDrawTime || now)) / 1000;
+      this._material.uniforms.uGlobalTime.value = (now - this._startTime) / 1000;
+
+      this._lastDrawTime = now;
+    }
 
     function _rendererRendered () {
       _.each(this._scopes, _.bind(function (scope) {
@@ -110,7 +122,7 @@
 
         this._renderer.material = mappingMaterial.shaderMaterial;
         if (this.autostart) {
-          this._renderer.start();
+          this.start();
         }
 
         this.trigger(this.mappingMaterial ? "update" : "ready");
@@ -163,6 +175,7 @@
         this.setMaterial(material);
         this.addTexts(options.texts);
 
+        this._renderer.on("willRender", _.bind(_rendererWillRender, this));
         this._renderer.on("render", _.bind(_rendererRendered, this));
 
         if (this.autobuild) {
@@ -176,6 +189,7 @@
 
       start : function () {
         this.autostart = true;
+        this._startTime = Date.now();
         this._renderer.start();
       },
 
@@ -383,7 +397,7 @@
     canvas : function (w, h, options) {
       options = options || {};
       var canvas = document.createElement("canvas");
-      
+
       canvas.className = options.class;
       canvas.innerHTML = options.html;
 
@@ -399,7 +413,7 @@
       ratio = ratio || this.pixelRatio;
       options = options || {};
       var canvas = document.createElement("canvas");
-      
+
       canvas.className = options.class;
       canvas.innerHTML = options.html;
 
@@ -564,11 +578,21 @@
 
   Blotter.UniformUtils = {
 
-    // Uniform type values we accept for user defined uniforms
+    // Uniform type values we accept for public uniforms
 
     UniformTypes : ["1f", "2f", "3f", "4f"],
 
-    // Determine if value is valid for user defined uniform type
+    // Default uniforms (required) provided to all materials
+
+    defaultUniforms : {
+      uResolution : { type : "2f", value : [0.0, 0.0] }, // Resolution of individual text areas within mapping texture
+      uAspect : { type : "1f", value : 1.0 }, // Width / Height
+      uGlobalTime : { type : "1f", value : 0.0 }, // The global time in seconds
+      uTimeDelta : { type : "1f", value : 0.0 }, // The render time in seconds
+      uBlendColor : { type : "4f", value : [1.0, 1.0, 1.0, 1.0] }
+    },
+
+    // Determine if value is valid for public uniform type
 
     validValueForUniformType : function (type, value) {
       var valid = false,
@@ -672,6 +696,19 @@
         memo[uniformName] = _.pick(uniformDescription, "type", "value");
         return memo;
       }, {});
+    },
+
+    ensureHasRequiredDefaultUniforms : function (uniforms, domain, method) {
+      if (!(Blotter.UniformUtils.hasRequiredDefaultUniforms(uniforms))) {
+        this.logError(domain, method, "uniforms object is missing required default uniforms defined in Blotter.UniformUtils.defaultUniforms");
+        return;
+      }
+    },
+
+    hasRequiredDefaultUniforms : function (uniforms) {
+      var missingKeys = _.difference(_.allKeys(Blotter.UniformUtils.defaultUniforms), _.allKeys(uniforms));
+
+      return !!!missingKeys.length;
     }
 
   };
@@ -679,6 +716,7 @@
 })(
   this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
 );
+
 (function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
 
   Blotter.Text = function (value, properties) {
@@ -1021,10 +1059,6 @@
 
   Blotter.Material.prototype = (function() {
 
-    var _defaultUniforms = {
-      uBlendColor : { type : "4f", value : [1.0, 1.0, 1.0, 1.0] }
-    };
-
     function _defaultMainImageSrc () {
       var mainImage = [
 
@@ -1108,7 +1142,9 @@
       },
 
       set uniforms (uniforms) {
-        this._uniforms = _getUniformInterface.call(this, Blotter.UniformUtils.extractValidUniforms(_.extend(uniforms, _defaultUniforms)));
+        this._uniforms = _getUniformInterface.call(this, Blotter.UniformUtils.extractValidUniforms(
+          _.extend(uniforms, Blotter.UniformUtils.defaultUniforms)
+        ));
       },
 
       init : function () {
@@ -1189,6 +1225,8 @@
     }
 
     function _loop () {
+      this.trigger("willRender");
+
       Blotter.webglRenderer.render(this._scene, this._camera, this._renderTarget);
 
       Blotter.webglRenderer.readRenderTargetPixels(
@@ -1680,26 +1718,26 @@
 
     function _fragmentSrc (uniforms, mainImageSrc) {
       var fragmentSrc,
-          userDefinedUniforms = {
-            // Strings of sampler2D declarations for each user defined uniform texture.
+          userUniforms = {
+            // Strings of sampler2D declarations for each user defined and default uniform texture.
             privateUniformTextureDeclarations : "",
-            // Strings of uniform declarations for each publicly facing version of each user defined uniform.
+            // Strings of uniform declarations for each publicly facing version of each user defined and default uniform.
             publicUniformDeclarations         : "",
-            // Strings of uniform definitions for each publicly facing version of each user defined uniform.
+            // Strings of uniform definitions for each publicly facing version of each user defined and default uniform.
             uniformDefinitions                : ""
           };
 
-      _.reduce(uniforms, function (userDefinedUniforms, uniformObject, uniformName) {
+      _.reduce(uniforms, function (userUniforms, uniformObject, uniformName) {
         var uniformTextureName = _userUniformDataTextureNameForUniformName(uniformName),
             glslSwizzle = Blotter.UniformUtils.fullSwizzleStringForUniformType(uniformObject.userUniform.type),
             glslDataType = Blotter.UniformUtils.glslDataTypeForUniformType(uniformObject.userUniform.type);
 
-        userDefinedUniforms.privateUniformTextureDeclarations += "uniform sampler2D " + uniformTextureName + ";\n";
-        userDefinedUniforms.publicUniformDeclarations += glslDataType + " " + uniformName + ";\n";
-        userDefinedUniforms.uniformDefinitions += "   " + uniformName + " = " + "texture2D(" + uniformTextureName + " , vec2(textIndex, 0.5))." + glslSwizzle + ";\n";
+        userUniforms.privateUniformTextureDeclarations += "uniform sampler2D " + uniformTextureName + ";\n";
+        userUniforms.publicUniformDeclarations += glslDataType + " " + uniformName + ";\n";
+        userUniforms.uniformDefinitions += "   " + uniformName + " = " + "texture2D(" + uniformTextureName + " , vec2(textIndex, 0.5))." + glslSwizzle + ";\n";
 
-        return userDefinedUniforms;
-      }, userDefinedUniforms);
+        return userUniforms;
+      }, userUniforms);
 
       fragmentSrc = [
 
@@ -1708,7 +1746,6 @@
         // Private blotter defined uniforms.
         "uniform sampler2D _uSampler;",
         "uniform vec2 _uCanvasResolution;",
-
         "uniform sampler2D _uTextIndicesTexture;",
         "uniform sampler2D _uTextBoundsTexture;",
 
@@ -1716,15 +1753,17 @@
         "varying vec2 _vTexCoord;",
         "vec4 _textBounds;",
 
-        // Private versions of use user defined uniforms
-        userDefinedUniforms.privateUniformTextureDeclarations,
+        // Private versions of user defined and default uniform declarations
+        userUniforms.privateUniformTextureDeclarations,
 
-        // Public blotter defined uniforms.
-        "vec2 uResolution;",
+        // Public versions of user defined and default uniform declarations
+        userUniforms.publicUniformDeclarations,
 
-        // Public versions of user defined uniforms.
-        userDefinedUniforms.publicUniformDeclarations,
 
+
+
+
+// MOVE OUT LIBRARY CODE. INCLUDE HERE.
         "float round(float n) {",
         "  return sign(n) * floor(abs(n) + 0.5);",
         "}",
@@ -1734,7 +1773,7 @@
         "vec4 textTexture(vec2 coord) {",
         "   vec2 adjustedFragCoord = _textBounds.xy + vec2((_textBounds.z * coord.x), (_textBounds.w * coord.y));",
         "   vec2 uv = adjustedFragCoord.xy / _uCanvasResolution;",
-        
+
         //  If adjustedFragCoord falls outside the bounds of the current texel's text, return `vec4(0.0)`.
         "   if (adjustedFragCoord.x < _textBounds.x ||",
         "       adjustedFragCoord.x > _textBounds.x + _textBounds.z ||",
@@ -1749,7 +1788,7 @@
         "// Returns the resulting blend color by blending a top color over a base color",
         "highp vec4 normalBlend(highp vec4 topColor, highp vec4 baseColor) {",
         "  highp vec4 blend = vec4(0.0);",
-          
+
         "  // HACK",
         "  // Cant divide by 0 (see the 'else' alpha) and after a lot of attempts",
         "  // this simply seems like the only solution Im going to be able to come up with to get alpha back.",
@@ -1781,7 +1820,7 @@
         "//  against a passed in base color in order to result in the passed in blend color.",
         "highp vec4 normalUnblend(highp vec4 blendColor, highp vec4 baseColor) {",
         "  highp vec4 unblend = vec4(0.0);",
-          
+
         "  // HACKY",
         "  // Cant divide by 0 (see alpha) and after a lot of attempts",
         "  // this simply seems like the only solution Im going to be able to come up with to get alpha back.",
@@ -1805,9 +1844,12 @@
         "    unblend.g = (blendColor.g - (baseColor.g * baseColor.a * (1.0 - unblend.a) / blendColor.a)) / (unblend.a / blendColor.a);",
         "    unblend.b = (blendColor.b - (baseColor.b * baseColor.a * (1.0 - unblend.a) / blendColor.a)) / (unblend.a / blendColor.a);",
         "  }",
-        
+
         "  return unblend;",
         "}",
+
+
+
 
         "void mainImage(out vec4 mainImage, in vec2 fragCoord);",
 
@@ -1823,9 +1865,11 @@
         //  Make bounds for the current text globally visible.
         "   _textBounds = texture2D(_uTextBoundsTexture, vec2(textIndex, 0.5));",
 
+
         //  Set "uniform" values visible to user.
+        userUniforms.uniformDefinitions,
         "   uResolution = _textBounds.zw;",
-        userDefinedUniforms.uniformDefinitions,
+        "   uAspect = _textBounds.z /_textBounds.w;",
 
         //  Set fragment coordinate in respect to position within text bounds.
         "   vec2 fragCoord = gl_FragCoord.xy - _textBounds.xy;",
@@ -1895,6 +1939,10 @@
     }
 
     function _buildUserUniformDataTextureObjects (userUniforms, dataLength, completion) {
+      Blotter.UniformUtils.ensureHasRequiredDefaultUniforms(userUniforms,
+        "Blotter.MappingMaterialBuilder",
+        "_buildUserUniformDataTextureObjects");
+
       userUniforms = Blotter.UniformUtils.extractValidUniforms(userUniforms);
 
       var userUniformDataTextureObjects = _.reduce(userUniforms, function (memo, userUniform, uniformName) {

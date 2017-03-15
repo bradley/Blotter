@@ -17,10 +17,22 @@
 
     this._renderer = new Blotter.Renderer();
 
+    this._startTime = 0;
+    this._lastDrawTime = 0;
+
     this.init.apply(this, arguments);
   };
 
   Blotter.prototype = (function () {
+
+    function _rendererWillRender () {
+      var now = Date.now();
+
+      this._material.uniforms.uTimeDelta.value = (now - (this._lastDrawTime || now)) / 1000;
+      this._material.uniforms.uGlobalTime.value = (now - this._startTime) / 1000;
+
+      this._lastDrawTime = now;
+    }
 
     function _rendererRendered () {
       _.each(this._scopes, _.bind(function (scope) {
@@ -80,7 +92,7 @@
 
         this._renderer.material = mappingMaterial.shaderMaterial;
         if (this.autostart) {
-          this._renderer.start();
+          this.start();
         }
 
         this.trigger(this.mappingMaterial ? "update" : "ready");
@@ -133,6 +145,7 @@
         this.setMaterial(material);
         this.addTexts(options.texts);
 
+        this._renderer.on("willRender", _.bind(_rendererWillRender, this));
         this._renderer.on("render", _.bind(_rendererRendered, this));
 
         if (this.autobuild) {
@@ -146,6 +159,7 @@
 
       start : function () {
         this.autostart = true;
+        this._startTime = Date.now();
         this._renderer.start();
       },
 

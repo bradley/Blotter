@@ -5,7 +5,7 @@
 
     <style type="text/css">
       body {
-        background: #202020;
+        background: #fff; //#202020;
         padding: 20px;
         font-family: Charcoal, sans-serif;
         font-size: 22px;
@@ -21,11 +21,14 @@
     </style>
 
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-beta1/jquery.js"></script>
+    <script type="text/javascript" src="./third_party/dat.gui.js"></script>
     <script type="text/javascript" src="../build/blotter.js"></script>
     <script type="text/javascript" src="../build/filters/ghostBlurMaterial.js"></script>
   </head>
     <span id="glitch-target"></span>
     <script>
+
+
       $(document).ready(function() {
 
         var styleProperties = {
@@ -38,7 +41,7 @@
           fill : "#ffffff"
         };
 
-        var text = new Blotter.Text("Blotter", styleProperties);
+        var text = new Blotter.Text("Ghost Ghost Ghost", styleProperties);
 
         var material = new Blotter.GhostBlurMaterial();
 
@@ -51,6 +54,45 @@
         blotter.on("ready", function () {
           myScope.appendTo(document.getElementById("glitch-target"));
         });
+
+        var controls = {
+          message : 'dat.gui',
+          uBlurRadius : material.uniforms.uBlurRadius.value,
+          uRotation : material.uniforms.uRotation.value,
+          uWidth : material.uniforms.uWidth.value,
+          uAmplitude : material.uniforms.uAmplitude.value,
+          uVolatility : material.uniforms.uVolatility.value,
+          uSmoothing : material.uniforms.uSmoothing.value,
+          uGlowColor : "#000000"
+        };
+
+        var gui = new dat.GUI();
+
+        gui.add(controls, 'uBlurRadius', 0.0, 30.0).onChange(function (radius) {
+          material.uniforms.uBlurRadius.value = radius;
+        });
+        gui.add(controls, 'uRotation', 0.0, 360.0).onChange(function (angle) {
+          material.uniforms.uRotation.value = angle;
+        });
+        gui.add(controls, 'uWidth', 0.0, 1.0).onChange(function (width) {
+          material.uniforms.uWidth.value = width;
+        });
+        gui.add(controls, 'uAmplitude', 0.0, 1.0).onChange(function (amplitude) {
+          material.uniforms.uAmplitude.value = amplitude;
+        });
+        gui.add(controls, 'uVolatility', 0.0, 1.0).onChange(function (volatility) {
+          material.uniforms.uVolatility.value = volatility;
+        });
+        gui.add(controls, 'uSmoothing', 0.0, 5.0).onChange(function (smoothing) {
+          material.uniforms.uSmoothing.value = smoothing;
+        });
+        gui.addColor(controls, 'uGlowColor').onChange(function (smoothing) {
+          var colorObj = new THREE.Color(controls.uGlowColor);
+          var rgba = colorObj.toArray();
+          rgba.push(1.0); // Add alpha (not part of gui color picker);
+          material.uniforms.uGlowColor.value = rgba;
+        });
+
       });
     </script>
   </body>

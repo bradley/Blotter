@@ -61,7 +61,7 @@
         "void mainImage( out vec4 mainImage, in vec2 fragCoord ) {",
 
         "  vec2 p = fragCoord / uResolution;",
-        "  float ty = uTime * uSpeed;",
+        "  float ty = uGlobalTime * uSpeed;",
         "  float yt = p.y - ty;",
 
            //smooth distortion
@@ -86,7 +86,6 @@
       init : function () {
         this.mainImage = _mainImageSrc();
         this.uniforms = {
-          uTime : { type : "1f", value : 0.0 },
           uDistortion : { type : "1f", value : 0.0 },
           uDistortion2 : { type : "1f", value : 0.0 },
           uSpeed : { type : "1f", value : 0.1 }

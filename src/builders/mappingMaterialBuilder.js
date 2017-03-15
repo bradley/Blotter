@@ -21,26 +21,26 @@
 
     function _fragmentSrc (uniforms, mainImageSrc) {
       var fragmentSrc,
-          userDefinedUniforms = {
-            // Strings of sampler2D declarations for each user defined uniform texture.
+          userUniforms = {
+            // Strings of sampler2D declarations for each user defined and default uniform texture.
             privateUniformTextureDeclarations : "",
-            // Strings of uniform declarations for each publicly facing version of each user defined uniform.
+            // Strings of uniform declarations for each publicly facing version of each user defined and default uniform.
             publicUniformDeclarations         : "",
-            // Strings of uniform definitions for each publicly facing version of each user defined uniform.
+            // Strings of uniform definitions for each publicly facing version of each user defined and default uniform.
             uniformDefinitions                : ""
           };
 
-      _.reduce(uniforms, function (userDefinedUniforms, uniformObject, uniformName) {
+      _.reduce(uniforms, function (userUniforms, uniformObject, uniformName) {
         var uniformTextureName = _userUniformDataTextureNameForUniformName(uniformName),
             glslSwizzle = Blotter.UniformUtils.fullSwizzleStringForUniformType(uniformObject.userUniform.type),
             glslDataType = Blotter.UniformUtils.glslDataTypeForUniformType(uniformObject.userUniform.type);
 
-        userDefinedUniforms.privateUniformTextureDeclarations += "uniform sampler2D " + uniformTextureName + ";\n";
-        userDefinedUniforms.publicUniformDeclarations += glslDataType + " " + uniformName + ";\n";
-        userDefinedUniforms.uniformDefinitions += "   " + uniformName + " = " + "texture2D(" + uniformTextureName + " , vec2(textIndex, 0.5))." + glslSwizzle + ";\n";
+        userUniforms.privateUniformTextureDeclarations += "uniform sampler2D " + uniformTextureName + ";\n";
+        userUniforms.publicUniformDeclarations += glslDataType + " " + uniformName + ";\n";
+        userUniforms.uniformDefinitions += "   " + uniformName + " = " + "texture2D(" + uniformTextureName + " , vec2(textIndex, 0.5))." + glslSwizzle + ";\n";
 
-        return userDefinedUniforms;
-      }, userDefinedUniforms);
+        return userUniforms;
+      }, userUniforms);
 
       fragmentSrc = [
 
@@ -49,7 +49,6 @@
         // Private blotter defined uniforms.
         "uniform sampler2D _uSampler;",
         "uniform vec2 _uCanvasResolution;",
-
         "uniform sampler2D _uTextIndicesTexture;",
         "uniform sampler2D _uTextBoundsTexture;",
 
@@ -57,15 +56,17 @@
         "varying vec2 _vTexCoord;",
         "vec4 _textBounds;",
 
-        // Private versions of use user defined uniforms
-        userDefinedUniforms.privateUniformTextureDeclarations,
+        // Private versions of user defined and default uniform declarations
+        userUniforms.privateUniformTextureDeclarations,
 
-        // Public blotter defined uniforms.
-        "vec2 uResolution;",
+        // Public versions of user defined and default uniform declarations
+        userUniforms.publicUniformDeclarations,
 
-        // Public versions of user defined uniforms.
-        userDefinedUniforms.publicUniformDeclarations,
 
+
+
+
+// MOVE OUT LIBRARY CODE. INCLUDE HERE.
         "float round(float n) {",
         "  return sign(n) * floor(abs(n) + 0.5);",
         "}",
@@ -75,7 +76,7 @@
         "vec4 textTexture(vec2 coord) {",
         "   vec2 adjustedFragCoord = _textBounds.xy + vec2((_textBounds.z * coord.x), (_textBounds.w * coord.y));",
         "   vec2 uv = adjustedFragCoord.xy / _uCanvasResolution;",
-        
+
         //  If adjustedFragCoord falls outside the bounds of the current texel's text, return `vec4(0.0)`.
         "   if (adjustedFragCoord.x < _textBounds.x ||",
         "       adjustedFragCoord.x > _textBounds.x + _textBounds.z ||",
@@ -90,7 +91,7 @@
         "// Returns the resulting blend color by blending a top color over a base color",
         "highp vec4 normalBlend(highp vec4 topColor, highp vec4 baseColor) {",
         "  highp vec4 blend = vec4(0.0);",
-          
+
         "  // HACK",
         "  // Cant divide by 0 (see the 'else' alpha) and after a lot of attempts",
         "  // this simply seems like the only solution Im going to be able to come up with to get alpha back.",
@@ -122,7 +123,7 @@
         "//  against a passed in base color in order to result in the passed in blend color.",
         "highp vec4 normalUnblend(highp vec4 blendColor, highp vec4 baseColor) {",
         "  highp vec4 unblend = vec4(0.0);",
-          
+
         "  // HACKY",
         "  // Cant divide by 0 (see alpha) and after a lot of attempts",
         "  // this simply seems like the only solution Im going to be able to come up with to get alpha back.",
@@ -146,9 +147,12 @@
         "    unblend.g = (blendColor.g - (baseColor.g * baseColor.a * (1.0 - unblend.a) / blendColor.a)) / (unblend.a / blendColor.a);",
         "    unblend.b = (blendColor.b - (baseColor.b * baseColor.a * (1.0 - unblend.a) / blendColor.a)) / (unblend.a / blendColor.a);",
         "  }",
-        
+
         "  return unblend;",
         "}",
+
+
+
 
         "void mainImage(out vec4 mainImage, in vec2 fragCoord);",
 
@@ -164,9 +168,11 @@
         //  Make bounds for the current text globally visible.
         "   _textBounds = texture2D(_uTextBoundsTexture, vec2(textIndex, 0.5));",
 
+
         //  Set "uniform" values visible to user.
+        userUniforms.uniformDefinitions,
         "   uResolution = _textBounds.zw;",
-        userDefinedUniforms.uniformDefinitions,
+        "   uAspect = _textBounds.z /_textBounds.w;",
 
         //  Set fragment coordinate in respect to position within text bounds.
         "   vec2 fragCoord = gl_FragCoord.xy - _textBounds.xy;",
@@ -236,6 +242,10 @@
     }
 
     function _buildUserUniformDataTextureObjects (userUniforms, dataLength, completion) {
+      Blotter.UniformUtils.ensureHasRequiredDefaultUniforms(userUniforms,
+        "Blotter.MappingMaterialBuilder",
+        "_buildUserUniformDataTextureObjects");
+
       userUniforms = Blotter.UniformUtils.extractValidUniforms(userUniforms);
 
       var userUniformDataTextureObjects = _.reduce(userUniforms, function (memo, userUniform, uniformName) {

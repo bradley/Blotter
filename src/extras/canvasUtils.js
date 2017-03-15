@@ -7,7 +7,7 @@
     canvas : function (w, h, options) {
       options = options || {};
       var canvas = document.createElement("canvas");
-      
+
       canvas.className = options.class;
       canvas.innerHTML = options.html;
 
@@ -23,7 +23,7 @@
       ratio = ratio || this.pixelRatio;
       options = options || {};
       var canvas = document.createElement("canvas");
-      
+
       canvas.className = options.class;
       canvas.innerHTML = options.html;
 

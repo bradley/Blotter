@@ -36,6 +36,8 @@
     }
 
     function _loop () {
+      this.trigger("willRender");
+
       Blotter.webglRenderer.render(this._scene, this._camera, this._renderTarget);
 
       Blotter.webglRenderer.readRenderTargetPixels(

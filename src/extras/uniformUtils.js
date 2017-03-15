@@ -2,11 +2,21 @@
 
   Blotter.UniformUtils = {
 
-    // Uniform type values we accept for user defined uniforms
+    // Uniform type values we accept for public uniforms
 
     UniformTypes : ["1f", "2f", "3f", "4f"],
 
-    // Determine if value is valid for user defined uniform type
+    // Default uniforms (required) provided to all materials
+
+    defaultUniforms : {
+      uResolution : { type : "2f", value : [0.0, 0.0] }, // Resolution of individual text areas within mapping texture
+      uAspect : { type : "1f", value : 1.0 }, // Width / Height
+      uGlobalTime : { type : "1f", value : 0.0 }, // The global time in seconds
+      uTimeDelta : { type : "1f", value : 0.0 }, // The render time in seconds
+      uBlendColor : { type : "4f", value : [1.0, 1.0, 1.0, 1.0] }
+    },
+
+    // Determine if value is valid for public uniform type
 
     validValueForUniformType : function (type, value) {
       var valid = false,
@@ -110,6 +120,19 @@
         memo[uniformName] = _.pick(uniformDescription, "type", "value");
         return memo;
       }, {});
+    },
+
+    ensureHasRequiredDefaultUniforms : function (uniforms, domain, method) {
+      if (!(Blotter.UniformUtils.hasRequiredDefaultUniforms(uniforms))) {
+        this.logError(domain, method, "uniforms object is missing required default uniforms defined in Blotter.UniformUtils.defaultUniforms");
+        return;
+      }
+    },
+
+    hasRequiredDefaultUniforms : function (uniforms) {
+      var missingKeys = _.difference(_.allKeys(Blotter.UniformUtils.defaultUniforms), _.allKeys(uniforms));
+
+      return !!!missingKeys.length;
     }
 
   };
