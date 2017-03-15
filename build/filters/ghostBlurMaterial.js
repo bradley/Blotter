@@ -374,18 +374,6 @@
         "    return wave;",
         "}",
 
-
-
-
-
-
-
-
-
-
-
-
-
         "void mainImage( out vec4 mainImage, in vec2 fragCoord )",
         "{",
         "    // Setup ========================================================================",
@@ -472,7 +460,7 @@
       init : function () {
         this.mainImage = _mainImageSrc();
         this.uniforms = {
-            uBlurRadius : { type : "1f", value : 30.0 },
+            uBlurRadius : { type : "1f", value : 15.0 },
             uRotation : { type : "1f", value : 0.0 },
             uWidth : { type : "1f", value : 0.96 },
             uAmplitude : { type : "1f", value : 0.185 },
