@@ -64,6 +64,50 @@
       });
     }
 
+    function _getUniformInterfaceForUniformDescription (uniformDescription) {
+      var interface = {
+        _type : uniformDescription.type,
+        _value : uniformDescription.value,
+
+        get type () {
+          return this._type;
+        },
+
+        set type (v) {
+          Blotter.Messaging.logError("Blotter.RenderScope", false, "uniform types may not be updated through a text scope");
+        },
+
+        get value () {
+          return this._value;
+        },
+
+        set value (v) {
+          if (!Blotter.UniformUtils.validValueForUniformType(this._type, v)) {
+            Blotter.Messaging.logError("Blotter.RenderScope", false, "uniform value not valid for uniform type: " + this._type);
+            return;
+          }
+          this._value = v;
+
+          this.trigger("update");
+        }
+      };
+
+      _.extend(interface, EventEmitter.prototype);
+
+      return interface;
+    }
+
+    function _getUniformInterfaceForMaterialUniforms (uniforms) {
+      return _.reduce(uniforms, _.bind(function (memo, uniformDescription, uniformName) {
+        memo[uniformName] = _getUniformInterfaceForUniformDescription(uniformDescription);
+        memo[uniformName].on("update", _.bind(function () {
+          this.trigger("update:uniform", [uniformName]);
+        }, this));
+
+        return memo;
+      }, this), {});
+    }
+
     function _update () {
       var mappingMaterial = this._mappingMaterial,
           bounds = mappingMaterial && _getBoundsForMappingMaterialAndText(mappingMaterial, this.text),
@@ -79,7 +123,7 @@
 
         this.domElement.innerHTML = this.text.value;
 
-        this.material.uniforms = mappingMaterial.uniformsInterfaceForText(this.text);
+        this.material.uniforms = _getUniformInterfaceForMaterialUniforms.call(this, mappingMaterial.uniforms);
         this.material.mainImage = mappingMaterial.mainImage;
 
         if (previousUniforms) {

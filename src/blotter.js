@@ -10,10 +10,10 @@
     this.Version = "v0.1.0";
 
     this._texts = [];
-
     this._textEventBindings = {};
 
     this._scopes = {};
+    this._scopeEventBindings = {};
 
     this._renderer = new Blotter.Renderer();
 
@@ -25,7 +25,7 @@
 
   Blotter.prototype = (function () {
 
-    function _rendererWillRender () {
+    function _updateMaterialUniforms () {
       var now = Date.now();
 
       this._material.uniforms.uTimeDelta.value = (now - (this._lastDrawTime || now)) / 1000;
@@ -35,6 +35,8 @@
     }
 
     function _rendererRendered () {
+      _updateMaterialUniforms.call(this);
+
       _.each(this._scopes, _.bind(function (scope) {
         if (scope.playing) {
           scope.render();
@@ -43,9 +45,20 @@
       }, this));
     }
 
-    function _updateUniformValues () {
+    function _updateUniformValue (uniformName) {
       if (this.mappingMaterial) {
-        this.mappingMaterial.needsUniformValuesUpdate = true;
+        var value = this._material.uniforms[uniformName].value;
+
+        this.mappingMaterial.uniformInterface[uniformName].value = value;
+      }
+    }
+
+    function _updateTextUniformValue (textId, uniformName) {
+      if (this.mappingMaterial) {
+        var scope = this._scopes[textId],
+            value = scope.material.uniforms[uniformName].value;
+
+        this.mappingMaterial.textUniformInterface[textId][uniformName].value = value;
       }
     }
 
@@ -145,7 +158,6 @@
         this.setMaterial(material);
         this.addTexts(options.texts);
 
-        this._renderer.on("willRender", _.bind(_rendererWillRender, this));
         this._renderer.on("render", _.bind(_rendererRendered, this));
 
         if (this.autobuild) {
@@ -186,12 +198,12 @@
             _update.call(this);
           }, this),
 
-          updateUniformValues : _.bind(function () {
-            _updateUniformValues.call(this);
+          updateUniform : _.bind(function (uniformName) {
+            _updateUniformValue.call(this, uniformName);
           }, this),
         });
         material.on("update", this._materialEventBinding.eventCallbacks.update);
-        material.on("updateUniformValues", this._materialEventBinding.eventCallbacks.updateUniformValues);
+        material.on("update:uniform", this._materialEventBinding.eventCallbacks.updateUniform);
       },
 
       addText : function (text) {
@@ -213,6 +225,13 @@
           text.on("update", this._textEventBindings[text.id].eventCallbacks.update);
 
           this._scopes[text.id] = new Blotter.RenderScope(text, this);
+
+          this._scopeEventBindings[text.id] = new Blotter.ModelEventBinding(this._scopes[text.id], {
+            updateUniform : _.bind(function (uniformName) {
+              _updateTextUniformValue.call(this, text.id, uniformName);
+            }, this),
+          });
+          this._scopes[text.id].on("update:uniform", this._scopeEventBindings[text.id].eventCallbacks.updateUniform);
         }, this));
       },
 
@@ -228,8 +247,10 @@
           this._texts = _.without(this._texts, text);
 
           this._textEventBindings[text.id].unsetEventCallbacks();
+          this._scopeEventBindings[text.id].unsetEventCallbacks();
 
           delete this._textEventBindings[text.id];
+          delete this._scopeEventBindings[text.id];
           delete this._scopes[text.id];
         }, this));
       },

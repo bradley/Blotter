@@ -50,6 +50,7 @@
 
         blotter.on("ready", function () {
           var myScope3 = blotter.forText(blotterTexts[12]);
+
           myScope3.material.uniforms.uLenseWeight.value = 0.25;
         });
 
@@ -67,6 +68,7 @@
         var startTime = new Date().getTime();
         myScope.on("render", function (frameCount) {
           var time = (new Date().getTime() - startTime) / 1000;
+
           myScope.material.uniforms.uLenseWeight.value = Math.abs(Math.sin(time));
         });
 

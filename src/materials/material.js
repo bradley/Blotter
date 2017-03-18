@@ -21,8 +21,7 @@
     }
 
     function _getUniformInterfaceForUniformDescription (uniformDescription) {
-      var self = this;
-      return {
+      var interface = {
         _type : uniformDescription.type,
         _value : uniformDescription.value,
 
@@ -44,14 +43,23 @@
             return;
           }
           this._value = v;
-          self.needsUniformValuesUpdate = true;
+
+          this.trigger("update");
         }
       };
+
+      _.extend(interface, EventEmitter.prototype);
+
+      return interface;
     }
 
     function _getUniformInterface (uniforms) {
       return _.reduce(uniforms, _.bind(function (memo, uniformDescription, uniformName) {
-        memo[uniformName] = _getUniformInterfaceForUniformDescription.call(this, uniformDescription);
+        memo[uniformName] = _getUniformInterfaceForUniformDescription(uniformDescription);
+        memo[uniformName].on("update", _.bind(function () {
+          this.trigger("update:uniform", [uniformName]);
+        }, this));
+
         return memo;
       }, this), {});
     }
@@ -65,14 +73,6 @@
       set needsUpdate (value) {
         if (value === true) {
           this.trigger("update");
-        }
-      },
-
-      get needsUniformValuesUpdate () { }, // jshint
-
-      set needsUniformValuesUpdate (value) {
-        if (value === true) {
-          this.trigger("updateUniformValues");
         }
       },
 

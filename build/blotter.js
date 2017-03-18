@@ -43196,10 +43196,10 @@ GrowingPacker.prototype = {
     this.Version = "v0.1.0";
 
     this._texts = [];
-
     this._textEventBindings = {};
 
     this._scopes = {};
+    this._scopeEventBindings = {};
 
     this._renderer = new Blotter.Renderer();
 
@@ -43211,7 +43211,7 @@ GrowingPacker.prototype = {
 
   Blotter.prototype = (function () {
 
-    function _rendererWillRender () {
+    function _updateMaterialUniforms () {
       var now = Date.now();
 
       this._material.uniforms.uTimeDelta.value = (now - (this._lastDrawTime || now)) / 1000;
@@ -43221,6 +43221,8 @@ GrowingPacker.prototype = {
     }
 
     function _rendererRendered () {
+      _updateMaterialUniforms.call(this);
+
       _.each(this._scopes, _.bind(function (scope) {
         if (scope.playing) {
           scope.render();
@@ -43229,9 +43231,20 @@ GrowingPacker.prototype = {
       }, this));
     }
 
-    function _updateUniformValues () {
+    function _updateUniformValue (uniformName) {
       if (this.mappingMaterial) {
-        this.mappingMaterial.needsUniformValuesUpdate = true;
+        var value = this._material.uniforms[uniformName].value;
+
+        this.mappingMaterial.uniformInterface[uniformName].value = value;
+      }
+    }
+
+    function _updateTextUniformValue (textId, uniformName) {
+      if (this.mappingMaterial) {
+        var scope = this._scopes[textId],
+            value = scope.material.uniforms[uniformName].value;
+
+        this.mappingMaterial.textUniformInterface[textId][uniformName].value = value;
       }
     }
 
@@ -43331,7 +43344,6 @@ GrowingPacker.prototype = {
         this.setMaterial(material);
         this.addTexts(options.texts);
 
-        this._renderer.on("willRender", _.bind(_rendererWillRender, this));
         this._renderer.on("render", _.bind(_rendererRendered, this));
 
         if (this.autobuild) {
@@ -43372,12 +43384,12 @@ GrowingPacker.prototype = {
             _update.call(this);
           }, this),
 
-          updateUniformValues : _.bind(function () {
-            _updateUniformValues.call(this);
+          updateUniform : _.bind(function (uniformName) {
+            _updateUniformValue.call(this, uniformName);
           }, this),
         });
         material.on("update", this._materialEventBinding.eventCallbacks.update);
-        material.on("updateUniformValues", this._materialEventBinding.eventCallbacks.updateUniformValues);
+        material.on("update:uniform", this._materialEventBinding.eventCallbacks.updateUniform);
       },
 
       addText : function (text) {
@@ -43399,6 +43411,13 @@ GrowingPacker.prototype = {
           text.on("update", this._textEventBindings[text.id].eventCallbacks.update);
 
           this._scopes[text.id] = new Blotter.RenderScope(text, this);
+
+          this._scopeEventBindings[text.id] = new Blotter.ModelEventBinding(this._scopes[text.id], {
+            updateUniform : _.bind(function (uniformName) {
+              _updateTextUniformValue.call(this, text.id, uniformName);
+            }, this),
+          });
+          this._scopes[text.id].on("update:uniform", this._scopeEventBindings[text.id].eventCallbacks.updateUniform);
         }, this));
       },
 
@@ -43414,8 +43433,10 @@ GrowingPacker.prototype = {
           this._texts = _.without(this._texts, text);
 
           this._textEventBindings[text.id].unsetEventCallbacks();
+          this._scopeEventBindings[text.id].unsetEventCallbacks();
 
           delete this._textEventBindings[text.id];
+          delete this._scopeEventBindings[text.id];
           delete this._scopes[text.id];
         }, this));
       },
@@ -44041,97 +44062,42 @@ GrowingPacker.prototype = {
 
   Blotter.MappingMaterial.prototype = (function() {
 
-    function _updateAllUniformValues (material, dataTextureObjects, uniformInterfaces) {
-      _.each(material.uniforms, function (materialUniform, materialUniformName) {
-        var value = materialUniform.value,
-            dataTextureObject = dataTextureObjects[materialUniformName],
-            type = dataTextureObject.userUniform.type,
-            data = dataTextureObject.data;
-
-        for (var i = 0; i < dataTextureObject.data.length / 4; i++) {
-          if (type == "1f") {
-            data[4*i]   = value;    // x (r)
-            data[4*i+1] = 0.0;
-            data[4*i+2] = 0.0;
-            data[4*i+3] = 0.0;
-          } else if (type == "2f") {
-            data[4*i]   = value[0]; // x (r)
-            data[4*i+1] = value[1]; // y (g)
-            data[4*i+2] = 0.0;
-            data[4*i+3] = 0.0;
-          } else if (type == "3f") {
-            data[4*i]   = value[0]; // x (r)
-            data[4*i+1] = value[1]; // y (g)
-            data[4*i+2] = value[2]; // z (b)
-            data[4*i+3] = 0.0;
-          } else if (type == "4f") {
-            data[4*i]   = value[0]; // x (r)
-            data[4*i+1] = value[1]; // y (g)
-            data[4*i+2] = value[2]; // z (b)
-            data[4*i+3] = value[3]; // w (a)
-          } else {
-            data[4*i]   = 0.0;
-            data[4*i+1] = 0.0;
-            data[4*i+2] = 0.0;
-            data[4*i+3] = 0.0;
-          }
-        }
-
-        // Update existing uniform interface, bypassing setter. Gross.
-        _.each(uniformInterfaces, function (uInterface, textId) {
-          uniformInterfaces[textId][materialUniformName]._value = value;
-        });
-
-        dataTextureObject.texture.needsUpdate = true;
-      });
-    }
-
     function _setValueAtIndexInDataTextureObject (value, i, dataTextureObject) {
-        var type = dataTextureObject.userUniform.type,
-            data = dataTextureObject.data;
+      var type = dataTextureObject.userUniform.type,
+          data = dataTextureObject.data;
 
-        if (type == "1f") {
-          data[4*i]   = value;    // x (r)
-          data[4*i+1] = 0.0;
-          data[4*i+2] = 0.0;
-          data[4*i+3] = 0.0;
-        } else if (type == "2f") {
-          data[4*i]   = value[0]; // x (r)
-          data[4*i+1] = value[1]; // y (g)
-          data[4*i+2] = 0.0;
-          data[4*i+3] = 0.0;
-        } else if (type == "3f") {
-          data[4*i]   = value[0]; // x (r)
-          data[4*i+1] = value[1]; // y (g)
-          data[4*i+2] = value[2]; // z (b)
-          data[4*i+3] = 0.0;
-        } else if (type == "4f") {
-          data[4*i]   = value[0]; // x (r)
-          data[4*i+1] = value[1]; // y (g)
-          data[4*i+2] = value[2]; // z (b)
-          data[4*i+3] = value[3]; // w (a)
-        } else {
-          data[4*i]   = 0.0;
-          data[4*i+1] = 0.0;
-          data[4*i+2] = 0.0;
-          data[4*i+3] = 0.0;
-        }
-
-        dataTextureObject.texture.needsUpdate = true;
+      if (type == "1f") {
+        data[4*i]   = value;    // x (r)
+        data[4*i+1] = 0.0;
+        data[4*i+2] = 0.0;
+        data[4*i+3] = 0.0;
+      } else if (type == "2f") {
+        data[4*i]   = value[0]; // x (r)
+        data[4*i+1] = value[1]; // y (g)
+        data[4*i+2] = 0.0;
+        data[4*i+3] = 0.0;
+      } else if (type == "3f") {
+        data[4*i]   = value[0]; // x (r)
+        data[4*i+1] = value[1]; // y (g)
+        data[4*i+2] = value[2]; // z (b)
+        data[4*i+3] = 0.0;
+      } else if (type == "4f") {
+        data[4*i]   = value[0]; // x (r)
+        data[4*i+1] = value[1]; // y (g)
+        data[4*i+2] = value[2]; // z (b)
+        data[4*i+3] = value[3]; // w (a)
+      } else {
+        data[4*i]   = 0.0;
+        data[4*i+1] = 0.0;
+        data[4*i+2] = 0.0;
+        data[4*i+3] = 0.0;
+      }
     }
 
-    function _getUniformInterfaceForIndexAndDataTextureObject (index, dataTextureObject) {
-      return {
+    function _getUniformInterfaceForDataTextureObject (dataTextureObject) {
+      var interface = {
         _type : dataTextureObject.userUniform.type,
         _value : dataTextureObject.userUniform.value,
-
-        get type () {
-          return this._type;
-        },
-
-        set type (v) {
-          Blotter.Messaging.logError("Blotter.MappingMaterial", false, "uniform types may not be updated through a text scope");
-        },
 
         get value () {
           return this._value;
@@ -44144,32 +44110,55 @@ GrowingPacker.prototype = {
           }
           this._value = v;
 
-          _setValueAtIndexInDataTextureObject(v, index, dataTextureObject);
+          this.trigger("update");
         }
       };
+
+      _.extend(interface, EventEmitter.prototype);
+
+      return interface;
+    }
+
+    function _getTextUniformInterface (mapping, userUniformDataTextureObjects) {
+      return _.reduce(mapping.texts, function (memo, text, i) {
+        memo[text.id] = _.reduce(userUniformDataTextureObjects, function (memo, dataTextureObject, uniformName) {
+          memo[uniformName] = _getUniformInterfaceForDataTextureObject(dataTextureObject);
+
+          memo[uniformName].on("update", function () {
+            _setValueAtIndexInDataTextureObject(memo[uniformName].value, i, dataTextureObject);
+            dataTextureObject.texture.needsUpdate = true;
+          });
+
+          memo[uniformName].value = dataTextureObject.userUniform.value;
+
+          return memo;
+        }, {});
+
+        return memo;
+      }, {});
     }
 
     function _getUniformInterface (mapping, userUniformDataTextureObjects) {
-      return _.reduce(mapping.texts, function (memo, text, i) {
-        memo[text.id] = _.reduce(userUniformDataTextureObjects, function (memo, dataTextureObject, uniformName) {
-          memo[uniformName] = _getUniformInterfaceForIndexAndDataTextureObject(i, dataTextureObject);
-          memo[uniformName].value = dataTextureObject.userUniform.value;
-          return memo;
-        }, {});
+      return _.reduce(userUniformDataTextureObjects, _.bind(function (memo, dataTextureObject, uniformName) {
+        memo[uniformName] = _getUniformInterfaceForDataTextureObject(dataTextureObject);
+
+        memo[uniformName].on("update", _.bind(function () {
+          _.each(mapping.texts, _.bind(function (text) {
+            this.textUniformInterface[text.id][uniformName].value = memo[uniformName].value;
+          }, this));
+          dataTextureObject.texture.needsUpdate = true;
+        }, this));
+
         return memo;
-      }, {});
+      }, this), {});
     }
 
     return {
 
       constructor : Blotter.MappingMaterial,
 
-      get needsUniformValuesUpdate () { }, // jshint
-
-      set needsUniformValuesUpdate (value) {
-        if (value === true) {
-          _updateAllUniformValues(this.material, this._userUniformDataTextureObjects, this._uniforms);
-        }
+      get uniforms () {
+        return this.material.uniforms;
       },
 
       get mainImage () {
@@ -44189,11 +44178,8 @@ GrowingPacker.prototype = {
       },
 
       init : function (mapping, material, shaderMaterial, userUniformDataTextureObjects) {
-        this._uniforms = _getUniformInterface(this.mapping, this._userUniformDataTextureObjects);
-      },
-
-      uniformsInterfaceForText : function (text) {
-        return this._uniforms[text.id];
+        this.textUniformInterface = _getTextUniformInterface.call(this, this.mapping, this._userUniformDataTextureObjects);
+        this.uniformInterface = _getUniformInterface.call(this, this.mapping, this._userUniformDataTextureObjects);
       },
 
       boundsForText : function (text) {
@@ -44230,8 +44216,7 @@ GrowingPacker.prototype = {
     }
 
     function _getUniformInterfaceForUniformDescription (uniformDescription) {
-      var self = this;
-      return {
+      var interface = {
         _type : uniformDescription.type,
         _value : uniformDescription.value,
 
@@ -44253,14 +44238,23 @@ GrowingPacker.prototype = {
             return;
           }
           this._value = v;
-          self.needsUniformValuesUpdate = true;
+
+          this.trigger("update");
         }
       };
+
+      _.extend(interface, EventEmitter.prototype);
+
+      return interface;
     }
 
     function _getUniformInterface (uniforms) {
       return _.reduce(uniforms, _.bind(function (memo, uniformDescription, uniformName) {
-        memo[uniformName] = _getUniformInterfaceForUniformDescription.call(this, uniformDescription);
+        memo[uniformName] = _getUniformInterfaceForUniformDescription(uniformDescription);
+        memo[uniformName].on("update", _.bind(function () {
+          this.trigger("update:uniform", [uniformName]);
+        }, this));
+
         return memo;
       }, this), {});
     }
@@ -44274,14 +44268,6 @@ GrowingPacker.prototype = {
       set needsUpdate (value) {
         if (value === true) {
           this.trigger("update");
-        }
-      },
-
-      get needsUniformValuesUpdate () { }, // jshint
-
-      set needsUniformValuesUpdate (value) {
-        if (value === true) {
-          this.trigger("updateUniformValues");
         }
       },
 
@@ -44381,8 +44367,6 @@ GrowingPacker.prototype = {
     }
 
     function _loop () {
-      this.trigger("willRender");
-
       Blotter.webglRenderer.render(this._scene, this._camera, this._renderTarget);
 
       Blotter.webglRenderer.readRenderTargetPixels(
@@ -44448,8 +44432,6 @@ GrowingPacker.prototype = {
       setSize : function (width, height) {
         this._width = width || 1;
         this._height = height || 1;
-
-        //Blotter.webglRenderer.setSize(this._width, this._height);
 
         this._mesh.scale.set(this._width, this._height, 1);
 
@@ -44546,6 +44528,50 @@ GrowingPacker.prototype = {
       });
     }
 
+    function _getUniformInterfaceForUniformDescription (uniformDescription) {
+      var interface = {
+        _type : uniformDescription.type,
+        _value : uniformDescription.value,
+
+        get type () {
+          return this._type;
+        },
+
+        set type (v) {
+          Blotter.Messaging.logError("Blotter.RenderScope", false, "uniform types may not be updated through a text scope");
+        },
+
+        get value () {
+          return this._value;
+        },
+
+        set value (v) {
+          if (!Blotter.UniformUtils.validValueForUniformType(this._type, v)) {
+            Blotter.Messaging.logError("Blotter.RenderScope", false, "uniform value not valid for uniform type: " + this._type);
+            return;
+          }
+          this._value = v;
+
+          this.trigger("update");
+        }
+      };
+
+      _.extend(interface, EventEmitter.prototype);
+
+      return interface;
+    }
+
+    function _getUniformInterfaceForMaterialUniforms (uniforms) {
+      return _.reduce(uniforms, _.bind(function (memo, uniformDescription, uniformName) {
+        memo[uniformName] = _getUniformInterfaceForUniformDescription(uniformDescription);
+        memo[uniformName].on("update", _.bind(function () {
+          this.trigger("update:uniform", [uniformName]);
+        }, this));
+
+        return memo;
+      }, this), {});
+    }
+
     function _update () {
       var mappingMaterial = this._mappingMaterial,
           bounds = mappingMaterial && _getBoundsForMappingMaterialAndText(mappingMaterial, this.text),
@@ -44561,7 +44587,7 @@ GrowingPacker.prototype = {
 
         this.domElement.innerHTML = this.text.value;
 
-        this.material.uniforms = mappingMaterial.uniformsInterfaceForText(this.text);
+        this.material.uniforms = _getUniformInterfaceForMaterialUniforms.call(this, mappingMaterial.uniforms);
         this.material.mainImage = mappingMaterial.mainImage;
 
         if (previousUniforms) {
@@ -44930,7 +44956,7 @@ GrowingPacker.prototype = {
         "   vec2 adjustedFragCoord = _textBounds.xy + vec2((_textBounds.z * coord.x), (_textBounds.w * coord.y));",
         "   vec2 uv = adjustedFragCoord.xy / _uCanvasResolution;",
 
-        //  If adjustedFragCoord falls outside the bounds of the current texel's text, return `vec4(0.0)`.
+        "   //  If adjustedFragCoord falls outside the bounds of the current texel's text, return `vec4(0.0)`.",
         "   if (adjustedFragCoord.x < _textBounds.x ||",
         "       adjustedFragCoord.x > _textBounds.x + _textBounds.z ||",
         "       adjustedFragCoord.y < _textBounds.y ||",
@@ -45003,6 +45029,9 @@ GrowingPacker.prototype = {
 
         "  return unblend;",
         "}",
+
+
+
 
 
 

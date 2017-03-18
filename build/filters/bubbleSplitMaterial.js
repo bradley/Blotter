@@ -42,14 +42,16 @@
         "   }",
 
         "   vec4 cr = textTexture(offsetUV + offset);",
-        "   vec4 cga = textTexture(offsetUV);",
+        "   vec4 cg = textTexture(offsetUV);",
         "   vec4 cb = textTexture(offsetUV - offset);",
 
         "   cr = normalBlend(cr, uBlendColor);",
-        "   cga = normalBlend(cga, uBlendColor);",
+        "   cg = normalBlend(cg, uBlendColor);",
         "   cb = normalBlend(cb, uBlendColor);",
 
-        "   mainImage = normalUnblend(vec3(cr.r, cga.g, cb.b, cga.a), uBlendColor);",
+        "   float a = max(cr.a, max(cg.a, cb.a));",
+
+        "   mainImage = normalUnblend(vec4(cr.r, cg.g, cb.b, a), uBlendColor);",
         "}"
       ].join("\n");
 

@@ -12,97 +12,42 @@
 
   Blotter.MappingMaterial.prototype = (function() {
 
-    function _updateAllUniformValues (material, dataTextureObjects, uniformInterfaces) {
-      _.each(material.uniforms, function (materialUniform, materialUniformName) {
-        var value = materialUniform.value,
-            dataTextureObject = dataTextureObjects[materialUniformName],
-            type = dataTextureObject.userUniform.type,
-            data = dataTextureObject.data;
-
-        for (var i = 0; i < dataTextureObject.data.length / 4; i++) {
-          if (type == "1f") {
-            data[4*i]   = value;    // x (r)
-            data[4*i+1] = 0.0;
-            data[4*i+2] = 0.0;
-            data[4*i+3] = 0.0;
-          } else if (type == "2f") {
-            data[4*i]   = value[0]; // x (r)
-            data[4*i+1] = value[1]; // y (g)
-            data[4*i+2] = 0.0;
-            data[4*i+3] = 0.0;
-          } else if (type == "3f") {
-            data[4*i]   = value[0]; // x (r)
-            data[4*i+1] = value[1]; // y (g)
-            data[4*i+2] = value[2]; // z (b)
-            data[4*i+3] = 0.0;
-          } else if (type == "4f") {
-            data[4*i]   = value[0]; // x (r)
-            data[4*i+1] = value[1]; // y (g)
-            data[4*i+2] = value[2]; // z (b)
-            data[4*i+3] = value[3]; // w (a)
-          } else {
-            data[4*i]   = 0.0;
-            data[4*i+1] = 0.0;
-            data[4*i+2] = 0.0;
-            data[4*i+3] = 0.0;
-          }
-        }
-
-        // Update existing uniform interface, bypassing setter. Gross.
-        _.each(uniformInterfaces, function (uInterface, textId) {
-          uniformInterfaces[textId][materialUniformName]._value = value;
-        });
-
-        dataTextureObject.texture.needsUpdate = true;
-      });
-    }
-
     function _setValueAtIndexInDataTextureObject (value, i, dataTextureObject) {
-        var type = dataTextureObject.userUniform.type,
-            data = dataTextureObject.data;
+      var type = dataTextureObject.userUniform.type,
+          data = dataTextureObject.data;
 
-        if (type == "1f") {
-          data[4*i]   = value;    // x (r)
-          data[4*i+1] = 0.0;
-          data[4*i+2] = 0.0;
-          data[4*i+3] = 0.0;
-        } else if (type == "2f") {
-          data[4*i]   = value[0]; // x (r)
-          data[4*i+1] = value[1]; // y (g)
-          data[4*i+2] = 0.0;
-          data[4*i+3] = 0.0;
-        } else if (type == "3f") {
-          data[4*i]   = value[0]; // x (r)
-          data[4*i+1] = value[1]; // y (g)
-          data[4*i+2] = value[2]; // z (b)
-          data[4*i+3] = 0.0;
-        } else if (type == "4f") {
-          data[4*i]   = value[0]; // x (r)
-          data[4*i+1] = value[1]; // y (g)
-          data[4*i+2] = value[2]; // z (b)
-          data[4*i+3] = value[3]; // w (a)
-        } else {
-          data[4*i]   = 0.0;
-          data[4*i+1] = 0.0;
-          data[4*i+2] = 0.0;
-          data[4*i+3] = 0.0;
-        }
-
-        dataTextureObject.texture.needsUpdate = true;
+      if (type == "1f") {
+        data[4*i]   = value;    // x (r)
+        data[4*i+1] = 0.0;
+        data[4*i+2] = 0.0;
+        data[4*i+3] = 0.0;
+      } else if (type == "2f") {
+        data[4*i]   = value[0]; // x (r)
+        data[4*i+1] = value[1]; // y (g)
+        data[4*i+2] = 0.0;
+        data[4*i+3] = 0.0;
+      } else if (type == "3f") {
+        data[4*i]   = value[0]; // x (r)
+        data[4*i+1] = value[1]; // y (g)
+        data[4*i+2] = value[2]; // z (b)
+        data[4*i+3] = 0.0;
+      } else if (type == "4f") {
+        data[4*i]   = value[0]; // x (r)
+        data[4*i+1] = value[1]; // y (g)
+        data[4*i+2] = value[2]; // z (b)
+        data[4*i+3] = value[3]; // w (a)
+      } else {
+        data[4*i]   = 0.0;
+        data[4*i+1] = 0.0;
+        data[4*i+2] = 0.0;
+        data[4*i+3] = 0.0;
+      }
     }
 
-    function _getUniformInterfaceForIndexAndDataTextureObject (index, dataTextureObject) {
-      return {
+    function _getUniformInterfaceForDataTextureObject (dataTextureObject) {
+      var interface = {
         _type : dataTextureObject.userUniform.type,
         _value : dataTextureObject.userUniform.value,
-
-        get type () {
-          return this._type;
-        },
-
-        set type (v) {
-          Blotter.Messaging.logError("Blotter.MappingMaterial", false, "uniform types may not be updated through a text scope");
-        },
 
         get value () {
           return this._value;
@@ -115,32 +60,55 @@
           }
           this._value = v;
 
-          _setValueAtIndexInDataTextureObject(v, index, dataTextureObject);
+          this.trigger("update");
         }
       };
+
+      _.extend(interface, EventEmitter.prototype);
+
+      return interface;
+    }
+
+    function _getTextUniformInterface (mapping, userUniformDataTextureObjects) {
+      return _.reduce(mapping.texts, function (memo, text, i) {
+        memo[text.id] = _.reduce(userUniformDataTextureObjects, function (memo, dataTextureObject, uniformName) {
+          memo[uniformName] = _getUniformInterfaceForDataTextureObject(dataTextureObject);
+
+          memo[uniformName].on("update", function () {
+            _setValueAtIndexInDataTextureObject(memo[uniformName].value, i, dataTextureObject);
+            dataTextureObject.texture.needsUpdate = true;
+          });
+
+          memo[uniformName].value = dataTextureObject.userUniform.value;
+
+          return memo;
+        }, {});
+
+        return memo;
+      }, {});
     }
 
     function _getUniformInterface (mapping, userUniformDataTextureObjects) {
-      return _.reduce(mapping.texts, function (memo, text, i) {
-        memo[text.id] = _.reduce(userUniformDataTextureObjects, function (memo, dataTextureObject, uniformName) {
-          memo[uniformName] = _getUniformInterfaceForIndexAndDataTextureObject(i, dataTextureObject);
-          memo[uniformName].value = dataTextureObject.userUniform.value;
-          return memo;
-        }, {});
+      return _.reduce(userUniformDataTextureObjects, _.bind(function (memo, dataTextureObject, uniformName) {
+        memo[uniformName] = _getUniformInterfaceForDataTextureObject(dataTextureObject);
+
+        memo[uniformName].on("update", _.bind(function () {
+          _.each(mapping.texts, _.bind(function (text) {
+            this.textUniformInterface[text.id][uniformName].value = memo[uniformName].value;
+          }, this));
+          dataTextureObject.texture.needsUpdate = true;
+        }, this));
+
         return memo;
-      }, {});
+      }, this), {});
     }
 
     return {
 
       constructor : Blotter.MappingMaterial,
 
-      get needsUniformValuesUpdate () { }, // jshint
-
-      set needsUniformValuesUpdate (value) {
-        if (value === true) {
-          _updateAllUniformValues(this.material, this._userUniformDataTextureObjects, this._uniforms);
-        }
+      get uniforms () {
+        return this.material.uniforms;
       },
 
       get mainImage () {
@@ -160,11 +128,8 @@
       },
 
       init : function (mapping, material, shaderMaterial, userUniformDataTextureObjects) {
-        this._uniforms = _getUniformInterface(this.mapping, this._userUniformDataTextureObjects);
-      },
-
-      uniformsInterfaceForText : function (text) {
-        return this._uniforms[text.id];
+        this.textUniformInterface = _getTextUniformInterface.call(this, this.mapping, this._userUniformDataTextureObjects);
+        this.uniformInterface = _getUniformInterface.call(this, this.mapping, this._userUniformDataTextureObjects);
       },
 
       boundsForText : function (text) {

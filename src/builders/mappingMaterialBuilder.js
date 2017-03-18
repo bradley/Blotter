@@ -77,7 +77,7 @@
         "   vec2 adjustedFragCoord = _textBounds.xy + vec2((_textBounds.z * coord.x), (_textBounds.w * coord.y));",
         "   vec2 uv = adjustedFragCoord.xy / _uCanvasResolution;",
 
-        //  If adjustedFragCoord falls outside the bounds of the current texel's text, return `vec4(0.0)`.
+        "   //  If adjustedFragCoord falls outside the bounds of the current texel's text, return `vec4(0.0)`.",
         "   if (adjustedFragCoord.x < _textBounds.x ||",
         "       adjustedFragCoord.x > _textBounds.x + _textBounds.z ||",
         "       adjustedFragCoord.y < _textBounds.y ||",

@@ -36,8 +36,6 @@
     }
 
     function _loop () {
-      this.trigger("willRender");
-
       Blotter.webglRenderer.render(this._scene, this._camera, this._renderTarget);
 
       Blotter.webglRenderer.readRenderTargetPixels(
@@ -103,8 +101,6 @@
       setSize : function (width, height) {
         this._width = width || 1;
         this._height = height || 1;
-
-        //Blotter.webglRenderer.setSize(this._width, this._height);
 
         this._mesh.scale.set(this._width, this._height, 1);
 
