@@ -39,6 +39,7 @@
         }
 
         var index = i - 1;
+
         points[4*index+0] = refIndex;
         points[4*index+1] = bg;
         points[4*index+2] = bg;

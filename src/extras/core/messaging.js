@@ -17,16 +17,19 @@
 
       logError : function (domain, method, message) {
         var formatted = _formattedMessage(domain, method, message);
+
         console.error(formatted);
       },
 
       logWarning : function (domain, method, message) {
         var formatted = _formattedMessage(domain, method, message);
+
         console.warn(formatted);
       },
 
       throwError : function (domain, method, message) {
         var formatted = _formattedMessage(domain, method, message);
+
         throw formatted;
       }
     };

@@ -28,6 +28,7 @@
         format: THREE.RGBAFormat,
         type: THREE.UnsignedByteType
       });
+
       renderTarget.texture.generateMipmaps = false;
       renderTarget.width = width;
       renderTarget.height = height;

@@ -32,9 +32,9 @@
           family: "Charcoal, sans-serif",
           size: 12,
           paddingTop: 12,
-          paddingRight: 17,
+          paddingRight: 30,
           paddingBottom: 12,
-          paddingLeft: 17,
+          paddingLeft: 30,
           leading: 1.5,
           fill: "#0d0f17"
         };
@@ -48,9 +48,9 @@
         });
 
 
+
         blotter.on("ready", function () {
           var myScope3 = blotter.forText(blotterTexts[12]);
-
           myScope3.material.uniforms.uLenseWeight.value = 0.25;
         });
 
@@ -58,6 +58,7 @@
         for (var i = 0; i < blotterTexts.length; i++) {
           var text = blotterTexts[i];
               outputEl = document.createElement("span");
+
           outputEl.style.display = "inline-block";
           document.body.appendChild(outputEl);
           blotter.forText(text).appendTo(outputEl);
@@ -67,7 +68,7 @@
         var myScope = blotter.forText(blotterTexts[4]);
         var startTime = new Date().getTime();
         myScope.on("render", function (frameCount) {
-          var time = (new Date().getTime() - startTime) / 1000;
+         var time = (new Date().getTime() - startTime) / 1000;
 
           myScope.material.uniforms.uLenseWeight.value = Math.abs(Math.sin(time));
         });
@@ -75,7 +76,6 @@
 
         var myScope2 = blotter.forText(blotterTexts[1]);
         myScope2.on("mousemove", function (mousePosition) {
-          myScope2.material.uniforms.uLenseWeight.value = 0.9;
           myScope2.material.uniforms.uCenterPoint.value = [mousePosition.x, mousePosition.y];
         });
 

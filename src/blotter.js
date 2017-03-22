@@ -73,8 +73,6 @@
           Blotter.MappingBuilder.build(this._texts, _.bind(function (mapping) {
             this._mapping = mapping;
             this._mapping.ratio = this.ratio;
-            this._renderer.width = this._mapping.width;
-            this._renderer.height = this._mapping.height;
 
             next();
           }, this));
@@ -84,7 +82,8 @@
       buildMappingMaterial = _.bind(function () {
         return _.bind(function (next) {
           Blotter.MappingMaterialBuilder.build(this._mapping, this._material, _.bind(function (newMappingMaterial) {
-            mappingMaterial = newMappingMaterial;
+            this.mappingMaterial = newMappingMaterial;
+
             next();
           }, this));
         }, this);
@@ -98,18 +97,21 @@
       _(buildStages).reduceRight(_.wrap, _.bind(function () {
         this._renderer.stop();
 
-        _.each(this._scopes, function (scope, textId) {
-          scope.mappingMaterial = mappingMaterial;
+        _.each(this._scopes, _.bind(function (scope, textId) {
+          scope.mappingMaterial = this.mappingMaterial;
           scope.needsUpdate = true;
-        });
+        }, this));
 
-        this._renderer.material = mappingMaterial.shaderMaterial;
+        this._renderer.material = this.mappingMaterial.shaderMaterial;
+        this._renderer.width = this._mapping.width;
+        this._renderer.height = this._mapping.height;
+
         if (this.autostart) {
           this.start();
         }
 
-        this.trigger(this.mappingMaterial ? "update" : "ready");
-        this.mappingMaterial = mappingMaterial;
+        this.trigger(this.lastUpdated ? "update" : "ready");
+        this.lastUpdated = Date.now();
       }, this))();
     }
 

@@ -43259,8 +43259,6 @@ GrowingPacker.prototype = {
           Blotter.MappingBuilder.build(this._texts, _.bind(function (mapping) {
             this._mapping = mapping;
             this._mapping.ratio = this.ratio;
-            this._renderer.width = this._mapping.width;
-            this._renderer.height = this._mapping.height;
 
             next();
           }, this));
@@ -43270,7 +43268,8 @@ GrowingPacker.prototype = {
       buildMappingMaterial = _.bind(function () {
         return _.bind(function (next) {
           Blotter.MappingMaterialBuilder.build(this._mapping, this._material, _.bind(function (newMappingMaterial) {
-            mappingMaterial = newMappingMaterial;
+            this.mappingMaterial = newMappingMaterial;
+
             next();
           }, this));
         }, this);
@@ -43284,18 +43283,21 @@ GrowingPacker.prototype = {
       _(buildStages).reduceRight(_.wrap, _.bind(function () {
         this._renderer.stop();
 
-        _.each(this._scopes, function (scope, textId) {
-          scope.mappingMaterial = mappingMaterial;
+        _.each(this._scopes, _.bind(function (scope, textId) {
+          scope.mappingMaterial = this.mappingMaterial;
           scope.needsUpdate = true;
-        });
+        }, this));
 
-        this._renderer.material = mappingMaterial.shaderMaterial;
+        this._renderer.material = this.mappingMaterial.shaderMaterial;
+        this._renderer.width = this._mapping.width;
+        this._renderer.height = this._mapping.height;
+
         if (this.autostart) {
           this.start();
         }
 
-        this.trigger(this.mappingMaterial ? "update" : "ready");
-        this.mappingMaterial = mappingMaterial;
+        this.trigger(this.lastUpdated ? "update" : "ready");
+        this.lastUpdated = Date.now();
       }, this))();
     }
 
@@ -43516,16 +43518,19 @@ GrowingPacker.prototype = {
 
       logError : function (domain, method, message) {
         var formatted = _formattedMessage(domain, method, message);
+
         console.error(formatted);
       },
 
       logWarning : function (domain, method, message) {
         var formatted = _formattedMessage(domain, method, message);
+
         console.warn(formatted);
       },
 
       throwError : function (domain, method, message) {
         var formatted = _formattedMessage(domain, method, message);
+
         throw formatted;
       }
     };
@@ -44126,6 +44131,7 @@ GrowingPacker.prototype = {
 
           memo[uniformName].on("update", function () {
             _setValueAtIndexInDataTextureObject(memo[uniformName].value, i, dataTextureObject);
+
             dataTextureObject.texture.needsUpdate = true;
           });
 
@@ -44138,19 +44144,20 @@ GrowingPacker.prototype = {
       }, {});
     }
 
-    function _getUniformInterface (mapping, userUniformDataTextureObjects) {
-      return _.reduce(userUniformDataTextureObjects, _.bind(function (memo, dataTextureObject, uniformName) {
+    function _getUniformInterface (mapping, userUniformDataTextureObjects, textUniformInterface) {
+      return _.reduce(userUniformDataTextureObjects, function (memo, dataTextureObject, uniformName) {
         memo[uniformName] = _getUniformInterfaceForDataTextureObject(dataTextureObject);
 
-        memo[uniformName].on("update", _.bind(function () {
-          _.each(mapping.texts, _.bind(function (text) {
-            this.textUniformInterface[text.id][uniformName].value = memo[uniformName].value;
-          }, this));
+        memo[uniformName].on("update", function () {
+          _.each(mapping.texts, function (text) {
+            textUniformInterface[text.id][uniformName].value = memo[uniformName].value;
+          });
+
           dataTextureObject.texture.needsUpdate = true;
-        }, this));
+        });
 
         return memo;
-      }, this), {});
+      }, {});
     }
 
     return {
@@ -44178,8 +44185,8 @@ GrowingPacker.prototype = {
       },
 
       init : function (mapping, material, shaderMaterial, userUniformDataTextureObjects) {
-        this.textUniformInterface = _getTextUniformInterface.call(this, this.mapping, this._userUniformDataTextureObjects);
-        this.uniformInterface = _getUniformInterface.call(this, this.mapping, this._userUniformDataTextureObjects);
+        this.textUniformInterface = _getTextUniformInterface(this.mapping, this._userUniformDataTextureObjects);
+        this.uniformInterface = _getUniformInterface(this.mapping, this._userUniformDataTextureObjects, this.textUniformInterface);
       },
 
       boundsForText : function (text) {
@@ -44359,6 +44366,7 @@ GrowingPacker.prototype = {
         format: THREE.RGBAFormat,
         type: THREE.UnsignedByteType
       });
+
       renderTarget.texture.generateMipmaps = false;
       renderTarget.width = width;
       renderTarget.height = height;
@@ -44496,12 +44504,14 @@ GrowingPacker.prototype = {
       function setMouseListener (eventName) {
         self.domElement.addEventListener(eventName, function(e) {
           var position = Blotter.CanvasUtils.normalizedMousePosition(self.domElement, e);
+
           self.emit(eventName, position);
         }, false);
       }
 
       for (var i = 0; i < eventNames.length; i++) {
         var eventName = eventNames[i];
+
         setMouseListener(eventName);
       }
     }
@@ -44522,8 +44532,14 @@ GrowingPacker.prototype = {
     function _transferInferfaceValues (oldInterface, newInterface) {
       _.each(oldInterface, function(interfaceObject, uniformName) {
         var newInterfaceObject = newInterface[uniformName];
-        if (newInterfaceObject && newInterfaceObject.type == interfaceObject.type) {
-          newInterfaceObject.value = interfaceObject.value;
+
+        if (newInterfaceObject) {
+          var typesMatch = newInterfaceObject.type == interfaceObject.type,
+              valuesMatch = newInterfaceObject.value == interfaceObject.value;
+
+          if (typesMatch && !valuesMatch) {
+            newInterfaceObject.value = interfaceObject.value;
+          }
         }
       });
     }
@@ -44584,8 +44600,9 @@ GrowingPacker.prototype = {
           bounds.h / this.blotter.ratio,
           this.blotter.ratio
         );
-
         this.domElement.innerHTML = this.text.value;
+
+        this.bounds = bounds;
 
         this.material.uniforms = _getUniformInterfaceForMaterialUniforms.call(this, mappingMaterial.uniforms);
         this.material.mainImage = mappingMaterial.mainImage;
@@ -44594,8 +44611,8 @@ GrowingPacker.prototype = {
           _transferInferfaceValues(previousUniforms, this.material.uniforms);
         }
 
-        this.trigger(this.bounds ? "update" : "ready");
-        this.bounds = bounds;
+        this.trigger(this.lastUpdated ? "update" : "ready");
+        this.lastUpdated = Date.now();
       }
     }
 
@@ -44748,6 +44765,7 @@ GrowingPacker.prototype = {
         }
 
         var index = i - 1;
+
         points[4*index+0] = refIndex;
         points[4*index+1] = bg;
         points[4*index+2] = bg;

@@ -76,6 +76,7 @@
 
           memo[uniformName].on("update", function () {
             _setValueAtIndexInDataTextureObject(memo[uniformName].value, i, dataTextureObject);
+
             dataTextureObject.texture.needsUpdate = true;
           });
 
@@ -88,19 +89,20 @@
       }, {});
     }
 
-    function _getUniformInterface (mapping, userUniformDataTextureObjects) {
-      return _.reduce(userUniformDataTextureObjects, _.bind(function (memo, dataTextureObject, uniformName) {
+    function _getUniformInterface (mapping, userUniformDataTextureObjects, textUniformInterface) {
+      return _.reduce(userUniformDataTextureObjects, function (memo, dataTextureObject, uniformName) {
         memo[uniformName] = _getUniformInterfaceForDataTextureObject(dataTextureObject);
 
-        memo[uniformName].on("update", _.bind(function () {
-          _.each(mapping.texts, _.bind(function (text) {
-            this.textUniformInterface[text.id][uniformName].value = memo[uniformName].value;
-          }, this));
+        memo[uniformName].on("update", function () {
+          _.each(mapping.texts, function (text) {
+            textUniformInterface[text.id][uniformName].value = memo[uniformName].value;
+          });
+
           dataTextureObject.texture.needsUpdate = true;
-        }, this));
+        });
 
         return memo;
-      }, this), {});
+      }, {});
     }
 
     return {
@@ -128,8 +130,8 @@
       },
 
       init : function (mapping, material, shaderMaterial, userUniformDataTextureObjects) {
-        this.textUniformInterface = _getTextUniformInterface.call(this, this.mapping, this._userUniformDataTextureObjects);
-        this.uniformInterface = _getUniformInterface.call(this, this.mapping, this._userUniformDataTextureObjects);
+        this.textUniformInterface = _getTextUniformInterface(this.mapping, this._userUniformDataTextureObjects);
+        this.uniformInterface = _getUniformInterface(this.mapping, this._userUniformDataTextureObjects, this.textUniformInterface);
       },
 
       boundsForText : function (text) {

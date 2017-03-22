@@ -32,12 +32,14 @@
       function setMouseListener (eventName) {
         self.domElement.addEventListener(eventName, function(e) {
           var position = Blotter.CanvasUtils.normalizedMousePosition(self.domElement, e);
+
           self.emit(eventName, position);
         }, false);
       }
 
       for (var i = 0; i < eventNames.length; i++) {
         var eventName = eventNames[i];
+
         setMouseListener(eventName);
       }
     }
@@ -58,8 +60,14 @@
     function _transferInferfaceValues (oldInterface, newInterface) {
       _.each(oldInterface, function(interfaceObject, uniformName) {
         var newInterfaceObject = newInterface[uniformName];
-        if (newInterfaceObject && newInterfaceObject.type == interfaceObject.type) {
-          newInterfaceObject.value = interfaceObject.value;
+
+        if (newInterfaceObject) {
+          var typesMatch = newInterfaceObject.type == interfaceObject.type,
+              valuesMatch = newInterfaceObject.value == interfaceObject.value;
+
+          if (typesMatch && !valuesMatch) {
+            newInterfaceObject.value = interfaceObject.value;
+          }
         }
       });
     }
@@ -120,8 +128,9 @@
           bounds.h / this.blotter.ratio,
           this.blotter.ratio
         );
-
         this.domElement.innerHTML = this.text.value;
+
+        this.bounds = bounds;
 
         this.material.uniforms = _getUniformInterfaceForMaterialUniforms.call(this, mappingMaterial.uniforms);
         this.material.mainImage = mappingMaterial.mainImage;
@@ -130,8 +139,8 @@
           _transferInferfaceValues(previousUniforms, this.material.uniforms);
         }
 
-        this.trigger(this.bounds ? "update" : "ready");
-        this.bounds = bounds;
+        this.trigger(this.lastUpdated ? "update" : "ready");
+        this.lastUpdated = Date.now();
       }
     }
 
