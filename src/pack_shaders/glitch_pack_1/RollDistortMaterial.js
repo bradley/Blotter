@@ -16,13 +16,6 @@ _.extend(BlotterSite.PackShaders.RollDistortMaterial.prototype, (function () {
 
       this.textScope = this.blotter.forText(this.text);
       this.textScope.appendTo(this.el);
-
-      this.startTime = new Date().getTime();
-    },
-
-    render : function () {
-      var time = (new Date().getTime() - this.startTime) / 1000;
-      this.material.uniforms.uTime.value = time;
     }
   }
 })());
