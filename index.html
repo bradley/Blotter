@@ -227,16 +227,10 @@ var blotter = new Blotter(material, {
 
 var elem = $("#draw-text");
 var myScope = blotter.forText(text);
-var startTime = new Date().getTime()
 
 blotter.on("ready", function () {
   elem.html(myScope.domElement);
-});
-
-myScope.on("render", function () {
-  var time = (new Date().getTime() - startTime) / 1000;
-  myScope.material.uniforms.uTime.value = time;
-}); </script>
+});</script>
               <div class="output-container">
                 <div class="output"><div id="draw-text">observation</div></div>
               </div>

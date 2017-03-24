@@ -247,7 +247,7 @@ $(document).ready(function () {
         this._readyImage(_.bind(function () {
           this._setListeners();
           this._setImageOffsets();
-          
+
           this._handleResize();
         }, this));
       },
@@ -1187,8 +1187,7 @@ $(document).ready(function () {
       "            stepCoord = fragCoord + vec2(float(i), float(j));",
       "            stepUV = stepCoord / uResolution.xy;",
       "            stepSample = textTexture(stepUV);",
-      "            vec4 sampleOnWhite = vec4(0.0);",
-      "            combineColors(sampleOnWhite, vec4(1.0), stepSample);",
+      "            vec4 sampleOnWhite = normalBlend(stepSample, vec4(1.0));",
       "            stepDistance = distance(fragCoord, stepCoord) / smoothstep(-1.0, 1.0, amount);",
 
       "            float stepDarkestSampleWeight = 1.0 - clamp((stepDistance / maxDistance), 0.0, 1.0) + randNoise;",
@@ -1202,7 +1201,7 @@ $(document).ready(function () {
       "        }",
       "    }",
 
-      "    rgbaFromRgb(mainImage, darkestSample.rgb);",
+      "    mainImage = normalUnblend(darkestSample.rgba, vec4(1.0));",
       "}"
     ].join("\n");
 
@@ -1589,9 +1588,9 @@ $(document).ready(function () {
     _setBlotter : function () {
       var PackShader = window["BlotterSite"]["PackShaders"][this.shaderName],
           $container = $("<div class='pack-shader-example-wrap'></div>");
-      
+
       this.$(".content").prepend($container);
-      
+
       this.blotterText = new Blotter.Text(this.textStr, this.textProperties);
 
       this.packShaderInstance = new PackShader($container, this.blotterText);
