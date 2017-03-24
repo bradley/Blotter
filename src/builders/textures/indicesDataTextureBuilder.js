@@ -1,4 +1,4 @@
-(function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
+(function(Blotter, _, THREE, setImmediate) {
 
   // Create a Data Texture the size of our text map wherein every texel holds the index of text whose boundaries contain the given texel's position.
 
@@ -75,6 +75,6 @@
   })();
 
 })(
-  this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
+  this.Blotter, this._, this.THREE, this.setImmediate
 );
 

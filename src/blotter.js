@@ -7,8 +7,6 @@
       Blotter.Messaging.throwError("Blotter", false, "device does not support webgl");
     }
 
-    this.Version = "v0.1.0";
-
     this._texts = [];
     this._textEventBindings = {};
 
@@ -285,8 +283,13 @@
 
   _.extend(Blotter.prototype, EventEmitter.prototype);
 
+  Blotter.Version = "v0.1.0";
+
   // Use a single webgl context regardless of number of blotter instances.
   Blotter.webglRenderer = Blotter.webglRenderer || new THREE.WebGLRenderer({ antialias: true, alpha: true, premultipliedAlpha : false });
+
+  Blotter.Assets = Blotter.Assets || {};
+  Blotter.Assets.Shaders = Blotter.Assets.Shaders || {};
 
 })(
   this.Blotter, this._, this.THREE, this.Detector, this.EventEmitter

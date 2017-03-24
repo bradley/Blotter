@@ -53,16 +53,21 @@ function SourceMap(options) {
         orig_line_diff : 0,
         dest_line_diff : 0,
     });
+    var generator = new MOZ_SourceMap.SourceMapGenerator({
+        file       : options.file,
+        sourceRoot : options.root
+    });
     var orig_map = options.orig && new MOZ_SourceMap.SourceMapConsumer(options.orig);
-    var generator;
-    if (orig_map) {
-      generator = MOZ_SourceMap.SourceMapGenerator.fromSourceMap(orig_map);
-    } else {
-        generator = new MOZ_SourceMap.SourceMapGenerator({
-            file       : options.file,
-            sourceRoot : options.root
+
+    if (orig_map && Array.isArray(options.orig.sources)) {
+        orig_map._sources.toArray().forEach(function(source) {
+            var sourceContent = orig_map.sourceContentFor(source, true);
+            if (sourceContent) {
+                generator.setSourceContent(source, sourceContent);
+            }
         });
     }
+
     function add(source, gen_line, gen_col, orig_line, orig_col, name) {
         if (orig_map) {
             var info = orig_map.originalPositionFor({
@@ -83,7 +88,7 @@ function SourceMap(options) {
             source    : source,
             name      : name
         });
-    }
+    };
     return {
         add        : add,
         get        : function() { return generator },

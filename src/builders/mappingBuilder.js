@@ -1,4 +1,4 @@
-(function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
+(function(Blotter, _, THREE, GrowingPacker, setImmediate) {
 
   Blotter.MappingBuilder = (function () {
 
@@ -60,5 +60,5 @@
   })();
 
 })(
-  this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
+  this.Blotter, this._, this.THREE, this.GrowingPacker, this.setImmediate
 );

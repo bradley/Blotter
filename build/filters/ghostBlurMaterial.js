@@ -10,7 +10,9 @@
 
     function _mainImageSrc () {
       var mainImageSrc = [
-        "#define PI 3.14159265358",
+        Blotter.Assets.Shaders.PI,
+        Blotter.Assets.Shaders.Random,
+        Blotter.Assets.Shaders.Noise,
 
         "bool isinf(float val) {",
         "    return (val != 0.0 && val * 2.0 == val) ? true : false;",
@@ -19,23 +21,6 @@
         "// Fix a floating point number to two decimal places",
         "float toFixedTwo(float f) {",
         "    return float(int(f * 100.0)) / 100.0;",
-        "}",
-
-        "// Taken from http://thebookofshaders.com/",
-        "float rand (in float _x) {",
-        "    return fract(sin(_x)*1e4);",
-        "}",
-
-        "float rand(vec2 co){",
-        "    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);",
-        "}",
-
-        "// Taken from http://thebookofshaders.com/",
-        "float noise (in float _x) {",
-        "    float i = floor(_x);",
-        "    float f = fract(_x);",
-        "    float u = f * f * (3.0 - 2.0 * f);",
-        "    return mix(rand(i), rand(i + 1.0), u);",
         "}",
 
         "// Returns the slope of a line given the degrees of the angle on which that line is rotated;",
@@ -408,7 +393,7 @@
         "    vec4 stepSampleAdjusted = vec4(1.0);",
         "    vec4 darkestSample = vec4(1.0);",
 
-        "    float randNoise = rand(uv * sin(uv.x * 0.025)) * 0.15;",
+        "    float randNoise = random(uv * sin(uv.x * 0.025)) * 0.15;",
 
         "    for (int i = -maxSteps; i <= maxSteps; i += 2) {",
         "        if (abs(float(i) * p.x) >= maxRadiusUv.x) { continue; }",

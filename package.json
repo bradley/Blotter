@@ -7,7 +7,6 @@
     "acid",
     "dom",
     "webgl",
-    "tripping",
     "canvas",
     "animation",
     "text",
@@ -35,9 +34,6 @@
     }
   ],
   "dependencies" : {
-    "three": "~0.74.0",
-    "underscore": "1.8.3",
-    "requestanimationframe": ">= 0.0.22"
   },
   "devDependencies": {
     "grunt": "^0.4.0",

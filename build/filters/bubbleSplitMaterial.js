@@ -13,21 +13,9 @@
 
         "void mainImage( out vec4 mainImage, in vec2 fragCoord ) {",
 
-        "   // p = x, y percentage for texel position within total resolution.",
         "   vec2 p = fragCoord / uResolution;",
-        "   // d = x, y percentage for texel position within total resolution relative to center point.",
         "   vec2 d = p - uCenterPoint;",
 
-        "   // The dot function returns the dot product of the two",
-        "   // input parameters, i.e. the sum of the component-wise",
-        "   // products. If x and y are the same the square root of",
-        "   // the dot product is equivalent to the length of the vector.",
-        "   // Therefore, r = length of vector represented by d (the ",
-        "   // distance of the texel from center position).",
-        "   // ",
-        "   // In order to apply weights here, we add our weight to this distance",
-        "   // (pushing it closer to 1 - essentially giving no effect at all) and",
-        "   // find the min between our weighted distance and 1.0",
         "   float inverseLenseWeight = 1.0 - uLenseWeight;",
         "   float r = min(sqrt(dot(d, d)) + inverseLenseWeight, 1.0);",
 
