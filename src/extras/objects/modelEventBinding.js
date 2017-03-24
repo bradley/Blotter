@@ -1,4 +1,4 @@
-  (function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
+  (function(Blotter, _) {
 
   Blotter.ModelEventBinding = function (model, eventCallbacks) {
     this.model = model;
@@ -17,5 +17,5 @@
   };
 
 })(
-  this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
+  this.Blotter, this._
 );

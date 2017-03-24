@@ -1,4 +1,4 @@
-(function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
+(function(Blotter, _, THREE, setImmediate) {
 
   // Create a Data Texture holding the boundaries (x/y offset and w/h) that should be available to any given texel for any given text.
 
@@ -37,5 +37,5 @@
   })();
 
 })(
-  this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
+  this.Blotter, this._, this.THREE, this.setImmediate
 );

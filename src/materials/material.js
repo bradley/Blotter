@@ -1,4 +1,4 @@
-(function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
+(function(Blotter, _, EventEmitter) {
 
   Blotter.Material = function () {
     this.init.apply(this, arguments);
@@ -104,5 +104,5 @@
   Blotter._extendWithGettersSetters(Blotter.Material.prototype, EventEmitter.prototype);
 
 })(
-  this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
+  this.Blotter, this._, this.EventEmitter
 );

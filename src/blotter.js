@@ -1,4 +1,4 @@
-(function(previousBlotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
+(function(previousBlotter, _, THREE, Detector, EventEmitter) {
 
   var root = this;
 
@@ -289,5 +289,5 @@
   Blotter.webglRenderer = Blotter.webglRenderer || new THREE.WebGLRenderer({ antialias: true, alpha: true, premultipliedAlpha : false });
 
 })(
-  this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
+  this.Blotter, this._, this.THREE, this.Detector, this.EventEmitter
 );

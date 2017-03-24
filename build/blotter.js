@@ -43184,7 +43184,7 @@ GrowingPacker.prototype = {
   }
 
 })();
-(function(previousBlotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
+(function(previousBlotter, _, THREE, Detector, EventEmitter) {
 
   var root = this;
 
@@ -43475,7 +43475,7 @@ GrowingPacker.prototype = {
   Blotter.webglRenderer = Blotter.webglRenderer || new THREE.WebGLRenderer({ antialias: true, alpha: true, premultipliedAlpha : false });
 
 })(
-  this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
+  this.Blotter, this._, this.THREE, this.Detector, this.EventEmitter
 );
 
 (function(Blotter, _) {
@@ -43548,7 +43548,7 @@ GrowingPacker.prototype = {
   this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
 );
 
-  (function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
+  (function(Blotter, _) {
 
   Blotter.ModelEventBinding = function (model, eventCallbacks) {
     this.model = model;
@@ -43567,10 +43567,10 @@ GrowingPacker.prototype = {
   };
 
 })(
-  this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
+  this.Blotter, this._
 );
 
-(function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
+(function(Blotter, _) {
 
   Blotter.CanvasUtils = {
 
@@ -43654,10 +43654,10 @@ GrowingPacker.prototype = {
   };
 
 })(
-  this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
+  this.Blotter, this._
 );
 
-(function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
+(function(Blotter, _) {
 
   Blotter.PropertyDefaults = {
     family       : 'sans-serif',
@@ -43753,10 +43753,10 @@ GrowingPacker.prototype = {
   };
 
 })(
-  this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
+  this.Blotter, this._
 );
 
-(function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
+(function(Blotter, _) {
 
   Blotter.UniformUtils = {
 
@@ -43896,10 +43896,10 @@ GrowingPacker.prototype = {
   };
 
 })(
-  this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
+  this.Blotter, this._
 );
 
-(function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
+(function(Blotter, _, THREE, EventEmitter) {
 
   Blotter.Text = function (value, properties) {
     this.id = THREE.Math.generateUUID();
@@ -43930,10 +43930,10 @@ GrowingPacker.prototype = {
   Blotter._extendWithGettersSetters(Blotter.Text.prototype, EventEmitter.prototype);
 
 })(
-  this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
+  this.Blotter, this._, this.THREE, this.EventEmitter
 );
 
-(function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
+(function(Blotter, _) {
 
   Blotter.Mapping = function (texts, textBounds, width, height) {
     this.texts = texts;
@@ -44050,10 +44050,10 @@ GrowingPacker.prototype = {
   })();
 
 })(
-  this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
+  this.Blotter, this._
 );
 
-(function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
+(function(Blotter, _, EventEmitter) {
 
   Blotter.MappingMaterial = function(mapping, material, shaderMaterial, userUniformDataTextureObjects) {
     this.mapping = mapping;
@@ -44197,10 +44197,10 @@ GrowingPacker.prototype = {
   })();
 
 })(
-  this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
+  this.Blotter, this._, this.EventEmitter
 );
 
-(function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
+(function(Blotter, _, EventEmitter) {
 
   Blotter.Material = function () {
     this.init.apply(this, arguments);
@@ -44306,10 +44306,10 @@ GrowingPacker.prototype = {
   Blotter._extendWithGettersSetters(Blotter.Material.prototype, EventEmitter.prototype);
 
 })(
-  this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
+  this.Blotter, this._, this.EventEmitter
 );
 
-(function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
+(function(Blotter, _) {
 
   Blotter.ShaderMaterial = function(mainImage, options) {
     Blotter.Material.apply(this, arguments);
@@ -44333,10 +44333,10 @@ GrowingPacker.prototype = {
   })());
 
 })(
-  this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
+  this.Blotter, this._
 );
 
-(function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
+(function(Blotter, _, THREE, EventEmitter) {
 
   var root = this;
 
@@ -44467,10 +44467,10 @@ GrowingPacker.prototype = {
   Blotter._extendWithGettersSetters(Blotter.Renderer.prototype, EventEmitter.prototype);
 
 })(
-  this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
+  this.Blotter, this._, this.THREE, this.EventEmitter
 );
 
-(function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
+(function(Blotter, _, EventEmitter) {
 
   Blotter.RenderScope = function (text, blotter) {
     this.text = text;
@@ -44679,10 +44679,10 @@ GrowingPacker.prototype = {
   Blotter._extendWithGettersSetters(Blotter.RenderScope.prototype, EventEmitter.prototype);
 
 })(
-  this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
+  this.Blotter, this._, this.EventEmitter
 );
 
-(function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
+(function(Blotter, _, THREE, setImmediate) {
 
   // Create a Data Texture holding the boundaries (x/y offset and w/h) that should be available to any given texel for any given text.
 
@@ -44721,7 +44721,7 @@ GrowingPacker.prototype = {
   })();
 
 })(
-  this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
+  this.Blotter, this._, this.THREE, this.setImmediate
 );
 
 (function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
@@ -44805,7 +44805,7 @@ GrowingPacker.prototype = {
 );
 
 
-(function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
+(function(Blotter, _, THREE) {
 
   Blotter.TextTextureBuilder = (function() {
 
@@ -44827,7 +44827,7 @@ GrowingPacker.prototype = {
   })();
 
 })(
-  this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
+  this.Blotter, this._, this.THREE
 );
 
 (function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
@@ -44895,7 +44895,7 @@ GrowingPacker.prototype = {
   this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
 );
 
-(function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
+(function(Blotter, _, THREE) {
 
   Blotter.MappingMaterialBuilder = (function() {
 
@@ -45269,5 +45269,5 @@ GrowingPacker.prototype = {
   })();
 
 })(
-  this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
+  this.Blotter, this._, this.THREE
 );

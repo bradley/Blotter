@@ -1,4 +1,4 @@
-(function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
+(function(Blotter, _, THREE, EventEmitter) {
 
   Blotter.Text = function (value, properties) {
     this.id = THREE.Math.generateUUID();
@@ -29,5 +29,5 @@
   Blotter._extendWithGettersSetters(Blotter.Text.prototype, EventEmitter.prototype);
 
 })(
-  this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
+  this.Blotter, this._, this.THREE, this.EventEmitter
 );

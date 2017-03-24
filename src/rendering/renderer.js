@@ -1,4 +1,4 @@
-(function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
+(function(Blotter, _, THREE, EventEmitter) {
 
   var root = this;
 
@@ -129,5 +129,5 @@
   Blotter._extendWithGettersSetters(Blotter.Renderer.prototype, EventEmitter.prototype);
 
 })(
-  this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
+  this.Blotter, this._, this.THREE, this.EventEmitter
 );

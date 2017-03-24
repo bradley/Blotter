@@ -1,4 +1,4 @@
-(function(Blotter, _, THREE, Detector, requestAnimationFrame, EventEmitter, GrowingPacker, setImmediate) {
+(function(Blotter, _, EventEmitter) {
 
   Blotter.RenderScope = function (text, blotter) {
     this.text = text;
@@ -207,5 +207,5 @@
   Blotter._extendWithGettersSetters(Blotter.RenderScope.prototype, EventEmitter.prototype);
 
 })(
-  this.Blotter, this._, this.THREE, this.Detector, this.requestAnimationFrame, this.EventEmitter, this.GrowingPacker, this.setImmediate
+  this.Blotter, this._, this.EventEmitter
 );
