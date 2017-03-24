@@ -17,8 +17,6 @@ _.extend(BlotterSite.PackShaders.BubbleSplitMaterial.prototype, (function () {
       this.textScope = this.blotter.forText(this.text);
       this.textScope.appendTo(this.el);
 
-      this.startTime = new Date().getTime();
-
       this.setListeners();
     },
 

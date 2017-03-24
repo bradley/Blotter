@@ -1534,6 +1534,7 @@ $(document).ready(function () {
 
       this.collection = new BlotterSite.Collections.PackShaders([
         { materialName : "RollDistortMaterial", packName : "glitch_pack_1"},
+        { materialName : "GhostBlurMaterial", packName : "glitch_pack_1"},
         { materialName : "RGBSplitMaterial", packName : "glitch_pack_1"},
         { materialName : "BubbleSplitMaterial", packName : "glitch_pack_1"}
       ]);
