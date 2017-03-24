@@ -19,4 +19,4 @@ var myFragmentSrc = [
 ```
 
 # Licensing
-The majority of files within this folder were supplied by third party developers. Please see license information at the top of each file's source.
+The majority of files within this folder (all but those within `./core`) were supplied by third party developers. Please see license information at the top of each file's source.
