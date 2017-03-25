@@ -1201,7 +1201,13 @@ $(document).ready(function () {
       "        }",
       "    }",
 
-      "    mainImage = normalUnblend(darkestSample.rgba, vec4(1.0));",
+      "    float a = 1.0 - min(darkestSample.r, min(darkestSample.g, darkestSample.b));",
+
+      "    float r = 1.0 - (1.0 - darkestSample.r) / a;",
+      "    float g = 1.0 - (1.0 - darkestSample.g) / a;",
+      "    float b = 1.0 - (1.0 - darkestSample.b) / a;",
+
+      "    mainImage = vec4(r, g, b, a);",
       "}"
     ].join("\n");
 
