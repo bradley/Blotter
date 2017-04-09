@@ -401,16 +401,13 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
 @font-face {
   font-family: "Garamond";
   src: url("./fonts/EBGaramond12-Regular.ttf"); }
-
 @font-face {
   font-family: "Garamond";
   src: url("./fonts/EBGaramond12-Italic.ttf");
   font-style: italic; }
-
 @font-face {
   font-family: "Avenir";
   src: url("./fonts/REPLACE_ME_WITH_SOMETHING_REAL.ttf"); }
-
 /*  Base
     ------------------------------------- */
 * {
@@ -510,6 +507,8 @@ aside {
       color: #8A2BE2; }
   aside a {
     border-width: 1px; }
+  aside code {
+    font-size: 12px; }
 
 /* Highlight colors. */
 ::-moz-selection {
@@ -556,7 +555,7 @@ code {
   box-sizing: border-box;
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
-  color: white;
+  color: #fff;
   display: inline-block;
   font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
   font-size: 14px;
@@ -593,11 +592,11 @@ code {
       height: 26px;
       line-height: 26px;
       position: absolute;
-      right: 0px;
+      right: -0px;
       top: -1px;
       width: 10px; }
   .dropdown-select .dropdown-options {
-    background: white;
+    background: #fff;
     border-radius: 4px;
     box-shadow: 0 0 10px 3px #f3f3f3;
     box-sizing: border-box;
@@ -615,7 +614,7 @@ code {
     .dropdown-select .dropdown-options li {
       padding: 6.5px 13px; }
       .dropdown-select .dropdown-options li:hover {
-        color: white;
+        color: #fff;
         cursor: pointer;
         background: #202020;
         font-weight: 500; }
@@ -646,7 +645,7 @@ code {
     position: absolute;
     right: 0; }
   .horizon:before {
-    border-color: transparent transparent white transparent;
+    border-color: transparent transparent #fff transparent;
     border-style: solid;
     border-width: 0 13px 6.5px 13px;
     left: -13px;
@@ -765,11 +764,11 @@ code {
 /*  Header
     ------------------------------------- */
 #masthead {
-  background: white;
-  background: -webkit-linear-gradient(white, rgba(255, 255, 255, 0));
-  background: -moz-linear-gradient(white, rgba(255, 255, 255, 0));
-  background: -o-linear-gradient(white, rgba(255, 255, 255, 0));
-  background: linear-gradient(white, rgba(255, 255, 255, 0));
+  background: #fff;
+  background: -webkit-linear-gradient(#fff, rgba(255, 255, 255, 0));
+  background: -moz-linear-gradient(#fff, rgba(255, 255, 255, 0));
+  background: -o-linear-gradient(#fff, rgba(255, 255, 255, 0));
+  background: linear-gradient(#fff, rgba(255, 255, 255, 0));
   height: 104px;
   left: 0;
   padding: 26px 52px;
@@ -962,7 +961,7 @@ ul.documentation {
 .tabbed-editor {
   float: none;
   list-style: none;
-  margin-top: 52px;
+  margin: 52px 0;
   width: 100%;
   padding: 0;
   position: relative; }
@@ -993,7 +992,7 @@ ul.documentation {
       height: auto; }
   .tabbed-editor .tab:checked + span {
     background: #202020;
-    color: white;
+    color: #fff;
     font-weight: 500; }
   .tabbed-editor .label-text {
     box-sizing: border-box;
@@ -1010,7 +1009,7 @@ ul.documentation {
     text-transform: uppercase; }
 
 .output {
-  background: white;
+  background: #fff;
   border: 2px solid #202020;
   box-sizing: border-box;
   -moz-box-sizing: border-box;
@@ -1050,7 +1049,7 @@ ul.documentation {
   list-style: none;
   overflow: hidden; }
   .pack-shaders li {
-    background: white;
+    background: #fff;
     border: 2px solid #202020;
     box-sizing: border-box;
     -moz-box-sizing: border-box;
@@ -1224,3 +1223,5 @@ p.static, p.static + p {
   }
 }
 */
+
+/*# sourceMappingURL=main.css.map */

@@ -141,7 +141,7 @@ aside {
     top: 0;
     width: $leading * 2;
 
-    &::first-letter { 
+    &::first-letter {
       font-size: 200%;
       color: #8A2BE2;
     }
@@ -149,6 +149,10 @@ aside {
 
   a {
     border-width: 1px;
+  }
+
+  code {
+    font-size: 12px;
   }
 }
 
@@ -413,10 +417,10 @@ code {
 
 #masthead {
   background: $white;
-  background: -webkit-linear-gradient($white, rgba(255,255,255,0));  
-  background: -moz-linear-gradient($white, rgba(255,255,255,0));  
-  background: -o-linear-gradient($white, rgba(255,255,255,0));  
-  background: linear-gradient($white, rgba(255,255,255,0)); 
+  background: -webkit-linear-gradient($white, rgba(255,255,255,0));
+  background: -moz-linear-gradient($white, rgba(255,255,255,0));
+  background: -o-linear-gradient($white, rgba(255,255,255,0));
+  background: linear-gradient($white, rgba(255,255,255,0));
   height: $leading * 4;
   left: 0;
   padding: $leading ($leading * 2);
@@ -512,7 +516,7 @@ code {
         a {
           .arrow-left {
             margin-right: $leading * 1.5;
-          }          
+          }
         }
       }
     }
@@ -542,14 +546,14 @@ code {
 .notated-list {
   position: relative;
   margin: 0 0 0 $leading;
-  
+
   ul {
     box-sizing: border-box;
     list-style: none;
     margin: 0;
     padding: 0;
     position: relative;
-    
+
     li {
       line-height: $leading;
       margin-bottom: $leading;
@@ -720,7 +724,7 @@ ul.documentation {
 .tabbed-editor {
   float: none;
   list-style: none;
-  margin-top: $leading * 2;
+  margin: ($leading * 2) 0;
   width: 100%;
   padding: 0;
   position: relative;

@@ -108,10 +108,10 @@
           <div class="hero-content">
             <div class="content-right">
               <p class="hero-text">
-                Blotter is a WebGL backed JavaScript API geared towards allowing designers to easily draw both pre-made and custom text effects using GLSL shaders.
+                GHANGE THIS IT'S TOO ROBOTIC AND THE FIRST THING PEOPLE SEE. DONT SAY DESIGNERS CONDESCENDINGLY Blotter is a WebGL backed JavaScript API geared towards allowing designers to easily draw both pre-made and custom text effects using GLSL shaders.
               </p>
               <p class="small-text">
-                 Blotter.js requires Underscore.js and Backbone.js Events. If you're already loading these files elsewhere then you can build the project yourself and get the file size even smaller. For more information on custom builds check out the source on github.
+                Blotter.js requires Three.js and Underscore.js. If you're already including these files in your project, view the information on custom builds in the documentation to get the file size even smaller.
               </p>
               <div class="download">
                 <div class="right">
@@ -120,11 +120,11 @@
                     <ul class="dropdown-options hidden">
                       <li data-title="Production Version" data-value="http://production" class="noselect">
                         <p class="download-title">Production Version</p>
-                        <p class="download-details">Testing 23kb</p>
+                        <p class="download-details">Minified, 23kb</p>
                       </li>
                       <li data-title="Development Version" data-value="http://download" class="noselect">
                         <p class="download-title">Development Version</p>
-                        <p class="download-details">Testing 420mb</p>
+                        <p class="download-details">Uncompressed, 420mb</p>
                       </li>
                     </ul>
                   </div>
@@ -144,20 +144,20 @@
             <div class="introduction">
               <h2 class="anchor"><span id="overview"></span>Overview</h2>
               <p>
-                When applying effects to text on the web, designers have traditionally been constrained to those provided by <code>css</code>. In the majority of cases this is entirely suitable – text is text right? Yet still, there exist numerous examples of designers combining <code>css</code> properties or gifs and images to create effects that evoke something more playful. Precisely here, Blotter exists to provide an alternative.
+                When applying effects to text on the web, designers have traditionally been constrained to those provided by <code>CSS</code>. In the majority of cases this is entirely suitable – text is text right? Yet still, there exist numerous examples of designers combining <code>CSS</code> properties or gifs and images to create effects that evoke something more playful. Precisely here, Blotter exists to provide an alternative.
               </p>
             </div>
             <ul class="bullet-list">
               <li>
                 <h3>GLSL Backed Text Effects with Ease</h3>
                 <p>
-                  Blotter provides a simple interface for building and manipulating text effects that utilize <code>glsl</code> shaders without requiring that the designer know <code>glsl</code>. Blotter has a growing library of configurable effects while also providing ways for student or experienced <code>glsl</code> programmers to quickly bootstrap new ones.
+                  Blotter provides a simple interface for building and manipulating text effects that utilize <code>GLSL</code> shaders without requiring that the designer write <code>GLSL</code>. Blotter has a growing library of configurable effects while also providing ways for student or experienced <code>GLSL</code> programmers to quickly bootstrap new ones.
                 </p>
               </li>
               <li>
                 <h3>Atlasing Effects in a Single WebGL Back Buffer</h3>
                 <p>
-                  Blotter bypasses the limit browsers place on the number of live <code>webgl</code> contexts in the document by using an atlas. This atlas maps elements that share the same effects so that they may be rendered together in a single <code>webgl</code> context. The resulting image data is then output to individual <code>2d</code> contexts for each element.
+                  Blotter bypasses the limit browsers place on the number of live <code>WebGL</code> contexts in the document by using an atlas. This atlas maps elements that share the same effects so that they may be rendered together in a single <code>WebGL</code> context. The resulting image data is then output to individual <code>2d</code> contexts for each element.
                 </p>
               </li>
               <li>
@@ -184,29 +184,23 @@
           <div class="content-right">
             <h2 class="anchor"><span id="basics"></span>The Basics</h2>
             <p>
-              When applying effects to text on the <code>WebGL</code>, designers have traditionally been constrained to those provided by  CSS. In the majority of cases this is entirely suitable – text is text, right? Yet still, there exist numerous examples of designers combining style properties or gifs and images to create effects that evoke something more playful. Precisely here, Blotter exists to provide an alternative.
+              To get started, download Blotter and include it in the head of the HTML document like so: <code>&lt;script src="./path/to/blotter.js"&gt;&lt;/script&gt;</code>. Once you've done this, visit the page in your browser, open the <a href="https://developers.google.com/chrome-developer-tools/docs/console#opening_the_console" title="Chrome console guide">console</a>, and type “Blotter”. If a function is returned, you're ready to begin.
             </p>
-            <h3>All Together Now</h3>
+            <h3>Plain Text</h3>
             <p>
-              When applying effects to text on the web, designers have traditionally been constrained to those provided by  CSS. In the <a href="#"><span>majority of</span></a> cases this is entirely suitable – text is text, right? Yet still, there exist numerous examples of designers combining style properties or gifs and images to create effects that evoke something more playful<sup><a href="#1">4</a></sup>. Precisely here, Blotter exists to provide an alternative.
+              Before adding any effects, you should learn how to replace text in your document with plain text rendered<sup><a href="#1">1</a></sup> by Blotter. Instances of Blotter take at least one Text object and a single Material object, which is the source of any Blotter effect you wish to apply to your texts. In the following example, we create a single Text object, apply the basic <code>Blotter.Material</code> material (which simply draws the Text as described by its <a href="#path-to-docs">properties</a>) and add the rendered <code>canvas</code> to an element on the page.
             </p>
-            <aside data-number="4" class="anchor"><span id="1"></span>This is an <a href="#"><span>important</span></a> line note that wraps multiple lines. These could be quite large.</aside>
-            <p>
-              When applying effects to text on the web, designers have traditionally been constrained to those provided by  CSS. In the majority of cases this is entirely suitable – text is text, right? Yet still, there exist numerous examples of designers combining style properties or gifs and images to create effects that evoke something more playful. Precisely here, Blotter exists to provide an alternative.
-            </p>
-            <p>
-              When applying effects to text on the web, designers have traditionally been constrained to those provided by  CSS. In the majority of cases this is entirely suitable – text is text, right? Yet still, there exist numerous examples of designers combining style properties or gifs and images to create effects that evoke something more playful. Precisely here, Blotter exists to provide an alternative.
-            </p>
+            <aside data-number="1" class="anchor"><span id="1"></span>Remember, texts rendered through Blotter are inserted into the DOM as <code>canvas</code> elements.</aside>
           </div>
           <div class="content-left">
             <div class="tabbed-editor">
               <div class="editable-content">
                 <label>
-                  <input type="radio" name="tabs" class="tab js-tab" checked="checked">
+                  <input type="radio" name="tabs-example-1" class="tab js-tab" checked>
                   <span class="label-text">JavaScript</span>
                 </label>
                 <label>
-                  <input type="radio" name="tabs" class="tab html-tab">
+                  <input type="radio" name="tabs-example-1" class="tab html-tab">
                   <span class="label-text">HTML</span>
                 </label>
                 <div class="tab-content js-content"></div>
@@ -216,24 +210,70 @@
 var text = new Blotter.Text("observation", {
   family : "'Garamond', serif",
   size : 27,
+  fill : "#202020"
+});
+
+var material = new Blotter.Material();
+
+var blotter = new Blotter(material, {
+  texts : text
+});
+
+var elem = document.getElementById("plain-text");
+var scope = blotter.forText(text);
+
+scope.appendTo(elem);
+</script>
+              <div class="output-container">
+                <div class="output"><div id="plain-text"></div></div>
+              </div>
+            </div>
+          </div>
+          <div class="content-right">
+            <h3>Ready-made Effects</h3>
+            <p>
+              Blotter is a tool designed to allow anyone, regardless of their knowledge of <code>GLSL</code> itself, to use the power of <code>GLSL</code> fragment shaders<sup><a href="#2">2</a></sup> to create and apply real-time visual effects to texts on the web. To this end, Blotter provides a growing collection of ready-to-use and configurable materials.
+            </p>
+            <aside data-number="2" class="anchor"><span id="2"></span>If you're unfamiliar with <code>GLSL</code> and fragment shaders, check out <a href="http://shadertoy.com" title="Shadertoy">Shadertoy</a> and read this <a href="http://stackoverflow.com/questions/19449590/webgl-glsl-how-does-a-shadertoy-work" title="Understanding Shadertoy">Stackoverflow thread</a> to learn about pixel shaders and what they are capable of.</aside>
+            <p>
+              The configurability of provided materials will depend on the material itself, but the basic interface will typically center around the manipulation of “uniforms”. Think of uniforms as values that describe how effects are rendered. For example, a material that blurs your text might have a uniform called <code>blurRadius</code> to help you control the amount of blurring your text undergoes. Below, we'll use Blotter's ready-made <code>Blotter.BlurMaterial</code> to blur our text.
+            </p>
+          </div>
+          <div class="content-left">
+            <div class="tabbed-editor">
+              <div class="editable-content">
+                <label>
+                  <input type="radio" name="tabs-example-2" class="tab js-tab" checked>
+                  <span class="label-text">JavaScript</span>
+                </label>
+                <label>
+                  <input type="radio" name="tabs-example-2" class="tab html-tab">
+                  <span class="label-text">HTML</span>
+                </label>
+                <div class="tab-content js-content"></div>
+                <div class="tab-content html-content"></div>
+              </div>
+              <script class="js-code"  type="application/json">// BLOTTER - Example 2
+var text = new Blotter.Text("observation", {
+  family : "'Garamond', serif",
+  size : 27,
   fill : "#171717"
 });
 
 var material = new Blotter.RollDistortMaterial();
 material.uniforms.uDistortion.value = 3.0;
 material.uniforms.uDistortion2.value = 5.0;
+
 var blotter = new Blotter(material, {
   texts : text
 });
 
-var elem = $("#draw-text");
-var myScope = blotter.forText(text);
+var elem = document.getElementById("distortion-text");
+var scope = blotter.forText(text);
 
-blotter.on("ready", function () {
-  elem.html(myScope.domElement);
-});</script>
+scope.appendTo(elem);</script>
               <div class="output-container">
-                <div class="output"><div id="draw-text">observation</div></div>
+                <div class="output"><div id="distortion-text"></div></div>
               </div>
             </div>
           </div>
