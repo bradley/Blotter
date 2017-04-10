@@ -1835,7 +1835,7 @@
         return bounds;
       },
 
-      toCanvas : function () {
+      toCanvas : function (completion) {
         var canvas = Blotter.CanvasUtils.hiDpiCanvas(this._width, this._height, this._ratio),
             ctx = canvas.getContext("2d", { alpha: false }),
             img = new Image();
@@ -1868,20 +1868,18 @@
           ctx.restore();
         }
 
+        img.onload = _.bind(function () {
+          // Flip Y for WebGL
+          ctx.save();
+          ctx.scale(1, -1);
+          ctx.clearRect(0, this._height * -1, this._width, this._height);
+          ctx.drawImage(img, 0, this._height * -1, this._width, this._height);
+          ctx.restore();
+
+          completion(canvas);
+        }, this);
+
         img.src = canvas.toDataURL("image/png");
-
-        // Flip Y for WebGL
-        ctx.save();
-        ctx.scale(1, -1);
-        ctx.clearRect(0, this._height * -1, this._width, this._height);
-        ctx.drawImage(img, 0, this._height * -1, this._width, this._height);
-        ctx.restore();
-
-        return canvas;
-      },
-
-      toDataURL : function () {
-        return this.toCanvas().toDataURL();
       }
     };
   })();
@@ -2649,15 +2647,20 @@
     return {
 
       build : function (mapping, completion) {
-        var loader = new THREE.TextureLoader();
+        var loader = new THREE.TextureLoader(),
+            url;
 
-        loader.load(mapping.toDataURL(), _.bind(function(texture) {
-          texture.generateMipmaps = true; // TODO: Make optional.
-          texture.minFilter = THREE.LinearFilter;
-          texture.magFilter = THREE.LinearFilter;
-          texture.needsUpdate = true;
+        mapping.toCanvas(_.bind(function(canvas) {
+          url = canvas.toDataURL();
 
-          completion(texture);
+          loader.load(url, _.bind(function(texture) {
+            texture.generateMipmaps = true; // TODO: Make optional.
+            texture.minFilter = THREE.LinearFilter;
+            texture.magFilter = THREE.LinearFilter;
+            texture.needsUpdate = true;
+
+            completion(texture);
+          }, this));
         }, this));
       }
     };

@@ -5,15 +5,20 @@
     return {
 
       build : function (mapping, completion) {
-        var loader = new THREE.TextureLoader();
+        var loader = new THREE.TextureLoader(),
+            url;
 
-        loader.load(mapping.toDataURL(), _.bind(function(texture) {
-          texture.generateMipmaps = true; // TODO: Make optional.
-          texture.minFilter = THREE.LinearFilter;
-          texture.magFilter = THREE.LinearFilter;
-          texture.needsUpdate = true;
+        mapping.toCanvas(_.bind(function(canvas) {
+          url = canvas.toDataURL();
 
-          completion(texture);
+          loader.load(url, _.bind(function(texture) {
+            texture.generateMipmaps = true; // TODO: Make optional.
+            texture.minFilter = THREE.LinearFilter;
+            texture.magFilter = THREE.LinearFilter;
+            texture.needsUpdate = true;
+
+            completion(texture);
+          }, this));
         }, this));
       }
     };
