@@ -5,6 +5,7 @@
 
     <style type="text/css">
       body {
+        background: #fff; //#202020;
         padding: 20px;
         font-family: Charcoal, sans-serif;
         font-size: 22px;
@@ -20,19 +21,23 @@
     </style>
 
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-beta1/jquery.js"></script>
+    <script type="text/javascript" src="./third_party/dat.gui.js"></script>
     <script type="text/javascript" src="../build/blotter.js"></script>
     <script type="text/javascript" src="../build/filters/rgbSplitMaterial.js"></script>
   </head>
-    <p>An <span>observation</span> is a set of limitations.</p>
-    <p>An <span id="glitch-target">observation</span> is a set of limitations.</p>
+    <span id="effect-target"></span>
     <script>
+
+
       $(document).ready(function() {
 
         var styleProperties = {
-          family: "Charcoal, sans-serif",
-          size: 22,
-          leading: 1.5,
-          fill: "#0d0f17"
+          family: "serif",
+          size : 64,
+          weight : 100,
+          paddingTop : 0,
+          paddingLeft : 14,
+          paddingRight : 14
         };
 
         var text = new Blotter.Text("observation", styleProperties);
@@ -46,9 +51,24 @@
         var myScope = blotter.forText(text);
 
         blotter.on("ready", function () {
-          $("#glitch-target").empty();
-          myScope.appendTo(document.getElementById("glitch-target"));
+          myScope.appendTo(document.getElementById("effect-target"));
         });
+
+        var controls = {
+          uOffset : material.uniforms.uOffset.value,
+          uRotation : material.uniforms.uRotation.value
+        };
+
+        var gui = new dat.GUI();
+
+        gui.add(controls, 'uOffset', 0.0, 30.0).onChange(function (angle) {
+          material.uniforms.uOffset.value = angle;
+        });
+
+        gui.add(controls, 'uRotation', 0.0, 360.0).onChange(function (angle) {
+          material.uniforms.uRotation.value = angle;
+        });
+
       });
     </script>
   </body>

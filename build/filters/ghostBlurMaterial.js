@@ -202,9 +202,6 @@
         "    float perpendicularDeg = mod(deg + 90.0, 360.0); // Offset angle by 90.0, but keep it from exceeding 360.0",
         "    float perpendicularSlope = normalizedSlope(slopeForDegrees(perpendicularDeg));",
 
-
-
-
         "    vec2 relativeCoord = vec2(0.0);",
         "    lineLineIntersection(relativeCoord, centerUv * uResolution.xy, slope, uv * uResolution.xy, perpendicularSlope);",
 
@@ -219,8 +216,6 @@
 
         "    amplitude = width * amplitude;",
         "    smoothing = amplitude * smoothing;",
-
-
 
         "    // Get offset UVs for width of line, adjacent to center point",
         "    // -------------------------------",
