@@ -1,5 +1,5 @@
 # Overview
-Files within this folder allow you to quickly import useful glsl helper functions into your glsl source strings.
+Files within this folder allow you to import useful glsl helper functions into your glsl source strings.
 
 In order to access methods within these files, strings exposed by the files in this folder should be inserted directly into shader source strings.
 

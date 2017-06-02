@@ -5,10 +5,11 @@
 
     <style type="text/css">
       body {
-        background: #fff; //#202020;
+        background: #fff;
         padding: 20px;
-        font-family: Charcoal, sans-serif;
-        font-size: 22px;
+        font-family: serif;
+        font-size: 64px;
+        font-weight: 100;
         line-height: 1.5;
         color: #0d0f17;
       }
@@ -18,6 +19,10 @@
         margin: 0;
         vertical-align: top;
       }
+
+      #filter-target .b-canvas {
+        margin-left: -14px;
+      }
     </style>
 
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-beta1/jquery.js"></script>
@@ -25,7 +30,8 @@
     <script type="text/javascript" src="../build/blotter.js"></script>
     <script type="text/javascript" src="../build/filters/liquidDistortMaterial.js"></script>
   </head>
-    <span id="glitch-target"></span>
+  <body>
+    <span id="filter-target"></span>
     <script>
 
 
@@ -51,11 +57,11 @@
         var myScope = blotter.forText(text);
 
         blotter.on("ready", function () {
-          myScope.appendTo(document.getElementById("glitch-target"));
+          myScope.appendTo(document.getElementById("filter-target"));
         });
 
         var controls = {
-          message : 'dat.gui',
+          message : "dat.gui",
           uAnimate : true,
           uSpeed : material.uniforms.uSpeed.value,
           uVolatility : material.uniforms.uVolatility.value,
@@ -64,16 +70,16 @@
 
         var gui = new dat.GUI();
 
-        gui.add(controls, 'uAnimate').onChange(function (bool) {
+        gui.add(controls, "uAnimate").onChange(function (bool) {
           material.uniforms.uAnimate.value = bool ? 1.0 : 0.0;
         });
-        gui.add(controls, 'uSpeed', 0.0, 2.0).onChange(function (speed) {
+        gui.add(controls, "uSpeed", 0.0, 2.0).onChange(function (speed) {
           material.uniforms.uSpeed.value = speed;
         });
-        gui.add(controls, 'uVolatility', 0.0, 1.0).onChange(function (volatility) {
+        gui.add(controls, "uVolatility", 0.0, 1.0).onChange(function (volatility) {
           material.uniforms.uVolatility.value = volatility;
         });
-        gui.add(controls, 'uSeed', 0.0, 100.0).onChange(function (seed) {
+        gui.add(controls, "uSeed", 0.0, 4.0).onChange(function (seed) {
           material.uniforms.uSeed.value = seed;
         });
       });
