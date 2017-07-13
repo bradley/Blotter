@@ -20,11 +20,13 @@
         "    return float(int(f * 100.0)) / 100.0;",
         "}",
 
+
         // http://www.iquilezles.org/www/articles/functions/functions.htm
         "float impulse(float k, float x) {",
         "    float h = k * x;",
         "    return h * exp(1.0 - h);",
         "}",
+
 
         "vec2 waveOffset(vec2 fragCoord, float animate, float primaryDistortSpread, float waveCount, float deg, float amplitude, float volatility, vec2 distortPosition) {",
 
@@ -47,7 +49,7 @@
         "    vec2 edgeIntersectA = vec2(0.0);",
         "    vec2 edgeIntersectB = vec2(0.0);",
         "    intersectsOnRectForLine(edgeIntersectA, edgeIntersectB, vec2(0.0), uResolution.xy, centerCoord, slope);",
-        "    float length = distance(edgeIntersectA, edgeIntersectB);",
+        "    float crossSectionLength = distance(edgeIntersectA, edgeIntersectB);",
 
 
         "    // Find the threshold for degrees at which our intersectsOnRectForLine function would flip",
@@ -82,22 +84,22 @@
 
 
 
-        "    float resolutionAdjustedOffset = primaryDistortSpread * 2.0;",
-        "    float adjustedXResolution = length + resolutionAdjustedOffset;",
+        "    float crossSectionOffsetAdjustment = primaryDistortSpread * 2.0;",
+        "    crossSectionLength += crossSectionOffsetAdjustment;",
 
 
-        "    primaryDistortSpread /= adjustedXResolution;",
+        "    primaryDistortSpread /= crossSectionLength;",
 
 
         "    vec2 distortPositionIntersect = vec2(0.0);",
         "    lineLineIntersection(distortPositionIntersect, distortPosition * uResolution.xy, perpendicularSlope, edgeIntersect, slope);",
-        "    float distortDistance = (distance(edgeIntersect, distortPositionIntersect) / adjustedXResolution) + primaryDistortSpread;",
+        "    float distortDistanceFromEdge = (distance(edgeIntersect, distortPositionIntersect) / crossSectionLength) + primaryDistortSpread;",
 
 
-        "    float coordDistanceFromDistort = distance(edgeIntersect, coordLineIntersect) / adjustedXResolution;",
+        "    float uvDistanceFromDistort = distance(edgeIntersect, coordLineIntersect) / crossSectionLength;",
         "    if (animate > 0.0) {",
         "       float f = uGlobalTime * 0.5;",
-        "       coordDistanceFromDistort += f;",
+        "       uvDistanceFromDistort += f;",
         "    }",
 
 
@@ -108,31 +110,23 @@
 
 
 
+        "    uvDistanceFromDistort = fract(uvDistanceFromDistort + primaryDistortSpread);",
+
+        "    float distortImpulse = noise(250.0 * uvDistanceFromDistort) * volatility * 0.001;",
+
+        "    uvDistanceFromDistort = smoothstep(distortDistanceFromEdge - primaryDistortSpread, distortDistanceFromEdge + primaryDistortSpread, uvDistanceFromDistort);",
 
 
 
+        "    float variance = sin(uvDistanceFromDistort * PI * waveCount) * amplitude;",
 
-        "    float oldX = coordDistanceFromDistort;",
-
-        "    coordDistanceFromDistort = fract(coordDistanceFromDistort + primaryDistortSpread);",
-        "    coordDistanceFromDistort = smoothstep(distortDistance - primaryDistortSpread, distortDistance + primaryDistortSpread, coordDistanceFromDistort);",
-        "    coordDistanceFromDistort = impulse(coordDistanceFromDistort, coordDistanceFromDistort);",
-
-        "    float variance = sin(coordDistanceFromDistort * PI * waveCount) * amplitude;",
-
-        "    //float distortImpulse = noise(oldX * 2.0) * volatility * 0.001;",
-        "    //float distortImpulse = noise(oldX * 40.0) * volatility * 0.001;",
-        "    float distortImpulse = 0.0;",
+        "    distortImpulse *= (variance > 0.0 ? 1.0 : -1.0);",
+        "    distortImpulse = impulse(distortImpulse, distortImpulse);",
 
         "    vec2 kV = offsetsForCoordAtDistanceOnSlope(variance + distortImpulse, perpendicularSlope);",
         "    if (deg <= 0.0 || deg >= 180.0) {",
         "       kV *= -1.0;",
         "    }",
-
-
-
-
-
 
         "    return kV;",
         "}",
