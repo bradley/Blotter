@@ -25,7 +25,7 @@
       }
     </style>
 
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-beta1/jquery.js"></script>
+    <script type="text/javascript" src="./third_party/jquery.min.js"></script>
     <script type="text/javascript" src="./third_party/dat.gui.js"></script>
     <script type="text/javascript" src="../build/blotter.js"></script>
     <script type="text/javascript" src="../build/filters/rollingDistortMaterial2.js"></script>
@@ -46,7 +46,7 @@
           paddingRight : 14
         };
 
-        var text = new Blotter.Text("GLITCH", styleProperties);
+        var text = new Blotter.Text("honest", styleProperties);
 
         var material = new Blotter.RollingDistortMaterial();
 
@@ -68,7 +68,9 @@
           uRotation : material.uniforms.uRotation.value,
           uAmplitude : material.uniforms.uAmplitude.value,
           uVolatility : material.uniforms.uVolatility.value,
-          uAxialDistortPosition : material.uniforms.uAxialDistortPosition.value
+          uDistortPosition : material.uniforms.uDistortPosition.value,
+          uDistortPositionX : material.uniforms.uDistortPosition.value[0],
+          uDistortPositionY : material.uniforms.uDistortPosition.value[1]
         };
 
         var gui = new dat.GUI();
@@ -76,7 +78,7 @@
         gui.add(controls, "uAnimate").onChange(function (bool) {
           material.uniforms.uAnimate.value = bool ? 1.0 : 0.0;
         });
-        gui.add(controls, "uPrimaryDistortSpread", 0.0, 2.5).onChange(function (offset) {
+        gui.add(controls, "uPrimaryDistortSpread", 0.0, 300.0).onChange(function (offset) {
           material.uniforms.uPrimaryDistortSpread.value = offset;
         });
         gui.add(controls, "uPrimaryDistortWaveCount", 0.0, 7.0).onChange(function (waveCount) {
@@ -88,11 +90,17 @@
         gui.add(controls, "uAmplitude", 0.0, 1.0).onChange(function (amplitude) {
           material.uniforms.uAmplitude.value = amplitude;
         });
-        gui.add(controls, "uVolatility", 0.0, 1.0).onChange(function (volatility) {
+        gui.add(controls, "uVolatility", 0.0, 100.0).onChange(function (volatility) {
           material.uniforms.uVolatility.value = volatility;
         });
-        gui.add(controls, "uAxialDistortPosition", 0.0, 1.0).onChange(function (position) {
-          material.uniforms.uAxialDistortPosition.value = position;
+        // gui.add(controls, "uAxialDistortPosition", 0.0, 1.0).onChange(function (position) {
+        //   material.uniforms.uAxialDistortPosition.value = position;
+        // });
+        gui.add(controls, "uDistortPositionX", 0.0, 1.0).onChange(function (position) {
+          material.uniforms.uDistortPosition.value = [position, material.uniforms.uDistortPosition.value[1]];
+        });
+        gui.add(controls, "uDistortPositionY", 0.0, 1.0).onChange(function (position) {
+          material.uniforms.uDistortPosition.value = [material.uniforms.uDistortPosition.value[0], position];
         });
       });
     </script>

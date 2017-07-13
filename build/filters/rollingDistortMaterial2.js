@@ -20,12 +20,13 @@
         "    return float(int(f * 100.0)) / 100.0;",
         "}",
 
+        // http://www.iquilezles.org/www/articles/functions/functions.htm
         "float impulse(float k, float x) {",
         "    float h = k * x;",
         "    return h * exp(1.0 - h);",
         "}",
 
-        "vec2 waveOffset(vec2 fragCoord, float animate, float distortOffset, float waveCount, float deg, float amplitude, float volatility, float axialDistortPosition) {",
+        "vec2 waveOffset(vec2 fragCoord, float animate, float primaryDistortSpread, float waveCount, float deg, float amplitude, float volatility, vec2 distortPosition) {",
 
         "    // Setup",
         "    // -------------------------------",
@@ -69,52 +70,71 @@
         "    intersectsOnRectForLine(perpendicularIntersectA, perpendicularIntersectB, vec2(0.0), uResolution.xy, centerCoord, perpendicularSlope); ",
         "    float perpendicularLength = distance(perpendicularIntersectA, perpendicularIntersectA);",
 
-        "    vec2 intersectOriginCoord = centerCoord;",
-        "    if (animate == 0.0) {",
-        "       vec2 distortK = offsetsForCoordAtDistanceOnSlope(axialDistortPosition, slope);",
-        "       if (deg > 90.0 && deg < 270.0) {",
-        "           distortK *= -1.0;",
-        "       }",
-        "       intersectOriginCoord = edgeIntersect + (distortK * length);",
-        "    }",
+
         "    vec2 coordLineIntersect = vec2(0.0);",
-        "    lineLineIntersection(coordLineIntersect, intersectOriginCoord, slope, fragCoord, perpendicularSlope);",
+        "    lineLineIntersection(coordLineIntersect, centerCoord, slope, fragCoord, perpendicularSlope);",
 
 
         "    // Define wave ",
         "    // -------------------------------",
 
-        "    float x = distance(edgeIntersect, coordLineIntersect) / length;",
+        // TODO: rename x. it's not x.
 
-        "    float resolutionAdjustedOffset = (distortOffset * length) * 2.0;",
+
+
+
+
+        "    float resolutionAdjustedOffset = primaryDistortSpread * 2.0;",
         "    float adjustedXResolution = length + resolutionAdjustedOffset;",
 
-        "    x = (x * length) / adjustedXResolution;",
-        "    distortOffset = (distortOffset * length) / adjustedXResolution;",
 
-        "    float distortDistance = 0.5;",
+        "    primaryDistortSpread /= adjustedXResolution;",
+
+
+        "    vec2 distortPositionIntersect = vec2(0.0);",
+        "    lineLineIntersection(distortPositionIntersect, distortPosition * uResolution.xy, perpendicularSlope, edgeIntersect, slope);",
+        "    float distortDistance = (distance(edgeIntersect, distortPositionIntersect) / adjustedXResolution) + primaryDistortSpread;",
+
+
+        "    float x = distance(edgeIntersect, coordLineIntersect) / adjustedXResolution;",
         "    if (animate > 0.0) {",
         "       float f = uGlobalTime * 0.5;",
         "       x += f;",
-        "    } else {",
-        "       vec2 distortOffsetK = offsetsForCoordAtDistanceOnSlope(axialDistortPosition, slope);",
-        "       if (deg > 90.0 && deg < 270.0) {",
-        "           distortOffsetK *= -1.0;",
-        "       }",
-        "       vec2 edgeIntersectUv = edgeIntersect / uResolution.xy;",
-        "       distortDistance = distance(edgeIntersectUv, edgeIntersectUv + distortOffsetK);",
         "    }",
 
-        "    x = fract(x + distortOffset);",
-        "    x = smoothstep(distortDistance - distortOffset, distortDistance + distortOffset, x);",
+
+
+
+
+
+
+
+
+
+
+
+
+        "    float oldX = x;",
+
+        "    x = fract(x + primaryDistortSpread);",
+        "    x = smoothstep(distortDistance - primaryDistortSpread, distortDistance + primaryDistortSpread, x);",
         "    x = impulse(x, x);",
 
         "    float variance = sin(x * PI * waveCount) * amplitude;",
 
-        "    vec2 kV = offsetsForCoordAtDistanceOnSlope(variance, perpendicularSlope);",
-        "    if (deg <= 0.0 || deg >= 180.0) {",
+        "    //float distortImpulse = noise(oldX * 2.0) * volatility * 0.001;",
+        "    //float distortImpulse = noise(oldX * 40.0) * volatility * 0.001;",
+        "    float distortImpulse = 0.0;",
+
+        "    vec2 kV = offsetsForCoordAtDistanceOnSlope(variance + distortImpulse, perpendicularSlope);",
+        "    if (animate > 0.0 && (deg <= 0.0 || deg >= 180.0)) {",
         "       kV *= -1.0;",
         "    }",
+
+
+
+
+
 
         "    return kV;",
         "}",
@@ -139,11 +159,12 @@
 
         "    // Minor hacks to ensure our waves start horizontal and animating in a downward direction by default.",
         "    uRotation = mod(uRotation + 270.0, 360.0);",
-        "    uAxialDistortPosition = 1.0 - uAxialDistortPosition;",
+        "    //uAxialDistortPosition = 1.0 - uAxialDistortPosition;",
 
         "    // Create Distortion ============================================================",
 
-        "    vec2 offset = waveOffset(fragCoord, uAnimate, uPrimaryDistortSpread, uPrimaryDistortWaveCount, uRotation, uAmplitude, uVolatility, uAxialDistortPosition);",
+        "    vec2 offset = waveOffset(fragCoord, uAnimate, uPrimaryDistortSpread, uPrimaryDistortWaveCount, uRotation, uAmplitude, uVolatility, uDistortPosition);",
+
         "    mainImage = textTexture(uv + offset);",
         "}"
       ].join("\n");
@@ -158,13 +179,14 @@
       init : function () {
         this.mainImage = _mainImageSrc();
         this.uniforms = {
-            uAnimate : { type : "1f", value : 1.0 },
+            uAnimate : { type : "1f", value : 0.0 },
             uPrimaryDistortWaveCount : { type : "1f", value : 2.0 },
-            uPrimaryDistortSpread : { type : "1f", value : 0.15 },
-            uRotation : { type : "1f", value : 0.0 },
-            uAmplitude : { type : "1f", value : 0.03 },
+            uPrimaryDistortSpread : { type : "1f", value : 16.0 },
+            uRotation : { type : "1f", value : 180.0 },
+            uAmplitude : { type : "1f", value : 0.04 },
             uVolatility : { type : "1f", value : 0.55 },
-            uAxialDistortPosition : { type : "1f", value : 0.5 },
+            //uAxialDistortPosition : { type : "1f", value : 0.5 },
+            uDistortPosition : { type : "2f", value : [0.5, 0.5] }
         };
       }
     };
