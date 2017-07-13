@@ -78,8 +78,6 @@
         "    // Define wave ",
         "    // -------------------------------",
 
-        // TODO: rename x. it's not x.
-
 
 
 
@@ -96,10 +94,10 @@
         "    float distortDistance = (distance(edgeIntersect, distortPositionIntersect) / adjustedXResolution) + primaryDistortSpread;",
 
 
-        "    float x = distance(edgeIntersect, coordLineIntersect) / adjustedXResolution;",
+        "    float coordDistanceFromDistort = distance(edgeIntersect, coordLineIntersect) / adjustedXResolution;",
         "    if (animate > 0.0) {",
         "       float f = uGlobalTime * 0.5;",
-        "       x += f;",
+        "       coordDistanceFromDistort += f;",
         "    }",
 
 
@@ -114,20 +112,20 @@
 
 
 
-        "    float oldX = x;",
+        "    float oldX = coordDistanceFromDistort;",
 
-        "    x = fract(x + primaryDistortSpread);",
-        "    x = smoothstep(distortDistance - primaryDistortSpread, distortDistance + primaryDistortSpread, x);",
-        "    x = impulse(x, x);",
+        "    coordDistanceFromDistort = fract(coordDistanceFromDistort + primaryDistortSpread);",
+        "    coordDistanceFromDistort = smoothstep(distortDistance - primaryDistortSpread, distortDistance + primaryDistortSpread, coordDistanceFromDistort);",
+        "    coordDistanceFromDistort = impulse(coordDistanceFromDistort, coordDistanceFromDistort);",
 
-        "    float variance = sin(x * PI * waveCount) * amplitude;",
+        "    float variance = sin(coordDistanceFromDistort * PI * waveCount) * amplitude;",
 
         "    //float distortImpulse = noise(oldX * 2.0) * volatility * 0.001;",
         "    //float distortImpulse = noise(oldX * 40.0) * volatility * 0.001;",
         "    float distortImpulse = 0.0;",
 
         "    vec2 kV = offsetsForCoordAtDistanceOnSlope(variance + distortImpulse, perpendicularSlope);",
-        "    if (animate > 0.0 && (deg <= 0.0 || deg >= 180.0)) {",
+        "    if (deg <= 0.0 || deg >= 180.0) {",
         "       kV *= -1.0;",
         "    }",
 
