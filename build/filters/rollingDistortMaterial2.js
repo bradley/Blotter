@@ -20,15 +20,13 @@
         "    return float(int(f * 100.0)) / 100.0;",
         "}",
 
-
-        // http://www.iquilezles.org/www/articles/functions/functions.htm
+        "// Via: http://www.iquilezles.org/www/articles/functions/functions.htm",
         "float impulse(float k, float x) {",
         "    float h = k * x;",
         "    return h * exp(1.0 - h);",
         "}",
 
-
-        "vec2 waveOffset(vec2 fragCoord, float animate, float primaryDistortSpread, float waveCount, float deg, float amplitude, float volatility, vec2 distortPosition) {",
+        "vec2 waveOffset(vec2 fragCoord, float animate, float sineDistortSpread, float sineDistortCycleCount, float sineDistortAmplitude, float primaryDistortAmplitude, float secondaryDistortAmplitude, vec2 distortPosition, float deg) {",
 
         "    // Setup",
         "    // -------------------------------",
@@ -51,7 +49,6 @@
         "    intersectsOnRectForLine(edgeIntersectA, edgeIntersectB, vec2(0.0), uResolution.xy, centerCoord, slope);",
         "    float crossSectionLength = distance(edgeIntersectA, edgeIntersectB);",
 
-
         "    // Find the threshold for degrees at which our intersectsOnRectForLine function would flip",
         "    //   intersects A and B because of the order in which it finds them. This is the angle at which",
         "    //   the y coordinate for the hypotenuse of a right triangle whose oposite adjacent edge runs from",
@@ -72,75 +69,68 @@
         "    intersectsOnRectForLine(perpendicularIntersectA, perpendicularIntersectB, vec2(0.0), uResolution.xy, centerCoord, perpendicularSlope); ",
         "    float perpendicularLength = distance(perpendicularIntersectA, perpendicularIntersectA);",
 
-
         "    vec2 coordLineIntersect = vec2(0.0);",
         "    lineLineIntersection(coordLineIntersect, centerCoord, slope, fragCoord, perpendicularSlope);",
 
 
-        "    // Define wave ",
+        "    // Define placement for distortion ",
         "    // -------------------------------",
 
-
-
-
-
-        "    float crossSectionOffsetAdjustment = primaryDistortSpread * 2.0;",
+        "    float crossSectionOffsetAdjustment = sineDistortSpread * 2.0;",
         "    crossSectionLength += crossSectionOffsetAdjustment;",
 
-
-        "    primaryDistortSpread /= crossSectionLength;",
-
+        "    sineDistortSpread /= crossSectionLength;",
 
         "    vec2 distortPositionIntersect = vec2(0.0);",
         "    lineLineIntersection(distortPositionIntersect, distortPosition * uResolution.xy, perpendicularSlope, edgeIntersect, slope);",
-        "    float distortDistanceFromEdge = (distance(edgeIntersect, distortPositionIntersect) / crossSectionLength) + primaryDistortSpread;",
-
+        "    float distortDistanceFromEdge = (distance(edgeIntersect, distortPositionIntersect) / crossSectionLength) + sineDistortSpread;",
 
         "    float uvDistanceFromDistort = distance(edgeIntersect, coordLineIntersect) / crossSectionLength;",
         "    if (animate > 0.0) {",
         "       float f = uGlobalTime * 0.5;",
         "       uvDistanceFromDistort += f;",
         "    }",
+        "    uvDistanceFromDistort = fract(uvDistanceFromDistort + sineDistortSpread);",
+
+        "    float distortVarianceAdjuster = 0.0; // Used to determine variance for distortion along cross section of text.",
+        "    if (animate == 0.0) {",
+        "       distortVarianceAdjuster = uvDistanceFromDistort - distortDistanceFromEdge;",
+        "    } else {",
+        "       distortVarianceAdjuster = uvDistanceFromDistort;",
+        "    }",
 
 
+        "    // Define sine distortion ",
+        "    // -------------------------------",
+
+        "    uvDistanceFromDistort = smoothstep(distortDistanceFromEdge - sineDistortSpread, distortDistanceFromEdge + sineDistortSpread, uvDistanceFromDistort);",
+        "    uvDistanceFromDistort = impulse(uvDistanceFromDistort, uvDistanceFromDistort); // Add smoother decay to sin distort.",
+
+        "    float sineDistortion = sin(uvDistanceFromDistort * PI * sineDistortCycleCount) * sineDistortAmplitude;",
 
 
+        "    // Define noise distortion ",
+        "    // -------------------------------",
+
+        "    float noiseDistortion = noise(7.0 * distortVarianceAdjuster) * primaryDistortAmplitude;",
+        "    noiseDistortion -= primaryDistortAmplitude / 2.0; // Adjust primary distort so that it distorts in two directions.",
+        "    noiseDistortion *= (sineDistortion > 0.0 ? 1.0 : -1.0); // Adjust primary distort to account for sin variance.",
+        "    noiseDistortion += noise(250.0 * distortVarianceAdjuster) * secondaryDistortAmplitude;",
+        "    noiseDistortion -= secondaryDistortAmplitude / 2.0; // Adjust secondary distort so that it distorts in two directions.",
+        "    noiseDistortion *= (sineDistortion > 0.0 ? 1.0 : -1.0); // Adjust secondary distort to account for sin variance.",
 
 
+        "    // Combine distortions to find UV offsets ",
+        "    // -------------------------------",
 
-
-
-        "    uvDistanceFromDistort = fract(uvDistanceFromDistort + primaryDistortSpread);",
-
-        "    float distortImpulse = noise(250.0 * uvDistanceFromDistort) * volatility * 0.001;",
-
-        "    uvDistanceFromDistort = smoothstep(distortDistanceFromEdge - primaryDistortSpread, distortDistanceFromEdge + primaryDistortSpread, uvDistanceFromDistort);",
-
-
-
-        "    float variance = sin(uvDistanceFromDistort * PI * waveCount) * amplitude;",
-
-        "    distortImpulse *= (variance > 0.0 ? 1.0 : -1.0);",
-        "    distortImpulse = impulse(distortImpulse, distortImpulse);",
-
-        "    vec2 kV = offsetsForCoordAtDistanceOnSlope(variance + distortImpulse, perpendicularSlope);",
+        "    vec2 kV = offsetsForCoordAtDistanceOnSlope(sineDistortion + noiseDistortion, perpendicularSlope);",
         "    if (deg <= 0.0 || deg >= 180.0) {",
         "       kV *= -1.0;",
         "    }",
 
+
         "    return kV;",
         "}",
-
-
-
-
-
-
-
-
-
-
-
 
 
         "void mainImage( out vec4 mainImage, in vec2 fragCoord )",
@@ -151,11 +141,11 @@
 
         "    // Minor hacks to ensure our waves start horizontal and animating in a downward direction by default.",
         "    uRotation = mod(uRotation + 270.0, 360.0);",
-        "    //uAxialDistortPosition = 1.0 - uAxialDistortPosition;",
+        "    uDistortPosition.y = 1.0 - uDistortPosition.y;",
 
         "    // Create Distortion ============================================================",
 
-        "    vec2 offset = waveOffset(fragCoord, uAnimate, uPrimaryDistortSpread, uPrimaryDistortWaveCount, uRotation, uAmplitude, uVolatility, uDistortPosition);",
+        "    vec2 offset = waveOffset(fragCoord, uAnimate, uSineDistortSpread, uSineDistortCycleCount, uSineDistortAmplitude, uPrimaryDistortAmplitude, uSecondaryDistortAmplitude, uDistortPosition, uRotation);",
 
         "    mainImage = textTexture(uv + offset);",
         "}"
@@ -172,13 +162,13 @@
         this.mainImage = _mainImageSrc();
         this.uniforms = {
             uAnimate : { type : "1f", value : 0.0 },
-            uPrimaryDistortWaveCount : { type : "1f", value : 2.0 },
-            uPrimaryDistortSpread : { type : "1f", value : 16.0 },
-            uRotation : { type : "1f", value : 180.0 },
-            uAmplitude : { type : "1f", value : 0.04 },
-            uVolatility : { type : "1f", value : 0.55 },
-            //uAxialDistortPosition : { type : "1f", value : 0.5 },
-            uDistortPosition : { type : "2f", value : [0.5, 0.5] }
+            uSineDistortCycleCount : { type : "1f", value : 2.0 },
+            uSineDistortSpread : { type : "1f", value : 16.0 },
+            uSineDistortAmplitude : { type : "1f", value : 0.04 },
+            uPrimaryDistortAmplitude : { type : "1f", value : 0.004 },
+            uSecondaryDistortAmplitude : { type : "1f", value : 0.004 },
+            uDistortPosition : { type : "2f", value : [0.5, 0.5] },
+            uRotation : { type : "1f", value : 180.0 }
         };
       }
     };

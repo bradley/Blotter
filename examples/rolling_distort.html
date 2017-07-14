@@ -62,15 +62,15 @@
 
         var controls = {
           message : "dat.gui",
-          uAnimate : true,
-          uPrimaryDistortSpread : material.uniforms.uPrimaryDistortSpread.value,
-          uPrimaryDistortWaveCount : material.uniforms.uPrimaryDistortWaveCount.value,
-          uRotation : material.uniforms.uRotation.value,
-          uAmplitude : material.uniforms.uAmplitude.value,
-          uVolatility : material.uniforms.uVolatility.value,
-          uDistortPosition : material.uniforms.uDistortPosition.value,
+          uAnimate : material.uniforms.uSineDistortSpread.value == 1.0,
+          uSineDistortSpread : material.uniforms.uSineDistortSpread.value,
+          uSineDistortCycleCount : material.uniforms.uSineDistortCycleCount.value,
+          uSineDistortAmplitude : material.uniforms.uSineDistortAmplitude.value,
+          uPrimaryDistortAmplitude : material.uniforms.uPrimaryDistortAmplitude.value,
+          uSecondaryDistortAmplitude : material.uniforms.uSecondaryDistortAmplitude.value,
           uDistortPositionX : material.uniforms.uDistortPosition.value[0],
-          uDistortPositionY : material.uniforms.uDistortPosition.value[1]
+          uDistortPositionY : material.uniforms.uDistortPosition.value[1],
+          uRotation : material.uniforms.uRotation.value
         };
 
         var gui = new dat.GUI();
@@ -78,29 +78,29 @@
         gui.add(controls, "uAnimate").onChange(function (bool) {
           material.uniforms.uAnimate.value = bool ? 1.0 : 0.0;
         });
-        gui.add(controls, "uPrimaryDistortSpread", 0.0, 300.0).onChange(function (offset) {
-          material.uniforms.uPrimaryDistortSpread.value = offset;
+        gui.add(controls, "uSineDistortSpread", 0.0, 300.0).onChange(function (offset) {
+          material.uniforms.uSineDistortSpread.value = offset;
         });
-        gui.add(controls, "uPrimaryDistortWaveCount", 0.0, 7.0).onChange(function (waveCount) {
-          material.uniforms.uPrimaryDistortWaveCount.value = waveCount;
+        gui.add(controls, "uSineDistortCycleCount", 0.0, 7.0).onChange(function (waveCount) {
+          material.uniforms.uSineDistortCycleCount.value = waveCount;
         });
-        gui.add(controls, "uRotation", 0.0, 360.0).onChange(function (angle) {
-          material.uniforms.uRotation.value = angle;
+        gui.add(controls, "uSineDistortAmplitude", 0.0, 1.0).onChange(function (amplitude) {
+          material.uniforms.uSineDistortAmplitude.value = amplitude;
         });
-        gui.add(controls, "uAmplitude", 0.0, 1.0).onChange(function (amplitude) {
-          material.uniforms.uAmplitude.value = amplitude;
+        gui.add(controls, "uPrimaryDistortAmplitude", 0.0, 1.0).onChange(function (volatility) {
+          material.uniforms.uPrimaryDistortAmplitude.value = volatility;
         });
-        gui.add(controls, "uVolatility", 0.0, 100.0).onChange(function (volatility) {
-          material.uniforms.uVolatility.value = volatility;
+        gui.add(controls, "uSecondaryDistortAmplitude", 0.0, 1.0).onChange(function (volatility) {
+          material.uniforms.uSecondaryDistortAmplitude.value = volatility;
         });
-        // gui.add(controls, "uAxialDistortPosition", 0.0, 1.0).onChange(function (position) {
-        //   material.uniforms.uAxialDistortPosition.value = position;
-        // });
         gui.add(controls, "uDistortPositionX", 0.0, 1.0).onChange(function (position) {
           material.uniforms.uDistortPosition.value = [position, material.uniforms.uDistortPosition.value[1]];
         });
         gui.add(controls, "uDistortPositionY", 0.0, 1.0).onChange(function (position) {
           material.uniforms.uDistortPosition.value = [material.uniforms.uDistortPosition.value[0], position];
+        });
+        gui.add(controls, "uRotation", 0.0, 360.0).onChange(function (angle) {
+          material.uniforms.uRotation.value = angle;
         });
       });
     </script>
