@@ -108,7 +108,9 @@
         "    // -------------------------------",
 
         "    float noiseDistortion = noise(noiseDistortVolatility * noiseDistortVarianceAdjuster) * noiseDistortAmplitude;",
-        "    noiseDistortion -= noiseDistortAmplitude / 2.0; // Adjust primary distort so that it distorts in two directions.",
+        "    if (noiseDistortVolatility > 0.0) {",
+        "        noiseDistortion -= noiseDistortAmplitude / 2.0; // Adjust primary distort so that it distorts in two directions.",
+        "    }",
         "    noiseDistortion *= (sineDistortion > 0.0 ? 1.0 : -1.0); // Adjust primary distort to account for sin variance.",
 
 
@@ -153,14 +155,14 @@
       init : function () {
         this.mainImage = _mainImageSrc();
         this.uniforms = {
+            uSineDistortSpread : { type : "1f", value : 0.05 },
             uSineDistortCycleCount : { type : "1f", value : 2.0 },
-            uSineDistortSpread : { type : "1f", value : 0.5 },
-            uSineDistortAmplitude : { type : "1f", value : 0.04 },
-            uNoiseDistortVolatility : { type : "1f", value : 0.00 },
-            uNoiseDistortAmplitude : { type : "1f", value : 0.00 },
+            uSineDistortAmplitude : { type : "1f", value : 0.25 },
+            uNoiseDistortVolatility : { type : "1f", value : 20.0 },
+            uNoiseDistortAmplitude : { type : "1f", value : 0.01 },
             uDistortPosition : { type : "2f", value : [0.5, 0.5] },
-            uRotation : { type : "1f", value :  0.0 },
-            uSpeed : { type : "1f", value : 0.5 }
+            uRotation : { type : "1f", value :  170.0 },
+            uSpeed : { type : "1f", value : 0.08 }
         };
       }
     };
