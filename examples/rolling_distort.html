@@ -28,7 +28,7 @@
     <script type="text/javascript" src="./third_party/jquery.min.js"></script>
     <script type="text/javascript" src="./third_party/dat.gui.js"></script>
     <script type="text/javascript" src="../build/blotter.js"></script>
-    <script type="text/javascript" src="../build/filters/rollingDistortMaterial2.js"></script>
+    <script type="text/javascript" src="../build/filters/rollingDistortMaterial.js"></script>
   </head>
   <body>
     <span id="filter-target"></span>
@@ -38,7 +38,7 @@
       $(document).ready(function() {
 
         var styleProperties = {
-          family: "sans-serif",
+          family: "serif",
           size : 150,
           weight : 700,
           paddingTop : 0,
@@ -46,7 +46,7 @@
           paddingRight : 14
         };
 
-        var text = new Blotter.Text("honest", styleProperties);
+        var text = new Blotter.Text("Marlboro", styleProperties);
 
         var material = new Blotter.RollingDistortMaterial();
 
@@ -62,23 +62,20 @@
 
         var controls = {
           message : "dat.gui",
-          uAnimate : material.uniforms.uSineDistortSpread.value == 1.0,
           uSineDistortSpread : material.uniforms.uSineDistortSpread.value,
           uSineDistortCycleCount : material.uniforms.uSineDistortCycleCount.value,
           uSineDistortAmplitude : material.uniforms.uSineDistortAmplitude.value,
-          uPrimaryDistortAmplitude : material.uniforms.uPrimaryDistortAmplitude.value,
-          uSecondaryDistortAmplitude : material.uniforms.uSecondaryDistortAmplitude.value,
+          uNoiseDistortVolatility : material.uniforms.uNoiseDistortVolatility.value,
+          uNoiseDistortAmplitude : material.uniforms.uNoiseDistortAmplitude.value,
           uDistortPositionX : material.uniforms.uDistortPosition.value[0],
           uDistortPositionY : material.uniforms.uDistortPosition.value[1],
-          uRotation : material.uniforms.uRotation.value
+          uRotation : material.uniforms.uRotation.value,
+          uSpeed : material.uniforms.uSpeed.value
         };
 
         var gui = new dat.GUI();
 
-        gui.add(controls, "uAnimate").onChange(function (bool) {
-          material.uniforms.uAnimate.value = bool ? 1.0 : 0.0;
-        });
-        gui.add(controls, "uSineDistortSpread", 0.0, 300.0).onChange(function (offset) {
+        gui.add(controls, "uSineDistortSpread", 0.0, 1.0).onChange(function (offset) {
           material.uniforms.uSineDistortSpread.value = offset;
         });
         gui.add(controls, "uSineDistortCycleCount", 0.0, 7.0).onChange(function (waveCount) {
@@ -87,13 +84,13 @@
         gui.add(controls, "uSineDistortAmplitude", 0.0, 1.0).onChange(function (amplitude) {
           material.uniforms.uSineDistortAmplitude.value = amplitude;
         });
-        gui.add(controls, "uPrimaryDistortAmplitude", 0.0, 1.0).onChange(function (volatility) {
-          material.uniforms.uPrimaryDistortAmplitude.value = volatility;
+        gui.add(controls, "uNoiseDistortVolatility", 0.0, 250.0).onChange(function (volatility) {
+          material.uniforms.uNoiseDistortVolatility.value = volatility;
         });
-        gui.add(controls, "uSecondaryDistortAmplitude", 0.0, 1.0).onChange(function (volatility) {
-          material.uniforms.uSecondaryDistortAmplitude.value = volatility;
+        gui.add(controls, "uNoiseDistortAmplitude", 0.0, 1.0).onChange(function (amplitude) {
+          material.uniforms.uNoiseDistortAmplitude.value = amplitude;
         });
-        gui.add(controls, "uDistortPositionX", 0.0, 1.0).onChange(function (position) {
+        gui.add(controls, "uDistortPositionX", 0.0, 4.0).onChange(function (position) {
           material.uniforms.uDistortPosition.value = [position, material.uniforms.uDistortPosition.value[1]];
         });
         gui.add(controls, "uDistortPositionY", 0.0, 1.0).onChange(function (position) {
@@ -101,6 +98,9 @@
         });
         gui.add(controls, "uRotation", 0.0, 360.0).onChange(function (angle) {
           material.uniforms.uRotation.value = angle;
+        });
+        gui.add(controls, "uSpeed", 0.0, 2.0).onChange(function (speed) {
+          material.uniforms.uSpeed.value = speed;
         });
       });
     </script>
