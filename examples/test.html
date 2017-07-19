@@ -33,60 +33,18 @@
     <span id="target"></span>
     <script>
 
-      function weightAtDistanceForRadius(dist, radius) {
-        var row = (radius * 2) + 4;
-
-        var coefficientSum = Math.pow(2.0, row) - ((pascalCoefficientAtPosition(row, 0) + pascalCoefficientAtPosition(row, 1)) * 2.0);
-        var centerCoefficientPosition = (radius + 2) + dist;
-
-        var weight = pascalCoefficientAtPosition(row, centerCoefficientPosition) / coefficientSum;
-
-        if (isNaN(weight)) {
-          weight = 0;
-        }
-
-        return weight.toFixed(20); // toFixed to avoid scientific notation. May not be the best thing.
-      }
-
-      function pascalCoefficientAtPosition(row, col) {
-        var c = 1,
-            truncatedCol = Math.trunc(col);
-
-        for (var k = 0; k < truncatedCol; k++) {
-          c = c * ((row - k) / (k + 1));
-        }
-
-        if (truncatedCol != col) {
-          c = c * ((row - (col - 1)) / col);
-        }
-
-        return c;
-      }
-
-      function generateWeightsStringForRadius(radius) {
-        var weights = "";
-
-        var truncatedRadius = Math.trunc(radius);
-
-        for (var d = 0; d <= truncatedRadius; d++) {
-          weights += weightAtDistanceForRadius(d, radius);
-          if (d != radius) {
-            weights += ", ";
-          }
-        }
-
-        if (truncatedRadius != radius) {
-          weights += weightAtDistanceForRadius(radius, radius);
-        }
-
-        return weights;
-      }
 
 
       //$(document).ready(function() {
 
 
         var blurSrc = [
+
+          "vec4 blackFromAlpha(vec4 inputColor) {",
+          "    return vec4(1.0 - vec3(inputColor.a), inputColor.a);",
+          "}",
+
+
           "void mainImage( out vec4 mainImage, in vec2 fragCoord )",
           "{",
           "    // Setup ========================================================================",
@@ -94,81 +52,6 @@
           "    vec2 uv = fragCoord.xy / uResolution.xy;",
           "    vec2 p = vec2(1.0) / uResolution.xy; // 1 pixel.",
           "    vec4 baseSample = normalBlend(textTexture(uv), vec4(1.0));",
-
-
-
-
-
-
-
-
-
-
-          // "    vec3 finalColour = vec3(0.0);",
-
-
-          // "    // Create Blur ==================================================================",
-
-          // "    const int maxSteps = 60;",
-
-          // "    vec3 avg = vec3(0.0);",
-
-          // "    for (int i=-maxSteps; i <= maxSteps; ++i) {",
-          // "       if (abs(float(i)) > (uBlurRadius)) { continue; };",
-          // "       for (int j = -maxSteps; j <= maxSteps; ++j) {",
-          // "           if (abs(float(j)) > (uBlurRadius)) { continue; }; ",
-          // "           vec2 stepUV = (fragCoord.xy + vec2(float(i), float(j))) / uResolution.xy;",
-
-          // "           vec4 stepSampleBlended = normalBlend(textTexture(stepUV), uBlendColor);",
-          // "           avg += stepSampleBlended.xyz;",
-          // "       }",
-          // "    }",
-
-          // "    int area = (2 * int(uBlurRadius) + 1) * (2 * int(uBlurRadius) + 1);",
-          // "    avg = avg.xyz / vec3(area);",
-
-          // "    mainImage = vec4(avg, 1.0);//vec4(finalColour, 1.0);//normalUnblend(lightestSample, vec4(1.0));",
-
-
-
-
-
-
-
-
-
-          // "    vec4 finalColour = vec4(0.0);",
-
-          // "    // Create Blur ==================================================================",
-
-          // "    const int maxSteps = 60;",
-
-          // "    vec3 avg = vec3(0.0);",
-
-
-          // "    finalColour = normalBlend(textTexture(uv), uBlendColor) * weights[0];",
-
-          // "    for (int i=-maxSteps; i <= maxSteps; ++i) {",
-          // "       if (abs(float(i)) > (uBlurRadius) || i == 0) { continue; };",
-          // "       for (int j = -maxSteps; j <= maxSteps; ++j) {",
-          // "           if (abs(float(j)) > (uBlurRadius) || j == 0) { continue; }; ",
-          // "           vec2 stepUV = (fragCoord.xy + vec2(float(i), float(j))) / uResolution.xy;",
-
-          // "           finalColour += normalBlend(textTexture(stepUV), uBlendColor) * weights[j < 0 ? -j : j];",
-          // "       }",
-          // "    }",
-
-          // "    mainImage = finalColour;//vec4(avg, 1.0);//vec4(finalColour, 1.0);//normalUnblend(lightestSample, vec4(1.0));",
-
-
-
-
-
-
-
-
-
-
 
 
           "    // Create Darkness ==============================================================",
@@ -184,24 +67,20 @@
           "    vec2 stepUv = vec2(0.0);",
           "    vec4 stepSample = vec4(1.0);",
           "    vec4 stepSampleAdjusted = vec4(1.0);",
-          "    vec4 lightestSample = baseSample;",
+          "    vec4 lightestSample = blackFromAlpha(baseSample);",
 
-          "    for (int i = -maxSteps; i <= maxSteps; i += 2) {",
+          "    for (int i = -maxSteps; i <= maxSteps; i += 1) {",
           "        if (abs(float(i)) >= uBlurRadius) { continue; }",
-          "        for (int j = -maxSteps; j <= maxSteps; j += 2) {",
+          "        for (int j = -maxSteps; j <= maxSteps; j += 1) {",
           "            if (abs(float(j)) >= uBlurRadius) { continue; }",
-
-
-
 
           "            stepUv = uv + vec2(float(i) * p.x, float(j) * p.y);",
           "            stepCoord = stepUv * uResolution.xy;",
           "            stepSample = textTexture(stepUv);",
 
 
-
           "            // Disregard actual color. Sample black, weighting for alpha",
-          "            stepSampleAdjusted = vec4(1.0 - vec3(stepSample.a), stepSample.a);",
+          "            stepSampleAdjusted = blackFromAlpha(stepSample);",
 
           "            vec4 sampleOnBackground = normalBlend(stepSampleAdjusted, vec4(1.0));",
 
@@ -209,19 +88,17 @@
 
           "            if (stepDistance <= maxDistance) {",
           "               float stepLightestSampleWeight = 1.0 - (stepDistance / maxDistance);",
-          "               //stepLightestSampleWeight = smoothstep(-0.5, 10.5, stepLightestSampleWeight);",
+          "               //stepLightestSampleWeight = smoothstep(0.0, 1.0, pow(stepLightestSampleWeight, 1.75));",
 
           "               vec4 mixedStep = mix(baseSample, sampleOnBackground, stepLightestSampleWeight);",
 
-          "               //if (mixedStep == ) {",
-          "                   lightestSample = max(mixedStep, lightestSample);",
-          "               //}",
+          "               lightestSample = max(mixedStep, lightestSample);",
           "            }",
           "        }",
           "    }",
 
 
-          "    mainImage = lightestSample;//mix(vec4(1.0, 0.0, 0.0, 1.0), vec4(0.0, 0.0, 1.0, 1.0), 0.5);//",
+          "    mainImage = baseSample;//lightestSample;//mix(vec4(1.0, 0.0, 0.0, 1.0), vec4(0.0, 0.0, 1.0, 1.0), 0.5);//",
 
 
 
@@ -230,7 +107,7 @@
 
         var styleProperties = {
           family: "serif",
-          size : 64,
+          size : 124,
           weight : 100,
           paddingTop : 0,
           paddingLeft : 14,

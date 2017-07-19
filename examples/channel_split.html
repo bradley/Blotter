@@ -5,7 +5,7 @@
 
     <style type="text/css">
       body {
-        background: #000000;
+        background: #FFFFFF;
         padding: 20px;
         font-family: serif;
         font-size: 64px;
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-beta1/jquery.js"></script>
     <script type="text/javascript" src="./third_party/dat.gui.js"></script>
     <script type="text/javascript" src="../build/blotter.js"></script>
-    <script type="text/javascript" src="../build/filters/rgbSplitMaterial.js"></script>
+    <script type="text/javascript" src="../build/filters/channelSplitMaterial.js"></script>
   </head>
   <body>
     <span id="filter-target"></span>
@@ -39,14 +39,12 @@
           weight : 100,
           paddingTop : 0,
           paddingLeft : 14,
-          paddingRight : 14,
-          fill: "#FF7500"
+          paddingRight : 14
         };
 
         var text = new Blotter.Text("observation", styleProperties);
 
-        var material = new Blotter.RGBSplitMaterial();
-        material.uniforms.uBlendColor.value = [0.0, 0.0, 0.0, 1.0];
+        var material = new Blotter.ChannelSplitMaterial();
 
         var blotter = new Blotter(material, {
           texts : text
@@ -60,7 +58,8 @@
 
         var controls = {
           uOffset : material.uniforms.uOffset.value,
-          uRotation : material.uniforms.uRotation.value
+          uRotation : material.uniforms.uRotation.value,
+          uBlurRadius : material.uniforms.uBlurRadius.value
         };
 
         var gui = new dat.GUI();
@@ -71,7 +70,9 @@
         gui.add(controls, 'uRotation', 0.0, 360.0).onChange(function (angle) {
           material.uniforms.uRotation.value = angle;
         });
-
+        gui.add(controls, 'uBlurRadius', 0.0, 30.0).onChange(function (angle) {
+          material.uniforms.uBlurRadius.value = angle;
+        });
       });
     </script>
   </body>

@@ -19,10 +19,6 @@
         margin: 0;
         vertical-align: top;
       }
-
-      #filter-target .b-canvas {
-        margin-left: -14px;
-      }
     </style>
 
     <script type="text/javascript" src="./third_party/jquery.min.js"></script>
@@ -38,15 +34,15 @@
       $(document).ready(function() {
 
         var styleProperties = {
-          family: "sans-serif",
-          size : 150,
-          weight : 700,
+          family: "serif",
+          size : 64,
+          weight : 100,
           paddingTop : 0,
           paddingLeft : 14,
           paddingRight : 14
         };
 
-        var text = new Blotter.Text("cactus", styleProperties);
+        var text = new Blotter.Text("rolling", styleProperties);
 
         var material = new Blotter.RollingDistortMaterial();
 
@@ -77,25 +73,25 @@
 
         gui.add(controls, "uSineDistortSpread", 0.0, 1.0).onChange(function (offset) {
           material.uniforms.uSineDistortSpread.value = offset;
-        });
+        }).step(0.1);
         gui.add(controls, "uSineDistortCycleCount", 0.0, 7.0).onChange(function (waveCount) {
           material.uniforms.uSineDistortCycleCount.value = waveCount;
         });
         gui.add(controls, "uSineDistortAmplitude", 0.0, 1.0).onChange(function (amplitude) {
           material.uniforms.uSineDistortAmplitude.value = amplitude;
-        });
+        }).step(0.1);
         gui.add(controls, "uNoiseDistortVolatility", 0.0, 250.0).onChange(function (volatility) {
           material.uniforms.uNoiseDistortVolatility.value = volatility;
         });
         gui.add(controls, "uNoiseDistortAmplitude", 0.0, 1.0).onChange(function (amplitude) {
           material.uniforms.uNoiseDistortAmplitude.value = amplitude;
-        });
+        }).step(0.1);
         gui.add(controls, "uDistortPositionX", 0.0, 4.0).onChange(function (position) {
           material.uniforms.uDistortPosition.value = [position, material.uniforms.uDistortPosition.value[1]];
         });
         gui.add(controls, "uDistortPositionY", 0.0, 1.0).onChange(function (position) {
           material.uniforms.uDistortPosition.value = [material.uniforms.uDistortPosition.value[0], position];
-        });
+        }).step(0.1);
         gui.add(controls, "uRotation", 0.0, 360.0).onChange(function (angle) {
           material.uniforms.uRotation.value = angle;
         });

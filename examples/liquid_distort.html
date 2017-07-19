@@ -19,10 +19,6 @@
         margin: 0;
         vertical-align: top;
       }
-
-      #filter-target .b-canvas {
-        margin-left: -14px;
-      }
     </style>
 
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-beta1/jquery.js"></script>
@@ -78,7 +74,7 @@
         });
         gui.add(controls, "uVolatility", 0.0, 1.0).onChange(function (volatility) {
           material.uniforms.uVolatility.value = volatility;
-        });
+        }).step(0.1);
         gui.add(controls, "uSeed", 0.0, 4.0).onChange(function (seed) {
           material.uniforms.uSeed.value = seed;
         });

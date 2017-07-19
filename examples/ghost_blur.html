@@ -19,10 +19,6 @@
         margin: 0;
         vertical-align: top;
       }
-
-      #filter-target .b-canvas {
-        margin-left: -14px;
-      }
     </style>
 
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-beta1/jquery.js"></script>
@@ -43,8 +39,7 @@
           weight : 100,
           paddingTop : 0,
           paddingLeft : 14,
-          paddingRight : 14,
-          fill : "#ffffff"
+          paddingRight : 14
         };
 
         var text = new Blotter.Text("Ghost", styleProperties);
@@ -82,13 +77,13 @@
         });
         gui.add(controls, "uWidth", 0.0, 1.0).onChange(function (width) {
           material.uniforms.uWidth.value = width;
-        });
+        }).step(0.1);
         gui.add(controls, "uAmplitude", 0.0, 1.0).onChange(function (amplitude) {
           material.uniforms.uAmplitude.value = amplitude;
-        });
+        }).step(0.1);
         gui.add(controls, "uVolatility", 0.0, 1.0).onChange(function (volatility) {
           material.uniforms.uVolatility.value = volatility;
-        });
+        }).step(0.1);
         gui.add(controls, "uSmoothing", 0.0, 5.0).onChange(function (smoothing) {
           material.uniforms.uSmoothing.value = smoothing;
         });
