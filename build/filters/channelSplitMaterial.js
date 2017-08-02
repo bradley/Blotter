@@ -12,111 +12,137 @@
       var mainImageSrc = [
         Blotter.Assets.Shaders.PI,
         Blotter.Assets.Shaders.LineMath,
+        Blotter.Assets.Shaders.Random,
 
-        "vec4 blackFromAlpha(vec4 inputColor) {",
-        "    return vec4(1.0 - vec3(inputColor.a), inputColor.a);",
+
+
+
+        "// Fix a floating point number to two decimal places",
+        "float toFixedTwo(float f) {",
+        "    return float(int(f * 100.0)) / 100.0;",
         "}",
 
-        "float edgeBlurAdjustment(vec2 fragCoord, float blurRadius){",
-        "    // Setup ========================================================================",
 
-        "    vec2 uv = fragCoord.xy / uResolution.xy;",
-        "    vec2 p = vec2(1.0) / uResolution.xy; // 1 pixel.",
-        "    vec4 baseSample = normalBlend(textTexture(uv), vec4(1.0));",
+        "vec2 motionBlurOffsets(vec2 fragCoord, float deg, float spread) {",
+
+        "    // Setup",
+        "    // -------------------------------",
+
+        "    vec2 centerUv = vec2(0.5);",
+        "    vec2 centerCoord = uResolution.xy * centerUv;",
+
+        "    deg = toFixedTwo(deg);",
+        "    float slope = normalizedSlope(slopeForDegrees(deg), uResolution.xy);",
 
 
-        "    // Create Darkness ==============================================================",
+        "    // Find offsets",
+        "    // -------------------------------",
 
-        "    vec2 normalizedBlurRadius = p * blurRadius;",
-        "    vec2 maxRadiusCoord = fragCoord + (normalizedBlurRadius.xy * uResolution.xy);",
-        "    float maxDistance = distance(fragCoord, maxRadiusCoord);",
-
-        "    const int maxSteps = 30; // This kind of sucks but we cant use non constant values for our loops",
-
-        "    float stepDistance = 1.0;",
-        "    vec2 stepCoord = vec2(0.0);",
-        "    vec2 stepUv = vec2(0.0);",
-        "    vec4 stepSample = vec4(1.0);",
-        "    vec4 stepSampleAdjusted = vec4(1.0);",
-        "    vec4 lightestSample = blackFromAlpha(baseSample);",
-
-        "    for (int i = -maxSteps; i <= maxSteps; i += 1) {",
-        "        if (abs(float(i)) >= blurRadius) { continue; }",
-        "        for (int j = -maxSteps; j <= maxSteps; j += 1) {",
-        "            if (abs(float(j)) >= blurRadius) { continue; }",
-
-        "            stepUv = uv + vec2(float(i) * p.x, float(j) * p.y);",
-        "            stepCoord = stepUv * uResolution.xy;",
-        "            stepSample = textTexture(stepUv);",
-
-        "            // Disregard actual color. Sample black, weighting for alpha",
-        "            stepSampleAdjusted = blackFromAlpha(stepSample);",
-
-        "            vec4 sampleOnBackground = normalBlend(stepSampleAdjusted, vec4(1.0));",
-
-        "            stepDistance = distance(stepCoord, fragCoord);",
-
-        "            if (stepDistance <= maxDistance) {",
-        "               float stepLightestSampleWeight = 1.0 - (stepDistance / maxDistance);",
-        "               //stepLightestSampleWeight = smoothstep(0.0, 1.0, pow(stepLightestSampleWeight, 1.75));",
-        "               //stepLightestSampleWeight = smoothstep(0.336, 1.000, pow(stepLightestSampleWeight, 0.216));",
-
-        "               vec4 mixedStep = mix(baseSample, sampleOnBackground, stepLightestSampleWeight);",
-
-        "               lightestSample = max(mixedStep, lightestSample);",
-        "            }",
-        "        }",
+        "    vec2 k = offsetsForCoordAtDistanceOnSlope(spread, slope);",
+        "    if (deg <= 90.0 || deg >= 270.0) {",
+        "        k *= -1.0;",
         "    }",
 
-        "    return 1.0 - lightestSample.r; // R, G, B,... none matter particularly.",
 
+        "    return k;",
+        "}",
+
+        "vec4 motionBlur(vec2 uv, vec2 blurOffset, float maxOffset) {",
+        "    const int maxSteps = 400; // This kind of sucks but we cant use non constant values for our loops",
+
+        "    float noiseModifier = 1.0;",
+        "    if (uAnimateNoise > 0.0) {",
+        "        noiseModifier = sin(uGlobalTime);",
+        "    }",
+        "    float randNoise = random(uv * noiseModifier) * 0.125;",
+
+        "    float maxAxialResolution = max(uResolution.x, uResolution.y);",
+        "    vec4 result = textTexture(uv);",
+
+        "    float maxStepsReached = 0.0;",
+
+        "    for (int i = 1; i <= maxSteps; i += 1) {",
+        "        if (abs(float(i)) > maxOffset) { break; }",
+        "        maxStepsReached += 1.0;",
+
+        "        vec2 offset = blurOffset * (float(i) / maxOffset);",
+        "        vec4 stepSample = textTexture(uv + (offset / maxAxialResolution));",,
+
+        "        result += stepSample;",
+        "    }",
+
+        "    if (maxOffset >= 1.0) {",
+        "        result /= maxStepsReached / 1.0; // Divide by 2.0 to account for loop step iterator @ 2x",
+        "        result.a = pow(result.a - (randNoise * (1.0 - result.a)), 2.0); // Apply logarithmic smoothing to alpha",
+        "    }",
+
+
+        "    return result;",
         "}",
 
 
         "void mainImage( out vec4 mainImage, in vec2 fragCoord ) {",
-        "   vec2 p = fragCoord / uResolution;",
-        "   vec2 rP = p;",
-        "   vec2 bP = p;",
+
+        "    // Setup",
+        "    // -------------------------------",
+
+        "    vec2 uv = fragCoord.xy / uResolution.xy;",
+
+        "    // We want the blur to be the full uOffset amount in each direction",
+        "    //   and to adjust with our logarithmic adjustment made later, so multiply by 4",
+        "    float adjustedOffset = uOffset * 4.0;",
+
+        "    float testRotation = uRotation;",
+
+        "    vec2 blurOffset = motionBlurOffsets(fragCoord, testRotation, adjustedOffset);",
 
 
+        "    // Set Starting Points",
+        "    // -------------------------------",
 
-        "   float slope = normalizedSlope(slopeForDegrees(uRotation), uResolution);",
-        "   vec2 k = offsetsForCoordAtDistanceOnSlope(uOffset, slope) / uResolution;",
+        "    vec2 rUv = uv;",
+        "    vec2 gUv = uv;",
+        "    vec2 bUv = uv;",
+
+        "    float slope = normalizedSlope(slopeForDegrees(uRotation), uResolution);",
+        "    vec2 k = offsetsForCoordAtDistanceOnSlope(uOffset, slope) / uResolution;",
 
         "    if (uRotation <= 90.0 || uRotation >= 270.0) {",
-        "        rP += k;",
-        "        bP -= k;",
+        "        rUv += k;",
+        "        bUv -= k;",
         "    }",
         "    else {",
-        "        rP -= k;",
-        "        bP += k;",
+        "        rUv -= k;",
+        "        bUv += k;",
         "    }",
 
 
+        "    // Blur and Split Channels",
+        "    // -------------------------------",
 
-        "   highp vec4 cr = textTexture(rP);",
-        "   highp vec4 cg = textTexture(p);",
-        "   highp vec4 cb = textTexture(bP);",
+        "    vec4 resultR = vec4(0.0);",
+        "    vec4 resultG = vec4(0.0);",
+        "    vec4 resultB = vec4(0.0);",
 
-        "   vec2 edgeBlurAdjustmentUv = vec2(0.0);",
-        "   if (cr.a >= cg.a && cr.a >= cb.a) {",
-        "       edgeBlurAdjustmentUv = rP;",
-        "   } else if (cg.a >= cr.a && cg.a >= cb.a) {",
-        "       edgeBlurAdjustmentUv = p;",
-        "   } else {",
-        "       edgeBlurAdjustmentUv = bP;",
-        "   }",
-        "   vec2 adjustedFragCoord = edgeBlurAdjustmentUv * uResolution.xy;",
+        "    if (uApplyBlur > 0.0) {",
+        "        resultR = motionBlur(rUv, blurOffset, adjustedOffset);",
+        "        resultG = motionBlur(gUv, blurOffset, adjustedOffset);",
+        "        resultB = motionBlur(bUv, blurOffset, adjustedOffset);",
+        "    } else {",
+        "        resultR = textTexture(rUv);",
+        "        resultG = textTexture(gUv);",
+        "        resultB = textTexture(bUv);",
+        "    }",
 
-        "   float blurAdjustment = edgeBlurAdjustment(adjustedFragCoord, uBlurRadius);",
+        "    float a = resultR.a + resultG.a + resultB.a;",
 
-        "   cr = normalBlend(cr, uBlendColor);",
-        "   cg = normalBlend(cg, uBlendColor);",
-        "   cb = normalBlend(cb, uBlendColor);",
+        "    resultR = normalBlend(resultR, uBlendColor);",
+        "    resultG = normalBlend(resultG, uBlendColor);",
+        "    resultB = normalBlend(resultB, uBlendColor);",
 
-        "   float a = max(cr.a, max(cg.a, cb.a)) * blurAdjustment;",
 
-        "   mainImage = vec4(cr.r, cg.g, cb.b, a);//normalUnblend(vec4(cr.r, cg.g, cb.b, a), uBlendColor);",
+
+        "    mainImage = vec4(resultR.r, resultG.g, resultB.b, a);",
         "}"
       ].join("\n");
 
@@ -132,7 +158,8 @@
         this.uniforms = {
           uOffset : { type : "1f", value : 5.0 },
           uRotation : { type : "1f", value : 0.0 },
-          uBlurRadius : { type : "1f", value : 0.0 }
+          uApplyBlur : { type : "1f", value : 1.0 },
+          uAnimateNoise : { type : "1f", value : 1.0 }
         };
       }
     };

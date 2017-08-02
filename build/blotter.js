@@ -44718,7 +44718,14 @@ GrowingPacker.prototype = {
     "// License : Distributed under the MIT License.",
     "// Source : https://github.com/patriciogonzalezvivo/thebookofshaders",
     "//",
-    Blotter.Assets.Shaders.Random,
+    "float random (in float _x) {",
+    "    return fract(sin(_x)*1e4);",
+    "}",
+    "",
+    "float random (in vec2 co) {",
+    "    return fract(sin(dot(co.xy,vec2(12.9898,78.233)))*43758.5453);",
+    "}",
+    "",
     "float noise (in float _x) {",
     "    float i = floor(_x);",
     "    float f = fract(_x);",
@@ -45122,7 +45129,7 @@ GrowingPacker.prototype = {
   	"",
   	"float random (in vec2 co) {",
   	"    return fract(sin(dot(co.xy,vec2(12.9898,78.233)))*43758.5453);",
-	"}"
+	  "}"
   ].join("\n");
 
 })(

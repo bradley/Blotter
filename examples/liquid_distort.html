@@ -58,7 +58,7 @@
 
         var controls = {
           message : "dat.gui",
-          uAnimate : true,
+          uAnimate : !!material.uniforms.uAnimate.value,
           uSpeed : material.uniforms.uSpeed.value,
           uVolatility : material.uniforms.uVolatility.value,
           uSeed : material.uniforms.uSeed.value

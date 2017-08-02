@@ -129,7 +129,8 @@
 
         "void mainImage( out vec4 mainImage, in vec2 fragCoord )",
         "{",
-        "    // Setup ========================================================================",
+        "    // Setup",
+        "    // -------------------------------",
 
         "    vec2 uv = fragCoord.xy / uResolution.xy;",
 
@@ -137,7 +138,9 @@
         "    uRotation = mod(uRotation + 270.0, 360.0);",
         "    uDistortPosition.y = 1.0 - uDistortPosition.y;",
 
-        "    // Create Distortion ============================================================",
+
+        "    // Distortion",
+        "    // -------------------------------",
 
         "    vec2 offset = waveOffset(fragCoord, uSineDistortSpread, uSineDistortCycleCount, uSineDistortAmplitude, uNoiseDistortVolatility, uNoiseDistortAmplitude, uDistortPosition, uRotation, uSpeed);",
 

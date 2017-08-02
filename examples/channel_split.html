@@ -27,7 +27,7 @@
     <script type="text/javascript" src="../build/filters/channelSplitMaterial.js"></script>
   </head>
   <body>
-    <span id="filter-target"></span>
+    <div id="filter-target"></div>
     <script>
 
 
@@ -35,14 +35,14 @@
 
         var styleProperties = {
           family: "serif",
-          size : 64,
+          size : 264,
           weight : 100,
           paddingTop : 0,
           paddingLeft : 14,
           paddingRight : 14
         };
 
-        var text = new Blotter.Text("observation", styleProperties);
+        var text = new Blotter.Text("channel", styleProperties);
 
         var material = new Blotter.ChannelSplitMaterial();
 
@@ -59,19 +59,23 @@
         var controls = {
           uOffset : material.uniforms.uOffset.value,
           uRotation : material.uniforms.uRotation.value,
-          uBlurRadius : material.uniforms.uBlurRadius.value
+          uApplyBlur : !!material.uniforms.uApplyBlur.value,
+          uAnimateNoise : !!material.uniforms.uAnimateNoise.value
         };
 
         var gui = new dat.GUI();
 
-        gui.add(controls, 'uOffset', 0.0, 30.0).onChange(function (angle) {
-          material.uniforms.uOffset.value = angle;
+        gui.add(controls, 'uOffset', 0.0, 60.0).onChange(function (offset) {
+          material.uniforms.uOffset.value = offset;
         });
         gui.add(controls, 'uRotation', 0.0, 360.0).onChange(function (angle) {
           material.uniforms.uRotation.value = angle;
         });
-        gui.add(controls, 'uBlurRadius', 0.0, 30.0).onChange(function (angle) {
-          material.uniforms.uBlurRadius.value = angle;
+        gui.add(controls, "uApplyBlur").onChange(function (bool) {
+          material.uniforms.uApplyBlur.value = bool ? 1.0 : 0.0;
+        });
+        gui.add(controls, "uAnimateNoise").onChange(function (bool) {
+          material.uniforms.uAnimateNoise.value = bool ? 1.0 : 0.0;
         });
       });
     </script>
