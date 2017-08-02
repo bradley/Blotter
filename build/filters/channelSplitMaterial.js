@@ -125,6 +125,18 @@
         "    vec4 resultB = vec4(0.0);",
 
         "    if (uApplyBlur > 0.0) {",
+        "        // Keep in place during motion blur phase",
+        "        if (uRotation <= 90.0 || uRotation >= 270.0) {",
+        "            rUv += k;",
+        "            gUv += k;",
+        "            bUv += k;",
+        "        }",
+        "        else {",
+        "            rUv -= k;",
+        "            gUv -= k;",
+        "            bUv -= k;",
+        "        }",
+
         "        resultR = motionBlur(rUv, blurOffset, adjustedOffset);",
         "        resultG = motionBlur(gUv, blurOffset, adjustedOffset);",
         "        resultB = motionBlur(bUv, blurOffset, adjustedOffset);",
