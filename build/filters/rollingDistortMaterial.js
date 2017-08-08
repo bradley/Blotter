@@ -12,7 +12,6 @@
       var mainImageSrc = [
         Blotter.Assets.Shaders.PI,
         Blotter.Assets.Shaders.LineMath,
-        Blotter.Assets.Shaders.Random,
         Blotter.Assets.Shaders.Noise,
 
         "// Fix a floating point number to two decimal places",

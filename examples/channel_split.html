@@ -11,7 +11,6 @@
         font-size: 64px;
         font-weight: 100;
         line-height: 1.5;
-        color: #0d0f17;
       }
 
       canvas {
@@ -35,14 +34,15 @@
 
         var styleProperties = {
           family: "serif",
-          size : 264,
+          size : 164,
           weight : 100,
           paddingTop : 0,
           paddingLeft : 14,
-          paddingRight : 14
+          paddingRight : 14,
+          fill: "#000000"
         };
 
-        var text = new Blotter.Text("channel", styleProperties);
+        var text = new Blotter.Text("Channel", styleProperties);
 
         var material = new Blotter.ChannelSplitMaterial();
 

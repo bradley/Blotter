@@ -61,7 +61,9 @@
 
         "    float maxStepsReached = 0.0;",
 
-        "    for (int i = 1; i <= maxSteps; i += 1) {",
+        "    // Note: Step by 2 to optimize performance. We conceal lossiness here via applied noise.",
+        "    //   If you do want maximum fidelity, change `i += 2` to `i += 1` below.",
+        "    for (int i = 1; i <= maxSteps; i += 2) {",
         "        if (abs(float(i)) > maxOffset) { break; }",
         "        maxStepsReached += 1.0;",
 
@@ -72,8 +74,9 @@
         "    }",
 
         "    if (maxOffset >= 1.0) {",
-        "        result /= maxStepsReached / 1.0; // Divide by 2.0 to account for loop step iterator @ 2x",
-        "        result.a = pow(result.a - (randNoise * (1.0 - result.a)), 2.0); // Apply logarithmic smoothing to alpha",
+        "        result /= maxStepsReached;",
+        "        result.a = pow(result.a, 2.0); // Apply logarithmic smoothing to alpha",
+        "        result.a -= (randNoise * (1.0 - result.a)); // Apply noise to smoothed alpha",
         "    }",
 
 
@@ -92,9 +95,7 @@
         "    //   and to adjust with our logarithmic adjustment made later, so multiply by 4",
         "    float adjustedOffset = uOffset * 4.0;",
 
-        "    float testRotation = uRotation;",
-
-        "    vec2 blurOffset = motionBlurOffsets(fragCoord, testRotation, adjustedOffset);",
+        "    vec2 blurOffset = motionBlurOffsets(fragCoord, uRotation, adjustedOffset);",
 
 
         "    // Set Starting Points",
@@ -168,8 +169,8 @@
       init : function () {
         this.mainImage = _mainImageSrc();
         this.uniforms = {
-          uOffset : { type : "1f", value : 5.0 },
-          uRotation : { type : "1f", value : 0.0 },
+          uOffset : { type : "1f", value : 3.0 },
+          uRotation : { type : "1f", value : 45.0 },
           uApplyBlur : { type : "1f", value : 1.0 },
           uAnimateNoise : { type : "1f", value : 1.0 }
         };
