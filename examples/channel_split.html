@@ -20,7 +20,7 @@
       }
     </style>
 
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-beta1/jquery.js"></script>
+    <script type="text/javascript" src="./third_party/jquery.min.js"></script>
     <script type="text/javascript" src="./third_party/dat.gui.js"></script>
     <script type="text/javascript" src="../build/blotter.js"></script>
     <script type="text/javascript" src="../build/filters/channelSplitMaterial.js"></script>
@@ -34,15 +34,15 @@
 
         var styleProperties = {
           family: "serif",
-          size : 164,
+          size : 68,
           weight : 100,
           paddingTop : 0,
           paddingLeft : 14,
           paddingRight : 14,
-          fill: "#000000"
+          fill: "#202020"
         };
 
-        var text = new Blotter.Text("Channel", styleProperties);
+        var text = new Blotter.Text("blotter", styleProperties);
 
         var material = new Blotter.ChannelSplitMaterial();
 

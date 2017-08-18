@@ -56,7 +56,6 @@
         "    }",
         "    float randNoise = random(uv * noiseModifier) * 0.125;",
 
-        "    float maxAxialResolution = max(uResolution.x, uResolution.y);",
         "    vec4 result = textTexture(uv);",
 
         "    float maxStepsReached = 0.0;",
@@ -68,7 +67,7 @@
         "        maxStepsReached += 1.0;",
 
         "        vec2 offset = blurOffset * (float(i) / maxOffset);",
-        "        vec4 stepSample = textTexture(uv + (offset / maxAxialResolution));",,
+        "        vec4 stepSample = textTexture(uv + (offset / uResolution.xy));",,
 
         "        result += stepSample;",
         "    }",
@@ -91,6 +90,9 @@
 
         "    vec2 uv = fragCoord.xy / uResolution.xy;",
 
+        "    float slope = normalizedSlope(slopeForDegrees(uRotation), uResolution);",
+
+
         "    // We want the blur to be the full uOffset amount in each direction",
         "    //   and to adjust with our logarithmic adjustment made later, so multiply by 4",
         "    float adjustedOffset = uOffset * 4.0;",
@@ -105,7 +107,6 @@
         "    vec2 gUv = uv;",
         "    vec2 bUv = uv;",
 
-        "    float slope = normalizedSlope(slopeForDegrees(uRotation), uResolution);",
         "    vec2 k = offsetsForCoordAtDistanceOnSlope(uOffset, slope) / uResolution;",
 
         "    if (uRotation <= 90.0 || uRotation >= 270.0) {",
@@ -169,7 +170,7 @@
       init : function () {
         this.mainImage = _mainImageSrc();
         this.uniforms = {
-          uOffset : { type : "1f", value : 3.0 },
+          uOffset : { type : "1f", value : 5.5 },
           uRotation : { type : "1f", value : 45.0 },
           uApplyBlur : { type : "1f", value : 1.0 },
           uAnimateNoise : { type : "1f", value : 1.0 }
