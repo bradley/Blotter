@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+
+    <style type="text/css">
+      body {
+        background: #030303;
+        padding: 20px;
+        font-family: serif;
+        font-size: 64px;
+        font-weight: 100;
+        line-height: 1.5;
+      }
+
+      canvas {
+        padding: 0;
+        margin: 0;
+        vertical-align: top;
+      }
+    </style>
+
+    <script type="text/javascript" src="./third_party/jquery.min.js"></script>
+    <script type="text/javascript" src="./third_party/dat.gui.js"></script>
+    <script type="text/javascript" src="../build/blotter.js"></script>
+    <script type="text/javascript" src="../build/filters/windowBlindsMaterial.js"></script>
+  </head>
+  <body>
+    <div id="filter-target"></div>
+    <script>
+
+
+      $(document).ready(function() {
+
+        var styleProperties = {
+          family: "sans-serif",
+          size : 168,
+          weight : 800,
+          leading: 1,
+          paddingLeft : 14,
+          paddingRight : 14,
+          fill: "#FFFFFF"
+        };
+
+        var text = new Blotter.Text("window", styleProperties);
+
+        var material = new Blotter.WindowBlindsMaterial();
+
+        var blotter = new Blotter(material, {
+          texts : text
+        });
+
+        var myScope = blotter.forText(text);
+
+        blotter.on("ready", function () {
+          myScope.appendTo(document.getElementById("filter-target"));
+        });
+
+        var controls = {
+          uSpeed : material.uniforms.uSpeed.value,
+          uDivisions : material.uniforms.uDivisions.value,
+          uPauseWidth : material.uniforms.uPauseWidth.value,
+          uAnimateVertically : !!material.uniforms.uAnimateVertically.value,
+          uFlipAnimationDirection : !!material.uniforms.uFlipAnimationDirection.value
+        };
+
+        var gui = new dat.GUI();
+
+        gui.add(controls, 'uSpeed', 0.0, 1.0).onChange(function (speed) {
+          material.uniforms.uSpeed.value = speed;
+        }).step(0.001);
+        gui.add(controls, 'uDivisions', 0.0, 20.0).onChange(function (divisions) {
+          material.uniforms.uDivisions.value = divisions;
+        }).step(1.0);
+        gui.add(controls, 'uPauseWidth', 0.0, 300.0).onChange(function (width) {
+          material.uniforms.uPauseWidth.value = width;
+        }).step(1.0);
+        gui.add(controls, "uAnimateVertically").onChange(function (bool) {
+          material.uniforms.uAnimateVertically.value = bool ? 1.0 : 0.0;
+        });
+        gui.add(controls, "uFlipAnimationDirection").onChange(function (bool) {
+          material.uniforms.uFlipAnimationDirection.value = bool ? 1.0 : 0.0;
+        });
+      });
+    </script>
+  </body>
+</html>
