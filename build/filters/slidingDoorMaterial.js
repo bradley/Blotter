@@ -1,12 +1,12 @@
 (function(Blotter, _) {
 
-  Blotter.WindowBlindsMaterial = function() {
+  Blotter.SlidingDoorMaterial = function() {
     Blotter.Material.apply(this, arguments);
   };
 
-  Blotter.WindowBlindsMaterial.prototype = Object.create(Blotter.Material.prototype);
+  Blotter.SlidingDoorMaterial.prototype = Object.create(Blotter.Material.prototype);
 
-  Blotter._extendWithGettersSetters(Blotter.WindowBlindsMaterial.prototype, (function () {
+  Blotter._extendWithGettersSetters(Blotter.SlidingDoorMaterial.prototype, (function () {
 
     function _mainImageSrc () {
       var mainImageSrc = [
@@ -55,30 +55,30 @@
 
         "    // Define Axis-Based Striping ===================================================",
 
-        "    float effectPosition = fragCoord.x;",
-        "    float effectDimension = uResolution.x;",
-        "    if (uAnimateVertically > 0.0) {",
-        "       effectPosition = fragCoord.y;",
-        "       effectDimension = uResolution.y;",
+        "    float effectPosition = fragCoord.y;",
+        "    float effectDimension = uResolution.y;",
+        "    if (uAnimateHorizontal > 0.0) {",
+        "       effectPosition = fragCoord.x;",
+        "       effectDimension = uResolution.x;",
         "    }",
         "    float stripe = floor(effectPosition / (effectDimension / uDivisions));",
 
 
         "    // Animate =====================================================================",
 
-        "    float timeAdjustedForStripe = time - (((uPauseWidth / uDivisions) / effectDimension) * stripe) * directionalAdjustment;",
+        "    float timeAdjustedForStripe = time - ((uDivisionWidth / uDivisions) * stripe) * directionalAdjustment;",
         "    float offsetAtTime = mod(timeAdjustedForStripe, 1.0);",
 
         "    // Divide sin output by 2 and add to 0.5 so that sin wave move between 0.0 and 1.0 rather than -1.0 and 1.0.",
         "    // Add 0.25 to offsetAtTime so that as offsetAtTime approaches 0.5, easing will approach 0.0.",
-        "    float easing = 0.5 + easingForPositionWithDeadzoneWidth(offsetAtTime, uPauseWidth / effectDimension);",
+        "    float easing = 0.5 + easingForPositionWithDeadzoneWidth(offsetAtTime, uDivisionWidth);",
 
         "    // Mulptiply offsetAtTime by 2.0 and subtract from 1.0 so that position changes over a range of -1.0 to 1.0 rather than 0.0 to 1.0.",
 
-        "    if (uAnimateVertically > 0.0) {",
-        "       uv.y -= ((1.0 - (offsetAtTime * 2.0)) * easing) * directionalAdjustment;",
-        "    } else {",
+        "    if (uAnimateHorizontal > 0.0) {",
         "       uv.x -= ((1.0 - (offsetAtTime * 2.0)) * easing) * directionalAdjustment;",
+        "    } else {",
+        "       uv.y -= ((1.0 - (offsetAtTime * 2.0)) * easing) * directionalAdjustment;",
         "    }",
 
 
@@ -92,15 +92,15 @@
 
     return {
 
-      constructor : Blotter.WindowBlindsMaterial,
+      constructor : Blotter.SlidingDoorMaterial,
 
       init : function () {
         this.mainImage = _mainImageSrc();
         this.uniforms = {
-          uSpeed : { type : "1f", value : 0.1 },
-          uDivisions : { type : "1f", value : 12.0 },
-          uPauseWidth : { type : "1f", value : 116.0 },
-          uAnimateVertically : { type : "1f", value : 0.0 },
+          uSpeed : { type : "1f", value : 0.2 },
+          uDivisions : { type : "1f", value : 5.0 },
+          uDivisionWidth : { type : "1f", value : 0.25 },
+          uAnimateHorizontal : { type : "1f", value : 0.0 },
           uFlipAnimationDirection : { type : "1f", value : 0.0 },
         };
       }
