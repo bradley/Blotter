@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+
+    <style type="text/css">
+      body {
+        background: #000;
+        padding: 20px;
+        font-family: serif;
+        font-size: 64px;
+        font-weight: 100;
+        line-height: 1.5;
+        color: #0d0f17;
+      }
+
+      canvas {
+        padding: 0;
+        margin: 0;
+        vertical-align: top;
+      }
+    </style>
+
+    <script type="text/javascript" src="./third_party/jquery.min.js"></script>
+    <script type="text/javascript" src="./third_party/dat.gui.js"></script>
+    <script type="text/javascript" src="../build/blotter.js"></script>
+    <script type="text/javascript" src="../build/filters/sparkleGlitchMaterial.js"></script>
+  </head>
+  <body>
+    <span id="filter-target"></span>
+    <script>
+
+
+      $(document).ready(function() {
+
+        var styleProperties = {
+          family: "sans-serif",
+          size: 168,
+          weight: 800,
+          fill: "#FFFFFF"
+        };
+
+        var text = new Blotter.Text("FREE YOUR MIND", styleProperties);
+
+        var material = new Blotter.SparkleGlitchMaterial();
+
+        var blotter = new Blotter(material, {
+          texts : text
+        });
+
+        var myScope = blotter.forText(text);
+
+        blotter.on("ready", function () {
+          myScope.appendTo(document.getElementById("filter-target"));
+        });
+
+        // var controls = {
+        //   message : "dat.gui",
+        //   uAnimate : !!material.uniforms.uAnimate.value,
+        //   uSpeed : material.uniforms.uSpeed.value,
+        //   uVolatility : material.uniforms.uVolatility.value,
+        //   uSeed : material.uniforms.uSeed.value
+        // };
+
+        // var gui = new dat.GUI();
+
+        // gui.add(controls, "uAnimate").onChange(function (bool) {
+        //   material.uniforms.uAnimate.value = bool ? 1.0 : 0.0;
+        // });
+        // gui.add(controls, "uSpeed", 0.0, 2.0).onChange(function (speed) {
+        //   material.uniforms.uSpeed.value = speed;
+        // });
+        // gui.add(controls, "uVolatility", 0.0, 1.0).onChange(function (volatility) {
+        //   material.uniforms.uVolatility.value = volatility;
+        // }).step(0.1);
+        // gui.add(controls, "uSeed", 0.0, 4.0).onChange(function (seed) {
+        //   material.uniforms.uSeed.value = seed;
+        // });
+      });
+    </script>
+  </body>
+</html>
