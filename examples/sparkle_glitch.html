@@ -5,13 +5,13 @@
 
     <style type="text/css">
       body {
-        background: #000;
+        background: #000000;
         padding: 20px;
         font-family: serif;
         font-size: 64px;
         font-weight: 100;
         line-height: 1.5;
-        color: #0d0f17;
+        color: #FFFFFF;
       }
 
       canvas {
@@ -23,6 +23,7 @@
 
     <script type="text/javascript" src="./third_party/jquery.min.js"></script>
     <script type="text/javascript" src="./third_party/dat.gui.js"></script>
+    <script type="text/javascript" src="./third_party/Tween.js"></script>
     <script type="text/javascript" src="../build/blotter.js"></script>
     <script type="text/javascript" src="../build/filters/sparkleGlitchMaterial.js"></script>
   </head>
@@ -35,14 +36,17 @@
 
         var styleProperties = {
           family: "sans-serif",
-          size: 168,
+          size: 468,
           weight: 800,
-          fill: "#FFFFFF"
+          leading: 1.02,
+          paddingLeft: 20,
+          paddingRight: 20
         };
 
-        var text = new Blotter.Text("FREE YOUR MIND", styleProperties);
+        var text = new Blotter.Text("hello", styleProperties);
 
         var material = new Blotter.SparkleGlitchMaterial();
+        material.uniforms.uPointRadius.value = 2.0;
 
         var blotter = new Blotter(material, {
           texts : text
@@ -54,28 +58,58 @@
           myScope.appendTo(document.getElementById("filter-target"));
         });
 
-        // var controls = {
-        //   message : "dat.gui",
-        //   uAnimate : !!material.uniforms.uAnimate.value,
-        //   uSpeed : material.uniforms.uSpeed.value,
-        //   uVolatility : material.uniforms.uVolatility.value,
-        //   uSeed : material.uniforms.uSeed.value
-        // };
+        var controls = {
+          message : "dat.gui",
+          uAnimate : !!material.uniforms.uAnimate.value,
+          uPointRadius : material.uniforms.uPointRadius.value,
+          uPointCellWidth : material.uniforms.uPointCellWidth.value
+        };
 
-        // var gui = new dat.GUI();
 
-        // gui.add(controls, "uAnimate").onChange(function (bool) {
-        //   material.uniforms.uAnimate.value = bool ? 1.0 : 0.0;
+
+        // var weightMin = { value : 6.0 },
+        //     weightMax = { value : 12.0 },
+        //     currentWeight = { value : 4.0 };
+
+
+        // var startTime = new Date().getTime();
+
+        // myScope.on("render", function () {
+        //   var time = (new Date().getTime() - startTime);
+        //   myScope.material.uniforms.uPointRadius.value = currentWeight.value;
+        //   TWEEN.update(time);
         // });
-        // gui.add(controls, "uSpeed", 0.0, 2.0).onChange(function (speed) {
-        //   material.uniforms.uSpeed.value = speed;
+
+        // var tween = new TWEEN.Tween(currentWeight)
+        //     .to({ value : 4.0 }, 100, TWEEN.Easing.Linear)
+        //     .start();
+
+        // myScope.on("mouseenter", function () {
+        //   tween._valuesEnd.value = 13.0;
+        //   tween.start();
         // });
-        // gui.add(controls, "uVolatility", 0.0, 1.0).onChange(function (volatility) {
-        //   material.uniforms.uVolatility.value = volatility;
-        // }).step(0.1);
-        // gui.add(controls, "uSeed", 0.0, 4.0).onChange(function (seed) {
-        //   material.uniforms.uSeed.value = seed;
+
+        // myScope.on("mouseleave", function () {
+        //   tween._valuesEnd.value = 4.0;
+        //   tween.start();
         // });
+
+
+
+
+
+        var gui = new dat.GUI();
+
+        gui.add(controls, "uAnimate").onChange(function (bool) {
+          material.uniforms.uAnimate.value = bool ? 1.0 : 0.0;
+        });
+        gui.add(controls, "uPointRadius", 0.0, 30.0).onChange(function (radius) {
+          material.uniforms.uPointRadius.value = radius;
+        });
+        gui.add(controls, "uPointCellWidth", 0.0, 30.0).onChange(function (width) {
+          material.uniforms.uPointCellWidth.value = width;
+        });
+
       });
     </script>
   </body>
