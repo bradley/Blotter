@@ -85,10 +85,10 @@
         });
         gui.add(controls, "uNoiseDistortAmplitude", 0.0, 1.0).onChange(function (amplitude) {
           material.uniforms.uNoiseDistortAmplitude.value = amplitude;
-        }).step(0.1);
+        });
         gui.add(controls, "uDistortPositionX", 0.0, 4.0).onChange(function (position) {
           material.uniforms.uDistortPosition.value = [position, material.uniforms.uDistortPosition.value[1]];
-        });
+        }).step(0.1);
         gui.add(controls, "uDistortPositionY", 0.0, 1.0).onChange(function (position) {
           material.uniforms.uDistortPosition.value = [material.uniforms.uDistortPosition.value[0], position];
         }).step(0.1);
