@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+
+    <style type="text/css">
+      body {
+        background: #000000;
+        padding: 20px;
+        font-family: serif;
+        font-size: 64px;
+        font-weight: 100;
+        line-height: 1.5;
+        color: #FFFFFF;
+      }
+
+      canvas {
+        padding: 0;
+        margin: 0;
+        vertical-align: top;
+      }
+    </style>
+
+    <script type="text/javascript" src="./third_party/jquery.min.js"></script>
+    <script type="text/javascript" src="./third_party/dat.gui.js"></script>
+    <script type="text/javascript" src="../build/blotter.js"></script>
+    <script type="text/javascript" src="../build/filters/dotsMaterial.js"></script>
+  </head>
+  <body>
+    <span id="filter-target"></span>
+    <script>
+
+
+      $(document).ready(function() {
+
+        var styleProperties = {
+          family: "sans-serif",
+          fill: "#FFC000",
+          size: 468,
+          weight: 800,
+          leading: 1.02,
+          paddingTop: 70,
+          paddingBottom: 70,
+          paddingLeft: 70,
+          paddingRight: 70
+        };
+
+        var text = new Blotter.Text("hello", styleProperties);
+
+        var material = new Blotter.DotsMaterial();
+        material.uniforms.uPointRadius.value = 2.0;
+
+        var blotter = new Blotter(material, {
+          texts : text
+        });
+
+        var myScope = blotter.forText(text);
+
+        blotter.on("ready", function () {
+          myScope.appendTo(document.getElementById("filter-target"));
+        });
+
+        var controls = {
+          message : "dat.gui",
+          uPointRadius : material.uniforms.uPointRadius.value,
+          uPointCellWidth : material.uniforms.uPointCellWidth.value,
+          uDodge : !!material.uniforms.uDodge.value,
+          uDodgePositionX : material.uniforms.uDodgePosition.value[0],
+          uDodgePositionY : material.uniforms.uDodgePosition.value[1],
+          uDodgeSpread : material.uniforms.uDodgeSpread.value,
+          uSpeed : material.uniforms.uSpeed.value
+        };
+
+        myScope.on("mousemove", function (mousePosition) {
+          material.uniforms.uDodge.value = 1.0;
+          myScope.material.uniforms.uDodgePosition.value = [mousePosition.x, mousePosition.y];
+        });
+
+        myScope.on("mouseleave", function () {
+          material.uniforms.uDodge.value = 0.0;
+        });
+
+
+        var gui = new dat.GUI();
+
+        gui.add(controls, "uPointRadius", 0.0, 30.0).onChange(function (radius) {
+          material.uniforms.uPointRadius.value = radius;
+        });
+        gui.add(controls, "uPointCellWidth", 0.0, 30.0).onChange(function (width) {
+          material.uniforms.uPointCellWidth.value = width;
+        });
+        gui.add(controls, "uDodge").onChange(function (bool) {
+          material.uniforms.uDodge.value = bool ? 1.0 : 0.0;
+        });
+        gui.add(controls, "uDodgePositionX", 0.0, 4.0).onChange(function (position) {
+          material.uniforms.uDodgePosition.value = [position, material.uniforms.uDodgePosition.value[1]];
+        }).step(0.1);
+        gui.add(controls, "uDodgePositionY", 0.0, 1.0).onChange(function (position) {
+          material.uniforms.uDodgePosition.value = [material.uniforms.uDodgePosition.value[0], position];
+        }).step(0.1);
+        gui.add(controls, "uDodgeSpread", 0.0, 1.0).onChange(function (width) {
+          material.uniforms.uDodgeSpread.value = width;
+        });
+        gui.add(controls, "uSpeed", 0.0, 5.0).onChange(function (speed) {
+          material.uniforms.uSpeed.value = speed;
+        });
+
+      });
+    </script>
+  </body>
+</html>
