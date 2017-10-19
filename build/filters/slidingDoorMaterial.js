@@ -53,36 +53,36 @@
         "    float directionalAdjustment = uFlipAnimationDirection > 0.0 ? -1.0 : 1.0;",
 
 
-        "    // Define Axis-Based Striping ===================================================",
+        "    if (uSpeed > 0.0) {",
 
-        "    float divisions = uDivisions;",
-        "    float effectPosition = fragCoord.y;",
-        "    float effectDimension = uResolution.y;",
-        "    if (uAnimateHorizontal > 0.0) {",
-        "       effectPosition = fragCoord.x;",
-        "       effectDimension = uResolution.x;",
-        "       divisions *= uResolution.x / uResolution.y;",
+        "       // Define Axis-Based Striping ===================================================",
+
+        "       float divisions = uDivisions;",
+        "       float effectPosition = fragCoord.y;",
+        "       float effectDimension = uResolution.y;",
+        "       if (uAnimateHorizontal > 0.0) {",
+        "          effectPosition = fragCoord.x;",
+        "          effectDimension = uResolution.x;",
+        "          divisions = floor((divisions * (uResolution.x / uResolution.y)) + 0.5);",
+        "       }",
+        "       float stripe = floor(effectPosition / (effectDimension / divisions));",
+
+
+        "       // Animate =====================================================================",
+
+        "       float timeAdjustedForStripe = time - ((uDivisionWidth / divisions) * stripe) * directionalAdjustment;",
+        "       float offsetAtTime = mod(timeAdjustedForStripe, 1.0);",
+
+        "       // Divide sin output by 2 and add to 0.5 so that sin wave move between 0.0 and 1.0 rather than -1.0 and 1.0.",
+        "       float easing = 0.5 + easingForPositionWithDeadzoneWidth(offsetAtTime, uDivisionWidth);",
+
+        "       // Mulptiply offsetAtTime by 2.0 and subtract from 1.0 so that position changes over a range of -1.0 to 1.0 rather than 0.0 to 1.0.",
+        "       if (uAnimateHorizontal > 0.0) {",
+        "          uv.x -= ((1.0 - (offsetAtTime * 2.0)) * easing) * directionalAdjustment;",
+        "       } else {",
+        "          uv.y -= ((1.0 - (offsetAtTime * 2.0)) * easing) * directionalAdjustment;",
+        "       }",
         "    }",
-        "    float stripe = floor(effectPosition / (effectDimension / divisions));",
-
-
-        "    // Animate =====================================================================",
-
-        "    float timeAdjustedForStripe = time - ((uDivisionWidth / divisions) * stripe) * directionalAdjustment;",
-        "    float offsetAtTime = mod(timeAdjustedForStripe, 1.0);",
-
-        "    // Divide sin output by 2 and add to 0.5 so that sin wave move between 0.0 and 1.0 rather than -1.0 and 1.0.",
-        "    // Add 0.25 to offsetAtTime so that as offsetAtTime approaches 0.5, easing will approach 0.0.",
-        "    float easing = 0.5 + easingForPositionWithDeadzoneWidth(offsetAtTime, uDivisionWidth);",
-
-        "    // Mulptiply offsetAtTime by 2.0 and subtract from 1.0 so that position changes over a range of -1.0 to 1.0 rather than 0.0 to 1.0.",
-
-        "    if (uAnimateHorizontal > 0.0) {",
-        "       uv.x -= ((1.0 - (offsetAtTime * 2.0)) * easing) * directionalAdjustment;",
-        "    } else {",
-        "       uv.y -= ((1.0 - (offsetAtTime * 2.0)) * easing) * directionalAdjustment;",
-        "    }",
-
 
         "    mainImage = textTexture(uv);",
 
