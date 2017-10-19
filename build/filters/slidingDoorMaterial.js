@@ -55,18 +55,20 @@
 
         "    // Define Axis-Based Striping ===================================================",
 
+        "    float divisions = uDivisions;",
         "    float effectPosition = fragCoord.y;",
         "    float effectDimension = uResolution.y;",
         "    if (uAnimateHorizontal > 0.0) {",
         "       effectPosition = fragCoord.x;",
         "       effectDimension = uResolution.x;",
+        "       divisions *= uResolution.x / uResolution.y;",
         "    }",
-        "    float stripe = floor(effectPosition / (effectDimension / uDivisions));",
+        "    float stripe = floor(effectPosition / (effectDimension / divisions));",
 
 
         "    // Animate =====================================================================",
 
-        "    float timeAdjustedForStripe = time - ((uDivisionWidth / uDivisions) * stripe) * directionalAdjustment;",
+        "    float timeAdjustedForStripe = time - ((uDivisionWidth / divisions) * stripe) * directionalAdjustment;",
         "    float offsetAtTime = mod(timeAdjustedForStripe, 1.0);",
 
         "    // Divide sin output by 2 and add to 0.5 so that sin wave move between 0.0 and 1.0 rather than -1.0 and 1.0.",
