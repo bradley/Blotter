@@ -65,9 +65,9 @@
 
         var gui = new dat.GUI();
 
-        gui.add(controls, 'uOffset', 0.0, 60.0).onChange(function (offset) {
+        gui.add(controls, 'uOffset', 0.0, 1.0).onChange(function (offset) {
           material.uniforms.uOffset.value = offset;
-        });
+        }).step(0.01);
         gui.add(controls, 'uRotation', 0.0, 360.0).onChange(function (angle) {
           material.uniforms.uRotation.value = angle;
         });
