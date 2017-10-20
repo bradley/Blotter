@@ -61,7 +61,7 @@
         "}",
 
         "vec4 motionBlur(vec2 uv, vec2 blurOffset, float maxOffset) {",
-        "    float noiseWidth = 2.0;",
+        "    float noiseWidth = 3.0;",
         "    float randNoise = noiseWithWidthAtUv(noiseWidth, uv);",
 
         "    vec4 result = textTexture(uv);",
