@@ -14,7 +14,8 @@
         Blotter.Assets.Shaders.LineMath,
         Blotter.Assets.Shaders.Random,
 
-        "const int MAX_STEPS = 500;",
+
+        "const int MAX_STEPS = 200;",
 
 
         "// Fix a floating point number to two decimal places",
@@ -47,6 +48,7 @@
         "    return k;",
         "}",
 
+
         "float noiseWithWidthAtUv(float width, vec2 uv) {",
         "    float noiseModifier = 1.0;",
         "    if (uAnimateNoise > 0.0) {",
@@ -59,6 +61,7 @@
 
         "    return random(noiseUv * noiseModifier) * 0.125;",
         "}",
+
 
         "vec4 motionBlur(vec2 uv, vec2 blurOffset, float maxOffset) {",
         "    float noiseWidth = 3.0;",
@@ -138,18 +141,6 @@
         "    vec4 resultB = vec4(0.0);",
 
         "    if (uApplyBlur > 0.0) {",
-        "        // Keep in place during motion blur phase",
-        // "        if (uRotation <= 90.0 || uRotation >= 270.0) {",
-        // "            rUv += k;",
-        // "            //gUv += k;",
-        // "            bUv -= k;",
-        // "        }",
-        // "        else {",
-        // "            rUv -= k;",
-        // "            //gUv -= k;",
-        // "            bUv += k;",
-        // "        }",
-
         "        resultR = motionBlur(rUv, blurOffset, adjustedOffset);",
         "        resultG = motionBlur(gUv, blurOffset, adjustedOffset);",
         "        resultB = motionBlur(bUv, blurOffset, adjustedOffset);",

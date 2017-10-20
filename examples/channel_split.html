@@ -5,7 +5,7 @@
 
     <style type="text/css">
       body {
-        background: #FFFFFF;
+        background: #202020;
         padding: 20px;
         font-family: serif;
         font-size: 64px;
@@ -29,22 +29,39 @@
     <div id="filter-target"></div>
     <script>
 
+      function angleBetweenPointsInDegrees(x1, y1, x2, y2) {
+        var angle = Math.atan2(y2 - y1, x2 - x1) * 180.0 / Math.PI;
+
+        angle = 180 + angle; // Im not entirely sure why this is necessarh currently. Try logging without it.
+
+        return angle;
+      }
+
+      function distanceBetweenPoints(x1, y1, x2, y2) {
+        var a = x1 - x2;
+        var b = y1 - y2;
+
+        return Math.sqrt((a * a) + (b * b));
+      }
 
       $(document).ready(function() {
 
         var styleProperties = {
           family: "serif",
-          size : 168,
-          weight : 100,
-          paddingTop : 0,
-          paddingLeft : 14,
-          paddingRight : 14,
-          fill: "#202020"
+          fill: "#FFFFFF",
+          size: 268,
+          weight: 800,
+          leading: 1.02,
+          paddingTop: 70,
+          paddingBottom: 70,
+          paddingLeft: 70,
+          paddingRight: 70
         };
 
         var text = new Blotter.Text("channel", styleProperties);
 
         var material = new Blotter.ChannelSplitMaterial();
+        material.uniforms.uBlendColor.value = [0.2, 0.2, 0.2, 1.0];
 
         var blotter = new Blotter(material, {
           texts : text
@@ -54,6 +71,14 @@
 
         blotter.on("ready", function () {
           myScope.appendTo(document.getElementById("filter-target"));
+        });
+
+        myScope.on("mousemove", function (mousePosition) {
+          var angle = angleBetweenPointsInDegrees(0.5, 0.5, mousePosition.x, mousePosition.y);
+          var blur = distanceBetweenPoints(0.5, 0.5, mousePosition.x, mousePosition.y);
+
+          myScope.material.uniforms.uRotation.value = angle;
+          myScope.material.uniforms.uOffset.value = blur;
         });
 
         var controls = {
