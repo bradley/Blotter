@@ -66,7 +66,9 @@
         "        if (abs(float(i)) > maxOffset) { break; }",
         "        maxStepsReached += 1.0;",
 
-        "        vec2 offset = blurOffset * (float(i) / maxOffset);",
+        "        // Divide blurOffset by 2.0 so that motion blur starts half way behind itself",
+        "        //   preventing blur from shoving samples in any direction",
+        "        vec2 offset = (blurOffset / 2.0) * (float(i) / maxOffset);",
         "        vec4 stepSample = textTexture(uv + (offset / uResolution.xy));",,
 
         "        result += stepSample;",
@@ -91,7 +93,6 @@
         "    vec2 uv = fragCoord.xy / uResolution.xy;",
 
         "    float slope = normalizedSlope(slopeForDegrees(uRotation), uResolution);",
-
 
         "    // We want the blur to be the full uOffset amount in each direction",
         "    //   and to adjust with our logarithmic adjustment made later, so multiply by 4",
