@@ -58,7 +58,7 @@
           paddingRight: 70
         };
 
-        var text = new Blotter.Text("channel", styleProperties);
+        var text = new Blotter.Text("A24", styleProperties);
 
         var material = new Blotter.ChannelSplitMaterial();
         material.uniforms.uBlendColor.value = [0.2, 0.2, 0.2, 1.0];
@@ -75,7 +75,7 @@
 
         myScope.on("mousemove", function (mousePosition) {
           var angle = angleBetweenPointsInDegrees(0.5, 0.5, mousePosition.x, mousePosition.y);
-          var blur = distanceBetweenPoints(0.5, 0.5, mousePosition.x, mousePosition.y);
+          var blur = Math.min(0.3, distanceBetweenPoints(0.5, 0.5, mousePosition.x, mousePosition.y));
 
           myScope.material.uniforms.uRotation.value = angle;
           myScope.material.uniforms.uOffset.value = blur;

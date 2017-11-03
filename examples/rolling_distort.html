@@ -5,7 +5,7 @@
 
     <style type="text/css">
       body {
-        background: #fff;
+        background: #202020;
         padding: 20px;
         font-family: serif;
         font-size: 64px;
@@ -34,15 +34,21 @@
       $(document).ready(function() {
 
         var styleProperties = {
-          family: "sans-serif",
-          size : 168,
-          weight : 800,
-          fill: "#FFC000"
+          family: "serif",
+          fill: "#FFFFFF",
+          size: 268,
+          weight: 800,
+          leading: 1.02,
+          paddingTop: 70,
+          paddingBottom: 70,
+          paddingLeft: 70,
+          paddingRight: 70
         };
 
         var text = new Blotter.Text("rolling", styleProperties);
 
         var material = new Blotter.RollingDistortMaterial();
+        material.uniforms.uBlendColor.value = [0.2, 0.2, 0.2, 1.0];
 
         var blotter = new Blotter(material, {
           texts : text
