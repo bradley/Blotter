@@ -1539,11 +1539,11 @@ $(document).ready(function () {
       };
 
       this.collection = new BlotterSite.Collections.PackShaders([
-        { materialName : "RollingDistortMaterial", packName : "glitch_pack_1" },
-        { materialName : "GhostBlurMaterial", packName : "glitch_pack_1" },
         { materialName : "ChannelSplitMaterial", packName : "glitch_pack_1" },
-        { materialName : "BubbleSplitMaterial", packName : "glitch_pack_1" },
-        { materialName : "LiquidDistortMaterial", packName : "glitch_pack_1" }
+        { materialName : "DotsMaterial", packName : "glitch_pack_1" },
+        { materialName : "LiquidDistortMaterial", packName : "glitch_pack_1" },
+        { materialName : "RollingDistortMaterial", packName : "glitch_pack_1" },
+        { materialName : "SlidingDoorMaterial", packName : "glitch_pack_1" }
       ]);
     }
   });

@@ -1,16 +1,16 @@
-BlotterSite.PackShaders.BubbleSplitMaterial = function(el, text) {
+BlotterSite.PackShaders.DotsMaterial = function(el, text) {
   this.init.apply(this, arguments);
 }
 
-BlotterSite.PackShaders.BubbleSplitMaterial.prototype =
+BlotterSite.PackShaders.DotsMaterial.prototype =
   Object.create(BlotterSite.PackShaders.PackShaderBase.prototype);
 
-_.extend(BlotterSite.PackShaders.BubbleSplitMaterial.prototype, (function () {
+_.extend(BlotterSite.PackShaders.DotsMaterial.prototype, (function () {
   return {
 
     prepare : function () {
-      this.material = new Blotter.BubbleSplitMaterial();
-      this.material.uniforms.uLenseWeight.value = 0.65;
+      this.material = new Blotter.DotsMaterial();
+      //this.material.uniforms.uLenseWeight.value = 0.65;
 
       this.blotter = new Blotter(this.material, { texts : this.text });
 
@@ -31,7 +31,7 @@ _.extend(BlotterSite.PackShaders.BubbleSplitMaterial.prototype, (function () {
           normalizedX = x / this.el.width(),
           normalizedY = y / this.el.height();
 
-      this.material.uniforms.uCenterPoint.value = [normalizedX, normalizedY];
+      //this.material.uniforms.uCenterPoint.value = [normalizedX, normalizedY];
     }
   }
 })());
