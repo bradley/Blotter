@@ -1,4 +1,5 @@
 @import "variables";
+@import "mixins";
 @import "codemirror_custom";
 
 /*  Typography
@@ -6,18 +7,18 @@
 
 @font-face{
   font-family: "Garamond";
-  src: url('fonts/EBGaramond12-Regular.ttf');
+  src: url('./fonts/EBGaramond12-Regular.ttf');
 }
 
 @font-face{
   font-family: "Garamond";
-  src: url('fonts/EBGaramond12-Italic.ttf');
+  src: url('./fonts/EBGaramond12-Italic.ttf');
   font-style: italic;
 }
 
 @font-face{
   font-family: "Avenir";
-  src: url('fonts/REPLACE_ME_WITH_SOMETHING_REAL.ttf');
+  src: url('./fonts/REPLACE_ME_WITH_SOMETHING_REAL.ttf');
 }
 
 
@@ -34,11 +35,12 @@
   -o-box-sizing: border-box;
   box-sizing: border-box;
   -webkit-font-smoothing: antialiased;
-  -moz-font-smoothing: antialiased;
-  -ms-font-smoothing: antialiased;
-  -o-font-smoothing: antialiased;
-  font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  height: 100%;
 }
 
 body {
@@ -46,7 +48,8 @@ body {
   font-family: $font-stack;
   font-size: $font-size;
   line-height: $leading;
-  padding: $leading $leading ($leading * 2) $leading;
+  padding: $leading;
+  position: relative;
   vertical-align: top;
 }
 
@@ -86,7 +89,15 @@ h3 {
 }
 
 p {
+  -moz-font-feature-settings: "onum" 1, "pnum" 1, "kern" 1, "ss01" 1;
+  -ms-font-feature-settings: "onum" 1, "pnum" 1, "kern" 1, "ss01" 1;
+  -o-font-feature-settings: "onum" 1, "pnum" 1, "kern" 1, "ss01" 1;
+  -webkit-font-feature-settings: "onum" 1, "pnum" 1, "kern" 1, "ss01" 1;
+  font-feature-settings: "onum" 1, "pnum" 1, "kern" 1, "ss01" 1;
+  font-kerning: normal;
+  letter-spacing: 0.015em;
   max-width: $max-content-width;
+  word-spacing: 0.001em;
 
   @media screen and (device-aspect-ratio: 2/3),
   screen and (device-aspect-ratio: 40/71) {
@@ -99,10 +110,14 @@ p {
 }
 
 a {
-  border-bottom: 2px solid black;
+  border-bottom: 1px solid black;
   color: black;
   position: relative;
   text-decoration: none;
+
+  &:hover {
+    border-color: black;
+  }
 }
 
 sup {
@@ -130,10 +145,19 @@ aside {
     text-align: center;
     top: 0;
     width: $leading * 2;
+
+    &::first-letter {
+      font-size: 200%;
+      color: #8A2BE2;
+    }
   }
 
   a {
     border-width: 1px;
+  }
+
+  code {
+    font-size: 12px;
   }
 }
 
@@ -149,7 +173,7 @@ code {
   background: $grey;
   border-radius: 4px;
   color: $black;
-  font-family: 'Ubuntu Mono', monospace;
+  font-family: $code-font-stack;
   font-size: 14px;
   font-size: 14px;
   line-height: 18px;
@@ -199,8 +223,9 @@ code {
   height: $leading;
   line-height: $leading * 2;
   padding: 1px ($leading * 2) 0;
-  text-decoration: none;
   text-align: center;
+  text-decoration: none;
+  text-transform: uppercase;
   height: $leading * 2;
 
   &:after {
@@ -253,7 +278,7 @@ code {
     padding: ($leading / 4) 0;
     position: absolute;
     top: calc(100% + #{$leading / 2});
-    width: $leading * 7;
+    width: $leading * 7.5;
     z-index: 50;
     backface-visiblity: visible;
 
@@ -329,13 +354,54 @@ code {
   line-height: 1.5;
 }
 
+.number {
+  font-family: $code-font-stack;
+}
+
+.arrow-up {
+  @include arrow-up;
+}
+
+.arrow-down {
+  @include arrow-down;
+}
+
+.arrow-left {
+  @include arrow-left;
+}
+
+.arrow-right {
+  @include arrow-right;
+}
+
 
 /*  Layout
     ------------------------------------- */
 
-#content {
-  margin: ($leading * 7) auto 0;
+#layout {
+  margin: 0 auto;
   width: $layout-width;
+}
+
+.hero-content-wrap {
+  display: table;
+  height: calc(100vh - #{$leading * 7});
+  width: 100%;
+
+  .hero-content {
+    display: table-cell;
+    padding-top: $leading * 7;
+    text-align: center;
+    vertical-align: middle;
+
+    > * {
+      text-align: left;
+    }
+  }
+}
+
+.content {
+  margin: $leading * 7 0;
 }
 
 .content-right, .content-left {
@@ -355,22 +421,23 @@ code {
     ------------------------------------- */
 
 #masthead {
-  background: white;
-  background: rgba(255,255,255,1);
-  background: -moz-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%);
-  background: -webkit-gradient(left top, left bottom, color-stop(0%, rgba(255,255,255,1)), color-stop(100%, rgba(255,255,255,0)));
-  background: -webkit-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%);
-  background: -o-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%);
-  background: -ms-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%);
-  background: linear-gradient(to bottom, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#ffffff', GradientType=0 );filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f85032', endColorstr='#e73827', GradientType=1 );
-  height: $leading * 2;
+  background: $white;
+  background: -webkit-linear-gradient($white, rgba(255,255,255,0));
+  background: -moz-linear-gradient($white, rgba(255,255,255,0));
+  background: -o-linear-gradient($white, rgba(255,255,255,0));
+  background: linear-gradient($white, rgba(255,255,255,0));
+  height: $leading * 4;
   left: 0;
   padding: $leading ($leading * 2);
+  pointer-events: none;
   position: fixed;
   right: 0;
   top: 0;
   z-index: 100;
+
+  * {
+    pointer-events: all;
+  }
 
   #logo {
     display: inline-block;
@@ -383,7 +450,7 @@ code {
     }
   }
 
-  ul#nav {
+  ul.nav {
     display: block;
     list-style: none;
     margin: 0;
@@ -391,8 +458,8 @@ code {
 
     li {
       display: inline-block;
-      padding: 0 ($leading / 2);
-      margin-left: $leading;
+      padding: 0 ($leading);
+      margin-left: ($leading / 2);
 
       &:first-child {
         margin-left: 0;
@@ -407,9 +474,94 @@ code {
         border: none;
         color: $black;
         font-family: $grotesque-font-stack;
-        font-size: $font-size;
+        font-size: 14px;
         line-height: $leading * 2;
+        position: relative;
+
+/*        &:after {
+          background: $black;
+          border-radius: 4px;
+          content: "";
+          display: inline-block;
+          height: 4px;
+          left: -(($leading / 2) + ($leading / 4) + $leading);
+          opacity: 0;
+          position: absolute;
+          top: 9.5px;
+          -webkit-transform: rotate(180deg);
+          -moz-transform: rotate(180deg);
+          -o-transform: rotate(180deg);
+          -ms-transform: rotate(180deg);
+          transform: rotate(180deg);
+          -webkit-transform-origin: ($leading / 2) + ($leading / 4);
+          -moz-transform-origin: ($leading / 2) + ($leading / 4);
+          -o-transform-origin: ($leading / 2) + ($leading / 4);
+          -ms-transform-origin: ($leading / 2) + ($leading / 4);
+          transform-origin: ($leading / 2) + ($leading / 4);
+          width: 4px;
+          transition: all 100ms ease-in;
+        }
+
+        &:hover::after {
+          opacity: 1;
+          width: ($leading / 2);
+        }*/
+
+        canvas {
+          margin-left: -13px;
+          margin-right: -13px;
+          vertical-align: top;
+          will-change: transform;
+        }
       }
+    }
+
+    &.back-nav {
+      li {
+        a {
+          .arrow-left {
+            margin-right: $leading * 1.5;
+          }
+        }
+      }
+    }
+  }
+}
+
+
+/*  Beauty
+    ------------------------------------- */
+
+#marginalia-container {
+  bottom: 0;
+  left: 0;
+  min-height: 100vh;
+  position: absolute;
+  right: 0;
+  top: 0;
+  will-change: transform;
+  z-index: -1;
+
+  .marginalia {
+    pointer-events: none;
+    position: absolute;
+  }
+}
+
+.notated-list {
+  position: relative;
+  margin: 0 0 0 $leading;
+
+  ul {
+    box-sizing: border-box;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: relative;
+
+    li {
+      line-height: $leading;
+      margin-bottom: $leading;
     }
   }
 }
@@ -437,12 +589,12 @@ code {
 
       .download-title {
         font-family: $grotesque-font-stack;
-        font-size: 14px;
+        font-size: 17px;
         line-height: 1.5;
       }
 
       .download-details {
-        font-size: 13px;
+        font-size: 14px;
         line-height: 1.5;
         margin-top: 0px;
       }
@@ -452,11 +604,20 @@ code {
 
 .download {
   height: 52px;
-  margin: $leading 0 ($leading * 4);
+  margin: $leading 0 0;
 }
 
 .introduction {
   margin-bottom: $leading * 2;
+}
+
+.pack-shader-example-wrap {
+  height: $leading * 3;
+  margin-bottom: $leading;
+
+  canvas {
+    vertical-align: top;
+  }
 }
 
 .bullet-list {
@@ -539,6 +700,26 @@ ul.documentation {
       }
     }
   }
+
+  .notated-list {
+
+    ul {
+      margin: ($leading * 1.5) 0 ($leading * 1.5) ($leading / 2);
+
+      li {
+        margin-bottom: ($leading / 2);
+        margin-top: 0;
+      }
+    }
+  }
+
+  > li:last-child ul > li:last-child .notated-list ul {
+    margin-bottom: 0;
+
+    > li:last-child {
+      margin-bottom: 0;
+    }
+  }
 }
 
 
@@ -548,7 +729,7 @@ ul.documentation {
 .tabbed-editor {
   float: none;
   list-style: none;
-  margin-top: $leading * 2;
+  margin: ($leading * 2) 0;
   width: 100%;
   padding: 0;
   position: relative;
@@ -610,10 +791,12 @@ ul.documentation {
     padding: 1px $leading 0;
     text-decoration: none;
     text-align: center;
+    text-transform: uppercase;
   }
 }
 
 .output {
+  background: $white;
   border: 2px solid $black;
   box-sizing: border-box;
   -moz-box-sizing: border-box;
@@ -623,20 +806,17 @@ ul.documentation {
   width: 100%;
 
   &:before {
-    content: "↓";
-    font-family: $grotesque-font-stack;
-    font-size: $leading;
-    height: $leading;
+    @include arrow-down;
     left: calc(50% - 5px);
-    line-height: $leading;
     position: absolute;
     top: -($leading * 2);
     z-index: -1;
   }
 
   > div {
-    width: 100%;
+    min-height: 92px;
     text-align: center;
+    width: 100%;
 
     canvas {
       margin: $leading auto;
@@ -654,6 +834,7 @@ ul.documentation {
   overflow: hidden;
 
   li {
+    background: $white;
     border: 2px solid $black;
     box-sizing: border-box;
     -moz-box-sizing: border-box;

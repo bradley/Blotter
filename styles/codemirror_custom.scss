@@ -6,9 +6,9 @@
 
 .CodeMirror {
   background: $black;
-  font-family: "Ubuntu Mono", monospace;
-  font-size: 14px;
-  line-height: 18px;
+  font-family: $code-font-stack;
+  font-size: 16px;
+  line-height: 20px;
   max-width: 100%;
   padding-right: $leading;
 }
@@ -35,15 +35,18 @@
   padding-left: 0;
 }
 
+.CodeMirror-gutter {
+  padding-bottom: 0;
+}
+
 .CodeMirror-linenumber {
   color: #DCDCDC;
-  font-size: 14px;
+  font-size: 16px;
   left: 1px !important;
-  line-height: 18px;
-  //min-width: $leading;
+  line-height: 20px;
   text-align: right;
   text-shadow: 0 0 4px #AAAAAA, 0 0 4px #AAAAAA;
-  padding-left: 0;
+  padding: 0;
 }
 
 @media screen and (max-width: $min-screen-width) {
@@ -68,8 +71,8 @@
 
 .CodeMirror pre {
   color: #DCDCDC;
-  font-size: 14px;
-  line-height: 18px;
+/*  font-size: 16px;
+    line-height: 20px;*/
   text-shadow: 0 0 3px #979797, 0 0 3px #979797;
 }
 

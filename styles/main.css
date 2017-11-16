@@ -303,10 +303,10 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
     visibility: hidden; } }
 /* BASE */
 .CodeMirror {
-  background: #1E1A1B;
+  background: #202020;
   font-family: "Ubuntu Mono", monospace;
-  font-size: 14px;
-  line-height: 18px;
+  font-size: 16px;
+  line-height: 20px;
   max-width: 100%;
   padding-right: 26px; }
 
@@ -321,21 +321,24 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
 /* GUTTER */
 .CodeMirror-gutters {
   border-right: 1px solid #B5B5B5;
-  background-color: #1E1A1B;
+  background-color: #202020;
   box-shadow: 1px 0 3px #6C6C6C, 1px 0 3px #6C6C6C;
   min-width: 26px;
   text-align: center;
   margin-right: 26px;
   padding-left: 0; }
 
+.CodeMirror-gutter {
+  padding-bottom: 0; }
+
 .CodeMirror-linenumber {
   color: #DCDCDC;
-  font-size: 14px;
+  font-size: 16px;
   left: 1px !important;
-  line-height: 18px;
+  line-height: 20px;
   text-align: right;
   text-shadow: 0 0 4px #AAAAAA, 0 0 4px #AAAAAA;
-  padding-left: 0; }
+  padding: 0; }
 
 @media screen and (max-width: 400px) {
   .CodeMirror-gutters,
@@ -351,8 +354,8 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
 /* TEXT STYLING */
 .CodeMirror pre {
   color: #DCDCDC;
-  font-size: 14px;
-  line-height: 18px;
+  /*  font-size: 16px;
+      line-height: 20px;*/
   text-shadow: 0 0 3px #979797, 0 0 3px #979797; }
 
 .cm-s-default .cm-keyword {
@@ -397,14 +400,14 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
     ------------------------------------- */
 @font-face {
   font-family: "Garamond";
-  src: url("fonts/EBGaramond12-Regular.ttf"); }
+  src: url("./fonts/EBGaramond12-Regular.ttf"); }
 @font-face {
   font-family: "Garamond";
-  src: url("fonts/EBGaramond12-Italic.ttf");
+  src: url("./fonts/EBGaramond12-Italic.ttf");
   font-style: italic; }
 @font-face {
   font-family: "Avenir";
-  src: url("fonts/REPLACE_ME_WITH_SOMETHING_REAL.ttf"); }
+  src: url("./fonts/REPLACE_ME_WITH_SOMETHING_REAL.ttf"); }
 /*  Base
     ------------------------------------- */
 * {
@@ -417,22 +420,23 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
   -o-box-sizing: border-box;
   box-sizing: border-box;
   -webkit-font-smoothing: antialiased;
-  -moz-font-smoothing: antialiased;
-  -ms-font-smoothing: antialiased;
-  -o-font-smoothing: antialiased;
-  font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   -webkit-tap-highlight-color: transparent; }
 
+html {
+  height: 100%; }
+
 body {
-  color: #1E1A1B;
+  color: #202020;
   font-family: "Garamond", serif;
   font-size: 17px;
   line-height: 26px;
-  padding: 26px 26px 52px 26px;
+  padding: 26px;
+  position: relative;
   vertical-align: top; }
 
 h1, h2, h3, h4, h5, h6 {
-  color: #1E1A1B;
+  color: #202020;
   font-family: "SerapionPro", "Garamond", serif;
   font-weight: 400;
   letter-spacing: 0.015em;
@@ -459,7 +463,15 @@ h3 {
   padding-top: 3px; }
 
 p {
-  max-width: 546px; }
+  -moz-font-feature-settings: "onum" 1, "pnum" 1, "kern" 1, "ss01" 1;
+  -ms-font-feature-settings: "onum" 1, "pnum" 1, "kern" 1, "ss01" 1;
+  -o-font-feature-settings: "onum" 1, "pnum" 1, "kern" 1, "ss01" 1;
+  -webkit-font-feature-settings: "onum" 1, "pnum" 1, "kern" 1, "ss01" 1;
+  font-feature-settings: "onum" 1, "pnum" 1, "kern" 1, "ss01" 1;
+  font-kerning: normal;
+  letter-spacing: 0.015em;
+  max-width: 546px;
+  word-spacing: 0.001em; }
   @media screen and (device-aspect-ratio: 2 / 3), screen and (device-aspect-ratio: 40 / 71) {
     p {
       max-width: 100%; } }
@@ -467,10 +479,12 @@ p {
     margin-top: 26px; }
 
 a {
-  border-bottom: 2px solid black;
+  border-bottom: 1px solid black;
   color: black;
   position: relative;
   text-decoration: none; }
+  a:hover {
+    border-color: black; }
 
 sup {
   font-size: 85%;
@@ -493,8 +507,13 @@ aside {
     text-align: center;
     top: 0;
     width: 52px; }
+    aside:before::first-letter {
+      font-size: 200%;
+      color: #8A2BE2; }
   aside a {
     border-width: 1px; }
+  aside code {
+    font-size: 12px; }
 
 /* Highlight colors. */
 ::-moz-selection {
@@ -506,8 +525,8 @@ aside {
 code {
   background: #f3f3f3;
   border-radius: 4px;
-  color: #1E1A1B;
-  font-family: 'Ubuntu Mono', monospace;
+  color: #202020;
+  font-family: "Ubuntu Mono", monospace;
   font-size: 14px;
   font-size: 14px;
   line-height: 18px;
@@ -536,7 +555,7 @@ code {
   user-select: none; }
 
 .btn {
-  background: #1E1A1B;
+  background: #202020;
   border-radius: 4px;
   box-sizing: border-box;
   -moz-box-sizing: border-box;
@@ -549,8 +568,9 @@ code {
   height: 26px;
   line-height: 52px;
   padding: 1px 52px 0;
-  text-decoration: none;
   text-align: center;
+  text-decoration: none;
+  text-transform: uppercase;
   height: 52px; }
   .btn:after {
     display: none; }
@@ -587,13 +607,13 @@ code {
     box-sizing: border-box;
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
-    color: #1E1A1B;
+    color: #202020;
     right: 26px;
     list-style: none;
     padding: 6.5px 0;
     position: absolute;
     top: calc(100% + 13px);
-    width: 182px;
+    width: 195px;
     z-index: 50;
     backface-visiblity: visible; }
     .dropdown-select .dropdown-options li {
@@ -601,7 +621,7 @@ code {
       .dropdown-select .dropdown-options li:hover {
         color: #fff;
         cursor: pointer;
-        background: #1E1A1B;
+        background: #202020;
         font-weight: 500; }
 
 /* Used for allowing anchor links but accounting for fixed header */
@@ -613,7 +633,7 @@ code {
 
 .horizon {
   background: transparent;
-  border-color: transparent transparent #1E1A1B transparent;
+  border-color: transparent transparent #202020 transparent;
   border-style: solid;
   border-width: 0 13px 6.5px 13px;
   box-sizing: border-box;
@@ -637,7 +657,7 @@ code {
     top: calc(100% + 2px);
     width: 100%; }
   .horizon:after {
-    border-color: #1E1A1B transparent transparent transparent;
+    border-color: #202020 transparent transparent transparent;
     border-style: solid;
     border-width: 6.5px 13px 0 13px;
     height: 26px;
@@ -649,11 +669,93 @@ code {
   font-size: 13px;
   line-height: 1.5; }
 
+.number {
+  font-family: "Ubuntu Mono", monospace; }
+
+.arrow-up {
+  display: inline-block;
+  font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
+  font-size: 26px;
+  height: 26px;
+  line-height: 26px;
+  position: relative;
+  vertical-align: middle;
+  content: "↑"; }
+  .arrow-up:before {
+    position: absolute;
+    top: 0; }
+  .arrow-up:before {
+    content: "↑";
+    margin-left: -5px; }
+
+.arrow-down {
+  display: inline-block;
+  font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
+  font-size: 26px;
+  height: 26px;
+  line-height: 26px;
+  position: relative;
+  vertical-align: middle;
+  content: "↓"; }
+  .arrow-down:before {
+    position: absolute;
+    top: 0; }
+  .arrow-down:before {
+    content: "↑";
+    margin-left: -5px; }
+
+.arrow-left {
+  display: inline-block;
+  font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
+  font-size: 26px;
+  height: 26px;
+  line-height: 26px;
+  position: relative;
+  vertical-align: middle;
+  content: "←"; }
+  .arrow-left:before {
+    position: absolute;
+    top: 0; }
+  .arrow-left:before {
+    content: "←";
+    margin-top: -5px; }
+
+.arrow-right {
+  display: inline-block;
+  font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
+  font-size: 26px;
+  height: 26px;
+  line-height: 26px;
+  position: relative;
+  vertical-align: middle;
+  content: "→"; }
+  .arrow-right:before {
+    position: absolute;
+    top: 0; }
+  .arrow-right:before {
+    content: "→";
+    margin-top: -5px; }
+
 /*  Layout
     ------------------------------------- */
-#content {
-  margin: 182px auto 0;
+#layout {
+  margin: 0 auto;
   width: 676px; }
+
+.hero-content-wrap {
+  display: table;
+  height: calc(100vh - 182px);
+  width: 100%; }
+  .hero-content-wrap .hero-content {
+    display: table-cell;
+    padding-top: 182px;
+    text-align: center;
+    vertical-align: middle; }
+    .hero-content-wrap .hero-content > * {
+      text-align: left; }
+
+.content {
+  margin: 182px 0; }
 
 .content-right, .content-left {
   width: 546px; }
@@ -667,23 +769,21 @@ code {
 /*  Header
     ------------------------------------- */
 #masthead {
-  background: white;
-  background: white;
-  background: -moz-linear-gradient(top, white 0%, rgba(255, 255, 255, 0) 100%);
-  background: -webkit-gradient(left top, left bottom, color-stop(0%, white), color-stop(100%, rgba(255, 255, 255, 0)));
-  background: -webkit-linear-gradient(top, white 0%, rgba(255, 255, 255, 0) 100%);
-  background: -o-linear-gradient(top, white 0%, rgba(255, 255, 255, 0) 100%);
-  background: -ms-linear-gradient(top, white 0%, rgba(255, 255, 255, 0) 100%);
-  background: linear-gradient(to bottom, white 0%, rgba(255, 255, 255, 0) 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#ffffff', GradientType=0 );
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f85032', endColorstr='#e73827', GradientType=1 );
-  height: 52px;
+  background: #fff;
+  background: -webkit-linear-gradient(#fff, rgba(255, 255, 255, 0));
+  background: -moz-linear-gradient(#fff, rgba(255, 255, 255, 0));
+  background: -o-linear-gradient(#fff, rgba(255, 255, 255, 0));
+  background: linear-gradient(#fff, rgba(255, 255, 255, 0));
+  height: 104px;
   left: 0;
   padding: 26px 52px;
+  pointer-events: none;
   position: fixed;
   right: 0;
   top: 0;
   z-index: 100; }
+  #masthead * {
+    pointer-events: all; }
   #masthead #logo {
     display: inline-block;
     height: 52px; }
@@ -691,26 +791,90 @@ code {
       vertical-align: top;
       margin-top: -6px;
       margin-left: -14px; }
-  #masthead ul#nav {
+  #masthead ul.nav {
     display: block;
     list-style: none;
     margin: 0;
     padding: 0; }
-    #masthead ul#nav li {
+    #masthead ul.nav li {
       display: inline-block;
-      padding: 0 13px;
-      margin-left: 26px; }
-      #masthead ul#nav li:first-child {
+      padding: 0 26px;
+      margin-left: 13px; }
+      #masthead ul.nav li:first-child {
         margin-left: 0;
         padding-left: 0; }
-      #masthead ul#nav li:last-child {
+      #masthead ul.nav li:last-child {
         padding-right: 0; }
-      #masthead ul#nav li a {
+      #masthead ul.nav li a {
         border: none;
-        color: #1E1A1B;
+        color: #202020;
         font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
-        font-size: 17px;
-        line-height: 52px; }
+        font-size: 14px;
+        line-height: 52px;
+        position: relative;
+        /*        &:after {
+                  background: $black;
+                  border-radius: 4px;
+                  content: "";
+                  display: inline-block;
+                  height: 4px;
+                  left: -(($leading / 2) + ($leading / 4) + $leading);
+                  opacity: 0;
+                  position: absolute;
+                  top: 9.5px;
+                  -webkit-transform: rotate(180deg);
+                  -moz-transform: rotate(180deg);
+                  -o-transform: rotate(180deg);
+                  -ms-transform: rotate(180deg);
+                  transform: rotate(180deg);
+                  -webkit-transform-origin: ($leading / 2) + ($leading / 4);
+                  -moz-transform-origin: ($leading / 2) + ($leading / 4);
+                  -o-transform-origin: ($leading / 2) + ($leading / 4);
+                  -ms-transform-origin: ($leading / 2) + ($leading / 4);
+                  transform-origin: ($leading / 2) + ($leading / 4);
+                  width: 4px;
+                  transition: all 100ms ease-in;
+                }
+        
+                &:hover::after {
+                  opacity: 1;
+                  width: ($leading / 2);
+                }*/ }
+        #masthead ul.nav li a canvas {
+          margin-left: -13px;
+          margin-right: -13px;
+          vertical-align: top;
+          will-change: transform; }
+    #masthead ul.nav.back-nav li a .arrow-left {
+      margin-right: 39px; }
+
+/*  Beauty
+    ------------------------------------- */
+#marginalia-container {
+  bottom: 0;
+  left: 0;
+  min-height: 100vh;
+  position: absolute;
+  right: 0;
+  top: 0;
+  will-change: transform;
+  z-index: -1; }
+  #marginalia-container .marginalia {
+    pointer-events: none;
+    position: absolute; }
+
+.notated-list {
+  position: relative;
+  margin: 0 0 0 26px; }
+  .notated-list ul {
+    box-sizing: border-box;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: relative; }
+    .notated-list ul li {
+      line-height: 26px;
+      margin-bottom: 26px; }
 
 /*  Documentation
     ------------------------------------- */
@@ -723,19 +887,25 @@ code {
 
 .download-options .dropdown-options li .download-title {
   font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
-  font-size: 14px;
+  font-size: 17px;
   line-height: 1.5; }
 .download-options .dropdown-options li .download-details {
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1.5;
   margin-top: 0px; }
 
 .download {
   height: 52px;
-  margin: 26px 0 104px; }
+  margin: 26px 0 0; }
 
 .introduction {
   margin-bottom: 52px; }
+
+.pack-shader-example-wrap {
+  height: 78px;
+  margin-bottom: 26px; }
+  .pack-shader-example-wrap canvas {
+    vertical-align: top; }
 
 .bullet-list {
   list-style: none; }
@@ -781,13 +951,22 @@ ul.documentation {
             margin-top: 6.5px; }
             ul.documentation li > ul ul li p.property, ul.documentation li > ul ul li p.method, ul.documentation li > ul ul li p.construction {
               border-left: none; }
+  ul.documentation .notated-list ul {
+    margin: 39px 0 39px 13px; }
+    ul.documentation .notated-list ul li {
+      margin-bottom: 13px;
+      margin-top: 0; }
+  ul.documentation > li:last-child ul > li:last-child .notated-list ul {
+    margin-bottom: 0; }
+    ul.documentation > li:last-child ul > li:last-child .notated-list ul > li:last-child {
+      margin-bottom: 0; }
 
 /*  Example Editor
     ------------------------------------- */
 .tabbed-editor {
   float: none;
   list-style: none;
-  margin-top: 52px;
+  margin: 52px 0;
   width: 100%;
   padding: 0;
   position: relative; }
@@ -806,7 +985,7 @@ ul.documentation {
     .tabbed-editor label span {
       border-radius: 4px 4px 0 0;
       cursor: pointer;
-      color: #1E1A1B;
+      color: #202020;
       font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif; }
   .tabbed-editor .tab-content {
     width: 100%;
@@ -817,7 +996,7 @@ ul.documentation {
     .tabbed-editor .tab-content > .CodeMirror {
       height: auto; }
   .tabbed-editor .tab:checked + span {
-    background: #1E1A1B;
+    background: #202020;
     color: #fff;
     font-weight: 500; }
   .tabbed-editor .label-text {
@@ -831,10 +1010,12 @@ ul.documentation {
     line-height: 26px;
     padding: 1px 26px 0;
     text-decoration: none;
-    text-align: center; }
+    text-align: center;
+    text-transform: uppercase; }
 
 .output {
-  border: 2px solid #1E1A1B;
+  background: #fff;
+  border: 2px solid #202020;
   box-sizing: border-box;
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
@@ -842,18 +1023,28 @@ ul.documentation {
   position: relative;
   width: 100%; }
   .output:before {
-    content: "↓";
+    display: inline-block;
     font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
     font-size: 26px;
     height: 26px;
-    left: calc(50% - 5px);
     line-height: 26px;
+    position: relative;
+    vertical-align: middle;
+    content: "↓";
+    left: calc(50% - 5px);
     position: absolute;
     top: -52px;
     z-index: -1; }
+    .output:before:before {
+      position: absolute;
+      top: 0; }
+    .output:before:before {
+      content: "↑";
+      margin-left: -5px; }
   .output > div {
-    width: 100%;
-    text-align: center; }
+    min-height: 92px;
+    text-align: center;
+    width: 100%; }
     .output > div canvas {
       margin: 26px auto;
       vertical-align: top; }
@@ -864,7 +1055,8 @@ ul.documentation {
   list-style: none;
   overflow: hidden; }
   .pack-shaders li {
-    border: 2px solid #1E1A1B;
+    background: #fff;
+    border: 2px solid #202020;
     box-sizing: border-box;
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
@@ -898,14 +1090,14 @@ ul.documentation {
       text-align: left;
       top: 0; }
       .pack-shaders li .pack-shader-overlay .pack-shader-name {
-        color: #1E1A1B;
+        color: #202020;
         display: block;
         font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
         font-size: 17px;
         font-weight: normal;
         line-height: 1.5; }
       .pack-shaders li .pack-shader-overlay .pack-name {
-        color: #1E1A1B;
+        color: #202020;
         display: block;
         font-family: "Garamond", serif;
         font-size: 14px;
@@ -1025,7 +1217,7 @@ p.detail {
 
 /* Used for properties and objects that are static. This would be like Blotter.UniformUtils.UniformTypes */
 p.static, p.static + p {
-  color: tint(#1E1A1B, 33%); }
+  color: tint(#202020, 33%); }
 
 /* --------------------------------------------------------------------------------------------*/
 /* SOURCE PROPERTY TYPE DESIGNATORS */
