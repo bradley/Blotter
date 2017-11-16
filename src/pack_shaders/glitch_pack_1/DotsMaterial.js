@@ -10,7 +10,8 @@ _.extend(BlotterSite.PackShaders.DotsMaterial.prototype, (function () {
 
     prepare : function () {
       this.material = new Blotter.DotsMaterial();
-      //this.material.uniforms.uLenseWeight.value = 0.65;
+      this.material.uniforms.uPointRadius.value = 30.0;
+      this.material.uniforms.uPointCellWidth.value = 8.0;
 
       this.blotter = new Blotter(this.material, { texts : this.text });
 
@@ -31,7 +32,7 @@ _.extend(BlotterSite.PackShaders.DotsMaterial.prototype, (function () {
           normalizedX = x / this.el.width(),
           normalizedY = y / this.el.height();
 
-      //this.material.uniforms.uCenterPoint.value = [normalizedX, normalizedY];
+      this.material.uniforms.uCenterPoint.value = [normalizedX, normalizedY];
     }
   }
 })());

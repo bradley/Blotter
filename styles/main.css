@@ -420,10 +420,7 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
   -o-box-sizing: border-box;
   box-sizing: border-box;
   -webkit-font-smoothing: antialiased;
-  -moz-font-smoothing: antialiased;
-  -ms-font-smoothing: antialiased;
-  -o-font-smoothing: antialiased;
-  font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   -webkit-tap-highlight-color: transparent; }
 
 html {
@@ -466,7 +463,15 @@ h3 {
   padding-top: 3px; }
 
 p {
-  max-width: 546px; }
+  -moz-font-feature-settings: "onum" 1, "pnum" 1, "kern" 1, "ss01" 1;
+  -ms-font-feature-settings: "onum" 1, "pnum" 1, "kern" 1, "ss01" 1;
+  -o-font-feature-settings: "onum" 1, "pnum" 1, "kern" 1, "ss01" 1;
+  -webkit-font-feature-settings: "onum" 1, "pnum" 1, "kern" 1, "ss01" 1;
+  font-feature-settings: "onum" 1, "pnum" 1, "kern" 1, "ss01" 1;
+  font-kerning: normal;
+  letter-spacing: 0.015em;
+  max-width: 546px;
+  word-spacing: 0.001em; }
   @media screen and (device-aspect-ratio: 2 / 3), screen and (device-aspect-ratio: 40 / 71) {
     p {
       max-width: 100%; } }
@@ -1037,8 +1042,9 @@ ul.documentation {
       content: "↑";
       margin-left: -5px; }
   .output > div {
-    width: 100%;
-    text-align: center; }
+    min-height: 92px;
+    text-align: center;
+    width: 100%; }
     .output > div canvas {
       margin: 26px auto;
       vertical-align: top; }

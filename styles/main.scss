@@ -35,10 +35,7 @@
   -o-box-sizing: border-box;
   box-sizing: border-box;
   -webkit-font-smoothing: antialiased;
-  -moz-font-smoothing: antialiased;
-  -ms-font-smoothing: antialiased;
-  -o-font-smoothing: antialiased;
-  font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -92,7 +89,15 @@ h3 {
 }
 
 p {
+  -moz-font-feature-settings: "onum" 1, "pnum" 1, "kern" 1, "ss01" 1;
+  -ms-font-feature-settings: "onum" 1, "pnum" 1, "kern" 1, "ss01" 1;
+  -o-font-feature-settings: "onum" 1, "pnum" 1, "kern" 1, "ss01" 1;
+  -webkit-font-feature-settings: "onum" 1, "pnum" 1, "kern" 1, "ss01" 1;
+  font-feature-settings: "onum" 1, "pnum" 1, "kern" 1, "ss01" 1;
+  font-kerning: normal;
+  letter-spacing: 0.015em;
   max-width: $max-content-width;
+  word-spacing: 0.001em;
 
   @media screen and (device-aspect-ratio: 2/3),
   screen and (device-aspect-ratio: 40/71) {
@@ -809,8 +814,9 @@ ul.documentation {
   }
 
   > div {
-    width: 100%;
+    min-height: 92px;
     text-align: center;
+    width: 100%;
 
     canvas {
       margin: $leading auto;

@@ -1335,7 +1335,7 @@ $(document).ready(function () {
                 leading : "50px",
                 paddingLeft : 13,
                 paddingRight : 13,
-                paddingTop: 2,
+                paddingTop : 2,
                 fill : "#202020"
               };
 
@@ -1531,9 +1531,9 @@ $(document).ready(function () {
         family : "'SerapionPro', sans-serif",
         size : 68,
         leading : "68px",
-        paddingBottom: 6,
+        paddingBottom : 6,
         paddingLeft : 40,
-        paddingRight: 40,
+        paddingRight : 40,
         paddingTop : 26,
         fill : "#202020"
       };
@@ -1575,10 +1575,10 @@ $(document).ready(function () {
         family : "'SerapionPro', sans-serif",
         size : 68,
         leading : "68px",
-        paddingBottom: 6,
-        paddingLeft : 40,
-        paddingRight: 40,
-        paddingTop : 4,
+        paddingBottom : 6,
+        paddingLeft  : 40,
+        paddingRight : 40,
+        paddingTop : 7,
         fill : "#202020"
       };
     },

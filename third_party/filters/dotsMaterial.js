@@ -117,7 +117,7 @@
         this.mainImage = _mainImageSrc();
         this.uniforms = {
           uPointRadius : { type : "1f", value : 0.16 },
-          uPointCellWidth : { type : "1f", value : 20.0 },
+          uPointCellWidth : { type : "1f", value : 5.0 },
           uDodge : { type : "1f", value : 0.0 },
           uDodgePosition : { type : "2f", value : [0.5, 0.5] },
           uDodgeSpread : { type : "1f", value : 0.10 },
