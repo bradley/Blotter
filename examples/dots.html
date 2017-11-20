@@ -48,7 +48,6 @@
         var text = new Blotter.Text("hello", styleProperties);
 
         var material = new Blotter.DotsMaterial();
-        material.uniforms.uPointRadius.value = 2.0;
 
         var blotter = new Blotter(material, {
           texts : text
@@ -62,8 +61,8 @@
 
         var controls = {
           message : "dat.gui",
-          uPointRadius : material.uniforms.uPointRadius.value,
           uPointCellWidth : material.uniforms.uPointCellWidth.value,
+          uPointRadius : material.uniforms.uPointRadius.value,
           uDodge : !!material.uniforms.uDodge.value,
           uDodgePositionX : material.uniforms.uDodgePosition.value[0],
           uDodgePositionY : material.uniforms.uDodgePosition.value[1],
@@ -83,12 +82,12 @@
 
         var gui = new dat.GUI();
 
-        gui.add(controls, "uPointRadius", 0.0, 30.0).onChange(function (radius) {
-          material.uniforms.uPointRadius.value = radius;
-        });
         gui.add(controls, "uPointCellWidth", 0.0, 30.0).onChange(function (width) {
           material.uniforms.uPointCellWidth.value = width;
         });
+        gui.add(controls, "uPointRadius", 0.0, 1.0).onChange(function (radius) {
+          material.uniforms.uPointRadius.value = radius;
+        }).step(0.01);
         gui.add(controls, "uDodge").onChange(function (bool) {
           material.uniforms.uDodge.value = bool ? 1.0 : 0.0;
         });

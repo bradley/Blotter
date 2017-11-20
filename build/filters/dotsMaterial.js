@@ -95,8 +95,8 @@
         "void mainImage( out vec4 mainImage, in vec2 fragCoord ) {",
         "    vec2 uv = fragCoord.xy / uResolution.xy;",
 
-        "    float pointCellWidth = max(uPointCellWidth, 1.0);",
-        "    float pointRadius = min(uPointRadius, pointCellWidth * 0.7);",
+        "    float pointCellWidth = max(uPointCellWidth / uPixelRatio, 1.0);",
+        "    float pointRadius = min(uPointRadius * pointCellWidth, pointCellWidth * 0.7);",
         "    float dodge = ceil(uDodge);",
 
         "    vec3 outColor = vec3(0.0);",
@@ -116,8 +116,8 @@
       init : function () {
         this.mainImage = _mainImageSrc();
         this.uniforms = {
-          uPointRadius : { type : "1f", value : 0.16 },
-          uPointCellWidth : { type : "1f", value : 5.0 },
+          uPointCellWidth : { type : "1f", value : 20.0 },
+          uPointRadius : { type : "1f", value : 0.5 },
           uDodge : { type : "1f", value : 0.0 },
           uDodgePosition : { type : "2f", value : [0.5, 0.5] },
           uDodgeSpread : { type : "1f", value : 0.10 },

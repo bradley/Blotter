@@ -636,10 +636,10 @@
 
     defaultUniforms : {
       uResolution : { type : "2f", value : [0.0, 0.0] }, // Resolution of individual text areas within mapping texture
-      uAspect : { type : "1f", value : 1.0 }, // Width / Height
       uGlobalTime : { type : "1f", value : 0.0 }, // The global time in seconds
       uTimeDelta : { type : "1f", value : 0.0 }, // The render time in seconds
-      uBlendColor : { type : "4f", value : [1.0, 1.0, 1.0, 1.0] }
+      uBlendColor : { type : "4f", value : [1.0, 1.0, 1.0, 1.0] },
+      uPixelRatio : { type : "1f", value : Blotter.CanvasUtils.pixelRatio } // The pixel ratio of the user's device
     },
 
     // Determine if value is valid for public uniform type
@@ -3046,7 +3046,6 @@
         //  Set "uniform" values visible to user.
         userUniforms.uniformDefinitions,
         "   uResolution = _textBounds.zw;",
-        "   uAspect = _textBounds.z /_textBounds.w;",
 
         //  Set fragment coordinate in respect to position within text bounds.
         "   vec2 fragCoord = gl_FragCoord.xy - _textBounds.xy;",

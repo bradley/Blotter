@@ -99,7 +99,6 @@
         //  Set "uniform" values visible to user.
         userUniforms.uniformDefinitions,
         "   uResolution = _textBounds.zw;",
-        "   uAspect = _textBounds.z /_textBounds.w;",
 
         //  Set fragment coordinate in respect to position within text bounds.
         "   vec2 fragCoord = gl_FragCoord.xy - _textBounds.xy;",
