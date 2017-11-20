@@ -17,7 +17,7 @@
         "    // Setup ========================================================================",
 
         "    vec2 uv = fragCoord.xy / uResolution.xy;",
-        "    float z = uAnimate == 0.0 ? uSeed : uGlobalTime * uSpeed;",
+        "    float z = uSeed + uGlobalTime * uSpeed;",
 
         "    uv += snoise(vec3(uv, z)) * uVolatility;",
 
@@ -36,7 +36,6 @@
       init : function () {
         this.mainImage = _mainImageSrc();
         this.uniforms = {
-          uAnimate : { type : "1f", value : 1.0 },
           uSpeed : { type : "1f", value : 1.0 },
           uVolatility : { type : "1f", value : 0.15 },
           uSeed : { type : "1f", value : 0.1 }

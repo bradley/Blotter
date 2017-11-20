@@ -58,7 +58,6 @@
 
         var controls = {
           message : "dat.gui",
-          uAnimate : !!material.uniforms.uAnimate.value,
           uSpeed : material.uniforms.uSpeed.value,
           uVolatility : material.uniforms.uVolatility.value,
           uSeed : material.uniforms.uSeed.value
@@ -66,9 +65,6 @@
 
         var gui = new dat.GUI();
 
-        gui.add(controls, "uAnimate").onChange(function (bool) {
-          material.uniforms.uAnimate.value = bool ? 1.0 : 0.0;
-        });
         gui.add(controls, "uSpeed", 0.0, 2.0).onChange(function (speed) {
           material.uniforms.uSpeed.value = speed;
         });
