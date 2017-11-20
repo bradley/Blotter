@@ -10,8 +10,6 @@ _.extend(BlotterSite.PackShaders.DotsMaterial.prototype, (function () {
 
     prepare : function () {
       this.material = new Blotter.DotsMaterial();
-      this.material.uniforms.uPointRadius.value = 30.0;
-      this.material.uniforms.uPointCellWidth.value = 8.0;
 
       this.blotter = new Blotter(this.material, { texts : this.text });
 
