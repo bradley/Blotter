@@ -1578,7 +1578,7 @@ $(document).ready(function () {
         paddingBottom : 6,
         paddingLeft  : 40,
         paddingRight : 40,
-        paddingTop : 7,
+        paddingTop : 10,
         fill : "#202020"
       };
     },

@@ -1,0 +1,132 @@
+<div>
+  <div class="content">
+    <div class="content-right">
+      <div class="introduction">
+        <h2>LiquidDistortMaterial</h2>
+        <p>
+          Like watching the tiles on the bottom of a swimming pool, the <code>LiquidDistortMaterial</code> washes over your text to apply a liquid-like distortion.
+        </p>
+        <p>
+          <code>Blotter.RollingDistortMaterial</code> inherits from <code>Blotter.Material</code>, and therefore has the same properties and functions as <code>Blotter.Material</code>.
+        </p>
+      </div>
+      <ul class="documentation">
+        <li id="liquid-distort-material-construction">
+          <p class="construction">
+            <strong>construction</strong>
+            <code>var material = new Blotter.LiquidDistortMaterial();</code>
+          </p>
+        </li>
+
+        <li id="liquid-distort-material-uniforms">
+          <p class="property object">
+            <strong>uniforms</strong>
+            <code>material.uniforms</code>
+          </p>
+          <p class="description">
+            An object that holds the uniforms that describe how the material's effects should be rendered. You should not manipulate this property directly.
+          </p>
+          <ul>
+
+            <li id="uSpeed" class="liquid-distort-material-uniforms-uSpeed">
+              <p class="property object">
+                <strong>uSpeed</strong>
+                <code>material.uniforms.uSpeed</code>
+              </p>
+              <p class="description">
+                The <code>uSpeed</code> uniform describes the speed of the animation applied to the distortion on your text.
+              </p>
+              <p class="description">
+                Note that when the distortion is animating, i.e., when the value of the <code>uSpeed</code> uniform is more than <code>0.0</code>, the value of the <code>uSeed</code> uniform will have no effect.
+              </p>
+              <div class="notated-list">
+                <ul class="properties">
+                  <li class="roll-distort-material-uniforms-uSpeed-properties">
+                    <p class="property float">
+                      <strong>value</strong>
+                      <code>material.uniforms.uSpeed.value</code>
+                    </p>
+                    <p class="description">
+                      Any floating point value is acceptable, however you will likely want to keep this value below <code>1.0</code>. This value acts as a multiplier against the default uniform passed to all effects, <code>uTime</code>, which represents the time in seconds since the effect started. Therefore, smaller values slow animation while higher values speed up animation. Play around, you'll get the idea.
+                    </p>
+                  </li>
+                  <li class="roll-distort-material-uniforms-uSpeed-properties static">
+                    <p class="property string">
+                      <strong>type</strong>
+                      <code>material.uniforms.uSpeed.type</code>
+                    </p>
+                    <p class="description">
+                      The uniform type of the value being passed to the shader. <code>1f</code> means the value is a single float (e.g.; <code>0.5</code>). You should not change this property.
+                    </p>
+                  </li>
+                </ul>
+              </div>
+            </li>
+            <li id="uVolatility" class="liquid-distort-material-uniforms-uVolatility">
+              <p class="property object">
+                <strong>uVolatility</strong>
+                <code>material.uniforms.uVolatility</code>
+              </p>
+              <p class="description">
+                When liquid distortion is applied to your text, the amount of distortion – the difference between normal looking text and highly abstracted text - is determined by the <code>uVolatility</code> uniform.
+              </p>
+              <div class="notated-list">
+                <ul class="properties">
+                  <li class="liquid-distort-material-uniforms-uVolatility-properties">
+                    <p class="property float">
+                      <strong>value</strong>
+                      <code>material.uniforms.uVolatility.value</code>
+                    </p>
+                    <p class="description">
+                      Any floating point value is acceptable, however you will likely want to keep this value below <code>1.0</code>. <code>LiquidDistortMaterial</code> assumes a maximum amount of distortion you would typically want through this material, which is reached at <code>1.0</code> (100%). Exceeding this is, however, entirely acceptable.
+                    </p>
+                  </li>
+                  <li class="liquid-distort-material-uniforms-uVolatility-properties static">
+                    <p class="property string">
+                      <strong>type</strong>
+                      <code>material.uniforms.uVolatility.type</code>
+                    </p>
+                    <p class="description">
+                      The uniform type of the value being passed to the shader. <code>1f</code> means the value is a single float (e.g.; <code>0.5</code>). You should not change this property.
+                    </p>
+                  </li>
+                </ul>
+              </div>
+            </li>
+            <li id="uSeed" class="liquid-distort-material-uniforms-uSeed">
+              <p class="property object">
+                <strong>uSeed</strong>
+                <code>material.uniforms.uSeed</code>
+              </p>
+              <p class="description">
+                When animating, i.e., when the value of the <code>uSpeed</code> uniform is more than <code>0.0</code>, variations in how the distortion determined by the <code>uVolatility</code> uniform are applied to your text are handled automatically. However, when the value of the <code>uSpeed</code> uniform is at <code>0.0</code>, determining the application of the <code>uVolatility</code> uniform is left to you. To adjust distortion variation in this case, use the <code>uSeed</code> uniform.
+              </p>
+              <div class="notated-list">
+                <ul class="properties">
+                  <li class="liquid-distort-material-uniforms-uSeed-properties">
+                    <p class="property float">
+                      <strong>value</strong>
+                      <code>material.uniforms.uSeed.value</code>
+                    </p>
+                    <p class="description">
+                      Any floating point value is acceptable.
+                    </p>
+                  </li>
+                  <li class="liquid-distort-material-uniforms-uSeed-properties static">
+                    <p class="property string">
+                      <strong>type</strong>
+                      <code>material.uniforms.uSeed.type</code>
+                    </p>
+                    <p class="description">
+                      The uniform type of the value being passed to the shader. <code>1f</code> means the value is a single float (e.g.; <code>0.5</code>). You should not change this property.
+                    </p>
+                  </li>
+                </ul>
+              </div>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
