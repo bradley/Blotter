@@ -92,9 +92,14 @@
         "void mainImage( out vec4 mainImage, in vec2 fragCoord ) {",
         "    vec2 uv = fragCoord.xy / uResolution.xy;",
 
+        "    // Ensure pointCellWidth is at least 1 pixel",
         "    // Note: floor uPointCellWidth here so that we dont have half pixel widths on retina displays.",
         "    float pointCellWidth = max(floor(uPointCellWidth / uPixelRatio), 1.0);",
-        "    float pointRadius = min(uPointRadius * pointCellWidth, pointCellWidth * 0.7);",
+
+        "    // Ensure uPointRadius allow points to exceed the width of their cells",
+        "    float pointRadius = uPointRadius * 0.8;",
+        "    pointRadius = min(pointRadius * pointCellWidth, pointCellWidth);",
+
         "    float dodge = ceil(uDodge);",
 
         "    vec3 outColor = vec3(0.0);",
