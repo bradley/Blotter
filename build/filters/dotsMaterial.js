@@ -78,9 +78,6 @@
 
         "            // Keep the closer distance",
         "            minDist = min(minDist, dist);",
-        "            if(minDist == dist) {",
-        "               //particleColor = cellSample.rgb;",
-        "            }",
         "        }",
         "    }",
 
@@ -95,7 +92,8 @@
         "void mainImage( out vec4 mainImage, in vec2 fragCoord ) {",
         "    vec2 uv = fragCoord.xy / uResolution.xy;",
 
-        "    float pointCellWidth = max(uPointCellWidth / uPixelRatio, 1.0);",
+        "    // Note: floor uPointCellWidth here so that we dont have half pixel widths on retina displays.",
+        "    float pointCellWidth = max(floor(uPointCellWidth / uPixelRatio), 1.0);",
         "    float pointRadius = min(uPointRadius * pointCellWidth, pointCellWidth * 0.7);",
         "    float dodge = ceil(uDodge);",
 
