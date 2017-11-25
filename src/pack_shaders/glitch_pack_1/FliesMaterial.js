@@ -1,15 +1,15 @@
-BlotterSite.PackShaders.DotsMaterial = function(el, text) {
+BlotterSite.PackShaders.FliesMaterial = function(el, text) {
   this.init.apply(this, arguments);
 }
 
-BlotterSite.PackShaders.DotsMaterial.prototype =
+BlotterSite.PackShaders.FliesMaterial.prototype =
   Object.create(BlotterSite.PackShaders.PackShaderBase.prototype);
 
-_.extend(BlotterSite.PackShaders.DotsMaterial.prototype, (function () {
+_.extend(BlotterSite.PackShaders.FliesMaterial.prototype, (function () {
   return {
 
     prepare : function () {
-      this.material = new Blotter.DotsMaterial();
+      this.material = new Blotter.FliesMaterial();
       this.material.uniforms.uPointCellWidth.value = 0.035;
       this.material.uniforms.uSpeed.value = 2.0;
 

@@ -1,12 +1,12 @@
 (function(Blotter, _) {
 
-  Blotter.DotsMaterial = function() {
+  Blotter.FliesMaterial = function() {
     Blotter.Material.apply(this, arguments);
   };
 
-  Blotter.DotsMaterial.prototype = Object.create(Blotter.Material.prototype);
+  Blotter.FliesMaterial.prototype = Object.create(Blotter.Material.prototype);
 
-  Blotter._extendWithGettersSetters(Blotter.DotsMaterial.prototype, (function () {
+  Blotter._extendWithGettersSetters(Blotter.FliesMaterial.prototype, (function () {
 
     function _mainImageSrc () {
       var mainImageSrc = [
@@ -103,9 +103,9 @@
         "    float dodge = ceil(uDodge);",
 
         "    vec3 outColor = vec3(0.0);",
-        "    float sparkle = isParticle(outColor, fragCoord, pointRadius, pointCellWidth, dodge, uDodgePosition, uDodgeSpread, uSpeed);",
+        "    float point = isParticle(outColor, fragCoord, pointRadius, pointCellWidth, dodge, uDodgePosition, uDodgeSpread, uSpeed);",
 
-        "    mainImage = vec4(outColor, sparkle);",
+        "    mainImage = vec4(outColor, point);",
         "}"
       ].join("\n");
 
@@ -114,7 +114,7 @@
 
     return {
 
-      constructor : Blotter.DotsMaterial,
+      constructor : Blotter.FliesMaterial,
 
       init : function () {
         this.mainImage = _mainImageSrc();
