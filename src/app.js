@@ -1571,14 +1571,15 @@ $(document).ready(function () {
       this.template = BlotterSite.Utils.renderFromUrl("./shaders/" + this.shaderName + ".html", this.templateOptions);
 
       this.textStr = "B";
+
       this.textProperties = {
         family : "'SerapionPro', sans-serif",
         size : 68,
         leading : "68px",
         paddingBottom : 6,
-        paddingLeft  : 40,
+        paddingLeft : 40,
         paddingRight : 40,
-        paddingTop : 10,
+        paddingTop : 26,
         fill : "#202020"
       };
     },

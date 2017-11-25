@@ -78,9 +78,6 @@
 
         "            // Keep the closer distance",
         "            minDist = min(minDist, dist);",
-        "            if(minDist == dist) {",
-        "               //particleColor = cellSample.rgb;",
-        "            }",
         "        }",
         "    }",
 
@@ -95,8 +92,14 @@
         "void mainImage( out vec4 mainImage, in vec2 fragCoord ) {",
         "    vec2 uv = fragCoord.xy / uResolution.xy;",
 
-        "    float pointCellWidth = max(uPointCellWidth / uPixelRatio, 1.0);",
-        "    float pointRadius = min(uPointRadius * pointCellWidth, pointCellWidth * 0.7);",
+        "    // Convert uPointCellWidth to pixels, keeping it between 1 and the total y resolution of the text",
+        "    // Note: floor uPointCellWidth here so that we dont have half pixel widths on retina displays",
+        "    float pointCellWidth = floor(max(0.0, min(1.0, uPointCellWidth) * uResolution.y));",
+
+        "    // Ensure uPointRadius allow points to exceed the width of their cells",
+        "    float pointRadius = uPointRadius * 0.8;",
+        "    pointRadius = min(pointRadius * pointCellWidth, pointCellWidth);",
+
         "    float dodge = ceil(uDodge);",
 
         "    vec3 outColor = vec3(0.0);",
@@ -116,11 +119,11 @@
       init : function () {
         this.mainImage = _mainImageSrc();
         this.uniforms = {
-          uPointCellWidth : { type : "1f", value : 15.0 },
+          uPointCellWidth : { type : "1f", value : 0.04 },
           uPointRadius : { type : "1f", value : 0.75 },
           uDodge : { type : "1f", value : 0.0 },
           uDodgePosition : { type : "2f", value : [0.5, 0.5] },
-          uDodgeSpread : { type : "1f", value : 0.10 },
+          uDodgeSpread : { type : "1f", value : 0.25 },
           uSpeed : { type : "1f", value : 1.0 }
         };
       }

@@ -905,6 +905,7 @@ code {
   height: 78px;
   margin-bottom: 26px; }
   .pack-shader-example-wrap canvas {
+    margin-top: -26px;
     vertical-align: top; }
 
 .bullet-list {
