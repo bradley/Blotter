@@ -94,7 +94,7 @@
 
         "    // Ensure pointCellWidth is at least 1 pixel",
         "    // Note: floor uPointCellWidth here so that we dont have half pixel widths on retina displays.",
-        "    float pointCellWidth = max(floor(uPointCellWidth / uPixelRatio), 1.0);",
+        "    float pointCellWidth = max(floor(uPointCellWidth * uPixelRatio), 1.0);",
 
         "    // Ensure uPointRadius allow points to exceed the width of their cells",
         "    float pointRadius = uPointRadius * 0.8;",
@@ -119,7 +119,7 @@
       init : function () {
         this.mainImage = _mainImageSrc();
         this.uniforms = {
-          uPointCellWidth : { type : "1f", value : 15.0 },
+          uPointCellWidth : { type : "1f", value : 7.0 },
           uPointRadius : { type : "1f", value : 0.75 },
           uDodge : { type : "1f", value : 0.0 },
           uDodgePosition : { type : "2f", value : [0.5, 0.5] },
