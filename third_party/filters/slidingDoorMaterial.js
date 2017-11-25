@@ -99,11 +99,11 @@
       init : function () {
         this.mainImage = _mainImageSrc();
         this.uniforms = {
-          uSpeed : { type : "1f", value : 0.2 },
           uDivisions : { type : "1f", value : 5.0 },
           uDivisionWidth : { type : "1f", value : 0.25 },
           uAnimateHorizontal : { type : "1f", value : 0.0 },
           uFlipAnimationDirection : { type : "1f", value : 0.0 },
+          uSpeed : { type : "1f", value : 0.2 }
         };
       }
     };
