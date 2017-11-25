@@ -47,8 +47,8 @@ $(document).ready(function () {
     routes : {
       "overview" : "overview",
       "basics" : "basics",
-      "packs" : "packs",
-      "shaders/:shaderName" : "shaders",
+      "materials" : "materials",
+      "materials/:materialName" : "material",
       "" : "home"
     },
 
@@ -76,16 +76,16 @@ $(document).ready(function () {
       BlotterSite.instance.goto(view);
     },
 
-    packs : function () {
-      var view = new BlotterSite.Views.Packs();
+    materials : function () {
+      var view = new BlotterSite.Views.Materials();
 
-      $("body").trigger("pathChange", ["packs"]);
+      $("body").trigger("pathChange", ["materials"]);
 
       BlotterSite.instance.goto(view);
     },
 
-    shaders : function (shaderName) {
-      var view = new BlotterSite.Views.PackShader({ shaderName : shaderName });
+    material : function (materialName) {
+      var view = new BlotterSite.Views.Material({ materialName : materialName });
 
       $("body").trigger("pathChange");
 
@@ -1023,18 +1023,17 @@ $(document).ready(function () {
   /*  Models
     ------------------------------------- */
 
-  BlotterSite.Models.PackShader = Backbone.Model.extend({
+  BlotterSite.Models.Material = Backbone.Model.extend({
     defaults : {
-      packName : "",
       materialName : ""
     },
 
-    packShader : function () {
-      return window["BlotterSite"]["PackShaders"][this.get("materialName")];
+    material : function () {
+      return window["BlotterSite"]["Materials"][this.get("materialName")];
     },
 
     path : function () {
-      return "#/shaders/" + this.get("materialName");
+      return "#/materials/" + this.get("materialName");
     }
   });
 
@@ -1042,8 +1041,8 @@ $(document).ready(function () {
   /*  Collections
     ------------------------------------- */
 
-  BlotterSite.Collections.PackShaders = Backbone.Collection.extend({
-    model : BlotterSite.Models.PackShader
+  BlotterSite.Collections.Materials = Backbone.Collection.extend({
+    model : BlotterSite.Models.Material
   })
 
 
@@ -1240,7 +1239,7 @@ $(document).ready(function () {
     return {
       template : _.template($("template[name=navigation]").html())(),
 
-      navPathWhitelist : ["overview", "basics", "packs"],
+      navPathWhitelist : ["overview", "basics", "materials"],
 
       initialize : function (options) {
         _.defaults(this, options);
@@ -1470,7 +1469,7 @@ $(document).ready(function () {
   });
 
 
-  BlotterSite.Views.PackShaderListItem = Marionette.ItemView.extend({
+  BlotterSite.Views.MaterialListItem = Marionette.ItemView.extend({
     tagName : "li",
     events : {
       "click" : "handleClick"
@@ -1481,9 +1480,8 @@ $(document).ready(function () {
 
       var templateHTMLStr = [
         "<div>",
-        "  <div class='pack-shader-overlay'>",
-        "    <span class='pack-shader-name'><%= materialName %></span>",
-        "    <span class='pack-name'><%= packName %></span>",
+        "  <div class='material-overlay'>",
+        "    <span class='material-name'><%= materialName %></span>",
         "  </div>",
         "</div>"
       ].join("");
@@ -1494,13 +1492,13 @@ $(document).ready(function () {
     },
 
     onRender : function () {
-      var PackShader = this.model.packShader();
-      this.packShaderInstance = new PackShader(this.$el, this.text);
+      var Material = this.model.material();
+      this.materialInstance = new Material(this.$el, this.text);
     },
 
     onDestroy : function () {
-      this.packShaderInstance.blotter.stop();
-      this.packShaderInstance.blotter.teardown();
+      this.materialInstance.blotter.stop();
+      this.materialInstance.blotter.teardown();
     },
 
     handleClick : function (e) {
@@ -1511,10 +1509,10 @@ $(document).ready(function () {
   });
 
 
-  BlotterSite.Views.PacksList = Marionette.CompositeView.extend({
-    childView : BlotterSite.Views.PackShaderListItem,
-    childViewContainer : "ul.pack-shaders",
-    template : _.template("<div><ul class='pack-shaders'></ul></div>")(),
+  BlotterSite.Views.MaterialsList = Marionette.CompositeView.extend({
+    childView : BlotterSite.Views.MaterialListItem,
+    childViewContainer : "ul.materials",
+    template : _.template("<div><ul class='materials'></ul></div>")(),
 
     childViewOptions : function () {
       return {
@@ -1538,37 +1536,37 @@ $(document).ready(function () {
         fill : "#202020"
       };
 
-      this.collection = new BlotterSite.Collections.PackShaders([
-        { materialName : "ChannelSplitMaterial", packName : "glitch_pack_1" },
-        { materialName : "FliesMaterial", packName : "glitch_pack_1" },
-        { materialName : "LiquidDistortMaterial", packName : "glitch_pack_1" },
-        { materialName : "RollingDistortMaterial", packName : "glitch_pack_1" },
-        { materialName : "SlidingDoorMaterial", packName : "glitch_pack_1" }
+      this.collection = new BlotterSite.Collections.Materials([
+        { materialName : "ChannelSplitMaterial" },
+        { materialName : "FliesMaterial" },
+        { materialName : "LiquidDistortMaterial" },
+        { materialName : "RollingDistortMaterial" },
+        { materialName : "SlidingDoorMaterial" }
       ]);
     }
   });
 
 
-  BlotterSite.Views.Packs = Marionette.LayoutView.extend({
-    className : "packs",
-    template : _.template($("template[name=packs]").html())(),
+  BlotterSite.Views.Materials = Marionette.LayoutView.extend({
+    className : "materials",
+    template : _.template($("template[name=materials]").html())(),
     regions : {
-      "packListRegion" : ".packs-list-region"
+      "materialsListRegion" : ".materials-list-region"
     },
 
     onRender : function () {
-      this.packListView = new BlotterSite.Views.PacksList();
-      this.packListRegion.show(this.packListView);
+      this.materialsListView = new BlotterSite.Views.MaterialsList();
+      this.materialsListRegion.show(this.materialsListView);
     }
   });
 
-  BlotterSite.Views.PackShader = Marionette.ItemView.extend({
-    className : "packs",
+  BlotterSite.Views.Material = Marionette.ItemView.extend({
+    className : "materials",
 
     initialize : function (options) {
       _.defaults(this, options);
 
-      this.template = BlotterSite.Utils.renderFromUrl("./shaders/" + this.shaderName + ".html", this.templateOptions);
+      this.template = BlotterSite.Utils.renderFromUrl("./materials/" + this.materialName + ".html", this.templateOptions);
 
       this.textStr = "B";
 
@@ -1590,19 +1588,19 @@ $(document).ready(function () {
     },
 
     onDestroy : function () {
-      this.packShaderInstance.blotter.stop();
-      this.packShaderInstance.blotter.teardown();
+      this.materialInstance.blotter.stop();
+      this.materialInstance.blotter.teardown();
     },
 
     _setBlotter : function () {
-      var PackShader = window["BlotterSite"]["PackShaders"][this.shaderName],
-          $container = $("<div class='pack-shader-example-wrap'></div>");
+      var Material = window["BlotterSite"]["Materials"][this.materialName],
+          $container = $("<div class='material-example-wrap'></div>");
 
       this.$(".content").prepend($container);
 
       this.blotterText = new Blotter.Text(this.textStr, this.textProperties);
 
-      this.packShaderInstance = new PackShader($container, this.blotterText);
+      this.materialInstance = new Material($container, this.blotterText);
     },
 
     _setNotation : function () {

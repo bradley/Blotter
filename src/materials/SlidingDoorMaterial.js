@@ -1,11 +1,11 @@
-BlotterSite.PackShaders.SlidingDoorMaterial = function(el, text) {
+BlotterSite.Materials.SlidingDoorMaterial = function(el, text) {
   this.init.apply(this, arguments);
 }
 
-BlotterSite.PackShaders.SlidingDoorMaterial.prototype =
-  Object.create(BlotterSite.PackShaders.PackShaderBase.prototype);
+BlotterSite.Materials.SlidingDoorMaterial.prototype =
+  Object.create(BlotterSite.Materials.Material.prototype);
 
-_.extend(BlotterSite.PackShaders.SlidingDoorMaterial.prototype, (function () {
+_.extend(BlotterSite.Materials.SlidingDoorMaterial.prototype, (function () {
   return {
     prepare : function () {
       this.material = new Blotter.SlidingDoorMaterial();

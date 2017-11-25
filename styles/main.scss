@@ -611,7 +611,7 @@ code {
   margin-bottom: $leading * 2;
 }
 
-.pack-shader-example-wrap {
+.material-example-wrap {
   height: $leading * 3;
   margin-bottom: $leading;
 
@@ -827,14 +827,14 @@ ul.documentation {
 }
 
 
-/*  Packs
+/*  Materials
     ------------------------------------- */
 
-.pack-shaders  {
+.materials  {
   list-style: none;
   overflow: hidden;
 
-  li {
+  > li {
     background: $white;
     border: 2px solid $black;
     box-sizing: border-box;
@@ -858,13 +858,13 @@ ul.documentation {
 
     &:hover {
 
-      .pack-shader-overlay {
+      .material-overlay {
         cursor: pointer;
         display: block;
       }
     }
 
-    .pack-shader-overlay {
+    .material-overlay {
       background: rgba(255, 255, 255, 0.9);
       bottom: 0;
       box-sizing: border-box;
@@ -878,19 +878,11 @@ ul.documentation {
       text-align: left;
       top: 0;
 
-      .pack-shader-name {
+      .material-name {
         color: $black;
         display: block;
         font-family: $grotesque-font-stack;
         font-size: 17px;
-        font-weight: normal;
-        line-height: 1.5;
-      }
-      .pack-name {
-        color: $black;
-        display: block;
-        font-family: $font-stack;
-        font-size: 14px;
         font-weight: normal;
         line-height: 1.5;
       }

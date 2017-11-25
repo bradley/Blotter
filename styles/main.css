@@ -901,10 +901,10 @@ code {
 .introduction {
   margin-bottom: 52px; }
 
-.pack-shader-example-wrap {
+.material-example-wrap {
   height: 78px;
   margin-bottom: 26px; }
-  .pack-shader-example-wrap canvas {
+  .material-example-wrap canvas {
     margin-top: -26px;
     vertical-align: top; }
 
@@ -1050,12 +1050,12 @@ ul.documentation {
       margin: 26px auto;
       vertical-align: top; }
 
-/*  Packs
+/*  Materials
     ------------------------------------- */
-.pack-shaders {
+.materials {
   list-style: none;
   overflow: hidden; }
-  .pack-shaders li {
+  .materials > li {
     background: #fff;
     border: 2px solid #202020;
     box-sizing: border-box;
@@ -1072,12 +1072,12 @@ ul.documentation {
     position: relative;
     text-align: center;
     width: 208px; }
-    .pack-shaders li:nth-child(3n + 3) {
+    .materials > li:nth-child(3n + 3) {
       margin-right: 0; }
-    .pack-shaders li:hover .pack-shader-overlay {
+    .materials > li:hover .material-overlay {
       cursor: pointer;
       display: block; }
-    .pack-shaders li .pack-shader-overlay {
+    .materials > li .material-overlay {
       background: rgba(255, 255, 255, 0.9);
       bottom: 0;
       box-sizing: border-box;
@@ -1090,18 +1090,11 @@ ul.documentation {
       right: 0;
       text-align: left;
       top: 0; }
-      .pack-shaders li .pack-shader-overlay .pack-shader-name {
+      .materials > li .material-overlay .material-name {
         color: #202020;
         display: block;
         font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
         font-size: 17px;
-        font-weight: normal;
-        line-height: 1.5; }
-      .pack-shaders li .pack-shader-overlay .pack-name {
-        color: #202020;
-        display: block;
-        font-family: "Garamond", serif;
-        font-size: 14px;
         font-weight: normal;
         line-height: 1.5; }
 

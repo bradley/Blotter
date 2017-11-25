@@ -1,11 +1,11 @@
-BlotterSite.PackShaders.LiquidDistortMaterial = function(el, text) {
+BlotterSite.Materials.LiquidDistortMaterial = function(el, text) {
   this.init.apply(this, arguments);
 }
 
-BlotterSite.PackShaders.LiquidDistortMaterial.prototype =
-  Object.create(BlotterSite.PackShaders.PackShaderBase.prototype);
+BlotterSite.Materials.LiquidDistortMaterial.prototype =
+  Object.create(BlotterSite.Materials.Material.prototype);
 
-_.extend(BlotterSite.PackShaders.LiquidDistortMaterial.prototype, (function () {
+_.extend(BlotterSite.Materials.LiquidDistortMaterial.prototype, (function () {
   return {
     prepare : function () {
       this.material = new Blotter.LiquidDistortMaterial();

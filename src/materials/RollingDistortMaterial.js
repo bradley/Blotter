@@ -1,11 +1,11 @@
-BlotterSite.PackShaders.RollingDistortMaterial = function(el, text) {
+BlotterSite.Materials.RollingDistortMaterial = function(el, text) {
   this.init.apply(this, arguments);
 }
 
-BlotterSite.PackShaders.RollingDistortMaterial.prototype =
-  Object.create(BlotterSite.PackShaders.PackShaderBase.prototype);
+BlotterSite.Materials.RollingDistortMaterial.prototype =
+  Object.create(BlotterSite.Materials.Material.prototype);
 
-_.extend(BlotterSite.PackShaders.RollingDistortMaterial.prototype, (function () {
+_.extend(BlotterSite.Materials.RollingDistortMaterial.prototype, (function () {
   return {
     prepare : function () {
       this.material = new Blotter.RollingDistortMaterial();

@@ -1,13 +1,13 @@
-BlotterSite.PackShaders = {};
+BlotterSite.Materials = {};
 
-BlotterSite.PackShaders.PackShaderBase = function (el, text) {
+BlotterSite.Materials.Material = function (el, text) {
   this.init.apply(this, arguments);
 }
 
-BlotterSite.PackShaders.PackShaderBase.prototype = (function () {
+BlotterSite.Materials.Material.prototype = (function () {
 
   return {
-    constructor : BlotterSite.PackShaders.PackShaderBase,
+    constructor : BlotterSite.Materials.Material,
 
     init : function (el, text) {
       this.el = el;

@@ -1,11 +1,11 @@
-BlotterSite.PackShaders.ChannelSplitMaterial = function(el, text) {
+BlotterSite.Materials.ChannelSplitMaterial = function(el, text) {
   this.init.apply(this, arguments);
 }
 
-BlotterSite.PackShaders.ChannelSplitMaterial.prototype =
-  Object.create(BlotterSite.PackShaders.PackShaderBase.prototype);
+BlotterSite.Materials.ChannelSplitMaterial.prototype =
+  Object.create(BlotterSite.Materials.Material.prototype);
 
-_.extend(BlotterSite.PackShaders.ChannelSplitMaterial.prototype, (function () {
+_.extend(BlotterSite.Materials.ChannelSplitMaterial.prototype, (function () {
   return {
     prepare : function () {
       this.material = new Blotter.ChannelSplitMaterial();

@@ -1,11 +1,11 @@
-BlotterSite.PackShaders.FliesMaterial = function(el, text) {
+BlotterSite.Materials.FliesMaterial = function(el, text) {
   this.init.apply(this, arguments);
 }
 
-BlotterSite.PackShaders.FliesMaterial.prototype =
-  Object.create(BlotterSite.PackShaders.PackShaderBase.prototype);
+BlotterSite.Materials.FliesMaterial.prototype =
+  Object.create(BlotterSite.Materials.Material.prototype);
 
-_.extend(BlotterSite.PackShaders.FliesMaterial.prototype, (function () {
+_.extend(BlotterSite.Materials.FliesMaterial.prototype, (function () {
   return {
 
     prepare : function () {

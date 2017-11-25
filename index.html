@@ -59,18 +59,18 @@
     <script src="./third_party/backbone.marionette.min.js"></script>
     <script src="./third_party/requestAnimationFrame.js"></script>
 
-    <script src="./third_party/filters/channelSplitMaterial.js"></script>
-    <script src="./third_party/filters/fliesMaterial.js"></script>
-    <script src="./third_party/filters/liquidDistortMaterial.js"></script>
-    <script src="./third_party/filters/rollingDistortMaterial.js"></script>
-    <script src="./third_party/filters/slidingDoorMaterial.js"></script>
+    <script src="./third_party/materials/channelSplitMaterial.js"></script>
+    <script src="./third_party/materials/fliesMaterial.js"></script>
+    <script src="./third_party/materials/liquidDistortMaterial.js"></script>
+    <script src="./third_party/materials/rollingDistortMaterial.js"></script>
+    <script src="./third_party/materials/slidingDoorMaterial.js"></script>
 
-    <script src="./src/pack_shaders/PackShader.js"></script>
-    <script src="./src/pack_shaders/glitch_pack_1/ChannelSplitMaterial.js"></script>
-    <script src="./src/pack_shaders/glitch_pack_1/FliesMaterial.js"></script>
-    <script src="./src/pack_shaders/glitch_pack_1/LiquidDistortMaterial.js"></script>
-    <script src="./src/pack_shaders/glitch_pack_1/RollingDistortMaterial.js"></script>
-    <script src="./src/pack_shaders/glitch_pack_1/SlidingDoorMaterial.js"></script>
+    <script src="./src/materials/Material.js"></script>
+    <script src="./src/materials/ChannelSplitMaterial.js"></script>
+    <script src="./src/materials/FliesMaterial.js"></script>
+    <script src="./src/materials/LiquidDistortMaterial.js"></script>
+    <script src="./src/materials/RollingDistortMaterial.js"></script>
+    <script src="./src/materials/SlidingDoorMaterial.js"></script>
 
   </head>
   <body>
@@ -97,7 +97,7 @@
           <ul class="nav right">
             <li><a href="#/overview" data-text="OVERVIEW" data-reference-id="overview"></a></li>
             <li><a href="#/basics" data-text="BASICS" data-reference-id="basics"></a></li>
-            <li><a href="#/packs" data-text="PACKS" data-reference-id="packs"></a></li>
+            <li><a href="#/materials" data-text="MATERIALS" data-reference-id="materials"></a></li>
             <li><a href="#/documentation" data-text="DOCUMENTATION" data-reference-id="documentation"></a></li>
           </ul>
         </div>
@@ -286,18 +286,18 @@ scope.appendTo(elem);</script>
       </div>
     </template>
 
-    <template name="packs">
+    <template name="materials">
       <div>
         <div class="content">
           <div class="content-right">
             <div class="introduction">
-              <h2 class="anchor"><span id="packs"></span>Shader Packs</h2>
+              <h2 class="anchor"><span id="materials"></span>Materials</h2>
               <p>
                 When applying effects to text on the <code>WebGL</code>, designers have traditionally been constrained to those provided by  CSS.
               </p>
             </div>
           </div>
-          <div class="packs-list-region"></div>
+          <div class="materials-list-region"></div>
         </div>
       </div>
     </template>
