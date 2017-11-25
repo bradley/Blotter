@@ -24,7 +24,7 @@
     <script type="text/javascript" src="./third_party/jquery.min.js"></script>
     <script type="text/javascript" src="./third_party/dat.gui.js"></script>
     <script type="text/javascript" src="../build/blotter.js"></script>
-    <script type="text/javascript" src="../build/filters/dotsMaterial.js"></script>
+    <script type="text/javascript" src="../build/filters/fliesMaterial.js"></script>
   </head>
   <body>
     <span id="filter-target"></span>
@@ -47,7 +47,7 @@
 
         var text = new Blotter.Text("hello", styleProperties);
 
-        var material = new Blotter.DotsMaterial();
+        var material = new Blotter.FliesMaterial();
 
         var blotter = new Blotter(material, {
           texts : text
@@ -82,9 +82,9 @@
 
         var gui = new dat.GUI();
 
-        gui.add(controls, "uPointCellWidth", 0.0, 30.0).onChange(function (width) {
+        gui.add(controls, "uPointCellWidth", 0.0, 0.1).onChange(function (width) {
           material.uniforms.uPointCellWidth.value = width;
-        });
+        }).step(0.001);
         gui.add(controls, "uPointRadius", 0.0, 1.0).onChange(function (radius) {
           material.uniforms.uPointRadius.value = radius;
         }).step(0.01);
