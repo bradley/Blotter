@@ -278,7 +278,7 @@ code {
     padding: ($leading / 4) 0;
     position: absolute;
     top: calc(100% + #{$leading / 2});
-    width: $leading * 7.5;
+    width: $leading * 8;
     z-index: 50;
     backface-visiblity: visible;
 

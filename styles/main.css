@@ -613,7 +613,7 @@ code {
     padding: 6.5px 0;
     position: absolute;
     top: calc(100% + 13px);
-    width: 195px;
+    width: 208px;
     z-index: 50;
     backface-visiblity: visible; }
     .dropdown-select .dropdown-options li {
