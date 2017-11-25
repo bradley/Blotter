@@ -11,13 +11,13 @@
         </p>
       </div>
       <ul class="documentation">
-        <li id="roll-distort-material-construction">
+        <li id="rolling-distort-material-construction">
           <p class="construction">
             <strong>construction</strong>
             <code>var material = new Blotter.RollingDistortMaterial();</code>
           </p>
         </li>
-        <li id="roll-distort-material-uniforms">
+        <li id="rolling-distort-material-uniforms">
           <p class="property object">
             <strong>uniforms</strong>
             <code>material.uniforms</code>
@@ -26,7 +26,7 @@
             An object that holds the uniforms that describe how the material's effects should be rendered. You should not manipulate this property directly.
           </p>
           <ul>
-            <li id="uSineDistortSpread" class="roll-distort-material-uniforms-uSineDistortSpread">
+            <li id="uSineDistortSpread" class="rolling-distort-material-uniforms-uSineDistortSpread">
               <p class="property object">
                 <strong>uSineDistortSpread</strong>
                 <code>material.uniforms.uSineDistortSpread</code>
@@ -36,7 +36,7 @@
               </p>
               <div class="notated-list">
                 <ul class="properties">
-                  <li class="roll-distort-material-uniforms-uSineDistortSpread-properties">
+                  <li class="rolling-distort-material-uniforms-uSineDistortSpread-properties">
                     <p class="property float">
                       <strong>value</strong>
                       <code>material.uniforms.uSineDistortSpread.value</code>
@@ -45,7 +45,7 @@
                       Any floating point value is acceptable, however you will likely want to keep this value <code>0.5</code> and below. This value describes the distance (from <code>0.0</code> (0%) to <code>1.0</code> (100%)) your wave spans on a line running away from the center point, as described by the <code>uDistortPosition</code> uniform, along the axis perpendicular to the one described by the <code>uRotation</code> uniform. Therefore setting this value to anything above <code>0.5</code> will create distortions, as your wave will not have room to complete itself before beginning anew.
                     </p>
                   </li>
-                  <li class="roll-distort-material-uniforms-uSineDistortSpread-properties static">
+                  <li class="rolling-distort-material-uniforms-uSineDistortSpread-properties static">
                     <p class="property string">
                       <strong>type</strong>
                       <code>material.uniforms.uSineDistortSpread.type</code>
@@ -57,7 +57,7 @@
                 </ul>
               </div>
             </li>
-            <li id="uSineDistortCycleCount" class="roll-distort-material-uniforms-uSineDistortCycleCount">
+            <li id="uSineDistortCycleCount" class="rolling-distort-material-uniforms-uSineDistortCycleCount">
               <p class="property object">
                 <strong>uSineDistortCycleCount</strong>
                 <code>material.uniforms.uSineDistortCycleCount</code>
@@ -67,7 +67,7 @@
               </p>
               <div class="notated-list">
                 <ul class="properties">
-                  <li class="roll-distort-material-uniforms-uSineDistortCycleCount-properties">
+                  <li class="rolling-distort-material-uniforms-uSineDistortCycleCount-properties">
                     <p class="property float">
                       <strong>value</strong>
                       <code>material.uniforms.uSineDistortCycleCount.value</code>
@@ -79,7 +79,7 @@
                       Note that you don't have to use whole numbers here; using partial numbers (e.g.; <code>3.5</code>) creates interesting artifacts you might enjoy.
                     </p>
                   </li>
-                  <li class="roll-distort-material-uniforms-uSineDistortCycleCount-properties static">
+                  <li class="rolling-distort-material-uniforms-uSineDistortCycleCount-properties static">
                     <p class="property string">
                       <strong>type</strong>
                       <code>material.uniforms.uSineDistortCycleCount.type</code>
@@ -91,7 +91,7 @@
                 </ul>
               </div>
             </li>
-            <li id="uSineDistortAmplitude" class="roll-distort-material-uniforms-uSineDistortAmplitude">
+            <li id="uSineDistortAmplitude" class="rolling-distort-material-uniforms-uSineDistortAmplitude">
               <p class="property object">
                 <strong>uSineDistortAmplitude</strong>
                 <code>material.uniforms.uSineDistortAmplitude</code>
@@ -101,7 +101,7 @@
               </p>
               <div class="notated-list">
                 <ul class="properties">
-                  <li class="roll-distort-material-uniforms-uSineDistortAmplitude-properties">
+                  <li class="rolling-distort-material-uniforms-uSineDistortAmplitude-properties">
                     <p class="property float">
                       <strong>value</strong>
                       <code>material.uniforms.uSineDistortAmplitude.value</code>
@@ -110,7 +110,7 @@
                       Any floating point value is acceptable. When distortion on your text rotates, imagine a virtual line running from the position described by the <code>uDistortPosition</code> uniform and at the degrees described by the <code>uRotation</code> uniform. The wave distortion amplitude described by the <code>uSineDistortAmplitude</code> uniform is relative to this distance (from <code>0.0</code> (0%) to <code>1.0</code> (100%)).
                     </p>
                   </li>
-                  <li class="roll-distort-material-uniforms-uSineDistortAmplitude-properties static">
+                  <li class="rolling-distort-material-uniforms-uSineDistortAmplitude-properties static">
                     <p class="property string">
                       <strong>type</strong>
                       <code>material.uniforms.uSineDistortAmplitude.type</code>
@@ -122,7 +122,7 @@
                 </ul>
               </div>
             </li>
-            <li id="uNoiseDistortVolatility" class="roll-distort-material-uniforms-uNoiseDistortVolatility">
+            <li id="uNoiseDistortVolatility" class="rolling-distort-material-uniforms-uNoiseDistortVolatility">
               <p class="property object">
                 <strong>uNoiseDistortVolatility</strong>
                 <code>material.uniforms.uNoiseDistortVolatility</code>
@@ -132,7 +132,7 @@
               </p>
               <div class="notated-list">
                 <ul class="properties">
-                  <li class="roll-distort-material-uniforms-uNoiseDistortVolatility-properties">
+                  <li class="rolling-distort-material-uniforms-uNoiseDistortVolatility-properties">
                     <p class="property float">
                       <strong>value</strong>
                       <code>material.uniforms.uNoiseDistortVolatility.value</code>
@@ -141,7 +141,7 @@
                      Any floating point value is acceptable. Higher values equate to a higher volatility. As always, play with the values here until you find the effect you like.
                     </p>
                   </li>
-                  <li class="roll-distort-material-uniforms-uNoiseDistortVolatility-properties static">
+                  <li class="rolling-distort-material-uniforms-uNoiseDistortVolatility-properties static">
                     <p class="property string">
                       <strong>type</strong>
                       <code>material.uniforms.uNoiseDistortVolatility.type</code>
@@ -153,7 +153,7 @@
                 </ul>
               </div>
             </li>
-            <li id="uNoiseDistortAmplitude" class="roll-distort-material-uniforms-uNoiseDistortAmplitude">
+            <li id="uNoiseDistortAmplitude" class="rolling-distort-material-uniforms-uNoiseDistortAmplitude">
               <p class="property object">
                 <strong>uNoiseDistortAmplitude</strong>
                 <code>material.uniforms.uNoiseDistortAmplitude</code>
@@ -163,7 +163,7 @@
               </p>
               <div class="notated-list">
                 <ul class="properties">
-                  <li class="roll-distort-material-uniforms-uNoiseDistortAmplitude-properties">
+                  <li class="rolling-distort-material-uniforms-uNoiseDistortAmplitude-properties">
                     <p class="property float">
                       <strong>value</strong>
                       <code>material.uniforms.uNoiseDistortAmplitude.value</code>
@@ -172,7 +172,7 @@
                       Any floating point value is acceptable. When distortion on your text rotates, imagine a virtual line running from the position described by the <code>uDistortPosition</code> uniform and at the degrees described by the <code>uRotation</code> uniform. The noise distortion amplitude described by the <code>uNoiseDistortAmplitude</code> uniform is relative to this distance (from <code>0.0</code> (0%) to <code>1.0</code> (100%)).
                     </p>
                   </li>
-                  <li class="roll-distort-material-uniforms-uNoiseDistortAmplitude-properties static">
+                  <li class="rolling-distort-material-uniforms-uNoiseDistortAmplitude-properties static">
                     <p class="property string">
                       <strong>type</strong>
                       <code>material.uniforms.uNoiseDistortAmplitude.type</code>
@@ -184,7 +184,7 @@
                 </ul>
               </div>
             </li>
-            <li id="uDistortPosition" class="roll-distort-material-uniforms-uDistortPosition">
+            <li id="uDistortPosition" class="rolling-distort-material-uniforms-uDistortPosition">
               <p class="property object">
                 <strong>uDistortPosition</strong>
                 <code>material.uniforms.uDistortPosition</code>
@@ -197,7 +197,7 @@
               </p>
               <div class="notated-list">
                 <ul class="properties">
-                  <li class="roll-distort-material-uniforms-uDistortPosition-properties">
+                  <li class="rolling-distort-material-uniforms-uDistortPosition-properties">
                     <p class="property float">
                       <strong>value</strong>
                       <code>material.uniforms.uDistortPosition.value</code>
@@ -206,7 +206,7 @@
                       A pair of floating point values between <code>0.0</code> (0%) and <code>1.0</code> (100%), relative to the width and height of your text respectively (including any padding and line height).
                     </p>
                   </li>
-                  <li class="roll-distort-material-uniforms-uDistortPosition-properties static">
+                  <li class="rolling-distort-material-uniforms-uDistortPosition-properties static">
                     <p class="property string">
                       <strong>type</strong>
                       <code>material.uniforms.uDistortPosition.type</code>
@@ -218,7 +218,7 @@
                 </ul>
               </div>
             </li>
-            <li id="uRotation" class="roll-distort-material-uniforms-uRotation">
+            <li id="uRotation" class="rolling-distort-material-uniforms-uRotation">
               <p class="property object">
                 <strong>uRotation</strong>
                 <code>material.uniforms.uRotation</code>
@@ -231,7 +231,7 @@
               </p>
               <div class="notated-list">
                 <ul class="properties">
-                  <li class="roll-distort-material-uniforms-uRotation-properties">
+                  <li class="rolling-distort-material-uniforms-uRotation-properties">
                     <p class="property float">
                       <strong>value</strong>
                       <code>material.uniforms.uRotation.value</code>
@@ -240,7 +240,7 @@
                       A floating point value between <code>0.0</code> and <code>360.0</code>.
                     </p>
                   </li>
-                  <li class="roll-distort-material-uniforms-uRotation-properties static">
+                  <li class="rolling-distort-material-uniforms-uRotation-properties static">
                     <p class="property string">
                       <strong>type</strong>
                       <code>material.uniforms.uRotation.type</code>
@@ -252,7 +252,7 @@
                 </ul>
               </div>
             </li>
-            <li id="uSpeed" class="roll-distort-material-uniforms-uSpeed">
+            <li id="uSpeed" class="rolling-distort-material-uniforms-uSpeed">
               <p class="property object">
                 <strong>uSpeed</strong>
                 <code>material.uniforms.uSpeed</code>
@@ -265,7 +265,7 @@
               </p>
               <div class="notated-list">
                 <ul class="properties">
-                  <li class="roll-distort-material-uniforms-uSpeed-properties">
+                  <li class="rolling-distort-material-uniforms-uSpeed-properties">
                     <p class="property float">
                       <strong>value</strong>
                       <code>material.uniforms.uSpeed.value</code>
@@ -274,7 +274,7 @@
                       Any floating point value is acceptable, however you will likely want to keep this value below <code>1.0</code>. This value acts as a multiplier against the default uniform passed to all effects, <code>uTime</code>, which represents the time in seconds since the effect started. Therefore, smaller values slow animation while higher values speed up animation. Play around, you'll get the idea.
                     </p>
                   </li>
-                  <li class="roll-distort-material-uniforms-uSpeed-properties static">
+                  <li class="rolling-distort-material-uniforms-uSpeed-properties static">
                     <p class="property string">
                       <strong>type</strong>
                       <code>material.uniforms.uSpeed.type</code>

@@ -1,0 +1,191 @@
+<div>
+  <div class="content">
+    <div class="content-right">
+      <div class="introduction">
+        <h2>SlidingDoorMaterial</h2>
+        <p>
+          The <code>SlidingDoorMaterial</code> multiplies your text into a series of segmented panes. As the effect animates, copies of your text slide in stunted progression within and outside their individual frames, appearing to drag eachother along as they move. The resulting effect is that your text splits and reorganizes itself, again and again in an endless loop.
+        </p>
+        <p>
+          <code>Blotter.ChannelSplitMaterial</code> inherits from <code>Blotter.Material</code>, and therefore has the same properties and functions as <code>Blotter.Material</code>.
+        </p>
+      </div>
+      <ul class="documentation">
+        <li id="sliding-door-material-construction">
+          <p class="construction">
+            <strong>construction</strong>
+            <code>var material = new Blotter.SlidingDoorMaterial();</code>
+          </p>
+        </li>
+
+        <li id="sliding-door-material-uniforms">
+          <p class="property object">
+            <strong>uniforms</strong>
+            <code>material.uniforms</code>
+          </p>
+          <p class="description">
+            An object that holds the uniforms that describe how the material's effects should be rendered. You should not manipulate this property directly.
+          </p>
+          <ul>
+            <li id="uDivisions" class="sliding-door-material-uniforms-uDivisions">
+              <p class="property object">
+                <strong>uDivisions</strong>
+                <code>material.uniforms.uDivisions</code>
+              </p>
+              <p class="description">
+                The <code>uDivisions</code> uniform describes the number of panes to separate your text into, along the animation axis. By default, your text animates verically and therefore the value of the <code>uDivisions</code> uniform describes a number of divisions along the Y axis. However, when the value of the <code>uAnimateHorizontal</code> uniform is more than <code>0.0</code> the value of the <code>uDivisions</code> uniform describes a number of divisions along the X axis.
+              </p>
+              <div class="notated-list">
+                <ul class="properties">
+                  <li class="roll-distort-material-uniforms-uDivisions-properties">
+                    <p class="property float">
+                      <strong>value</strong>
+                      <code>material.uniforms.uDivisions.value</code>
+                    </p>
+                    <p class="description">
+                      Any floating point value is acceptable.
+                    </p>
+                  </li>
+                  <li class="roll-distort-material-uniforms-uDivisions-properties static">
+                    <p class="property string">
+                      <strong>type</strong>
+                      <code>material.uniforms.uDivisions.type</code>
+                    </p>
+                    <p class="description">
+                      The uniform type of the value being passed to the shader. <code>1f</code> means the value is a single float (e.g.; <code>0.5</code>). You should not change this property.
+                    </p>
+                  </li>
+                </ul>
+              </div>
+            </li>
+            <li id="uDivisionWidth" class="sliding-door-material-uniforms-uDivisionWidth">
+              <p class="property object">
+                <strong>uDivisionWidth</strong>
+                <code>material.uniforms.uDivisionWidth</code>
+              </p>
+              <p class="description">
+                Consider the panes of your text, each separately sliding, one after the other, out of and back into their original positions. As each pane follows its predecessor, it does so on a delay, waiting for the previous pane to animate some number of pixels before its own animation begins. The distance each pane covers before its decendant begins animating is described by the <code>uDivisionWidth<code> uniform.
+              </p>
+              <div class="notated-list">
+                <ul class="properties">
+                  <li class="roll-distort-material-uniforms-uDivisionWidth-properties">
+                    <p class="property float">
+                      <strong>value</strong>
+                      <code>material.uniforms.uDivisionWidth.value</code>
+                    </p>
+                    <p class="description">
+                      A floating point value between <code>0.0</code> (0%) and <code>1.0</code> (100%), relative to the height of your text (including any padding and line height).
+                    </p>
+                  </li>
+                  <li class="roll-distort-material-uniforms-uDivisionWidth-properties static">
+                    <p class="property string">
+                      <strong>type</strong>
+                      <code>material.uniforms.uDivisionWidth.type</code>
+                    </p>
+                    <p class="description">
+                      The uniform type of the value being passed to the shader. <code>1f</code> means the value is a single float (e.g.; <code>0.5</code>). You should not change this property.
+                    </p>
+                  </li>
+                </ul>
+              </div>
+            </li>
+            <li id="uAnimateHorizontal" class="sliding-door-material-uniforms-uDivisionWidth">
+              <p class="property object">
+                <strong>uAnimateHorizontal</strong>
+                <code>material.uniforms.uAnimateHorizontal</code>
+              </p>
+              <p class="description">
+                By default, <code>SlidingDoorMaterial</code> assumes that animation within its effect takes place along the vertical (Y) axis. The <code>uAnimateHorizontal</code> uniform serves as a boolean (true/false) value, meant to tell the effect whether or not to animate along the horizontal (X) axis.
+              </p>
+              <div class="notated-list">
+                <ul class="properties">
+                  <li class="roll-distort-material-uniforms-uAnimateHorizontal-properties">
+                    <p class="property float">
+                      <strong>value</strong>
+                      <code>material.uniforms.uAnimateHorizontal.value</code>
+                    </p>
+                    <p class="description">
+                      A floating point value. Either <code>0.0</code> (false) or <code>1.0</code> (true).
+                    </p>
+                  </li>
+                  <li class="roll-distort-material-uniforms-uAnimateHorizontal-properties static">
+                    <p class="property string">
+                      <strong>type</strong>
+                      <code>material.uniforms.uAnimateHorizontal.type</code>
+                    </p>
+                    <p class="description">
+                      The uniform type of the value being passed to the shader. <code>1f</code> means the value is a single float (e.g.; <code>0.5</code>). You should not change this property.
+                    </p>
+                  </li>
+                </ul>
+              </div>
+            </li>
+            <li id="uFlipAnimationDirection" class="sliding-door-material-uniforms-uDivisionWidth">
+              <p class="property object">
+                <strong>uFlipAnimationDirection</strong>
+                <code>material.uniforms.uFlipAnimationDirection</code>
+              </p>
+              <p class="description">
+                By default, <code>SlidingDoorMaterial</code> animates your text in a predetermined direction, depending on the value of the <code>uAnimateHorizontal</code> uniform. When the value of the <code>uAnimateHorizontal</code> uniform is equal to <code>0.0</code> and your text is animating vertically, your text will animate from bottom to top by default. When the value of the <code>uAnimateHorizontal</code> uniform is more than <code>0.0</code> and your text is animating horizontally, your text will animate from right to left by default. The <code>uFlipAnimationDirection</code> uniform serves as a boolean (true/false) value, meant to tell the effect whether or not to invert animation along the axis determined by the <code>uAnimateHorizontal</code> uniform.
+              </p>
+              </p>
+              <div class="notated-list">
+                <ul class="properties">
+                  <li class="roll-distort-material-uniforms-uFlipAnimationDirection-properties">
+                    <p class="property float">
+                      <strong>value</strong>
+                      <code>material.uniforms.uFlipAnimationDirection.value</code>
+                    </p>
+                    <p class="description">
+                      A floating point value. Either <code>0.0</code> (false) or <code>1.0</code> (true).
+                    </p>
+                  </li>
+                  <li class="roll-distort-material-uniforms-uFlipAnimationDirection-properties static">
+                    <p class="property string">
+                      <strong>type</strong>
+                      <code>material.uniforms.uFlipAnimationDirection.type</code>
+                    </p>
+                    <p class="description">
+                      The uniform type of the value being passed to the shader. <code>1f</code> means the value is a single float (e.g.; <code>0.5</code>). You should not change this property.
+                    </p>
+                  </li>
+                </ul>
+              </div>
+            </li>
+            <li id="uSpeed" class="sliding-door-material-uniforms-uSpeed">
+              <p class="property object">
+                <strong>uSpeed</strong>
+                <code>material.uniforms.uSpeed</code>
+              </p>
+              <p class="description">
+                The <code>uSpeed</code> uniform describes the speed of the animation of the panes of the <code>SlidingDoorMaterial</code>.
+              </p>
+              <div class="notated-list">
+                <ul class="properties">
+                  <li class="sliding-door-material-uniforms-uSpeed-properties">
+                    <p class="property float">
+                      <strong>value</strong>
+                      <code>material.uniforms.uSpeed.value</code>
+                    </p>
+                    <p class="description">
+                      Any floating point value is acceptable. This value acts as a multiplier against the default uniform passed to all effects, <code>uTime</code>, which represents the time in seconds since the effect started. Therefore, smaller values slow animation while higher values speed up animation. Play around, you'll get the idea.
+                    </p>
+                  </li>
+                  <li class="sliding-door-materiall-uniforms-uSpeed-properties static">
+                    <p class="property string">
+                      <strong>type</strong>
+                      <code>material.uniforms.uSpeed.type</code>
+                    </p>
+                    <p class="description">
+                      The uniform type of the value being passed to the shader. <code>1f</code> means the value is a single float (e.g.; <code>0.5</code>). You should not change this property.
+                    </p>
+                  </li>
+                </ul>
+              </div>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>

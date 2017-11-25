@@ -6,6 +6,9 @@
         <p>
           Veering in a tireless swarm, the <code>FliesMaterial</code> recreates your text as a cloud of animated points.
         </p>
+        <p>
+          <code>Blotter.ChannelSplitMaterial</code> inherits from <code>Blotter.Material</code>, and therefore has the same properties and functions as <code>Blotter.Material</code>.
+        </p>
       </div>
       <ul class="documentation">
         <li id="flies-material-construction">
@@ -34,7 +37,7 @@
               </p>
               <div class="notated-list">
                 <ul class="properties">
-                  <li class="roll-distort-material-uniforms-uPointCellWidth-properties">
+                  <li class="flies-material-uniforms-uPointCellWidth-properties">
                     <p class="property float">
                       <strong>value</strong>
                       <code>material.uniforms.uPointCellWidth.value</code>
@@ -43,7 +46,7 @@
                       A floating point value between <code>0.0</code> (0%) and <code>1.0</code> (100%), relative to the height of your text (including any padding and line height). For example, if your text has a total height of 100 pixels, and the value of the <code>uPointCellWidth</code> uniform is <code>0.04</code>, each unit within the grid of used spaces described above will have a width and a height of 4 pixels.
                     </p>
                   </li>
-                  <li class="roll-distort-material-uniforms-uPointCellWidth-properties static">
+                  <li class="flies-material-uniforms-uPointCellWidth-properties static">
                     <p class="property string">
                       <strong>type</strong>
                       <code>material.uniforms.uPointCellWidth.type</code>
@@ -65,7 +68,7 @@
               </p>
               <div class="notated-list">
                 <ul class="properties">
-                  <li class="roll-distort-material-uniforms-uPointRadius-properties">
+                  <li class="flies-material-uniforms-uPointRadius-properties">
                     <p class="property float">
                       <strong>value</strong>
                       <code>material.uniforms.uPointRadius.value</code>
@@ -74,7 +77,7 @@
                       A floating point value between <code>0.0</code> (0%) and <code>1.0</code> (100%), relative to half the value of the <code>uPointCellWidth</code> uniform. That is, given a value of <code>1.0</code>, the <code>uPointRadius</code> uniform would describe a point with a total circumference equal to the cell in which it exists as described by the <code>uPointCellWidth</code> uniform.
                     </p>
                   </li>
-                  <li class="roll-distort-material-uniforms-uPointRadius-properties static">
+                  <li class="flies-material-uniforms-uPointRadius-properties static">
                     <p class="property string">
                       <strong>type</strong>
                       <code>material.uniforms.uPointRadius.type</code>
@@ -96,7 +99,7 @@
               </p>
               <div class="notated-list">
                 <ul class="properties">
-                  <li class="roll-distort-material-uniforms-uDodge-properties">
+                  <li class="flies-material-uniforms-uDodge-properties">
                     <p class="property float">
                       <strong>value</strong>
                       <code>material.uniforms.uDodge.value</code>
@@ -105,7 +108,7 @@
                       A floating point value. Either <code>0.0</code> (false) or <code>1.0</code> (true).
                     </p>
                   </li>
-                  <li class="roll-distort-material-uniforms-uDodge-properties static">
+                  <li class="flies-material-uniforms-uDodge-properties static">
                     <p class="property string">
                       <strong>type</strong>
                       <code>material.uniforms.uDodge.type</code>
@@ -127,7 +130,7 @@
               </p>
               <div class="notated-list">
                 <ul class="properties">
-                  <li class="roll-distort-material-uniforms-uDodgePosition-properties">
+                  <li class="flies-material-uniforms-uDodgePosition-properties">
                     <p class="property float">
                       <strong>value</strong>
                       <code>material.uniforms.uDodgePosition.value</code>
@@ -136,7 +139,7 @@
                       A pair of floating point values between <code>0.0</code> (0%) and <code>1.0</code> (100%), relative to the width and height of your text respectively (including any padding and line height).
                     </p>
                   </li>
-                  <li class="roll-distort-material-uniforms-uDodgePosition-properties static">
+                  <li class="flies-material-uniforms-uDodgePosition-properties static">
                     <p class="property string">
                       <strong>type</strong>
                       <code>material.uniforms.uDodgePosition.type</code>
@@ -158,7 +161,7 @@
               </p>
               <div class="notated-list">
                 <ul class="properties">
-                  <li class="roll-distort-material-uniforms-uDodgeSpread-properties">
+                  <li class="flies-material-uniforms-uDodgeSpread-properties">
                     <p class="property float">
                       <strong>value</strong>
                       <code>material.uniforms.uDodgeSpread.value</code>
@@ -167,7 +170,7 @@
                       A floating point value between <code>0.0</code> (0%) and <code>1.0</code> (100%), relative to the height of your text (including any padding and line height).
                     </p>
                   </li>
-                  <li class="roll-distort-material-uniforms-uDodgeSpread-properties static">
+                  <li class="flies-material-uniforms-uDodgeSpread-properties static">
                     <p class="property string">
                       <strong>type</strong>
                       <code>material.uniforms.uDodgeSpread.type</code>
@@ -189,7 +192,7 @@
               </p>
               <div class="notated-list">
                 <ul class="properties">
-                  <li class="roll-distort-material-uniforms-uSpeed-properties">
+                  <li class="flies-material-uniforms-uSpeed-properties">
                     <p class="property float">
                       <strong>value</strong>
                       <code>material.uniforms.uSpeed.value</code>
@@ -198,7 +201,7 @@
                       Any floating point value is acceptable. This value acts as a multiplier against the default uniform passed to all effects, <code>uTime</code>, which represents the time in seconds since the effect started. Therefore, smaller values slow animation while higher values speed up animation. Play around, you'll get the idea.
                     </p>
                   </li>
-                  <li class="roll-distort-material-uniforms-uSpeed-properties static">
+                  <li class="flies-material-uniforms-uSpeed-properties static">
                     <p class="property string">
                       <strong>type</strong>
                       <code>material.uniforms.uSpeed.type</code>
