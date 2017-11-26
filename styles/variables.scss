@@ -13,8 +13,8 @@ $gutter-width: $leading * 2;
 $layout-width: ($col-width * 4) + ($gutter-width * 3);
 $max-content-width: ($col-width * 3) + ($gutter-width * 3);
 
-$min-screen-width: 400px;
-$min-device-width: 640px; // iPhone 5 portrait width
+$min-screen-width: $layout-width + ($leading * 2);
+$min-device-width: $layout-width + ($leading * 2); // iPhone 5 portrait width
 
 $font-stack: "Garamond", serif;
 $h-font-stack: "SerapionPro", "Garamond", serif;

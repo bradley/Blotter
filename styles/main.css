@@ -340,7 +340,7 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
   text-shadow: 0 0 4px #AAAAAA, 0 0 4px #AAAAAA;
   padding: 0; }
 
-@media screen and (max-width: 400px) {
+@media screen and (max-width: 728px) {
   .CodeMirror-gutters,
   .CodeMirror-linenumbers,
   .CodeMirror-linenumber {
@@ -470,13 +470,13 @@ p {
   font-feature-settings: "onum" 1, "pnum" 1, "kern" 1, "ss01" 1;
   font-kerning: normal;
   letter-spacing: 0.015em;
-  max-width: 546px;
   word-spacing: 0.001em; }
   @media screen and (device-aspect-ratio: 2 / 3), screen and (device-aspect-ratio: 40 / 71) {
     p {
       max-width: 100%; } }
-  p + p {
-    margin-top: 26px; }
+
+p + p, aside + p, p + aside {
+  margin-top: 26px; }
 
 a {
   border-bottom: 1px solid black;
@@ -497,8 +497,8 @@ aside {
   font-size: 13px;
   line-height: 1.5;
   position: relative;
-  width: 312px;
-  margin: 26px 0; }
+  max-width: 312px;
+  width: calc(100% - 52px); }
   aside:before {
     content: "[" attr(data-number) "]";
     font-size: 14px;
@@ -740,7 +740,8 @@ code {
     ------------------------------------- */
 #layout {
   margin: 0 auto;
-  width: 676px; }
+  max-width: 676px;
+  width: 100%; }
 
 .hero-content-wrap {
   display: table;
@@ -755,16 +756,23 @@ code {
       text-align: left; }
 
 .content {
-  margin: 182px 0; }
+  overflow: hidden;
+  margin-left: -52px;
+  margin-right: -52px;
+  padding: 182px 52px; }
 
 .content-right, .content-left {
-  width: 546px; }
+  max-width: 546px;
+  width: 100%; }
+  @media screen and (max-width: 728px), screen and (max-device-width: 728px) {
+    .content-right, .content-left {
+      max-width: 100%; } }
 
 .content-right {
-  margin-left: 130px; }
+  float: right; }
 
 .content-left {
-  margin-right: 130px; }
+  float: left; }
 
 /*  Header
     ------------------------------------- */
@@ -782,6 +790,9 @@ code {
   right: 0;
   top: 0;
   z-index: 100; }
+  @media screen and (max-width: 728px), screen and (max-device-width: 728px) {
+    #masthead {
+      padding: 26px; } }
   #masthead * {
     pointer-events: all; }
   #masthead #logo {
@@ -811,35 +822,7 @@ code {
         font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
         font-size: 14px;
         line-height: 52px;
-        position: relative;
-        /*        &:after {
-                  background: $black;
-                  border-radius: 4px;
-                  content: "";
-                  display: inline-block;
-                  height: 4px;
-                  left: -(($leading / 2) + ($leading / 4) + $leading);
-                  opacity: 0;
-                  position: absolute;
-                  top: 9.5px;
-                  -webkit-transform: rotate(180deg);
-                  -moz-transform: rotate(180deg);
-                  -o-transform: rotate(180deg);
-                  -ms-transform: rotate(180deg);
-                  transform: rotate(180deg);
-                  -webkit-transform-origin: ($leading / 2) + ($leading / 4);
-                  -moz-transform-origin: ($leading / 2) + ($leading / 4);
-                  -o-transform-origin: ($leading / 2) + ($leading / 4);
-                  -ms-transform-origin: ($leading / 2) + ($leading / 4);
-                  transform-origin: ($leading / 2) + ($leading / 4);
-                  width: 4px;
-                  transition: all 100ms ease-in;
-                }
-        
-                &:hover::after {
-                  opacity: 1;
-                  width: ($leading / 2);
-                }*/ }
+        position: relative; }
         #masthead ul.nav li a canvas {
           margin-left: -13px;
           margin-right: -13px;
@@ -880,6 +863,9 @@ code {
     ------------------------------------- */
 .content-right aside {
   left: -130px; }
+  @media screen and (max-width: 728px), screen and (max-device-width: 728px) {
+    .content-right aside {
+      left: 52px; } }
 
 .hero-text {
   font-size: 26px !important;
@@ -907,6 +893,9 @@ code {
   .material-example-wrap canvas {
     margin-top: -26px;
     vertical-align: top; }
+    @media screen and (max-width: 728px), screen and (max-device-width: 728px) {
+      .material-example-wrap canvas {
+        margin-left: -40px; } }
 
 .bullet-list {
   list-style: none; }
@@ -921,6 +910,9 @@ code {
       text-align: center;
       top: -3px;
       width: 52px; }
+      @media screen and (max-width: 728px), screen and (max-device-width: 728px) {
+        .bullet-list li:before {
+          display: none; } }
 
 ul.documentation {
   list-style: none; }
@@ -928,9 +920,8 @@ ul.documentation {
     margin-top: 26px; }
     ul.documentation li p.property > strong, ul.documentation li p.method > strong, ul.documentation li p.construction > strong {
       font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
-      font-weight: 500; }
-      ul.documentation li p.property > strong + code, ul.documentation li p.method > strong + code, ul.documentation li p.construction > strong + code {
-        margin-left: 13px; }
+      font-weight: 500;
+      margin-right: 13px; }
     ul.documentation li > ul {
       font-size: 14px;
       list-style: none;
@@ -1052,6 +1043,9 @@ ul.documentation {
 
 /*  Materials
     ------------------------------------- */
+.materials-list-region {
+  float: left; }
+
 .materials {
   list-style: none;
   overflow: hidden; }
@@ -1105,14 +1099,14 @@ ul.documentation {
   list-style: none;
   clear: both;
   max-width: none; }
-  @media screen and (max-width: 400px), screen and (max-device-width: 640px) {
+  @media screen and (max-width: 728px), screen and (max-device-width: 728px) {
     #toc, #documentation-toc {
       text-align: center; } }
   #toc li, #documentation-toc li {
     margin-top: 0;
     display: inline-block;
     float: left; }
-    @media screen and (max-width: 400px), screen and (max-device-width: 640px) {
+    @media screen and (max-width: 728px), screen and (max-device-width: 728px) {
       #toc li, #documentation-toc li {
         float: none; } }
     #toc li a, #documentation-toc li a {

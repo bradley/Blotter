@@ -339,7 +339,7 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
   text-shadow: 0 0 4px #AAAAAA, 0 0 4px #AAAAAA;
   padding: 0; }
 
-@media screen and (max-width: 400px) {
+@media screen and (max-width: 728px) {
   .CodeMirror-gutters,
   .CodeMirror-linenumbers,
   .CodeMirror-linenumber {

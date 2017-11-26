@@ -70,11 +70,6 @@ h2 {
   font-size: 32px;
   line-height: 16px;
   padding-top: 10px;
-
-  @media screen and (max-width: $min-screen-width),
-  screen and (max-device-width: $min-device-width) {
-    //text-align: center;
-  }
 }
 
 h3 {
@@ -96,17 +91,16 @@ p {
   font-feature-settings: "onum" 1, "pnum" 1, "kern" 1, "ss01" 1;
   font-kerning: normal;
   letter-spacing: 0.015em;
-  max-width: $max-content-width;
   word-spacing: 0.001em;
 
   @media screen and (device-aspect-ratio: 2/3),
   screen and (device-aspect-ratio: 40/71) {
     max-width: 100%;
   }
+}
 
-  + p {
-    margin-top: $leading;
-  }
+p + p, aside + p, p + aside {
+  margin-top: $leading;
 }
 
 a {
@@ -134,8 +128,8 @@ aside {
   font-size: 13px;
   line-height: 1.5;
   position: relative;
-  width: ($col-width * 2) + $gutter-width;
-  margin: $leading 0;
+  max-width: ($col-width * 2) + $gutter-width;
+  width: calc(100% - #{$leading * 2});
 
   &:before {
     content: "[" attr(data-number) "]";
@@ -380,7 +374,8 @@ code {
 
 #layout {
   margin: 0 auto;
-  width: $layout-width;
+  max-width: $layout-width;
+  width: 100%;
 }
 
 .hero-content-wrap {
@@ -401,19 +396,28 @@ code {
 }
 
 .content {
-  margin: $leading * 7 0;
+  overflow: hidden;
+  margin-left: -($leading * 2);
+  margin-right: -($leading * 2);
+  padding: ($leading * 7) ($leading * 2);
 }
 
 .content-right, .content-left {
-  width: $max-content-width;
+  max-width: $max-content-width;
+  width: 100%;
+
+  @media screen and (max-width: $min-screen-width),
+  screen and (max-device-width: $min-device-width) {
+    max-width: 100%;
+  }
 }
 
 .content-right {
-  margin-left: $col-width;
+  float: right;
 }
 
 .content-left {
-  margin-right: $col-width;
+  float: left;
 }
 
 
@@ -434,6 +438,11 @@ code {
   right: 0;
   top: 0;
   z-index: 100;
+
+  @media screen and (max-width: $min-screen-width),
+  screen and (max-device-width: $min-device-width) {
+    padding: $leading;
+  }
 
   * {
     pointer-events: all;
@@ -477,35 +486,6 @@ code {
         font-size: 14px;
         line-height: $leading * 2;
         position: relative;
-
-/*        &:after {
-          background: $black;
-          border-radius: 4px;
-          content: "";
-          display: inline-block;
-          height: 4px;
-          left: -(($leading / 2) + ($leading / 4) + $leading);
-          opacity: 0;
-          position: absolute;
-          top: 9.5px;
-          -webkit-transform: rotate(180deg);
-          -moz-transform: rotate(180deg);
-          -o-transform: rotate(180deg);
-          -ms-transform: rotate(180deg);
-          transform: rotate(180deg);
-          -webkit-transform-origin: ($leading / 2) + ($leading / 4);
-          -moz-transform-origin: ($leading / 2) + ($leading / 4);
-          -o-transform-origin: ($leading / 2) + ($leading / 4);
-          -ms-transform-origin: ($leading / 2) + ($leading / 4);
-          transform-origin: ($leading / 2) + ($leading / 4);
-          width: 4px;
-          transition: all 100ms ease-in;
-        }
-
-        &:hover::after {
-          opacity: 1;
-          width: ($leading / 2);
-        }*/
 
         canvas {
           margin-left: -13px;
@@ -573,6 +553,11 @@ code {
 .content-right {
   aside {
     left: -($col-width);
+
+    @media screen and (max-width: $min-screen-width),
+    screen and (max-device-width: $min-device-width) {
+      left: $leading * 2;
+    }
   }
 }
 
@@ -618,6 +603,11 @@ code {
   canvas {
     margin-top: -26px;
     vertical-align: top;
+
+    @media screen and (max-width: $min-screen-width),
+    screen and (max-device-width: $min-device-width) {
+      margin-left: -40px;
+    }
   }
 }
 
@@ -636,6 +626,11 @@ code {
       text-align: center;
       top: -3px;
       width: $leading * 2;
+
+      @media screen and (max-width: $min-screen-width),
+      screen and (max-device-width: $min-device-width) {
+        display: none;
+      }
     }
   }
 }
@@ -656,10 +651,7 @@ ul.documentation {
         > strong {
           font-family: $grotesque-font-stack;
           font-weight: 500;
-
-          + code {
-            margin-left: $leading / 2;
-          }
+          margin-right: $leading / 2;
         }
       }
     }
@@ -829,6 +821,9 @@ ul.documentation {
 
 /*  Materials
     ------------------------------------- */
+.materials-list-region {
+  float: left;
+}
 
 .materials  {
   list-style: none;
