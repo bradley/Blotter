@@ -1278,9 +1278,9 @@ $(document).ready(function () {
         this.navBlotter.material.uniforms.hovering.value = 0.0;
 
         if (this.dataId && this.navBlotterReady) {
-          var el = this.$(".nav:visible li a[data-reference-id='" + this.dataId + "']"),
+          var el = this.$(".nav li a[data-reference-id='" + this.dataId + "']"),
               li = el.parent("li"),
-              i = this.$(".nav:visible li").index(li);
+              i = this.$(".nav li").index(li);
 
           el.addClass("active");
 
@@ -1407,7 +1407,7 @@ $(document).ready(function () {
 
 
   BlotterSite.Views.BackNavigation = Marionette.ItemView.extend({
-    template : _.template("<div><ul class='nav back-nav'><li><a href='#'><span class='arrow-left'></span> FULL BLOTTER DOCUMENTATION</a></li></ul></div>")(),
+    template : _.template("<div><div class='inner-navigation-wrap'><ul class='nav back-nav'><li><a href='#'><span class='arrow-left'></span> FULL BLOTTER DOCUMENTATION</a></li></ul></div></div>")(),
     events : {
       "click a" : "handleBackArrowClicked"
     },
