@@ -51,6 +51,11 @@ body {
   padding: $leading;
   position: relative;
   vertical-align: top;
+
+  @media screen and (max-width: $min-screen-width),
+  screen and (max-device-width: $min-device-width) {
+    padding: $font-size;
+  }
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -70,11 +75,6 @@ h2 {
   font-size: 32px;
   line-height: 16px;
   padding-top: 10px;
-
-  @media screen and (max-width: $min-screen-width),
-  screen and (max-device-width: $min-device-width) {
-    //text-align: center;
-  }
 }
 
 h3 {
@@ -96,17 +96,16 @@ p {
   font-feature-settings: "onum" 1, "pnum" 1, "kern" 1, "ss01" 1;
   font-kerning: normal;
   letter-spacing: 0.015em;
-  max-width: $max-content-width;
   word-spacing: 0.001em;
 
   @media screen and (device-aspect-ratio: 2/3),
   screen and (device-aspect-ratio: 40/71) {
     max-width: 100%;
   }
+}
 
-  + p {
-    margin-top: $leading;
-  }
+p + p, aside + p, p + aside {
+  margin-top: $leading;
 }
 
 a {
@@ -134,8 +133,8 @@ aside {
   font-size: 13px;
   line-height: 1.5;
   position: relative;
-  width: ($col-width * 2) + $gutter-width;
-  margin: $leading 0;
+  max-width: ($col-width * 2) + $gutter-width;
+  width: calc(100% - #{$leading * 2});
 
   &:before {
     content: "[" attr(data-number) "]";
@@ -374,13 +373,30 @@ code {
   @include arrow-right;
 }
 
+.mobile-hidden {
+  @media screen and (max-width: $min-screen-width),
+  screen and (max-device-width: $min-device-width) {
+    display: none !important;
+  }
+}
+
+.mobile-show {
+  display: none !important;
+
+  @media screen and (max-width: $min-screen-width),
+  screen and (max-device-width: $min-device-width) {
+    display: initial !important;
+  }
+}
+
 
 /*  Layout
     ------------------------------------- */
 
 #layout {
   margin: 0 auto;
-  width: $layout-width;
+  max-width: $layout-width;
+  width: 100%;
 }
 
 .hero-content-wrap {
@@ -401,19 +417,34 @@ code {
 }
 
 .content {
-  margin: $leading * 7 0;
+  overflow: hidden;
+  margin-left: -($leading * 2);
+  margin-right: -($leading * 2);
+  padding: ($leading * 7) ($leading * 2);
+
+  @media screen and (max-width: $min-screen-width),
+  screen and (max-device-width: $min-device-width) {
+    margin: 0;
+    padding: ($leading * 7) 0;
+  }
 }
 
 .content-right, .content-left {
-  width: $max-content-width;
+  max-width: $max-content-width;
+  width: 100%;
+
+  @media screen and (max-width: $min-screen-width),
+  screen and (max-device-width: $min-device-width) {
+    max-width: 100%;
+  }
 }
 
 .content-right {
-  margin-left: $col-width;
+  float: right;
 }
 
 .content-left {
-  margin-right: $col-width;
+  float: left;
 }
 
 
@@ -421,32 +452,70 @@ code {
     ------------------------------------- */
 
 #masthead {
-  background: $white;
-  background: -webkit-linear-gradient($white, rgba(255,255,255,0));
-  background: -moz-linear-gradient($white, rgba(255,255,255,0));
-  background: -o-linear-gradient($white, rgba(255,255,255,0));
-  background: linear-gradient($white, rgba(255,255,255,0));
+  background: transparent;
   height: $leading * 4;
   left: 0;
-  padding: $leading ($leading * 2);
+  padding: $leading 0;
   pointer-events: none;
   position: fixed;
   right: 0;
   top: 0;
   z-index: 100;
 
-  * {
-    pointer-events: all;
+  min-width: $layout-width;
+  max-width: calc(100% - #{$leading * 4});
+  margin: 0 auto;
+
+  @media screen and (max-width: $min-screen-width),
+  screen and (max-device-width: $min-device-width) {
+    min-width: auto;
+    max-width: inherit;
+    padding: $font-size;
   }
 
-  #logo {
-    display: inline-block;
-    height: $leading * 2;
+  &::before {
+    background: transparent;
+    background: -webkit-linear-gradient($white, rgba(255,255,255,0));
+    background: -moz-linear-gradient($white, rgba(255,255,255,0));
+    background: -o-linear-gradient($white, rgba(255,255,255,0));
+    background: linear-gradient($white, rgba(255,255,255,0));
+    content: '';
+    display: block;
+    height: 104px;
+    left: 0;
+    pointer-events: none!important;
+    position: fixed;
+    top: 0;
+    width: 100vw;
+  }
 
-    canvas {
-      vertical-align: top;
-      margin-top: -6px;
-      margin-left: -14px;
+  .inner-navigation-wrap {
+    pointer-events: none;
+
+    * {
+      pointer-events: all;
+    }
+  }
+
+  #navigation {
+    overflow: hidden;
+  }
+
+  .logo-anchor {
+    display: inline-block;
+
+    #logo {
+      align-items: center;
+      display: flex;
+      height: $leading * 2;
+      justify-content: center;
+
+      canvas {
+        height: 39px !important;
+        margin-left: -9px;
+        vertical-align: top;
+        width: auto !important;
+      }
     }
   }
 
@@ -458,8 +527,14 @@ code {
 
     li {
       display: inline-block;
-      padding: 0 ($leading);
-      margin-left: ($leading / 2);
+      margin-left: $font-size;
+      padding: 0 ($font-size);
+
+      @media screen and (max-width: $min-screen-width),
+      screen and (max-device-width: $min-device-width) {
+        margin-left: 0;
+        padding: 0 ($font-size) 0 0;
+      }
 
       &:first-child {
         margin-left: 0;
@@ -478,40 +553,19 @@ code {
         line-height: $leading * 2;
         position: relative;
 
-/*        &:after {
-          background: $black;
-          border-radius: 4px;
-          content: "";
-          display: inline-block;
-          height: 4px;
-          left: -(($leading / 2) + ($leading / 4) + $leading);
-          opacity: 0;
-          position: absolute;
-          top: 9.5px;
-          -webkit-transform: rotate(180deg);
-          -moz-transform: rotate(180deg);
-          -o-transform: rotate(180deg);
-          -ms-transform: rotate(180deg);
-          transform: rotate(180deg);
-          -webkit-transform-origin: ($leading / 2) + ($leading / 4);
-          -moz-transform-origin: ($leading / 2) + ($leading / 4);
-          -o-transform-origin: ($leading / 2) + ($leading / 4);
-          -ms-transform-origin: ($leading / 2) + ($leading / 4);
-          transform-origin: ($leading / 2) + ($leading / 4);
-          width: 4px;
-          transition: all 100ms ease-in;
-        }
-
-        &:hover::after {
-          opacity: 1;
-          width: ($leading / 2);
-        }*/
-
         canvas {
           margin-left: -13px;
           margin-right: -13px;
-          vertical-align: top;
+          vertical-align: middle;
           will-change: transform;
+
+          @media screen and (max-width: $min-screen-width),
+          screen and (max-device-width: $min-device-width) {
+            height: 42px !important;
+            margin-left: -10px;
+            margin-right: -10px;
+            width: auto !important;
+          }
         }
       }
     }
@@ -573,6 +627,11 @@ code {
 .content-right {
   aside {
     left: -($col-width);
+
+    @media screen and (max-width: $min-screen-width),
+    screen and (max-device-width: $min-device-width) {
+      left: $leading * 2;
+    }
   }
 }
 
@@ -584,6 +643,12 @@ code {
 .download-options {
 
   .dropdown-options {
+
+    @media screen and (max-width: $min-screen-width),
+    screen and (max-device-width: $min-device-width) {
+      top: inherit;
+      right: inherit;
+    }
 
     li {
 
@@ -618,6 +683,11 @@ code {
   canvas {
     margin-top: -26px;
     vertical-align: top;
+
+    @media screen and (max-width: $min-screen-width),
+    screen and (max-device-width: $min-device-width) {
+      margin-left: -40px;
+    }
   }
 }
 
@@ -636,6 +706,11 @@ code {
       text-align: center;
       top: -3px;
       width: $leading * 2;
+
+      @media screen and (max-width: $min-screen-width),
+      screen and (max-device-width: $min-device-width) {
+        display: none;
+      }
     }
   }
 }
@@ -656,10 +731,7 @@ ul.documentation {
         > strong {
           font-family: $grotesque-font-stack;
           font-weight: 500;
-
-          + code {
-            margin-left: $leading / 2;
-          }
+          margin-right: $leading / 2;
         }
       }
     }
@@ -829,9 +901,13 @@ ul.documentation {
 
 /*  Materials
     ------------------------------------- */
+.materials-list-region {
+  float: left;
+}
 
-.materials  {
+.materials-list  {
   list-style: none;
+  margin-right: -($leading);
   overflow: hidden;
 
   > li {
@@ -851,10 +927,6 @@ ul.documentation {
     position: relative;
     text-align: center;
     width: ($layout-width - ($leading * 2)) / 3;
-
-    &:nth-child(3n + 3) {
-      margin-right: 0;
-    }
 
     &:hover {
 

@@ -1278,9 +1278,9 @@ $(document).ready(function () {
         this.navBlotter.material.uniforms.hovering.value = 0.0;
 
         if (this.dataId && this.navBlotterReady) {
-          var el = this.$(".nav li a[data-reference-id='" + this.dataId + "']"),
+          var el = this.$(".nav:visible li a[data-reference-id='" + this.dataId + "']"),
               li = el.parent("li"),
-              i = this.$(".nav li").index(li);
+              i = this.$(".nav:visible li").index(li);
 
           el.addClass("active");
 
@@ -1322,7 +1322,7 @@ $(document).ready(function () {
       },
 
       prepareNav : function () {
-        var navEls = this.$(".nav li a");
+        var navEls = this.$(".main-nav li a");
 
         if (!this.navBlotter || this.navEls != navEls) {
           this.navEls = navEls;
@@ -1511,8 +1511,8 @@ $(document).ready(function () {
 
   BlotterSite.Views.MaterialsList = Marionette.CompositeView.extend({
     childView : BlotterSite.Views.MaterialListItem,
-    childViewContainer : "ul.materials",
-    template : _.template("<div><ul class='materials'></ul></div>")(),
+    childViewContainer : "ul.materials-list",
+    template : _.template("<div><ul class='materials-list'></ul></div>")(),
 
     childViewOptions : function () {
       return {
