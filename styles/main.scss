@@ -51,6 +51,11 @@ body {
   padding: $leading;
   position: relative;
   vertical-align: top;
+
+  @media screen and (max-width: $min-screen-width),
+  screen and (max-device-width: $min-device-width) {
+    padding: $font-size;
+  }
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -368,6 +373,22 @@ code {
   @include arrow-right;
 }
 
+.mobile-hidden {
+  @media screen and (max-width: $min-screen-width),
+  screen and (max-device-width: $min-device-width) {
+    display: none !important;
+  }
+}
+
+.mobile-show {
+  display: none !important;
+
+  @media screen and (max-width: $min-screen-width),
+  screen and (max-device-width: $min-device-width) {
+    display: initial !important;
+  }
+}
+
 
 /*  Layout
     ------------------------------------- */
@@ -400,6 +421,12 @@ code {
   margin-left: -($leading * 2);
   margin-right: -($leading * 2);
   padding: ($leading * 7) ($leading * 2);
+
+  @media screen and (max-width: $min-screen-width),
+  screen and (max-device-width: $min-device-width) {
+    margin: 0;
+    padding: ($leading * 7) 0;
+  }
 }
 
 .content-right, .content-left {
@@ -425,37 +452,70 @@ code {
     ------------------------------------- */
 
 #masthead {
-  background: $white;
-  background: -webkit-linear-gradient($white, rgba(255,255,255,0));
-  background: -moz-linear-gradient($white, rgba(255,255,255,0));
-  background: -o-linear-gradient($white, rgba(255,255,255,0));
-  background: linear-gradient($white, rgba(255,255,255,0));
+  background: transparent;
   height: $leading * 4;
   left: 0;
-  padding: $leading ($leading * 2);
+  padding: $leading 0;
   pointer-events: none;
   position: fixed;
   right: 0;
   top: 0;
   z-index: 100;
 
+  min-width: $layout-width;
+  max-width: calc(100% - #{$leading * 4});
+  margin: 0 auto;
+
   @media screen and (max-width: $min-screen-width),
   screen and (max-device-width: $min-device-width) {
-    padding: $leading;
+    min-width: auto;
+    max-width: inherit;
+    padding: $font-size;
   }
 
-  * {
-    pointer-events: all;
+  &::before {
+    background: transparent;
+    background: -webkit-linear-gradient($white, rgba(255,255,255,0));
+    background: -moz-linear-gradient($white, rgba(255,255,255,0));
+    background: -o-linear-gradient($white, rgba(255,255,255,0));
+    background: linear-gradient($white, rgba(255,255,255,0));
+    content: '';
+    display: block;
+    height: 104px;
+    left: 0;
+    pointer-events: none!important;
+    position: fixed;
+    top: 0;
+    width: 100vw;
   }
 
-  #logo {
+  .inner-navigation-wrap {
+    pointer-events: none;
+
+    * {
+      pointer-events: all;
+    }
+  }
+
+  #navigation {
+    overflow: hidden;
+  }
+
+  .logo-anchor {
     display: inline-block;
-    height: $leading * 2;
 
-    canvas {
-      vertical-align: top;
-      margin-top: -6px;
-      margin-left: -14px;
+    #logo {
+      align-items: center;
+      display: flex;
+      height: $leading * 2;
+      justify-content: center;
+
+      canvas {
+        height: 39px !important;
+        margin-left: -9px;
+        vertical-align: top;
+        width: auto !important;
+      }
     }
   }
 
@@ -467,8 +527,14 @@ code {
 
     li {
       display: inline-block;
-      padding: 0 ($leading);
-      margin-left: ($leading / 2);
+      margin-left: $font-size;
+      padding: 0 ($font-size);
+
+      @media screen and (max-width: $min-screen-width),
+      screen and (max-device-width: $min-device-width) {
+        margin-left: 0;
+        padding: 0 ($font-size) 0 0;
+      }
 
       &:first-child {
         margin-left: 0;
@@ -490,8 +556,16 @@ code {
         canvas {
           margin-left: -13px;
           margin-right: -13px;
-          vertical-align: top;
+          vertical-align: middle;
           will-change: transform;
+
+          @media screen and (max-width: $min-screen-width),
+          screen and (max-device-width: $min-device-width) {
+            height: 42px !important;
+            margin-left: -10px;
+            margin-right: -10px;
+            width: auto !important;
+          }
         }
       }
     }
@@ -569,6 +643,12 @@ code {
 .download-options {
 
   .dropdown-options {
+
+    @media screen and (max-width: $min-screen-width),
+    screen and (max-device-width: $min-device-width) {
+      top: inherit;
+      right: inherit;
+    }
 
     li {
 
@@ -825,8 +905,9 @@ ul.documentation {
   float: left;
 }
 
-.materials  {
+.materials-list  {
   list-style: none;
+  margin-right: -($leading);
   overflow: hidden;
 
   > li {
@@ -846,10 +927,6 @@ ul.documentation {
     position: relative;
     text-align: center;
     width: ($layout-width - ($leading * 2)) / 3;
-
-    &:nth-child(3n + 3) {
-      margin-right: 0;
-    }
 
     &:hover {
 

@@ -434,6 +434,9 @@ body {
   padding: 26px;
   position: relative;
   vertical-align: top; }
+  @media screen and (max-width: 728px), screen and (max-device-width: 728px) {
+    body {
+      padding: 17px; } }
 
 h1, h2, h3, h4, h5, h6 {
   color: #202020;
@@ -736,6 +739,16 @@ code {
     content: "→";
     margin-top: -5px; }
 
+@media screen and (max-width: 728px), screen and (max-device-width: 728px) {
+  .mobile-hidden {
+    display: none !important; } }
+
+.mobile-show {
+  display: none !important; }
+  @media screen and (max-width: 728px), screen and (max-device-width: 728px) {
+    .mobile-show {
+      display: initial !important; } }
+
 /*  Layout
     ------------------------------------- */
 #layout {
@@ -760,6 +773,10 @@ code {
   margin-left: -52px;
   margin-right: -52px;
   padding: 182px 52px; }
+  @media screen and (max-width: 728px), screen and (max-device-width: 728px) {
+    .content {
+      margin: 0;
+      padding: 182px 0; } }
 
 .content-right, .content-left {
   max-width: 546px;
@@ -777,31 +794,55 @@ code {
 /*  Header
     ------------------------------------- */
 #masthead {
-  background: #fff;
-  background: -webkit-linear-gradient(#fff, rgba(255, 255, 255, 0));
-  background: -moz-linear-gradient(#fff, rgba(255, 255, 255, 0));
-  background: -o-linear-gradient(#fff, rgba(255, 255, 255, 0));
-  background: linear-gradient(#fff, rgba(255, 255, 255, 0));
+  background: transparent;
   height: 104px;
   left: 0;
-  padding: 26px 52px;
+  padding: 26px 0;
   pointer-events: none;
   position: fixed;
   right: 0;
   top: 0;
-  z-index: 100; }
+  z-index: 100;
+  min-width: 676px;
+  max-width: calc(100% - 104px);
+  margin: 0 auto; }
   @media screen and (max-width: 728px), screen and (max-device-width: 728px) {
     #masthead {
-      padding: 26px; } }
-  #masthead * {
-    pointer-events: all; }
-  #masthead #logo {
-    display: inline-block;
-    height: 52px; }
-    #masthead #logo canvas {
-      vertical-align: top;
-      margin-top: -6px;
-      margin-left: -14px; }
+      min-width: auto;
+      max-width: inherit;
+      padding: 17px; } }
+  #masthead::before {
+    background: transparent;
+    background: -webkit-linear-gradient(#fff, rgba(255, 255, 255, 0));
+    background: -moz-linear-gradient(#fff, rgba(255, 255, 255, 0));
+    background: -o-linear-gradient(#fff, rgba(255, 255, 255, 0));
+    background: linear-gradient(#fff, rgba(255, 255, 255, 0));
+    content: '';
+    display: block;
+    height: 104px;
+    left: 0;
+    pointer-events: none !important;
+    position: fixed;
+    top: 0;
+    width: 100vw; }
+  #masthead .inner-navigation-wrap {
+    pointer-events: none; }
+    #masthead .inner-navigation-wrap * {
+      pointer-events: all; }
+  #masthead #navigation {
+    overflow: hidden; }
+  #masthead .logo-anchor {
+    display: inline-block; }
+    #masthead .logo-anchor #logo {
+      align-items: center;
+      display: flex;
+      height: 52px;
+      justify-content: center; }
+      #masthead .logo-anchor #logo canvas {
+        height: 39px !important;
+        margin-left: -9px;
+        vertical-align: top;
+        width: auto !important; }
   #masthead ul.nav {
     display: block;
     list-style: none;
@@ -809,8 +850,12 @@ code {
     padding: 0; }
     #masthead ul.nav li {
       display: inline-block;
-      padding: 0 26px;
-      margin-left: 13px; }
+      margin-left: 17px;
+      padding: 0 17px; }
+      @media screen and (max-width: 728px), screen and (max-device-width: 728px) {
+        #masthead ul.nav li {
+          margin-left: 0;
+          padding: 0 17px 0 0; } }
       #masthead ul.nav li:first-child {
         margin-left: 0;
         padding-left: 0; }
@@ -826,8 +871,14 @@ code {
         #masthead ul.nav li a canvas {
           margin-left: -13px;
           margin-right: -13px;
-          vertical-align: top;
+          vertical-align: middle;
           will-change: transform; }
+          @media screen and (max-width: 728px), screen and (max-device-width: 728px) {
+            #masthead ul.nav li a canvas {
+              height: 42px !important;
+              margin-left: -10px;
+              margin-right: -10px;
+              width: auto !important; } }
     #masthead ul.nav.back-nav li a .arrow-left {
       margin-right: 39px; }
 
@@ -871,6 +922,10 @@ code {
   font-size: 26px !important;
   line-height: 39px !important; }
 
+@media screen and (max-width: 728px), screen and (max-device-width: 728px) {
+  .download-options .dropdown-options {
+    top: inherit;
+    right: inherit; } }
 .download-options .dropdown-options li .download-title {
   font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
   font-size: 17px;
@@ -1046,10 +1101,11 @@ ul.documentation {
 .materials-list-region {
   float: left; }
 
-.materials {
+.materials-list {
   list-style: none;
+  margin-right: -26px;
   overflow: hidden; }
-  .materials > li {
+  .materials-list > li {
     background: #fff;
     border: 2px solid #202020;
     box-sizing: border-box;
@@ -1066,12 +1122,10 @@ ul.documentation {
     position: relative;
     text-align: center;
     width: 208px; }
-    .materials > li:nth-child(3n + 3) {
-      margin-right: 0; }
-    .materials > li:hover .material-overlay {
+    .materials-list > li:hover .material-overlay {
       cursor: pointer;
       display: block; }
-    .materials > li .material-overlay {
+    .materials-list > li .material-overlay {
       background: rgba(255, 255, 255, 0.9);
       bottom: 0;
       box-sizing: border-box;
@@ -1084,7 +1138,7 @@ ul.documentation {
       right: 0;
       text-align: left;
       top: 0; }
-      .materials > li .material-overlay .material-name {
+      .materials-list > li .material-overlay .material-name {
         color: #202020;
         display: block;
         font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;

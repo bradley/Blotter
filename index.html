@@ -6,6 +6,8 @@
     <meta name="description" content="DESCRIPTION HERE">
     <meta name="keywords" content="blotter.js, blotter, javascript, library, graphics, text, rendering, effects, styles, web, html5">
     <meta name="author" content="bradley">
+    <meta name="viewport" content="width=device-width">
+    <meta name="viewport" content="initial-scale=1.0">
     <link rel="image_src" href="./images/logo.gif" />
     <title>Blotter.js</title>
 
@@ -92,13 +94,14 @@
     <template name="navigation">
       <div>
         <div id="top" class="anchor"></div>
-        <div>
+        <div class="inner-navigation-wrap">
           <a href="#" class="logo-anchor"><div id="logo"></div></a>
-          <ul class="nav right">
-            <li><a href="#/overview" data-text="OVERVIEW" data-reference-id="overview"></a></li>
+          <ul class="nav main-nav right">
+            <li class="mobile-hidden"><a href="#/overview" data-text="OVERVIEW" data-reference-id="overview"></a></li>
             <li><a href="#/basics" data-text="BASICS" data-reference-id="basics"></a></li>
             <li><a href="#/materials" data-text="MATERIALS" data-reference-id="materials"></a></li>
-            <li><a href="#/documentation" data-text="DOCUMENTATION" data-reference-id="documentation"></a></li>
+            <li class="mobile-hidden"><a href="#/documentation" data-text="DOCUMENTATION" data-reference-id="documentation"></a></li>
+            <li class="mobile-show"><a href="#/documentation" data-text="DOCS" data-reference-id="documentation"></a></li>
           </ul>
         </div>
       </div>
