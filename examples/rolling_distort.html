@@ -5,7 +5,7 @@
 
     <style type="text/css">
       body {
-        background: #202020;
+        background: #FFFFFF;
         padding: 20px;
         font-family: serif;
         font-size: 64px;
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="./third_party/jquery.min.js"></script>
     <script type="text/javascript" src="./third_party/dat.gui.js"></script>
     <script type="text/javascript" src="../build/blotter.js"></script>
-    <script type="text/javascript" src="../build/filters/rollingDistortMaterial.js"></script>
+    <script type="text/javascript" src="../build/materials/rollingDistortMaterial.js"></script>
   </head>
   <body>
     <span id="filter-target"></span>
@@ -35,7 +35,7 @@
 
         var styleProperties = {
           family: "serif",
-          fill: "#FFFFFF",
+          fill: "#202020",
           size: 268,
           weight: 800,
           leading: 1.02,
@@ -45,7 +45,7 @@
           paddingRight: 70
         };
 
-        var text = new Blotter.Text("rolling", styleProperties);
+        var text = new Blotter.Text("R", styleProperties);
 
         var material = new Blotter.RollingDistortMaterial();
         material.uniforms.uBlendColor.value = [0.2, 0.2, 0.2, 1.0];
