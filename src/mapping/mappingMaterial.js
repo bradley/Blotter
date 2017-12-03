@@ -12,9 +12,8 @@
 
   Blotter.MappingMaterial.prototype = (function() {
 
-    function _setValueAtIndexInDataTextureObject (value, i, dataTextureObject) {
-      var type = dataTextureObject.userUniform.type,
-          data = dataTextureObject.data;
+    function _setValueAtIndexInDataTextureObject (value, i, data, userUniform) {
+      var type = userUniform.type;
 
       if (type == "1f") {
         data[4*i]   = value;    // x (r)
@@ -70,14 +69,21 @@
     }
 
     function _getTextUniformInterface (mapping, userUniformDataTextureObjects) {
-      return _.reduce(mapping.texts, function (memo, text, i) {
-        memo[text.id] = _.reduce(userUniformDataTextureObjects, function (memo, dataTextureObject, uniformName) {
+      return _.reduce(mapping.texts, function (memo, text, textIndex) {
+        memo[text.id] = _.reduce(userUniformDataTextureObjects.userUniforms, function (memo, dataTextureObject, uniformName) {
+          var uniformIndex = dataTextureObject.position + textIndex;
+
           memo[uniformName] = _getUniformInterfaceForDataTextureObject(dataTextureObject);
 
           memo[uniformName].on("update", function () {
-            _setValueAtIndexInDataTextureObject(memo[uniformName].value, i, dataTextureObject);
+            _setValueAtIndexInDataTextureObject(
+              memo[uniformName].value,
+              uniformIndex,
+              userUniformDataTextureObjects.data,
+              dataTextureObject.userUniform
+            );
 
-            dataTextureObject.texture.needsUpdate = true;
+            userUniformDataTextureObjects.texture.needsUpdate = true;
           });
 
           memo[uniformName].value = dataTextureObject.userUniform.value;
@@ -90,7 +96,7 @@
     }
 
     function _getUniformInterface (mapping, userUniformDataTextureObjects, textUniformInterface) {
-      return _.reduce(userUniformDataTextureObjects, function (memo, dataTextureObject, uniformName) {
+      return _.reduce(userUniformDataTextureObjects.userUniforms, function (memo, dataTextureObject, uniformName) {
         memo[uniformName] = _getUniformInterfaceForDataTextureObject(dataTextureObject);
 
         memo[uniformName].on("update", function () {
@@ -98,7 +104,7 @@
             textUniformInterface[text.id][uniformName].value = memo[uniformName].value;
           });
 
-          dataTextureObject.texture.needsUpdate = true;
+          userUniformDataTextureObjects.texture.needsUpdate = true;
         });
 
         return memo;
