@@ -43254,8 +43254,8 @@ GrowingPacker.prototype = {
 
       buildMapping = _.bind(function () {
         return _.bind(function (next) {
-          Blotter.MappingBuilder.build(this._texts, _.bind(function (mapping) {
-            this._mapping = mapping;
+          Blotter.MappingBuilder.build(this._texts, _.bind(function (newMapping) {
+            this._mapping = newMapping;
             this._mapping.ratio = this.ratio;
 
             next();
@@ -43335,7 +43335,7 @@ GrowingPacker.prototype = {
       init : function (material, options) {
         options = options || {};
         _.defaults(this, options, {
-          ratio  : Blotter.CanvasUtils.pixelRatio,
+          ratio : Blotter.CanvasUtils.pixelRatio,
           autobuild : true,
           autostart : true,
           autoplay : true
@@ -45268,9 +45268,8 @@ GrowingPacker.prototype = {
 
   Blotter.MappingMaterial.prototype = (function() {
 
-    function _setValueAtIndexInDataTextureObject (value, i, dataTextureObject) {
-      var type = dataTextureObject.userUniform.type,
-          data = dataTextureObject.data;
+    function _setValueAtIndexInDataTextureObject (value, i, data, userUniform) {
+      var type = userUniform.type;
 
       if (type == "1f") {
         data[4*i]   = value;    // x (r)
@@ -45326,14 +45325,21 @@ GrowingPacker.prototype = {
     }
 
     function _getTextUniformInterface (mapping, userUniformDataTextureObjects) {
-      return _.reduce(mapping.texts, function (memo, text, i) {
-        memo[text.id] = _.reduce(userUniformDataTextureObjects, function (memo, dataTextureObject, uniformName) {
+      return _.reduce(mapping.texts, function (memo, text, textIndex) {
+        memo[text.id] = _.reduce(userUniformDataTextureObjects.userUniforms, function (memo, dataTextureObject, uniformName) {
+          var uniformIndex = dataTextureObject.position + textIndex;
+
           memo[uniformName] = _getUniformInterfaceForDataTextureObject(dataTextureObject);
 
           memo[uniformName].on("update", function () {
-            _setValueAtIndexInDataTextureObject(memo[uniformName].value, i, dataTextureObject);
+            _setValueAtIndexInDataTextureObject(
+              memo[uniformName].value,
+              uniformIndex,
+              userUniformDataTextureObjects.data,
+              dataTextureObject.userUniform
+            );
 
-            dataTextureObject.texture.needsUpdate = true;
+            userUniformDataTextureObjects.texture.needsUpdate = true;
           });
 
           memo[uniformName].value = dataTextureObject.userUniform.value;
@@ -45346,7 +45352,7 @@ GrowingPacker.prototype = {
     }
 
     function _getUniformInterface (mapping, userUniformDataTextureObjects, textUniformInterface) {
-      return _.reduce(userUniformDataTextureObjects, function (memo, dataTextureObject, uniformName) {
+      return _.reduce(userUniformDataTextureObjects.userUniforms, function (memo, dataTextureObject, uniformName) {
         memo[uniformName] = _getUniformInterfaceForDataTextureObject(dataTextureObject);
 
         memo[uniformName].on("update", function () {
@@ -45354,7 +45360,7 @@ GrowingPacker.prototype = {
             textUniformInterface[text.id][uniformName].value = memo[uniformName].value;
           });
 
-          dataTextureObject.texture.needsUpdate = true;
+          userUniformDataTextureObjects.texture.needsUpdate = true;
         });
 
         return memo;
@@ -46122,25 +46128,30 @@ GrowingPacker.prototype = {
       return vertexSrc.join("\n");
     }
 
-    function _fragmentSrc (uniforms, mainImageSrc) {
+    function _fragmentSrc (userUniformDataTextureObjects, textsLength, mainImageSrc) {
       var fragmentSrc,
           userUniforms = {
-            // Strings of sampler2D declarations for each user defined and default uniform texture.
-            privateUniformTextureDeclarations : "",
             // Strings of uniform declarations for each publicly facing version of each user defined and default uniform.
-            publicUniformDeclarations         : "",
+            publicUniformDeclarations : "",
             // Strings of uniform definitions for each publicly facing version of each user defined and default uniform.
-            uniformDefinitions                : ""
-          };
+            publicUniformDefinitions : ""
+          },
+          halfPixel = ((1 / userUniformDataTextureObjects.data.length) / 2).toFixed(20),
+          userUniformsTextureWidth = (userUniformDataTextureObjects.texture.image.width).toFixed(1);
 
-      _.reduce(uniforms, function (userUniforms, uniformObject, uniformName) {
-        var uniformTextureName = _userUniformDataTextureNameForUniformName(uniformName),
-            glslSwizzle = Blotter.UniformUtils.fullSwizzleStringForUniformType(uniformObject.userUniform.type),
+      _.reduce(userUniformDataTextureObjects.userUniforms, function (userUniforms, uniformObject, uniformName) {
+        var glslSwizzle = Blotter.UniformUtils.fullSwizzleStringForUniformType(uniformObject.userUniform.type),
             glslDataType = Blotter.UniformUtils.glslDataTypeForUniformType(uniformObject.userUniform.type);
 
-        userUniforms.privateUniformTextureDeclarations += "uniform sampler2D " + uniformTextureName + ";\n";
+        // This is super convoluted. Sorry. All user uniforms are passed in a single texture, where for each uniform
+        //   there is a single rgba value per text. Within this texture data we need to be able to locate the position
+        //   of any given text's value for the given uniform. The maths here use the `textIndex` value, a value
+        //   sampled via the `indicesValueTexture`, to locate the text value for the given uniform, and then offsets that
+        //   value by half a texel in the overall _userUniformsTexture
+        var uniformSamplePosition = "((" + (uniformObject.position).toFixed(1) + " + ((textIndex - ((1.0 / " + textsLength.toFixed(1) + ") / 2.0)) * " + textsLength.toFixed(1) + ")) / " + userUniformsTextureWidth + ") + " + halfPixel;
+
         userUniforms.publicUniformDeclarations += glslDataType + " " + uniformName + ";\n";
-        userUniforms.uniformDefinitions += "   " + uniformName + " = " + "texture2D(" + uniformTextureName + " , vec2(textIndex, 0.5))." + glslSwizzle + ";\n";
+        userUniforms.publicUniformDefinitions += "   " + uniformName + " = texture2D(_userUniformsTexture, vec2(" + uniformSamplePosition + ", 0.5))." + glslSwizzle + ";\n";
 
         return userUniforms;
       }, userUniforms);
@@ -46162,7 +46173,7 @@ GrowingPacker.prototype = {
         "vec4 _textBounds;",
 
         // Private versions of user defined and default uniform declarations
-        userUniforms.privateUniformTextureDeclarations,
+        "uniform sampler2D _userUniformsTexture;",
 
         // Public versions of user defined and default uniform declarations
         userUniforms.publicUniformDeclarations,
@@ -46198,9 +46209,8 @@ GrowingPacker.prototype = {
         //  Make bounds for the current text globally visible.
         "   _textBounds = texture2D(_uTextBoundsTexture, vec2(textIndex, 0.5));",
 
-
         //  Set "uniform" values visible to user.
-        userUniforms.uniformDefinitions,
+        userUniforms.publicUniformDefinitions,
         "   uResolution = _textBounds.zw;",
 
         //  Set fragment coordinate in respect to position within text bounds.
@@ -46218,10 +46228,6 @@ GrowingPacker.prototype = {
       ];
 
       return fragmentSrc.join("\n");
-    }
-
-    function _userUniformDataTextureNameForUniformName (uniformName) {
-      return "_" + uniformName + "Texture";
     }
 
     function _buildMappedTextsTexture (mapping, completion) {
@@ -46270,22 +46276,33 @@ GrowingPacker.prototype = {
       })();
     }
 
-    function _buildUserUniformDataTextureObjects (userUniforms, dataLength, completion) {
+    function _buildUserUniformDataTextureObjects (userUniforms, textsLength, completion) {
       Blotter.UniformUtils.ensureHasRequiredDefaultUniforms(userUniforms,
         "Blotter.MappingMaterialBuilder",
         "_buildUserUniformDataTextureObjects");
 
       userUniforms = Blotter.UniformUtils.extractValidUniforms(userUniforms);
 
-      var userUniformDataTextureObjects = _.reduce(userUniforms, function (memo, userUniform, uniformName) {
-        var data = new Float32Array(dataLength * 4);
-        memo[uniformName] = {
+      var uniformsDataLength = Object.keys(userUniforms).length * textsLength;
+      var data = new Float32Array(uniformsDataLength * 4);
+      var texture = new THREE.DataTexture(data, uniformsDataLength, 1, THREE.RGBAFormat, THREE.FloatType);
+
+      var userUniformDataTextureObjects = {
+        data : data,
+        texture : texture,
+        userUniforms : {}
+      };
+
+      _.reduce(userUniforms, function (memo, userUniform, uniformName) {
+        var uniformPosition = Object.keys(userUniforms).indexOf(uniformName) * textsLength;
+
+        memo.userUniforms[uniformName] = {
           userUniform : userUniform,
-          data : data,
-          texture : new THREE.DataTexture(data, dataLength, 1, THREE.RGBAFormat, THREE.FloatType)
+          position : uniformPosition
         };
+
         return memo;
-      }, {});
+      }, userUniformDataTextureObjects);
 
       completion(userUniformDataTextureObjects);
     }
@@ -46301,13 +46318,12 @@ GrowingPacker.prototype = {
     }
 
     function _getUniformsForUserUniformDataObjects (userUniformDataObjects) {
-      return _.reduce(userUniformDataObjects, function (memo, uniformDataObject, uniformName) {
-        memo[_userUniformDataTextureNameForUniformName(uniformName)] = {
+      return {
+        _userUniformsTexture: {
           type : "t",
-          value : uniformDataObject.texture
-        };
-        return memo;
-      }, {});
+          value : userUniformDataObjects.texture
+        }
+      };
     }
 
     function _getUniforms (width, height, mappedTextsTexture, mappingDataTextureObjects, userUniformDataTextureObjects) {
@@ -46389,7 +46405,7 @@ GrowingPacker.prototype = {
                 userUniformDataTextureObjects
               ),
               userUniforms = _.omit(uniforms, "_uCanvasResolution", "_uSampler", "_uTextBoundsTexture", "_uTextIndicesTexture"),
-              threeMaterial = _getThreeMaterial(_vertexSrc(), _fragmentSrc(userUniformDataTextureObjects, material.mainImage), uniforms);
+              threeMaterial = _getThreeMaterial(_vertexSrc(), _fragmentSrc(userUniformDataTextureObjects, mapping.texts.length, material.mainImage), uniforms);
 
           completion(new Blotter.MappingMaterial(mapping, material, threeMaterial, userUniformDataTextureObjects));
         })();

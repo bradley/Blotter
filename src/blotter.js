@@ -68,8 +68,8 @@
 
       buildMapping = _.bind(function () {
         return _.bind(function (next) {
-          Blotter.MappingBuilder.build(this._texts, _.bind(function (mapping) {
-            this._mapping = mapping;
+          Blotter.MappingBuilder.build(this._texts, _.bind(function (newMapping) {
+            this._mapping = newMapping;
             this._mapping.ratio = this.ratio;
 
             next();
@@ -149,7 +149,7 @@
       init : function (material, options) {
         options = options || {};
         _.defaults(this, options, {
-          ratio  : Blotter.CanvasUtils.pixelRatio,
+          ratio : Blotter.CanvasUtils.pixelRatio,
           autobuild : true,
           autostart : true,
           autoplay : true
