@@ -179,6 +179,27 @@ code {
   padding: 3px 4px 4px;
 }
 
+.site-badge {
+  bottom: $leading * 2;
+  height: $leading * 2;
+  left: $leading * 2;
+  position: fixed;
+  width: $leading * 2;
+
+  @media screen and (max-width: $min-screen-width),
+  screen and (max-device-width: $min-device-width) {
+    bottom: $leading !important;
+    left: $leading !important;
+  }
+
+  &.lotus {
+    background: url(../images/lotus.png);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 100%;
+  }
+}
+
 
 /*  Utilities
     ------------------------------------- */
@@ -221,7 +242,7 @@ code {
   font-weight: 500;
   height: $leading;
   line-height: $leading * 2;
-  padding: 1px ($leading * 2) 0;
+  padding: 1px ($leading * 3) 0 $leading;
   text-align: center;
   text-decoration: none;
   text-transform: uppercase;
@@ -636,8 +657,8 @@ code {
 }
 
 .hero-text {
-  font-size: 26px !important;
-  line-height: 39px !important;
+  font-size: 20px !important;
+  line-height: 26px !important;
 }
 
 .download-options {

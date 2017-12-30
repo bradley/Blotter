@@ -1205,8 +1205,15 @@ $(document).ready(function () {
       "    float r = 1.0 - (1.0 - darkestSample.r) / a;",
       "    float g = 1.0 - (1.0 - darkestSample.g) / a;",
       "    float b = 1.0 - (1.0 - darkestSample.b) / a;",
+      "    vec3 outRGB = vec3(r, g, b);",
 
-      "    mainImage = vec4(r, g, b, a);",
+      "    // Uncomment to add gradient coloring to logo",
+      "    //vec3 leftColor = vec3(1.0, 0.6235294118, 0.09411764706); // Red",
+      "    //vec3 rightColor = vec3(0.8470588235, 0.1215686275, 0.0); // Yellow",
+      "    //outRGB += uv.x * leftColor;",
+      "    //outRGB += (1.0 - uv.x) * rightColor;",
+
+      "    mainImage = vec4(outRGB, a);",
       "}"
     ].join("\n");
 
