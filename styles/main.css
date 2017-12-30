@@ -535,6 +535,22 @@ code {
   line-height: 18px;
   padding: 3px 4px 4px; }
 
+.site-badge {
+  bottom: 52px;
+  height: 52px;
+  left: 52px;
+  position: fixed;
+  width: 52px; }
+  @media screen and (max-width: 728px), screen and (max-device-width: 728px) {
+    .site-badge {
+      bottom: 26px !important;
+      left: 26px !important; } }
+  .site-badge.lotus {
+    background: url(../images/lotus.png);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 100%; }
+
 /*  Utilities
     ------------------------------------- */
 .contain-floats {
@@ -570,7 +586,7 @@ code {
   font-weight: 500;
   height: 26px;
   line-height: 52px;
-  padding: 1px 52px 0;
+  padding: 1px 78px 0 26px;
   text-align: center;
   text-decoration: none;
   text-transform: uppercase;
@@ -919,8 +935,8 @@ code {
       left: 52px; } }
 
 .hero-text {
-  font-size: 26px !important;
-  line-height: 39px !important; }
+  font-size: 20px !important;
+  line-height: 26px !important; }
 
 @media screen and (max-width: 728px), screen and (max-device-width: 728px) {
   .download-options .dropdown-options {
@@ -1271,5 +1287,3 @@ p.static, p.static + p {
   }
 }
 */
-
-/*# sourceMappingURL=main.css.map */
