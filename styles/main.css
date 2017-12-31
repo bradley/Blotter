@@ -775,7 +775,14 @@ code {
 .hero-content-wrap {
   display: table;
   height: calc(100vh - 182px);
-  width: 100%; }
+  position: absolute;
+  right: 52px;
+  width: 676px; }
+  @media screen and (max-width: 728px), screen and (max-device-width: 728px) {
+    .hero-content-wrap {
+      position: static !important;
+      right: initial !important;
+      width: 100% !important; } }
   .hero-content-wrap .hero-content {
     display: table-cell;
     padding-top: 182px;
@@ -862,7 +869,7 @@ code {
   #masthead ul.nav {
     display: block;
     list-style: none;
-    margin: 0;
+    margin: 0 -17px 0 0;
     padding: 0; }
     #masthead ul.nav li {
       display: inline-block;
@@ -875,8 +882,6 @@ code {
       #masthead ul.nav li:first-child {
         margin-left: 0;
         padding-left: 0; }
-      #masthead ul.nav li:last-child {
-        padding-right: 0; }
       #masthead ul.nav li a {
         border: none;
         color: #202020;

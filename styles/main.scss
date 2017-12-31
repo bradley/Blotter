@@ -423,7 +423,16 @@ code {
 .hero-content-wrap {
   display: table;
   height: calc(100vh - #{$leading * 7});
-  width: 100%;
+  position: absolute;
+  right: $leading * 2;
+  width: $layout-width;
+
+  @media screen and (max-width: $min-screen-width),
+  screen and (max-device-width: $min-device-width) {
+    position: static !important;
+    right: initial !important;
+    width: 100% !important;
+  }
 
   .hero-content {
     display: table-cell;
@@ -543,7 +552,7 @@ code {
   ul.nav {
     display: block;
     list-style: none;
-    margin: 0;
+    margin: 0 (-$font-size) 0 0;
     padding: 0;
 
     li {
@@ -560,10 +569,6 @@ code {
       &:first-child {
         margin-left: 0;
         padding-left: 0;
-      }
-
-      &:last-child {
-        padding-right: 0;
       }
 
       a {
