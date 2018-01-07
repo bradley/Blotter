@@ -74,6 +74,8 @@
     <script src="./src/materials/RollingDistortMaterial.js"></script>
     <script src="./src/materials/SlidingDoorMaterial.js"></script>
 
+    <script src="./src/hero_examples/Material.js"></script>
+    <script src="./src/hero_examples/ChannelSplitMaterial.js"></script>
   </head>
   <body>
     <!-- Preload Serapion -->
@@ -109,32 +111,40 @@
 
     <template name="home">
       <div>
-        <div class="hero-content-wrap">
-          <div class="hero-content">
-            <div class="content-right">
-              <p class="hero-text">
-                A JavaScript API for drawing unconventional text effects on the web.
-              </p>
-              <p class="small-text">
-                Blotter.js requires Three.js and Underscore.js. If you're already including these files in your project, view the information on custom builds in the documentation to get the file size even smaller.
-              </p>
-              <div class="download">
-                <div class="right">
-                  <div class="download-options dropdown-select">
-                    <div class="dropdown-title noselect">Production Version</div>
-                    <ul class="dropdown-options hidden">
-                      <li data-title="Production Version" data-value="http://production" class="noselect">
-                        <p class="download-title">Production Version</p>
-                        <p class="download-details">Minified, 23kb</p>
-                      </li>
-                      <li data-title="Development Version" data-value="http://download" class="noselect">
-                        <p class="download-title">Development Version</p>
-                        <p class="download-details">Uncompressed, 420mb</p>
-                      </li>
-                    </ul>
+        <div class="hero-container">
+          <div class="hero-content hero-content-dialogue">
+            <div class="hero-inner-container hero-message-container">
+              <div class="content-right">
+                <p class="hero-text">
+                  A JavaScript API for drawing unconventional text effects on the web.
+                </p>
+                <p class="small-text">
+                  Blotter.js requires Three.js and Underscore.js. If you're already including these files in your project, view the information on custom builds in the documentation to get the file size even smaller.
+                </p>
+                <div class="download">
+                  <div class="right">
+                    <div class="download-options dropdown-select">
+                      <div class="dropdown-title noselect">Production Version</div>
+                      <ul class="dropdown-options hidden">
+                        <li data-title="Production Version" data-value="http://production" class="noselect">
+                          <p class="download-title">Production Version</p>
+                          <p class="download-details">Minified, 23kb</p>
+                        </li>
+                        <li data-title="Development Version" data-value="http://download" class="noselect">
+                          <p class="download-title">Development Version</p>
+                          <p class="download-details">Uncompressed, 420mb</p>
+                        </li>
+                      </ul>
+                    </div>
+                    <a href="http://production" class="btn download-btn">Download</a>
                   </div>
-                  <a href="http://production" class="btn download-btn">Download</a>
                 </div>
+              </div>
+            </div>
+          </div>
+          <div class="hero-content hero-content-examples">
+            <div class="hero-inner-container hero-blotter-container">
+              <div class="hero-blotter">
               </div>
             </div>
           </div>

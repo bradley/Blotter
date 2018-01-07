@@ -1298,15 +1298,15 @@ $(document).ready(function () {
       prepareLogo : function () {
         if (!this.logoBlotter) {
           var text = new Blotter.Text("Blotter", {
-                family : "'SerapionPro', sans-serif",
-                size : 48,
-                weight : 100,
-                leading : "52px",
-                paddingTop : 14,
-                paddingLeft : 14,
-                paddingRight : 14,
-                fill : "#202020"
-              });
+            family : "'SerapionPro', sans-serif",
+            size : 48,
+            weight : 100,
+            leading : "52px",
+            paddingTop : 14,
+            paddingLeft : 14,
+            paddingRight : 14,
+            fill : "#202020"
+          });
 
           var material = new Blotter.ShaderMaterial(_logoMainImage, {
             uniforms : {
@@ -1335,15 +1335,15 @@ $(document).ready(function () {
           this.navEls = navEls;
 
           var properties = {
-                family : "'Avenir', sans-serif",
-                size : 14,
-                weight : 100,
-                leading : "50px",
-                paddingLeft : 13,
-                paddingRight : 13,
-                paddingTop : 2,
-                fill : "#202020"
-              };
+            family : "'Avenir', sans-serif",
+            size : 14,
+            weight : 100,
+            leading : "50px",
+            paddingLeft : 13,
+            paddingRight : 13,
+            paddingTop : 2,
+            fill : "#202020"
+          };
 
           this.navTexts = _.reduce(this.navEls, function(m, elem) {
             var text = new Blotter.Text($(elem).data("text"), properties);
@@ -1440,7 +1440,78 @@ $(document).ready(function () {
 
       this.downloadBtn = this.$el.find(".download-btn");
 
+      this._setExample();
+
       this.setupListeners();
+    },
+
+    onDestroy : function () {
+      // this.blotter.stop();
+      // this.blotter.teardown();
+    },
+
+    // _setBlotter : function () {
+    //   var $container = this.$el.find(".hero-blotter");
+
+    //   this.texts = ["а", "б", "в", "г", "ѓ", "ґ", "д", "е", "ё", "ж", "з", "и", "й", "ҋ", "к", "ќ", "л", "м", "н", "о", "п", "р", "с", "т", "у", "ў", "ф", "х", "ч", "ц", "ш", "щ", "џ", "ь", "ъ", "ы", "љ", "њ", "ѕ", "є", "э", "і", "ї", "ј", "ћ", "ю", "я", "ђ", "ѣ", "ѳ", "ѵ", "ғ", "ҕ", "җ", "ҙ", "қ", "ҝ", "ҟ", "ҡ", "ң", "ҥ", "ҧ", "ԥ", "ҩ", "ҫ", "ҭ", "ү", "ұ", "ҳ", "ҵ", "ҷ", "ҹ", "һ", "ԧ", "ҽ", "ҿ", "ӏ", "ӂ", "ӄ", "ӆ", "ӈ", "ӊ", "ӌ", "ӎ", "ӑ", "ӓ", "ӕ", "ӗ", "ә", "ӛ", "ӝ", "ӟ", "ӡ", "ӣ", "ӥ", "ӧ", "ө", "ӫ", "ӭ", "ӯ", "ӱ", "ӳ", "ӵ", "ӷ", "ӹ", "ӽ", "ԑ", "ԓ", "ԝ", "ҍ", "ҏ", "в", "г", "д", "ж", "з", "и", "й", "к", "л", "п", "т", "ц", "ш", "щ", "ю", "б"];
+    //   this.textProperties = {
+    //     family : "sans-serif",
+    //     size : 32,
+    //     fill : "#202020"
+    //   };
+
+    //   this.blotterTexts = _.map(this.texts, _.bind(function(textStr) {
+    //     return new Blotter.Text(textStr, this.textProperties);
+    //   }, this));
+
+    //   this.material = new Blotter.LiquidDistortMaterial();
+    //   this.blotter = new Blotter(this.material, { texts : this.blotterTexts });
+
+    //   _.each(this.blotterTexts, _.bind(function(blotterText) {
+    //     this.blotter.forText(blotterText).appendTo($container);
+    //   }, this));
+    // },
+
+    _setBlotter : function () {
+      // var $container = this.$el.find(".hero-blotter");
+
+      // this.texts = ["ABC"];
+      // this.textProperties = {
+      //   family : "sans-serif",
+      //   size : 420,
+      //   leading : 1.0,
+      //   weight : 800,
+      //   fill : "#202020"
+      // };
+
+      // this.blotterTexts = _.map(this.texts, _.bind(function(textStr) {
+      //   return new Blotter.Text(textStr, this.textProperties);
+      // }, this));
+
+      // this.material = new Blotter.SlidingDoorMaterial();
+      // this.blotter = new Blotter(this.material, { texts : this.blotterTexts });
+
+      // _.each(this.blotterTexts, _.bind(function(blotterText) {
+      //   this.blotter.forText(blotterText).appendTo($container);
+      // }, this));
+    },
+
+    onShow : function () {
+      this.exampleInstance.render();
+    },
+
+    onDestroy : function () {
+      this.exampleInstance.blotter.stop();
+      this.exampleInstance.blotter.teardown();
+    },
+
+    _setExample : function () {
+      var materialName = "ChannelSplitMaterial";
+
+      var $container = this.$el.find(".hero-blotter"),
+          Example = window["BlotterSite"]["HeroExamples"][materialName];
+
+      this.exampleInstance = new Example($container);
     },
 
     setupListeners : function () {

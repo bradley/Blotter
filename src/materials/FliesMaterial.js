@@ -7,7 +7,6 @@ BlotterSite.Materials.FliesMaterial.prototype =
 
 _.extend(BlotterSite.Materials.FliesMaterial.prototype, (function () {
   return {
-
     prepare : function () {
       this.material = new Blotter.FliesMaterial();
       this.material.uniforms.uPointCellWidth.value = 0.035;

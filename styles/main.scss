@@ -420,29 +420,74 @@ code {
   width: 100%;
 }
 
-.hero-content-wrap {
-  display: table;
-  height: calc(100vh - #{$leading * 7});
-  position: absolute;
-  right: $leading * 2;
-  width: $layout-width;
 
-  @media screen and (max-width: $min-screen-width),
-  screen and (max-device-width: $min-device-width) {
-    position: static !important;
-    right: initial !important;
-    width: 100% !important;
-  }
+
+.hero-container {
+  left: 0;
+  position: absolute;
+  right: 0;
 
   .hero-content {
-    display: table-cell;
-    padding-top: $leading * 7;
-    text-align: center;
-    vertical-align: middle;
+    display: table;
+    height: calc(100vh - #{$leading * 7});
+    padding: 0 ($leading * 2);
+    position: absolute;
 
-    > * {
-      text-align: left;
+    &.hero-content-examples {
+      left: 0;
+      min-width: $leading * 21;
+      width: calc(100% - #{$max-content-width + ($leading * 4)});
     }
+
+    &.hero-content-dialogue {
+      right: 0;
+      width: $max-content-width + ($leading * 4);
+    }
+
+    .hero-inner-container {
+      display: table-cell;
+      padding-top: $leading * 7;
+      text-align: center;
+      vertical-align: middle;
+
+      > * {
+        text-align: left;
+      }
+    }
+
+    @media screen and (max-width: ($leading * 46)),
+    screen and (max-device-width: ($leading * 46)) {
+      height: initial !important;
+      min-width: 100% !important;
+      position: initial !important;
+      width: 100% !important;
+
+      .hero-inner-container {
+        display: block !important;
+
+        &.hero-blotter-container {
+          padding-top: ($leading * 4) !important;
+        }
+
+        .content-right {
+          max-width: $max-content-width;
+        }
+      }
+    }
+
+    @media screen and (max-width: $min-screen-width),
+    screen and (max-device-width: $min-device-width) {
+      padding: 0 $font-size;
+      right: initial !important;
+    }
+  }
+
+  .hero-blotter {
+    height: $hero-content-height;
+    margin: 0 auto;
+    max-width: $hero-content-width;
+    position: relative;
+    width: 100%;
   }
 }
 
@@ -615,7 +660,7 @@ code {
 #marginalia-container {
   bottom: 0;
   left: 0;
-  min-height: 100vh;
+  min-height: calc(100vh - #{$font-size});
   position: absolute;
   right: 0;
   top: 0;

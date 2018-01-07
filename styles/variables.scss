@@ -16,6 +16,9 @@ $max-content-width: ($col-width * 3) + ($gutter-width * 3);
 $min-screen-width: $layout-width + ($leading * 2);
 $min-device-width: $layout-width + ($leading * 2); // iPhone 5 portrait width
 
+$hero-content-width: $min-device-width;
+$hero-content-height: $leading * 24;
+
 $font-stack: "Garamond", serif;
 $h-font-stack: "SerapionPro", "Garamond", serif;
 $h-font-stack-bold: "SerapionPro-BoldItalic", "Garamond", serif;
