@@ -39,7 +39,7 @@ _.extend(BlotterSite.HeroExamples.ChannelSplitMaterial.prototype, (function () {
         }, this));
 
         this._setRandomPositions(_.pluck(this.scopes, "domElement"));
-        this._handleNewPosition(0.5, 0.5);
+        this._setInitialCenter();
       }, this));
     },
 
@@ -101,6 +101,19 @@ _.extend(BlotterSite.HeroExamples.ChannelSplitMaterial.prototype, (function () {
       }, this));
     },
 
+    _setInitialCenter : function () {
+      var parentWidth = $(document).width(),
+          parentHeight = $(document).height(),
+          exampleWidth = this.$el.width(),
+          exampleHeight = this.$el.height();
+          examplePosition = this.$el.offset();
+
+      this._handleNewCenter(
+        (examplePosition.left + (exampleWidth / 2.0)) / parentWidth,
+        (examplePosition.top + (exampleHeight / 2.0)) / parentHeight
+      )
+    },
+
     _handleMousemove : function (e) {
       var parentWidth = $(document).width(),
           parentHeight = $(document).height();
@@ -108,10 +121,10 @@ _.extend(BlotterSite.HeroExamples.ChannelSplitMaterial.prototype, (function () {
       var posX = e.pageX / parentWidth;
       var posY = e.pageY / parentHeight;
 
-      this._handleNewPosition(posX, posY);
+      this._handleNewCenter(posX, posY);
     },
 
-    _handleNewPosition : function (posX, posY) {
+    _handleNewCenter : function (posX, posY) {
       var parentWidth = $(document).width(),
           parentHeight = $(document).height();
 
