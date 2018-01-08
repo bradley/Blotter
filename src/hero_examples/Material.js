@@ -11,6 +11,7 @@ BlotterSite.HeroExamples.Material.prototype = (function () {
 
     init : function (el) {
       this.el = el;
+      this.$el = $(this.el);
 
       this.prepare();
     },
