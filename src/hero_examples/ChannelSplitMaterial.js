@@ -29,7 +29,7 @@ _.extend(BlotterSite.HeroExamples.ChannelSplitMaterial.prototype, (function () {
     },
 
     _setListeners : function () {
-      this.$el.mousemove(_.bind(this._handleMousemove, this));
+      $(document).mousemove(_.bind(this._handleMousemove, this));
     },
 
     render : function () {
@@ -102,23 +102,22 @@ _.extend(BlotterSite.HeroExamples.ChannelSplitMaterial.prototype, (function () {
     },
 
     _handleMousemove : function (e) {
-      var parentOffset = this.$el.offset(),
-          parentWidth = this.$el.width(),
-          parentHeight = this.$el.height();
+      var parentWidth = $(document).width(),
+          parentHeight = $(document).height();
 
-      var posX = (e.pageX - parentOffset.left) / parentWidth;
-      var posY = (e.pageY - parentOffset.top) / parentHeight;
+      var posX = e.pageX / parentWidth;
+      var posY = e.pageY / parentHeight;
 
       this._handleNewPosition(posX, posY);
     },
 
     _handleNewPosition : function (posX, posY) {
-      var parentWidth = this.$el.width(),
-          parentHeight = this.$el.height();
+      var parentWidth = $(document).width(),
+          parentHeight = $(document).height();
 
       _.each(this.scopes, _.bind(function (scope) {
         var element = $(scope.domElement),
-            position = element.position(),
+            position = element.offset(),
             x = (position.left + (element.width() / 2.0)) / parentWidth,
             y = (position.top + (element.height() / 2.0)) / parentHeight;
 
