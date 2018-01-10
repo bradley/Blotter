@@ -53,7 +53,7 @@ _.extend(BlotterSite.HeroExamples.ChannelSplitMaterial.prototype, (function () {
     },
 
     _blotterTexts : function () {
-      var texts = ["A", "B", "C", "D", "母", "F", "G", "I", "J", "K", "L", "M", "生"];
+      var texts = ["A", "B", "C", "D", "E", "F", "G", "I", "J", "K", "L", "M", "N"];
       var textProperties = {
         family :  "'Avenir', sans-serif",
         leading : 1.0,
@@ -65,11 +65,6 @@ _.extend(BlotterSite.HeroExamples.ChannelSplitMaterial.prototype, (function () {
         fill : "#202020"
       };
       var sizes = [17, 17, 26, 26, 26, 26, 78, 78, 78, 104, 104, 156, 208];
-
-      var chinese = [
-        "母", // mother,
-        "生", // birth/raw?
-      ];
 
       return _.map(_.shuffle(texts), function(text, i) {
         var properties = _.clone(textProperties);

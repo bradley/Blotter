@@ -1445,57 +1445,6 @@ $(document).ready(function () {
       this.setupListeners();
     },
 
-    onDestroy : function () {
-      // this.blotter.stop();
-      // this.blotter.teardown();
-    },
-
-    // _setBlotter : function () {
-    //   var $container = this.$el.find(".hero-blotter");
-
-    //   this.texts = ["а", "б", "в", "г", "ѓ", "ґ", "д", "е", "ё", "ж", "з", "и", "й", "ҋ", "к", "ќ", "л", "м", "н", "о", "п", "р", "с", "т", "у", "ў", "ф", "х", "ч", "ц", "ш", "щ", "џ", "ь", "ъ", "ы", "љ", "њ", "ѕ", "є", "э", "і", "ї", "ј", "ћ", "ю", "я", "ђ", "ѣ", "ѳ", "ѵ", "ғ", "ҕ", "җ", "ҙ", "қ", "ҝ", "ҟ", "ҡ", "ң", "ҥ", "ҧ", "ԥ", "ҩ", "ҫ", "ҭ", "ү", "ұ", "ҳ", "ҵ", "ҷ", "ҹ", "һ", "ԧ", "ҽ", "ҿ", "ӏ", "ӂ", "ӄ", "ӆ", "ӈ", "ӊ", "ӌ", "ӎ", "ӑ", "ӓ", "ӕ", "ӗ", "ә", "ӛ", "ӝ", "ӟ", "ӡ", "ӣ", "ӥ", "ӧ", "ө", "ӫ", "ӭ", "ӯ", "ӱ", "ӳ", "ӵ", "ӷ", "ӹ", "ӽ", "ԑ", "ԓ", "ԝ", "ҍ", "ҏ", "в", "г", "д", "ж", "з", "и", "й", "к", "л", "п", "т", "ц", "ш", "щ", "ю", "б"];
-    //   this.textProperties = {
-    //     family : "sans-serif",
-    //     size : 32,
-    //     fill : "#202020"
-    //   };
-
-    //   this.blotterTexts = _.map(this.texts, _.bind(function(textStr) {
-    //     return new Blotter.Text(textStr, this.textProperties);
-    //   }, this));
-
-    //   this.material = new Blotter.LiquidDistortMaterial();
-    //   this.blotter = new Blotter(this.material, { texts : this.blotterTexts });
-
-    //   _.each(this.blotterTexts, _.bind(function(blotterText) {
-    //     this.blotter.forText(blotterText).appendTo($container);
-    //   }, this));
-    // },
-
-    _setBlotter : function () {
-      // var $container = this.$el.find(".hero-blotter");
-
-      // this.texts = ["ABC"];
-      // this.textProperties = {
-      //   family : "sans-serif",
-      //   size : 420,
-      //   leading : 1.0,
-      //   weight : 800,
-      //   fill : "#202020"
-      // };
-
-      // this.blotterTexts = _.map(this.texts, _.bind(function(textStr) {
-      //   return new Blotter.Text(textStr, this.textProperties);
-      // }, this));
-
-      // this.material = new Blotter.SlidingDoorMaterial();
-      // this.blotter = new Blotter(this.material, { texts : this.blotterTexts });
-
-      // _.each(this.blotterTexts, _.bind(function(blotterText) {
-      //   this.blotter.forText(blotterText).appendTo($container);
-      // }, this));
-    },
-
     onShow : function () {
       this.exampleInstance.render();
     },
@@ -1506,7 +1455,7 @@ $(document).ready(function () {
     },
 
     _setExample : function () {
-      var materialName = "ChannelSplitMaterial";
+      var materialName = "ChannelSplitMaterial"; //"LiquidDistortMaterial";
 
       var $container = this.$el.find(".hero-blotter"),
           Example = window["BlotterSite"]["HeroExamples"][materialName];
