@@ -1,5 +1,14 @@
 <img src="https://github.com/bradley/Blotter/blob/assets/images/logo.png" alt="Blotter logo"/>
 
+A JavaScript API for drawing unconventional text effects on the web.
+
+[Home](http://bradley.github.io/Blotter) • [Examples](http://jonobr1.github.io/two.js/#examples) • [Documentation](http://jonobr1.github.io/two.js/#documentation) • [Help](https://github.com/jonobr1/two.js/issues?labels=question)
+
+
+[Home](http://bradley.github.io/Blotter) &mdash;
+[Help](https://github.com/bradley/blotter/issues?labels=question)
+
+## Overview
 
 ## Making Changes
 
