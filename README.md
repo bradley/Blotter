@@ -26,7 +26,7 @@ Any texts you pass to Blotter can be individually configured using familiar styl
 
 Download the [minified version](https://raw.github.com/bradley/blotter/build/blotter.min.js).
 
-To apply text effects, you'll also want to include at least one [material](https://github.com/bradley/blotter/build/materials/), so download one of Blotter's ready-made effects, such as the [ChannelSplitMaterial](https://raw.github.com/bradley/blotter/build/materials/ChannelSplitMaterial.js).
+To apply text effects, you'll also want to include at least one [material](https://github.com/bradley/Blotter/tree/master/build/materials/), so download one of Blotter's ready-made effects, such as the [ChannelSplitMaterial](https://raw.github.com/bradley/blotter/build/materials/ChannelSplitMaterial.js).
 
 Include both in your HTML.
 
