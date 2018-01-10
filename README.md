@@ -1,4 +1,4 @@
-<img src="https://github.com/bradley/Blotter/blob/assets/images/logo.png" alt="Blotter logo" styles="margin-left: -17px"/>
+<img src="https://github.com/bradley/Blotter/blob/assets/images/logo.png" alt="Blotter logo" style="margin-left: -17px"/>
 
 
 ## Making Changes
