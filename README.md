@@ -1,3 +1,6 @@
+<img src="https://github.com/bradley/Blotter/blob/assets/images/logo.png" alt="Blotter logo" height="70" >
+
+
 ## Making Changes
 
 Firstly, install Blotter's build dependencies (OSX):
