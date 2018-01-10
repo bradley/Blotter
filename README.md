@@ -1,7 +1,6 @@
-Making Changes
-==
+## Making Changes
 
-Firstly, install Blotter's dependencis (OSX):
+Firstly, install Blotter's build dependencies (OSX):
 
 ```
 $ npm install grunt
