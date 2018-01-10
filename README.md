@@ -69,17 +69,19 @@ The following illustrates how to render Blotter's [ChannelSplitMaterial](http://
 ```
 
 
-## Making Changes
+## Making Changes / Custom Builds
 
 Firstly, install Blotter's build dependencies (OSX):
 
 ```
-$ npm install grunt
+$ cd ~/path/to/blotter
 $ npm install
 ```
 
-The blotter.js and blotter.min.js files are built from source files in the src directory. Do not edit blotter.js directly. Instead, edit the source files, and then run the following build the generated files:
+The `blotter.js`, `blotter.clean.js`, and `blotter.min.js` files are built from source files in the `/src` directory. Do not edit these files directly. Instead, edit the source files within the `/src` directory and then run the following to build the generated files:
 
 ```
 $ grunt
 ```
+
+You will the updated build files at `/build/blotter.js`, `/build/blotter.clean.js`, and `/build/blotter.min.js`.
