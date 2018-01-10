@@ -21,6 +21,50 @@ Rather than executing on a time based interval, Blotter's internal animation loo
 - **What Blotter Isn't**
 Any texts you pass to Blotter can be individually configured using familiar style properties. You can use custom font faces through the @font-face spec. However, Blotter ultimately renders the texts passed to it into canvas elements. This means rendered text won't be selectable. Blotter is great for elements like titles, headings, and texts used for graphic purposes. It's not recommended that Blotter be used for lengthy bodies of text, and should in most cases be applied to words individually.
 
+
+## Usage
+
+Download the [minified version](https://raw.github.com/bradley/blotter/build/blotter.min.js).
+
+To apply text effects, you'll also want to include at least one [material](https://github.com/bradley/blotter/build/materials/), so download one of Blotter's ready-made effects, such as the [ChannelSplitMaterial](https://raw.github.com/bradley/blotter/build/materials/ChannelSplitMaterial.js).
+
+Include both in your HTML.
+
+```html
+<script src="path/to/blotter.min.js"></script>
+<script src="path/to/ChannelSplitMaterial.js"></script>
+```
+
+The following illustrates how to render Blotter's [ChannelSplitMaterial](http://bradley.github.io/Blotter/#/materials/ChannelSplitMaterial) in the `body` of your page with default settings.
+
+```html
+<!doctype html>
+<html>
+  <head>
+    <script src="path/to/blotter.min.js"></script>
+    <script src="path/to/ChannelSplitMaterial.js"></script>
+  </head>
+  <body>
+    <script>
+      var text = new Blotter.Text("Hello", {
+        family : "serif",
+        size : 120,
+        fill : "#171717"
+      });
+
+      var material = new Blotter.ChannelSplitMaterial();
+
+      var blotter = new Blotter(material, { texts : text });
+
+      var scope = blotter.forText(text);
+
+      scope.appendTo(document.body);
+    </script>
+  </body>
+</html>
+```
+
+
 ## Making Changes
 
 Firstly, install Blotter's build dependencies (OSX):
