@@ -29,7 +29,7 @@ BlotterSite.Materials.Material.prototype = (function () {
     },
 
     render : function () {
-      // update
+      // override
     }
   }
 })();

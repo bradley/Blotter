@@ -772,17 +772,51 @@ code {
   max-width: 676px;
   width: 100%; }
 
-.hero-content-wrap {
-  display: table;
-  height: calc(100vh - 182px);
-  width: 100%; }
-  .hero-content-wrap .hero-content {
-    display: table-cell;
-    padding-top: 182px;
-    text-align: center;
-    vertical-align: middle; }
-    .hero-content-wrap .hero-content > * {
-      text-align: left; }
+.hero-container {
+  left: 0;
+  position: absolute;
+  right: 0; }
+  .hero-container .hero-content {
+    display: table;
+    height: calc(100vh - 182px);
+    padding: 0 52px;
+    position: absolute; }
+    .hero-container .hero-content.hero-content-examples {
+      left: 0;
+      min-width: 546px;
+      width: calc(100% - 650px); }
+    .hero-container .hero-content.hero-content-dialogue {
+      right: 0;
+      width: 650px; }
+    .hero-container .hero-content .hero-inner-container {
+      display: table-cell;
+      padding-top: 182px;
+      text-align: center;
+      vertical-align: middle; }
+      .hero-container .hero-content .hero-inner-container > * {
+        text-align: left; }
+    @media screen and (max-width: 1196px), screen and (max-device-width: 1196px) {
+      .hero-container .hero-content {
+        height: initial !important;
+        min-width: 100% !important;
+        position: initial !important;
+        width: 100% !important; }
+        .hero-container .hero-content .hero-inner-container {
+          display: block !important; }
+          .hero-container .hero-content .hero-inner-container.hero-blotter-container {
+            padding-top: 104px !important; }
+          .hero-container .hero-content .hero-inner-container .content-right {
+            max-width: 546px; } }
+    @media screen and (max-width: 728px), screen and (max-device-width: 728px) {
+      .hero-container .hero-content {
+        padding: 0 17px;
+        right: initial !important; } }
+  .hero-container .hero-blotter {
+    height: 624px;
+    margin: 0 auto;
+    max-width: 728px;
+    position: relative;
+    width: 100%; }
 
 .content {
   overflow: hidden;
@@ -862,7 +896,7 @@ code {
   #masthead ul.nav {
     display: block;
     list-style: none;
-    margin: 0;
+    margin: 0 -17px 0 0;
     padding: 0; }
     #masthead ul.nav li {
       display: inline-block;
@@ -875,8 +909,6 @@ code {
       #masthead ul.nav li:first-child {
         margin-left: 0;
         padding-left: 0; }
-      #masthead ul.nav li:last-child {
-        padding-right: 0; }
       #masthead ul.nav li a {
         border: none;
         color: #202020;
@@ -903,7 +935,7 @@ code {
 #marginalia-container {
   bottom: 0;
   left: 0;
-  min-height: 100vh;
+  min-height: calc(100vh - 17px);
   position: absolute;
   right: 0;
   top: 0;

@@ -1205,8 +1205,15 @@ $(document).ready(function () {
       "    float r = 1.0 - (1.0 - darkestSample.r) / a;",
       "    float g = 1.0 - (1.0 - darkestSample.g) / a;",
       "    float b = 1.0 - (1.0 - darkestSample.b) / a;",
+      "    vec3 outRGB = vec3(r, g, b);",
 
-      "    mainImage = vec4(r, g, b, a);",
+      "    // Uncomment to add gradient coloring to logo",
+      "    //vec3 leftColor = vec3(1.0, 0.6235294118, 0.09411764706); // Red",
+      "    //vec3 rightColor = vec3(0.8470588235, 0.1215686275, 0.0); // Yellow",
+      "    //outRGB += uv.x * leftColor;",
+      "    //outRGB += (1.0 - uv.x) * rightColor;",
+
+      "    mainImage = vec4(outRGB, a);",
       "}"
     ].join("\n");
 
@@ -1291,15 +1298,15 @@ $(document).ready(function () {
       prepareLogo : function () {
         if (!this.logoBlotter) {
           var text = new Blotter.Text("Blotter", {
-                family : "'SerapionPro', sans-serif",
-                size : 48,
-                weight : 100,
-                leading : "52px",
-                paddingTop : 14,
-                paddingLeft : 14,
-                paddingRight : 14,
-                fill : "#202020"
-              });
+            family : "'SerapionPro', sans-serif",
+            size : 48,
+            weight : 100,
+            leading : "52px",
+            paddingTop : 14,
+            paddingLeft : 14,
+            paddingRight : 14,
+            fill : "#202020"
+          });
 
           var material = new Blotter.ShaderMaterial(_logoMainImage, {
             uniforms : {
@@ -1328,15 +1335,15 @@ $(document).ready(function () {
           this.navEls = navEls;
 
           var properties = {
-                family : "'Avenir', sans-serif",
-                size : 14,
-                weight : 100,
-                leading : "50px",
-                paddingLeft : 13,
-                paddingRight : 13,
-                paddingTop : 2,
-                fill : "#202020"
-              };
+            family : "'Avenir', sans-serif",
+            size : 14,
+            weight : 100,
+            leading : "50px",
+            paddingLeft : 13,
+            paddingRight : 13,
+            paddingTop : 2,
+            fill : "#202020"
+          };
 
           this.navTexts = _.reduce(this.navEls, function(m, elem) {
             var text = new Blotter.Text($(elem).data("text"), properties);
@@ -1433,7 +1440,27 @@ $(document).ready(function () {
 
       this.downloadBtn = this.$el.find(".download-btn");
 
+      this._setExample();
+
       this.setupListeners();
+    },
+
+    onShow : function () {
+      this.exampleInstance.render();
+    },
+
+    onDestroy : function () {
+      this.exampleInstance.blotter.stop();
+      this.exampleInstance.blotter.teardown();
+    },
+
+    _setExample : function () {
+      var materialName = "ChannelSplitMaterial"; //"LiquidDistortMaterial";
+
+      var $container = this.$el.find(".hero-blotter"),
+          Example = window["BlotterSite"]["HeroExamples"][materialName];
+
+      this.exampleInstance = new Example($container);
     },
 
     setupListeners : function () {
