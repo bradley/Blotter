@@ -78,7 +78,7 @@ $ cd ~/path/to/blotter
 $ npm install
 ```
 
-The `blotter.js`, `blotter.clean.js`, and `blotter.min.js` files are built from source files in the `/src` directory. Do not edit these files directly. Instead, edit the source files within the `/src` directory and then run the following to build the generated files:
+The `blotter.js`, `blotter.clean.js`, and `blotter.min.js` files are built from source files in the `/src` directory. Do not edit these built files directly. Instead, edit the source files within the `/src` directory and then run the following to build the generated files:
 
 ```
 $ grunt
