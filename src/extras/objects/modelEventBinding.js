@@ -1,21 +1,21 @@
-  (function(Blotter, _) {
+import { each, bind } from "underscore";
 
-  Blotter.ModelEventBinding = function (model, eventCallbacks) {
-    this.model = model;
-    this.eventCallbacks = eventCallbacks || {};
-  };
 
-  Blotter.ModelEventBinding.prototype = {
+var ModelEventBinding = function (model, eventCallbacks) {
+  this.model = model;
+  this.eventCallbacks = eventCallbacks || {};
+};
 
-    constructor : Blotter.ModelEventBinding,
+ModelEventBinding.prototype = {
 
-    unsetEventCallbacks : function () {
-      _.each(this.eventCallbacks, _.bind(function (callback, eventKey) {
-        this.model.off(eventKey, callback);
-      }, this));
-    }
-  };
+  constructor : ModelEventBinding,
 
-})(
-  this.Blotter, this._
-);
+  unsetEventCallbacks : function () {
+    each(this.eventCallbacks, bind(function (callback, eventKey) {
+      this.model.off(eventKey, callback);
+    }, this));
+  }
+};
+
+
+export { ModelEventBinding };

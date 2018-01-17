@@ -1,41 +1,42 @@
-(function(Blotter, _, THREE, setImmediate) {
+import { DataTexture, RGBAFormat, FloatType } from "three";
+import immediate from "immediate";
 
-  // Create a Data Texture holding the boundaries (x/y offset and w/h) that should be available to any given texel for any given text.
 
-  Blotter.BoundsDataTextureBuilder = (function () {
+// Create a Data Texture holding the boundaries (x/y offset and w/h) that should be available to any given texel for any given text.
 
-    function _boundsDataForMapping (mapping) {
-      var texts = mapping.texts,
-          data = new Float32Array(texts.length * 4);
+var BoundsDataTextureBuilder = (function () {
 
-      for (var i = 0; i < texts.length; i++) {
-        var text = texts[i],
-            bounds = mapping.boundsForText(text);
+  function _boundsDataForMapping (mapping) {
+    var texts = mapping.texts,
+        data = new Float32Array(texts.length * 4);
 
-        data[4*i]   = bounds.x;                               // x
-        data[4*i+1] = mapping.height - (bounds.y + bounds.h); // y
-        data[4*i+2] = bounds.w;                               // w
-        data[4*i+3] = bounds.h;                               // h
-      }
+    for (var i = 0; i < texts.length; i++) {
+      var text = texts[i],
+          bounds = mapping.boundsForText(text);
 
-      return data;
+      data[4*i]   = bounds.x;                               // x
+      data[4*i+1] = mapping.height - (bounds.y + bounds.h); // y
+      data[4*i+2] = bounds.w;                               // w
+      data[4*i+3] = bounds.h;                               // h
     }
 
-    return {
+    return data;
+  }
 
-      build : function (mapping, completion) {
-        setImmediate(function() {
-          var data = _boundsDataForMapping(mapping),
-              texture = new THREE.DataTexture(data, mapping.texts.length, 1, THREE.RGBAFormat, THREE.FloatType);
+  return {
 
-          texture.needsUpdate = true;
+    build : function (mapping, completion) {
+      immediate(function() {
+        var data = _boundsDataForMapping(mapping),
+            texture = new DataTexture(data, mapping.texts.length, 1, RGBAFormat, FloatType);
 
-          completion(texture);
-        });
-      }
-    };
-  })();
+        texture.needsUpdate = true;
 
-})(
-  this.Blotter, this._, this.THREE, this.setImmediate
-);
+        completion(texture);
+      });
+    }
+  };
+})();
+
+
+export { BoundsDataTextureBuilder };

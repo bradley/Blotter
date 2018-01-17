@@ -1,20 +1,22 @@
-(function(Blotter, _, EventEmitter) {
+import { defaults, extend } from "underscore";
+import EventEmitter from "wolfy87-eventemitter";
+import { ModelEventBinding } from "./modelEventBinding";
 
-  Blotter.EmitterObject = function (settings) {
-    this.init.call(this, arguments);
-  };
 
-  Blotter.EmitterObject.prototype = {
+var EmitterObject = function (settings) {
+  this.init.call(this, arguments);
+};
 
-    constructor : Blotter.ModelEventBinding,
+EmitterObject.prototype = {
 
-    init : function (settings) {
-      _.defaults(this, settings);
-    }
-  };
+  constructor : ModelEventBinding,
 
-  _.extend(Blotter.EmitterObject.prototype, EventEmitter.prototype);
+  init : function (settings) {
+    defaults(this, settings);
+  }
+};
 
-})(
-  this.Blotter, this._, this.EventEmitter
-);
+extend(EmitterObject.prototype, EventEmitter.prototype);
+
+
+export { EmitterObject };

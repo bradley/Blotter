@@ -1,29 +1,30 @@
-(function(Blotter, _, THREE) {
+import { bind } from "underscore";
+import { TextureLoader, LinearFilter } from "three";
 
-  Blotter.TextTextureBuilder = (function() {
 
-    return {
+var TextTextureBuilder = (function() {
 
-      build : function (mapping, completion) {
-        var loader = new THREE.TextureLoader(),
-            url;
+  return {
 
-        mapping.toCanvas(_.bind(function(canvas) {
-          url = canvas.toDataURL();
+    build : function (mapping, completion) {
+      var loader = new TextureLoader(),
+          url;
 
-          loader.load(url, _.bind(function(texture) {
-            texture.generateMipmaps = true; // TODO: Make optional.
-            texture.minFilter = THREE.LinearFilter;
-            texture.magFilter = THREE.LinearFilter;
-            texture.needsUpdate = true;
+      mapping.toCanvas(bind(function(canvas) {
+        url = canvas.toDataURL();
 
-            completion(texture);
-          }, this));
+        loader.load(url, bind(function(texture) {
+          texture.generateMipmaps = true; // TODO: Make optional.
+          texture.minFilter = LinearFilter;
+          texture.magFilter = LinearFilter;
+          texture.needsUpdate = true;
+
+          completion(texture);
         }, this));
-      }
-    };
-  })();
+      }, this));
+    }
+  };
+})();
 
-})(
-  this.Blotter, this._, this.THREE
-);
+
+export { TextTextureBuilder };

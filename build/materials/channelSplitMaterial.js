@@ -6,7 +6,7 @@
 
   Blotter.ChannelSplitMaterial.prototype = Object.create(Blotter.Material.prototype);
 
-  Blotter._extendWithGettersSetters(Blotter.ChannelSplitMaterial.prototype, (function () {
+  Blotter.Helpers.extendWithGettersSetters(Blotter.ChannelSplitMaterial.prototype, (function () {
 
     function _mainImageSrc () {
       var mainImageSrc = [

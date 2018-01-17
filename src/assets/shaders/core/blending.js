@@ -1,6 +1,4 @@
-(function(Blotter, _) {
-
-  Blotter.Assets.Shaders.Blending = [
+var Blending = [
     "//",
     "// Author : Bradley Griffith",
     "// License : Distributed under the MIT License.",
@@ -69,8 +67,7 @@
 
     "  return unblend;",
     "}",
-  ].join("\n");
+].join("\n");
 
-})(
-  this.Blotter, this._
-);
+
+export { Blending };

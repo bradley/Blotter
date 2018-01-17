@@ -1,7 +1,4 @@
-(function(Blotter, _) {
+var VendorPrefixes = ["ms", "moz", "webkit", "o"];
 
-  Blotter.VendorPrefixes = ["ms", "moz", "webkit", "o"];
 
-})(
-  this.Blotter, this._
-);
+export { VendorPrefixes };

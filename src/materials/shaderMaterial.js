@@ -1,26 +1,28 @@
-(function(Blotter, _) {
+import { defaults } from "underscore";
+import { Material } from "./material";
+import { extendWithGettersSetters } from "../helpers";
 
-  Blotter.ShaderMaterial = function(mainImage, options) {
-    Blotter.Material.apply(this, arguments);
+
+var ShaderMaterial = function(mainImage, options) {
+  Material.apply(this, arguments);
+};
+
+ShaderMaterial.prototype = Object.create(Material.prototype);
+
+extendWithGettersSetters(ShaderMaterial.prototype, (function () {
+
+  return {
+
+    constructor : ShaderMaterial,
+
+    init : function (mainImage, options) {
+      defaults(this, options);
+
+      this.mainImage = mainImage;
+    }
   };
 
-  Blotter.ShaderMaterial.prototype = Object.create(Blotter.Material.prototype);
+})());
 
-  Blotter._extendWithGettersSetters(Blotter.ShaderMaterial.prototype, (function () {
 
-    return {
-
-      constructor : Blotter.RGBSplitMaterial,
-
-      init : function (mainImage, options) {
-        _.defaults(this, options);
-
-        this.mainImage = mainImage;
-      }
-    };
-
-  })());
-
-})(
-  this.Blotter, this._
-);
+export { ShaderMaterial };

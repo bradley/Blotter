@@ -1,108 +1,112 @@
-(function(Blotter, _, EventEmitter) {
+import { extend, reduce, bind } from "underscore";
+import EventEmitter from "wolfy87-eventemitter";
+import { Messaging } from "../extras/core/messaging";
+import { UniformUtils } from "../extras/uniformUtils";
+import { extendWithGettersSetters } from "../helpers";
 
-  Blotter.Material = function () {
-    this.init.apply(this, arguments);
-  };
 
-  Blotter.Material.prototype = (function() {
+var Material = function () {
+  this.init.apply(this, arguments);
+};
 
-    function _defaultMainImageSrc () {
-      var mainImage = [
+Material.prototype = (function() {
 
-        "void mainImage( out vec4 mainImage, in vec2 fragCoord ) {",
+  function _defaultMainImageSrc () {
+    var mainImage = [
 
-          "mainImage = textTexture(fragCoord / uResolution);",
+      "void mainImage( out vec4 mainImage, in vec2 fragCoord ) {",
 
-        "}"
+        "mainImage = textTexture(fragCoord / uResolution);",
 
-      ];
+      "}"
 
-      return mainImage.join("\n");
-    }
+    ];
 
-    function _getUniformInterfaceForUniformDescription (uniformDescription) {
-      var interface = {
-        _type : uniformDescription.type,
-        _value : uniformDescription.value,
+    return mainImage.join("\n");
+  }
 
-        get type () {
-          return this._type;
-        },
+  function _getUniformInterfaceForUniformDescription (uniformDescription) {
+    var uniformInterface = {
+      _type : uniformDescription.type,
+      _value : uniformDescription.value,
 
-        set type (v) {
-          this._type = v;
-        },
+      get type () {
+        return this._type;
+      },
 
-        get value () {
-          return this._value;
-        },
+      set type (v) {
+        this._type = v;
+      },
 
-        set value (v) {
-          if (!Blotter.UniformUtils.validValueForUniformType(this._type, v)) {
-            Blotter.Messaging.logError("Blotter.Material", false, "uniform value not valid for uniform type: " + this._type);
-            return;
-          }
-          this._value = v;
+      get value () {
+        return this._value;
+      },
 
-          this.trigger("update");
+      set value (v) {
+        if (!UniformUtils.validValueForUniformType(this._type, v)) {
+          Messaging.logError("Blotter.Material", false, "uniform value not valid for uniform type: " + this._type);
+          return;
         }
-      };
+        this._value = v;
 
-      _.extend(interface, EventEmitter.prototype);
-
-      return interface;
-    }
-
-    function _getUniformInterface (uniforms) {
-      return _.reduce(uniforms, _.bind(function (memo, uniformDescription, uniformName) {
-        memo[uniformName] = _getUniformInterfaceForUniformDescription(uniformDescription);
-        memo[uniformName].on("update", _.bind(function () {
-          this.trigger("update:uniform", [uniformName]);
-        }, this));
-
-        return memo;
-      }, this), {});
-    }
-
-    return {
-
-      constructor : Blotter.Material,
-
-      get needsUpdate () { }, // jshint
-
-      set needsUpdate (value) {
-        if (value === true) {
-          this.trigger("update");
-        }
-      },
-
-      get mainImage () {
-        return this._mainImage;
-      },
-
-      set mainImage (mainImage) {
-        this._mainImage = mainImage || _defaultMainImageSrc();
-      },
-
-      get uniforms () {
-        return this._uniforms;
-      },
-
-      set uniforms (uniforms) {
-        this._uniforms = _getUniformInterface.call(this, Blotter.UniformUtils.extractValidUniforms(
-          _.extend(uniforms, Blotter.UniformUtils.defaultUniforms)
-        ));
-      },
-
-      init : function () {
-        this.mainImage = _defaultMainImageSrc();
-        this.uniforms = {};
+        this.trigger("update");
       }
     };
-  })();
 
-  Blotter._extendWithGettersSetters(Blotter.Material.prototype, EventEmitter.prototype);
+    extend(uniformInterface, EventEmitter.prototype);
 
-})(
-  this.Blotter, this._, this.EventEmitter
-);
+    return uniformInterface;
+  }
+
+  function _getUniformInterface (uniforms) {
+    return reduce(uniforms, bind(function (memo, uniformDescription, uniformName) {
+      memo[uniformName] = _getUniformInterfaceForUniformDescription(uniformDescription);
+      memo[uniformName].on("update", bind(function () {
+        this.trigger("update:uniform", [uniformName]);
+      }, this));
+
+      return memo;
+    }, this), {});
+  }
+
+  return {
+
+    constructor : Material,
+
+    get needsUpdate () { }, // jshint
+
+    set needsUpdate (value) {
+      if (value === true) {
+        this.trigger("update");
+      }
+    },
+
+    get mainImage () {
+      return this._mainImage;
+    },
+
+    set mainImage (mainImage) {
+      this._mainImage = mainImage || _defaultMainImageSrc();
+    },
+
+    get uniforms () {
+      return this._uniforms;
+    },
+
+    set uniforms (uniforms) {
+      this._uniforms = _getUniformInterface.call(this, UniformUtils.extractValidUniforms(
+        extend(uniforms, UniformUtils.defaultUniforms)
+      ));
+    },
+
+    init : function () {
+      this.mainImage = _defaultMainImageSrc();
+      this.uniforms = {};
+    }
+  };
+})();
+
+extendWithGettersSetters(Material.prototype, EventEmitter.prototype);
+
+
+export { Material };

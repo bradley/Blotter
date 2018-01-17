@@ -1,33 +1,36 @@
-(function(Blotter, _, THREE, EventEmitter) {
+import { Math } from "three";
+import EventEmitter from "wolfy87-eventemitter";
+import { extendWithGettersSetters } from "../helpers";
+import { TextUtils } from "../extras/textUtils";
 
-  Blotter.Text = function (value, properties) {
-    this.id = THREE.Math.generateUUID();
-    this.value = value;
-    this.properties = properties;
-  };
 
-  Blotter.Text.prototype = {
-    constructor : Blotter.Text,
+var Text = function (value, properties) {
+  this.id = Math.generateUUID();
+  this.value = value;
+  this.properties = properties;
+};
 
-    get needsUpdate () { }, // jshint
+Text.prototype = {
+  constructor : Text,
 
-    set needsUpdate (value) {
-      if (value === true) {
-        this.trigger("update");
-      }
-    },
+  get needsUpdate () { }, // jshint
 
-    get properties () {
-      return this._properties;
-    },
-
-    set properties (properties) {
-      this._properties = Blotter.TextUtils.ensurePropertyValues(properties);
+  set needsUpdate (value) {
+    if (value === true) {
+      this.trigger("update");
     }
-  };
+  },
 
-  Blotter._extendWithGettersSetters(Blotter.Text.prototype, EventEmitter.prototype);
+  get properties () {
+    return this._properties;
+  },
 
-})(
-  this.Blotter, this._, this.THREE, this.EventEmitter
-);
+  set properties (properties) {
+    this._properties = TextUtils.ensurePropertyValues(properties);
+  }
+};
+
+extendWithGettersSetters(Text.prototype, EventEmitter.prototype);
+
+
+export { Text };
