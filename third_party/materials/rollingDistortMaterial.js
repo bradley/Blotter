@@ -1,4 +1,4 @@
-(function(Blotter, _) {
+(function(Blotter) {
 
   Blotter.RollingDistortMaterial = function() {
     Blotter.Material.apply(this, arguments);
@@ -6,7 +6,7 @@
 
   Blotter.RollingDistortMaterial.prototype = Object.create(Blotter.Material.prototype);
 
-  Blotter._extendWithGettersSetters(Blotter.RollingDistortMaterial.prototype, (function () {
+  Blotter.Helpers.extendWithGettersSetters(Blotter.RollingDistortMaterial.prototype, (function () {
 
     function _mainImageSrc () {
       var mainImageSrc = [
@@ -172,5 +172,5 @@
   })());
 
 })(
-  this.Blotter, this._
+  this.Blotter
 );

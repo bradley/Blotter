@@ -1,4 +1,4 @@
-(function(Blotter, _) {
+(function(Blotter) {
 
   Blotter.ChannelSplitMaterial = function() {
     Blotter.Material.apply(this, arguments);
@@ -6,7 +6,7 @@
 
   Blotter.ChannelSplitMaterial.prototype = Object.create(Blotter.Material.prototype);
 
-  Blotter._extendWithGettersSetters(Blotter.ChannelSplitMaterial.prototype, (function () {
+  Blotter.Helpers.extendWithGettersSetters(Blotter.ChannelSplitMaterial.prototype, (function () {
 
     function _mainImageSrc () {
       var mainImageSrc = [
@@ -183,5 +183,5 @@
   })());
 
 })(
-  this.Blotter, this._
+  this.Blotter
 );
