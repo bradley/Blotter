@@ -19,9 +19,10 @@
     "creative-coding",
     "lsd"
   ],
-  "homepage": "",
+  "homepage": "http://bradley.github.io/Blotter",
   "author": {
     "name": "Bradley Griffith",
+    "email": "bradley.j.griffith@gmail.com",
     "url": "http://bradley.computer"
   },
   "main": "build/blotter.js",
@@ -32,7 +33,6 @@
   "bugs": {
     "url": "https://github.com/bradley/blotter/issues"
   },
-  "license": "MIT",
   "licenses": [
     {
       "type": "MIT",
