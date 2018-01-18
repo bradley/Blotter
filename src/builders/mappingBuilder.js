@@ -1,6 +1,6 @@
 import { reduce } from "underscore";
 import immediate from "immediate";
-import GrowingPacker from "jakes-gordon-growing-packer";
+import GrowingPacker from "growing-packer";
 import { TextUtils } from "../extras/textUtils";
 import { Mapping } from "../mapping/mapping";
 
@@ -47,21 +47,20 @@ var MappingBuilder = (function () {
         }
 
         // Add fit object to all objects in tempTextBounds.
-        pack = packer.pack(tempTextBounds.sort(_sortTexts));
-        packedRectangles = pack.rectangles();
+        packer.fit(tempTextBounds.sort(_sortTexts));
 
         // Add fit objects back into this._textBounds for each Text id.
         for (var i = 0; i < tempTextBounds.length; i++) {
-          var packedSizesObject = packedRectangles[i];
+          var packedSizesObject = tempTextBounds[i];
           textBounds[packedSizesObject.referenceId] = {
             w : packedSizesObject.w,
             h : packedSizesObject.h,
-            x : packedSizesObject.x,
-            y : pack.height - (packedSizesObject.y + packedSizesObject.h)
+            x : packedSizesObject.fit.x,
+            y : packer.root.h - (packedSizesObject.fit.y + packedSizesObject.h)
           };
         }
 
-        completion(new Mapping(filteredTexts, textBounds, pack.width, pack.height));
+        completion(new Mapping(filteredTexts, textBounds, packer.root.w, packer.root.h));
       });
     }
   };

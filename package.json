@@ -4,8 +4,7 @@
   "description": "",
   "scripts": {
     "build": "rollup -c",
-    "build-uglify": "rollup -c && uglifyjs build_2/blotter.js -cm --preamble > build_2/blotter.min.js",
-    "build-super": "npx browserify src/blotter.js -t ascjsify -p threejs-tree-shake > build_3/blotter.js && rollup -c && uglifyjs build_3/blotter.js -cm --preamble > build_3/blotter.min.js"
+    "build-uglify": "rollup -c && uglifyjs build/blotter.js -cm --preamble > build/blotter.min.js"
   },
   "keywords": [
     "webgl",
@@ -45,34 +44,25 @@
   },
   "dependencies": {
     "detector-webgl": "^2.0.0",
+    "growing-packer": "file:./third_party/growing-packer",
     "immediate": "^3.2.3",
-    "jakes-gordon-growing-packer": "^0.1.0",
     "three": "^0.89.0",
     "underscore": "^1.8.3",
     "wolfy87-eventemitter": "^5.2.4"
   },
   "devDependencies": {
-    "ascjsify": "^1.0.0",
-    "babel-core": "^6.26.0",
-    "babel-loader": "^7.1.2",
-    "babel-plugin-lodash": "^3.3.2",
-    "babel-preset-env": "^1.6.1",
-    "browserify": "^15.2.0",
     "eslint": "^4.1.1",
     "eslint-config-mdcs": "^4.2.2",
     "google-closure-compiler": "^20170521.0.0",
     "lodash-webpack-plugin": "^0.11.4",
     "rollup": "^0.51.0",
-    "rollup-plugin-babel": "^3.0.3",
     "rollup-plugin-commonjs": "^3.1.0",
-    "rollup-plugin-node-builtins": "^2.1.2",
-    "rollup-plugin-node-globals": "^1.1.0",
+    "rollup-plugin-includepaths": "^0.2.2",
+    "rollup-plugin-license": "^0.5.0",
     "rollup-plugin-node-resolve": "^3.0.2",
     "rollup-plugin-replace": "^2.0.0",
     "rollup-watch": "^4.0.0",
-    "threejs-tree-shake": "^1.0.0",
     "uglify-js": "^3.0.23",
-    "underscore-es": "^1.9.8",
     "webpack": "^3.10.0"
   }
 }

@@ -1,0 +1,11 @@
+{
+  "name": "growing-packer",
+  "version": "1.0.0",
+  "description": "A javascript binary tree based algorithm for 2d bin-packing suitable for generating CSS sprites",
+  "main": "growing-packer.js",
+  "author": "Jake Gordon and contributors",
+  "license": "MIT",
+  "dependencies": {
+  },
+  "repository": "git@github.com:jakesgordon/bin-packing"
+}

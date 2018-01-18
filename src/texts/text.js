@@ -1,11 +1,11 @@
-import { Math } from "three";
+import { Math as ThreeMath } from "three";
 import EventEmitter from "wolfy87-eventemitter";
 import { extendWithGettersSetters } from "../helpers";
 import { TextUtils } from "../extras/textUtils";
 
 
 var Text = function (value, properties) {
-  this.id = Math.generateUUID();
+  this.id = ThreeMath.generateUUID();
   this.value = value;
   this.properties = properties;
 };

@@ -1,6 +1,5 @@
 import { reduce, reduceRight, extend, wrap, omit } from "underscore";
 import { DataTexture, RGBAFormat, FloatType, ShaderMaterial } from "three";
-import GrowingPacker from "jakes-gordon-growing-packer";
 import { UniformUtils } from "../extras/uniformUtils";
 import { MappingMaterial } from "../mapping/mappingMaterial";
 import { Blending } from "../assets/shaders/core/blending";
