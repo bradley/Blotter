@@ -2,20 +2,26 @@
   "name": "blotter",
   "version": "0.1.0",
   "description": "",
+  "scripts": {
+    "build": "grunt"
+  },
   "keywords": [
-    "lsd",
-    "acid",
-    "dom",
     "webgl",
-    "canvas",
-    "animation",
-    "text",
+    "glsl",
+    "glsl-shaders",
+    "javascript",
     "typography",
-    "substances"
+    "text",
+    "css",
+    "animation",
+    "design",
+    "creative-coding",
+    "lsd"
   ],
-  "homepage": "",
+  "homepage": "http://bradley.github.io/Blotter",
   "author": {
     "name": "Bradley Griffith",
+    "email": "bradley.j.griffith@gmail.com",
     "url": "http://bradley.computer"
   },
   "main": "build/blotter.js",
@@ -26,7 +32,6 @@
   "bugs": {
     "url": "https://github.com/bradley/blotter/issues"
   },
-  "license" : "MIT",
   "licenses": [
     {
       "type": "MIT",

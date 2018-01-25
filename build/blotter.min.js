@@ -7,7 +7,7 @@
 //                                          ▀
 // The MIT License
 //
-// Copyright © 2015 - ∞, Blotter / Bradley Griffith / http://bradley.computer
+// Copyright © 1986 - ∞, Blotter / Bradley Griffith / http://bradley.computer
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal

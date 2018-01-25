@@ -1,8 +1,5 @@
-/* globals module */
-
 module.exports = function(grunt) {
 
-  // Project configuration
   grunt.initConfig({
     pkg: grunt.file.readJSON("package.json"),
     meta: {
@@ -15,7 +12,7 @@ module.exports = function(grunt) {
         "third_party/three/Detector.js",
         "third_party/set_immediate/setimmediate.js",
         "third_party/event_emitter/EventEmitter.js",
-        "third_party/packer/packer.growing.js",
+        "third_party/bin-packing/packer.growing.js",
         "third_party/request_animation_frame/requestAnimationFrame.js"
       ],
 
@@ -53,13 +50,6 @@ module.exports = function(grunt) {
       options: {
         separator: "\n"
       },
-      clean : {
-        src: [
-          "<%= meta.licenseFile %>",
-          "<%= meta.srcFiles %>"
-        ],
-        dest: "build/blotter.clean.js"
-      },
       dist: {
         src: [
           "<%= meta.licenseFile %>",
@@ -75,8 +65,8 @@ module.exports = function(grunt) {
         preserveComments: "some"
       },
       release: {
-        src: ["build/blotter.js"],
-        dest: "build/blotter.min.js"
+        src: ["build/<%= pkg.name %>.js"],
+        dest: "build/<%= pkg.name %>.min.js"
       }
     }
   });

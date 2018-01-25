@@ -1,4 +1,4 @@
-(function(Blotter, _) {
+(function(Blotter) {
 
   Blotter.RollingDistortMaterial = function() {
     Blotter.Material.apply(this, arguments);
@@ -172,5 +172,5 @@
   })());
 
 })(
-  this.Blotter, this._
+  this.Blotter
 );

@@ -1,4 +1,4 @@
-(function(Blotter, _) {
+(function(Blotter) {
 
   Blotter.LiquidDistortMaterial = function() {
     Blotter.Material.apply(this, arguments);
@@ -46,5 +46,5 @@
   })());
 
 })(
-  this.Blotter, this._
+  this.Blotter
 );

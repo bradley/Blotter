@@ -1,4 +1,4 @@
-(function(Blotter, _) {
+(function(Blotter) {
 
   Blotter.SlidingDoorMaterial = function() {
     Blotter.Material.apply(this, arguments);
@@ -111,5 +111,5 @@
   })());
 
 })(
-  this.Blotter, this._
+  this.Blotter
 );
