@@ -6,7 +6,7 @@
 
   Blotter.LiquidDistortMaterial.prototype = Object.create(Blotter.Material.prototype);
 
-  Blotter.Helpers.extendWithGettersSetters(Blotter.LiquidDistortMaterial.prototype, (function () {
+  Blotter._extendWithGettersSetters(Blotter.LiquidDistortMaterial.prototype, (function () {
 
     function _mainImageSrc () {
       var mainImageSrc = [

@@ -6,7 +6,7 @@
 
   Blotter.SlidingDoorMaterial.prototype = Object.create(Blotter.Material.prototype);
 
-  Blotter.Helpers.extendWithGettersSetters(Blotter.SlidingDoorMaterial.prototype, (function () {
+  Blotter._extendWithGettersSetters(Blotter.SlidingDoorMaterial.prototype, (function () {
 
     function _mainImageSrc () {
       var mainImageSrc = [

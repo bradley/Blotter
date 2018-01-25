@@ -6,7 +6,7 @@
 
   Blotter.FliesMaterial.prototype = Object.create(Blotter.Material.prototype);
 
-  Blotter.Helpers.extendWithGettersSetters(Blotter.FliesMaterial.prototype, (function () {
+  Blotter._extendWithGettersSetters(Blotter.FliesMaterial.prototype, (function () {
 
     function _mainImageSrc () {
       var mainImageSrc = [
