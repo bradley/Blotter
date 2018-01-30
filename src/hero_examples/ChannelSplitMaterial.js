@@ -25,7 +25,6 @@ _.extend(BlotterSite.HeroExamples.ChannelSplitMaterial.prototype, (function () {
   return {
     prepare : function () {
       this._prepareBlotter();
-      this._setListeners();
     },
 
     _setListeners : function () {
@@ -34,6 +33,8 @@ _.extend(BlotterSite.HeroExamples.ChannelSplitMaterial.prototype, (function () {
 
     render : function () {
       this.blotter.on("ready", _.bind(function() {
+        this._setListeners();
+
         _.each(this.scopes, _.bind(function (scope) {
           scope.appendTo(this.el);
         }, this));
@@ -53,7 +54,7 @@ _.extend(BlotterSite.HeroExamples.ChannelSplitMaterial.prototype, (function () {
     },
 
     _blotterTexts : function () {
-      var texts = ["A", "B", "C", "D", "E", "F", "G", "I", "J", "K", "L", "M", "N"];
+      var texts = ["A", "B", "C", "D", "E", "F", "G", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"];
       var textProperties = {
         family :  "'Avenir', sans-serif",
         leading : 1.0,
@@ -66,7 +67,7 @@ _.extend(BlotterSite.HeroExamples.ChannelSplitMaterial.prototype, (function () {
       };
       var sizes = [17, 17, 26, 26, 26, 26, 78, 78, 78, 104, 104, 156, 208];
 
-      return _.map(_.shuffle(texts), function(text, i) {
+      return _.map(_.shuffle(texts).slice(0, 13), function(text, i) {
         var properties = _.clone(textProperties);
         properties.size = sizes[i];
 

@@ -1255,10 +1255,16 @@ $(document).ready(function () {
       },
 
       onRender : function () {
-        this.prepareLogo();
-        this.prepareNav();
+        // Ensure fontFace loaded before attempting to render with Blotter.
+        var fontLoader = new FontLoader(['SerapionPro'], {
+          'fontLoaded' : function (font) {
+            this.prepareLogo();
+            this.prepareNav();
 
-        this.setListeners();
+            this.setListeners();
+          }.bind(this)
+        });
+        fontLoader.loadFonts();
       },
 
       setListeners : function () {
@@ -1298,7 +1304,7 @@ $(document).ready(function () {
       prepareLogo : function () {
         if (!this.logoBlotter) {
           var text = new Blotter.Text("Blotter", {
-            family : "'SerapionPro', sans-serif",
+            family : "'SerapionPro', serif",
             size : 48,
             weight : 100,
             leading : "52px",
@@ -1335,7 +1341,7 @@ $(document).ready(function () {
           this.navEls = navEls;
 
           var properties = {
-            family : "'Avenir', sans-serif",
+            family : "'Avenir', 'Helvetica Neue', 'Helvetica', Arial, sans-serif",
             size : 14,
             weight : 100,
             leading : "50px",
