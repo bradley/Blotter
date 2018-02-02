@@ -264,11 +264,14 @@ scope.appendTo(elem);
           <div class="content-right">
             <h3>Ready-made Effects</h3>
             <p>
-              Blotter is a tool designed to allow anyone, regardless of their knowledge of <code>GLSL</code> itself, to use the power of <code>GLSL</code> fragment shaders<sup>2</sup> to create and apply real-time visual effects to texts on the web. To this end, Blotter provides a growing collection of ready-to-use and configurable materials.
+              Blotter is a tool designed to allow anyone, regardless of their knowledge of <code>GLSL</code> itself, to use the power of <code>GLSL</code> fragment shaders<sup>2</sup> to create and apply real-time visual effects to texts on the web. To this end, Blotter provides a growing collection of ready-to-use and configurable <a href="#/materials">materials</a>.
             </p>
             <aside data-number="2" class="anchor"><span id="2"></span>If you're unfamiliar with <code>GLSL</code> and fragment shaders, check out <a href="http://shadertoy.com" title="Shadertoy">Shadertoy</a> and read this <a href="http://stackoverflow.com/questions/19449590/webgl-glsl-how-does-a-shadertoy-work" title="Understanding Shadertoy">Stackoverflow thread</a> to learn about pixel shaders and what they are capable of.</aside>
             <p>
-              The configurability of provided materials will depend on the material itself, but the basic interface will typically center around the manipulation of “uniforms”. Think of uniforms as values that describe how effects are rendered. For example, a material that blurs your text might have a uniform called <code>uBlurRadius</code> to help you control the amount of blurring your text undergoes. Below, we'll use Blotter's ready-made <code>Blotter.BlurMaterial</code> to blur our text.
+              The configurability of provided materials will depend on the material itself, but the basic interface will typically center around the manipulation of “uniforms”. Think of uniforms as values that describe how effects are rendered. For example, a material that bends and distorts your text as if viewed on the bottom of a pool might have a uniform called <code>uSpeed</code> to help you control the speed at which the distortion occurs when animated.
+            </p>
+            <p>
+              Below, we will use Blotter's ready-made <code>LiquidDistortMaterial</code> to illustrate how to use Blotter materials by controlling uniforms.
             </p>
           </div>
           <div class="content-left">
@@ -289,12 +292,24 @@ scope.appendTo(elem);
 var text = new Blotter.Text("observation", {
   family : "'Garamond', serif",
   size : 27,
-  fill : "#171717"
+  fill : "#171717",
+  paddingLeft : 40,
+  paddingRight : 40
 });
 
-var material = new Blotter.RollDistortMaterial();
-material.uniforms.uDistortion.value = 3.0;
-material.uniforms.uDistortion2.value = 5.0;
+var material = new Blotter.LiquidDistortMaterial();
+
+// Play with the value for uSpeed. Lower values slow
+// down animation, while higher values speed it up. At
+// a speed of 0.0, animation is stopped entirely.
+material.uniforms.uSpeed.value = 0.25;
+
+// Try uncommenting the following line to play with
+// the "volatility" of the effect. Higher values here will
+// produce more dramatic changes in the appearance of your
+// text as it animates, but you will likely want to keep
+// the value below 0.0.
+//material.uniforms.uVolatility.value = 0.30;
 
 var blotter = new Blotter(material, {
   texts : text
