@@ -1341,7 +1341,7 @@ $(document).ready(function () {
           this.navEls = navEls;
 
           var properties = {
-            family : "'Avenir', 'Helvetica Neue', 'Helvetica', Arial, sans-serif",
+            family : "'AvenirLTStd-Book', 'Helvetica', Arial, sans-serif",
             size : 14,
             weight : 100,
             leading : "50px",

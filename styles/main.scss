@@ -16,11 +16,6 @@
   font-style: italic;
 }
 
-@font-face{
-  font-family: "Avenir";
-  src: url('./fonts/REPLACE_ME_WITH_SOMETHING_REAL.ttf');
-}
-
 
 /*  Base
     ------------------------------------- */
@@ -274,7 +269,7 @@ code {
       background-position: center;
       background-repeat: no-repeat;
       background-size: 100%;
-      font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
+      font-family: $grotesque-font-stack;
       font-size: 18px;
       height: 26px;
       line-height: 26px;

@@ -54,9 +54,9 @@ _.extend(BlotterSite.HeroExamples.ChannelSplitMaterial.prototype, (function () {
     },
 
     _blotterTexts : function () {
-      var texts = ["A", "B", "C", "D", "E", "F", "G", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"];
+      var texts = ["A", "B", "C", "D", "E", "F", "G", "I", "J", "K", "L", "M", "N", "O", "P", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]; // Note: I dont like 'Q' with this typeface, so it's absent.
       var textProperties = {
-        family :  "'Avenir', sans-serif",
+        family :  "'AvenirLTStd-Black', 'Helvetica Neue', 'Helvetica', Arial, sans-serif",
         leading : 1.0,
         weight : 800,
         paddingLeft : 60,

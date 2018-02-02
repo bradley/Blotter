@@ -405,9 +405,6 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
   font-family: "Garamond";
   src: url("./fonts/EBGaramond12-Italic.ttf");
   font-style: italic; }
-@font-face {
-  font-family: "Avenir";
-  src: url("./fonts/REPLACE_ME_WITH_SOMETHING_REAL.ttf"); }
 /*  Base
     ------------------------------------- */
 * {
@@ -581,7 +578,7 @@ code {
   -webkit-box-sizing: border-box;
   color: #fff;
   display: inline-block;
-  font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
+  font-family: "AvenirLTStd-Book", "Helvetica Neue", "Helvetica", Arial, sans-serif;
   font-size: 14px;
   font-weight: 500;
   height: 26px;
@@ -598,7 +595,7 @@ code {
   display: inline-block;
   position: relative; }
   .dropdown-select .dropdown-title {
-    font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
+    font-family: "AvenirLTStd-Book", "Helvetica Neue", "Helvetica", Arial, sans-serif;
     font-size: 14px;
     margin-right: 21px;
     padding-right: 18px;
@@ -611,7 +608,7 @@ code {
       background-position: center;
       background-repeat: no-repeat;
       background-size: 100%;
-      font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
+      font-family: "AvenirLTStd-Book", "Helvetica Neue", "Helvetica", Arial, sans-serif;
       font-size: 18px;
       height: 26px;
       line-height: 26px;
@@ -693,7 +690,7 @@ code {
 
 .arrow-up {
   display: inline-block;
-  font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
+  font-family: "AvenirLTStd-Book", "Helvetica Neue", "Helvetica", Arial, sans-serif;
   font-size: 26px;
   height: 26px;
   line-height: 26px;
@@ -709,7 +706,7 @@ code {
 
 .arrow-down {
   display: inline-block;
-  font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
+  font-family: "AvenirLTStd-Book", "Helvetica Neue", "Helvetica", Arial, sans-serif;
   font-size: 26px;
   height: 26px;
   line-height: 26px;
@@ -725,7 +722,7 @@ code {
 
 .arrow-left {
   display: inline-block;
-  font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
+  font-family: "AvenirLTStd-Book", "Helvetica Neue", "Helvetica", Arial, sans-serif;
   font-size: 26px;
   height: 26px;
   line-height: 26px;
@@ -741,7 +738,7 @@ code {
 
 .arrow-right {
   display: inline-block;
-  font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
+  font-family: "AvenirLTStd-Book", "Helvetica Neue", "Helvetica", Arial, sans-serif;
   font-size: 26px;
   height: 26px;
   line-height: 26px;
@@ -912,7 +909,7 @@ code {
       #masthead ul.nav li a {
         border: none;
         color: #202020;
-        font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
+        font-family: "AvenirLTStd-Book", "Helvetica Neue", "Helvetica", Arial, sans-serif;
         font-size: 14px;
         line-height: 52px;
         position: relative; }
@@ -975,7 +972,7 @@ code {
     top: inherit;
     right: inherit; } }
 .download-options .dropdown-options li .download-title {
-  font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
+  font-family: "AvenirLTStd-Book", "Helvetica Neue", "Helvetica", Arial, sans-serif;
   font-size: 17px;
   line-height: 1.5; }
 .download-options .dropdown-options li .download-details {
@@ -1022,7 +1019,7 @@ ul.documentation {
   ul.documentation li {
     margin-top: 26px; }
     ul.documentation li p.property > strong, ul.documentation li p.method > strong, ul.documentation li p.construction > strong {
-      font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
+      font-family: "AvenirLTStd-Book", "Helvetica Neue", "Helvetica", Arial, sans-serif;
       font-weight: 500;
       margin-right: 13px; }
     ul.documentation li > ul {
@@ -1081,7 +1078,7 @@ ul.documentation {
       border-radius: 4px 4px 0 0;
       cursor: pointer;
       color: #202020;
-      font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif; }
+      font-family: "AvenirLTStd-Book", "Helvetica Neue", "Helvetica", Arial, sans-serif; }
   .tabbed-editor .tab-content {
     width: 100%;
     float: left;
@@ -1119,7 +1116,7 @@ ul.documentation {
   width: 100%; }
   .output:before {
     display: inline-block;
-    font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
+    font-family: "AvenirLTStd-Book", "Helvetica Neue", "Helvetica", Arial, sans-serif;
     font-size: 26px;
     height: 26px;
     line-height: 26px;
@@ -1189,7 +1186,7 @@ ul.documentation {
       .materials-list > li .material-overlay .material-name {
         color: #202020;
         display: block;
-        font-family: "Avenir", "Helvetica Neue", "Helvetica", Arial, sans-serif;
+        font-family: "AvenirLTStd-Book", "Helvetica Neue", "Helvetica", Arial, sans-serif;
         font-size: 17px;
         font-weight: normal;
         line-height: 1.5; }
