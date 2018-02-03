@@ -45,10 +45,11 @@ $(document).ready(function () {
 
   BlotterSite.Router = Backbone.Router.extend({
     routes : {
-      "overview" : "overview",
       "basics" : "basics",
+      "overview" : "overview",
       "materials" : "materials",
       "materials/:materialName" : "material",
+      "documentation" : "documentation",
       "" : "home"
     },
 
@@ -92,6 +93,14 @@ $(document).ready(function () {
       BlotterSite.instance.goto(view, {
         navView : new BlotterSite.Views.BackNavigation()
       });
+    },
+
+    documentation : function () {
+      var view = new BlotterSite.Views.Documentation();
+
+      $("body").trigger("pathChange", ["documentation"]);
+
+      BlotterSite.instance.goto(view);
     }
   });
 
@@ -1256,7 +1265,7 @@ $(document).ready(function () {
 
       onRender : function () {
         // Ensure fontFace loaded before attempting to render with Blotter.
-        var fontLoader = new FontLoader(['SerapionPro'], {
+        var fontLoader = new FontLoader(['SerapionPro', 'AvenirLTStd-Book'], {
           'fontLoaded' : function (font) {
             this.prepareLogo();
             this.prepareNav();
@@ -1634,6 +1643,26 @@ $(document).ready(function () {
       this.blotterText = new Blotter.Text(this.textStr, this.textProperties);
 
       this.materialInstance = new Material($container, this.blotterText);
+    },
+
+    _setNotation : function () {
+      var $notation = this.$(".notated-list");
+
+      _.each($notation, _.bind(function (el) {
+        new BlotterSite.Helpers.Notation($(el), {
+          lineHeight: 26
+        });
+      }, this));
+    }
+  });
+
+
+  BlotterSite.Views.Documentation = Marionette.ItemView.extend({
+    className : "documentation",
+    template : _.template($("template[name=documentation]").html())(),
+
+    onRender : function () {
+      this._setNotation();
     },
 
     _setNotation : function () {

@@ -1019,7 +1019,7 @@ ul.documentation {
   ul.documentation li {
     margin-top: 26px; }
     ul.documentation li p.property > strong, ul.documentation li p.method > strong, ul.documentation li p.construction > strong {
-      font-family: "AvenirLTStd-Book", "Helvetica Neue", "Helvetica", Arial, sans-serif;
+      font-family: "AvenirLTStd-Heavy", "Helvetica Neue", "Helvetica", Arial, sans-serif;
       font-weight: 500;
       margin-right: 13px; }
     ul.documentation li > ul {

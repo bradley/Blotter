@@ -18,7 +18,7 @@
     <!--
     /**
      * @license
-     * MyFonts Webfont Build ID 3519862, 2018-02-01T20:39:12-0500
+     * MyFonts Webfont Build ID 3519951, 2018-02-02T02:10:19-0500
      *
      * The fonts listed in this notice are subject to the End User License
      * Agreement(s) entered into by the website owner. All other parties are
@@ -36,6 +36,11 @@
      * Copyright: Copyright (c) Frantisek Storm. www.stormtype.com, 2005. All rights reserved.
      * Licensed pageviews: 10,000
      *
+     * Webfont: AvenirLTStd-Heavy by Linotype
+     * URL: https://www.myfonts.com/fonts/linotype/avenir/85-heavy/
+     * Copyright: Copyright &#x00A9; 1989, 1995, 2002 Adobe Systems Incorporated.  All Rights Reserved. &#x00A9; 1981, 1995, 2002 Heidelberger Druckmaschinen AG. All rights reserved.
+     * Licensed pageviews: 250,000
+     *
      * Webfont: AvenirLTStd-Book by Linotype
      * URL: https://www.myfonts.com/fonts/linotype/avenir/45-book/
      * Copyright: Copyright &#x00A9; 1989, 1995, 2002 Adobe Systems Incorporated.  All Rights Reserved. &#x00A9; 1981, 1995, 2002 Heidelberger Druckmaschinen AG. All rights reserved.
@@ -47,7 +52,7 @@
      * Licensed pageviews: 250,000
      *
      *
-     * License: https://www.myfonts.com/viewlicense?type=web&buildid=3519862
+     * License: https://www.myfonts.com/viewlicense?type=web&buildid=3519951
      *
      * © 2018 MyFonts Inc
     */
@@ -435,6 +440,343 @@ scope.appendTo(elem);</script>
         </div>
       </div>
     </template>
+
+    <template name="documentation">
+      <div>
+        <div class="content">
+          <div class="content-right">
+            <div class="documentation">
+              <h2 class="anchor"><span id="documentation"></span>Documentation</h2>
+
+
+              <h3 class="anchor"><span id="documentation-blotter"></span>Blotter</h3>
+              <p>
+                <code>Blotter</code> is the window level interface for interacting with all Blotter classes and properties. Whenever you want to apply a new Blotter material to texts on your page, you will instantiate a new object of the <code>Blotter</code> class.
+              </p>
+              <ul class="documentation">
+                <li id="blotter-construction">
+                  <p class="property class">
+                    <strong>construction</strong>
+                    <code>var blotter = new Blotter(material[, options]);</code>
+                  </p>
+                  <p class="description">
+                    Create a new instance of <code>Blotter</code> where <code>material</code> is an instance of any <code>Blotter.Material</code> and <code>options</code> is an optional JavaScript object with any of the following optional parameters.
+                  </p>
+                  <div class="notated-list">
+                    <ul class="properties">
+                      <li>
+                        <p class="property array">
+                          <strong>texts</strong>
+                          <code>options.texts</code>
+                        </p>
+                        <p class="description">
+                          An array of <code>Blotter.Text</code> objects, or optionally a single <code>Blotter.Text</code> object. Any texts given to an instance of <code>Blotter</code> will be drawn according to the instance's material.
+                        </p>
+                      </li>
+                      <li>
+                        <p class="property number">
+                          <strong>ratio</strong>
+                          <code>options.ratio</code>
+                        </p>
+                        <p class="description">
+                          The backing store size in relation to the canvas element, or otherwise known as the <code>devicePixelRatio</code>. This property essentially tells Blotter what pixel ratio to draw texts for in relation to the screen, and will effect the clarity of rendered texts on retina devices. Blotter determines this property by default to ensure the most appropriate pixel ratio for your user's device, so it's unlikely you'll need to set this yourself.
+                        </p>
+                      </li>
+                      <li>
+                        <p class="property boolean">
+                          <strong>autobuild</strong>
+                          <code>options.autobuild</code>
+                        </p>
+                        <p class="description">
+                          Tells the instance of <code>Blotter</code> whether or not to immediately build and configure itself using the supplied <code>Blotter.Material</code> instance and optional parameters such as supplied <code>Blotter.Text</code> objects. By default, Blotter will assume this to be <code>true</code>. If for some reason you intend to add additonal texts or change the material prior to use, it would be a good idea to set this to <code>false</code> and later set the value of <code>needsUpdate</code> to <code>true</code> in order to trigger a fresh build.
+                        </p>
+                      </li>
+                      <li>
+                        <p class="property boolean">
+                          <strong>autostart</strong>
+                          <code>options.autostart</code>
+                        </p>
+                        <p class="description">
+                          Tells the instance of <code>Blotter</code> whether or not to immediately begin rendering and updating universal uniforms. By default, Blotter will assume this to be <code>true</code>.
+                        </p>
+                      </li>
+                      <li>
+                        <p class="property boolean">
+                          <strong>autoplay</strong>
+                          <code>options.autoplay</code>
+                        </p>
+                        <p class="description">
+                          Tells the instance of <code>Blotter</code> whether or not to immediately begin the render loops for all <code>Blotter.RenderScope</code> objects created for each of its texts. By default, Blotter will assume this to be <code>true</code>.
+                        </p>
+                        <p class="description">
+                          Each draw will happen on <code>requestAnimationFrame</code>.
+                        </p>
+                      </li>
+                    </ul>
+                  </div>
+                  <p class="description">
+                    Listen for the <code>ready</code> event to perform work after the instance has finished building itself.
+                  </p>
+                </li>
+                <li>
+                  <p class="property property">
+                    <strong>needsUpdate</strong>
+                    <code>blotter.needsUpdate = true</code>
+                  </p>
+                  <p class="description">
+                    Occasionally you may need to perform actions on your instances of <code>Blotter</code> that require it to repeat important preparatory steps necessary for rendering the instance's texts. To do so, simply set the value of <code>blotter.needsUpdate</code> to <code>true</code> and the instance will take care of the rest. You can listen for the instance's <code>update</code> event if you need to do any work after the update has completed.
+                  </p>
+                </li>
+                <li>
+                  <p class="property property">
+                    <strong>material</strong>
+                    <code>blotter.material</code>
+                  </p>
+                  <p class="description">
+                    A reference to the <code>Blotter.Material</code> instance being used to render your texts. Setting this property after your <code>Blotter</code> object's initialization requires that your <code>Blotter</code> instance be rebuilt by setting the value of its <code>needsUpdate</code> property to <code>true</code>.
+                  </p>
+                </li>
+                 <li>
+                  <p class="property property">
+                    <strong>texts</strong>
+                    <code>blotter.texts</code>
+                  </p>
+                  <p class="description">
+                    A reference to the <code>Blotter.Text</code> objects being rendered by your instance of <code>Blotter</code>. Setting this property after your <code>Blotter</code> object's initialization requires that your <code>Blotter</code> instance be rebuilt by setting the value of its <code>needsUpdate</code> property to <code>true</code>.
+                  </p>
+                </li>
+                <li id="blotter">
+                  <p class="property function">
+                    <strong>start</strong>
+                    <code>blotter.start()</code>
+                  </p>
+                  <p class="description">
+                    Tells the instance of <code>Blotter</code> to begin rendering and updating universal uniforms.
+                  </p>
+                  <p class="description">
+                    At the time of each draw on <code>requestAnimationFrame</code> the instance will emit a <code>render</code> event.
+                  </p>
+                </li>
+                <li id="blotter">
+                  <p class="property function">
+                    <strong>stop</strong>
+                    <code>blotter.stop()</code>
+                  </p>
+                  <p class="description">
+                    Tells the instance of <code>Blotter</code> to stop rendering and updating universal uniforms.
+                  </p>
+                </li>
+                <li id="blotter">
+                  <p class="property function">
+                    <strong>setMaterial</strong>
+                    <code>blotter.setMaterial(material)</code>
+                  </p>
+                  <p class="description">
+                    Sets the <code>Blotter.Material</code> instance being used to render your texts. In order for this change to go into effect you'll have to rebuild your <code>Blotter</code> instance by setting the value of its <code>needsUpdate</code> property to <code>true</code>.
+                  </p>
+                </li>
+                <li id="blotter">
+                  <p class="property function">
+                    <strong>addText</strong>
+                    <code>blotter.addText(text)</code>
+                  </p>
+                  <p class="description">
+                    Alias method for <code>blotter.addTexts(text)</code>, see below.
+                  </p>
+                </li>
+                <li id="blotter">
+                  <p class="property function">
+                    <strong>addTexts</strong>
+                    <code>blotter.addTexts(texts)</code>
+                  </p>
+                  <p class="description">
+                    Adds one or more <code>Blotter.Text</code> objects to be rendered by your instance of <code>Blotter</code>. In order for this change to go into effect you'll have to rebuild your <code>Blotter</code> instance by setting the value of its <code>needsUpdate</code> property to <code>true</code>.
+                  </p>
+                </li>
+                <li id="blotter">
+                  <p class="property function">
+                    <strong>removeText</strong>
+                    <code>blotter.removeText(text)</code>
+                  </p>
+                  <p class="description">
+                    Alias method for <code>blotter.removeTexts(text)</code>, see below.
+                  </p>
+                </li>
+                <li id="blotter">
+                  <p class="property function">
+                    <strong>removeTexts</strong>
+                    <code>blotter.removeTexts(texts)</code>
+                  </p>
+                  <p class="description">
+                    Removes one or more <code>Blotter.Text</code> objects from being rendered by your instance of <code>Blotter</code>. In order for this change to go into effect you'll have to rebuild your <code>Blotter</code> instance by setting the value of its <code>needsUpdate</code> property to <code>true</code>.
+                  </p>
+                </li>
+                <li id="blotter">
+                  <p class="property function">
+                    <strong>forText</strong>
+                    <code>blotter.forText(text)</code>
+                  </p>
+                  <p class="description">
+                    Returns an instance of <code>Blotter.RenderScope</code> for the given <code>Blotter.Text</code> object.
+                  </p>
+                </li>
+                <li id="blotter">
+                  <p class="property function">
+                    <strong>boundsForText</strong>
+                    <code>blotter.boundsForText(text)</code>
+                  </p>
+                  <p class="description">
+                    Returns a JavaScript object containing the width (<code>w</code>), height (<code>h</code>), x-offset (<code>x</code>), and y-offset (<code>y</code>) of the given <code>Blotter.Text</code> object in the backbuffer the <code>Blotter</code> instance uses to render the material's effect collectively for all texts in the instance. These values, especially the x-offset and y-offset, will likely be of little use to you.
+                  </p>
+                </li>
+              </ul>
+
+
+              <h3 class="anchor"><span id="documentation-blotter"></span>Blotter.Material</h3>
+              <p>
+                Blotter Materials describe how your texts will be rendered and provide the interface through which you can control <code>uniforms</code> to introduce variety in the characteristics of any effect.
+              </p>
+              <p>
+                As the <code>Blotter.Material</code> class is the abstract base class for all Blotter <a href="#/materials">Materials</a>, using this class will simply render your texts according to their font and style properties.
+              </p>
+              <ul class="documentation">
+                <li id="blotter-material-construction">
+                  <p class="property class">
+                    <strong>construction</strong>
+                    <code>var material = new Blotter.Material();</code>
+                  </p>
+                  <p class="description">
+                    Create a new instance of <code>Blotter.Material</code>.
+                  </p>
+                </li>
+                <li>
+                  <p class="property property">
+                    <strong>needsUpdate</strong>
+                    <code>material.needsUpdate = true</code>
+                  </p>
+                  <p class="description">
+                    Rarely, you may need to perform actions on your instances of <code>Blotter.Material</code> that require it to tell the instance of <code>Blotter</code> to repeat important preparatory steps necessary for rendering the instance's texts. To do so, set the value of <code>material.needsUpdate</code> to <code>true</code> and the instance will take care of the rest. You can listen for the <code>Blotter</code> instance's <code>update</code> event if you need to do any work after the update has completed.
+                  </p>
+                </li>
+                <li>
+                  <p class="property string">
+                    <strong>mainImage</strong>
+                    <code>material.mainImage</code>
+                  </p>
+                  <p class="description">
+                    For every Blotter Material, there is an underlying <code>GLSL</code> fragment shader that describes how the individual Material's effect will be rendered. The <code>material.mainImage</code> property returns the shader's <code>GLSL</code> in string form. Setting this property after your <code>Blotter.Material</code> object's initialization requires that your <code>Blotter.Material</code> instance be rebuilt by setting the value of its <code>needsUpdate</code> property to <code>true</code>.
+                  </p>
+                </li>
+
+                <li>
+                  <p class="property array">
+                    <strong>uniforms</strong>
+                    <code>material.uniforms</code>
+                  </p>
+                  <p class="description">
+                    The fundamental interface for all effects in Blotter. Every Material will provide its own array of uniform objects, each having a <code>type</code> and a <code>value</code>. To manipulate any effect, simply set the <code>value</code> of the uniform you wish to change.
+                  </p>
+                  <p>
+                   Listed below are the four uniform types available in Blotter.
+                  </p>
+                  <div class="notated-list">
+                    <ul>
+                      <li>
+                        <p class="property">
+                          <strong>"1f"</strong>
+                        </p>
+                        <p class="description">
+                          For "1f" type uniforms, values should be set using floating point values.<br/>
+                          <code>material.uniforms.myUniform1.value = 0.5;</code>.
+                        </p>
+                      </li>
+                      <li>
+                        <p class="property">
+                          <strong>"2f"</strong>
+                        </p>
+                        <p class="description">
+                          For "2f" type uniforms, values should be set using an array of two floating point values.<br/>
+                          <code>material.uniforms.myUniform2.value = [0.5, 0.5];</code>.
+                        </p>
+                      </li>
+                      <li>
+                        <p class="property">
+                          <strong>"3f"</strong>
+                        </p>
+                        <p class="description">
+                          For "3f" type uniforms, values should be set using an array of three floating point values.<br/>
+                          <code>material.uniforms.myUniform3.value = [0.5, 0.5, 0.5];</code>.
+                        </p>
+                      </li>
+                      <li>
+                        <p class="property">
+                          <strong>"4f"</strong>
+                        </p>
+                        <p class="description">
+                          For "4f" type uniforms, values should be set using an array of four floating point values.<br/>
+                          <code>material.uniforms.myUniform4.value = [0.5, 0.5, 0.5, 0.5];</code>.
+                        </p>
+                      </li>
+                    </ul>
+                  </div>
+                  <p>
+                    As stated, every Blotter Material will provide its own uniforms unique to the characteristics of its own effect. However, there are a handful of uniforms on which all Blotter Materials rely. These are listed below.
+                  </p>
+                  <div class="notated-list">
+                    <ul>
+                      <li>
+                        <p class="property">
+                          <strong>uResolution</strong>
+                        </p>
+                        <p class="description">
+                          The resolution of an individual text within the mapping material being rendered by your material. Type "2f". You should never set the value of this uniform yourself.
+                        </p>
+                      </li>
+                      <li>
+                        <p class="property">
+                          <strong>uGlobalTime</strong>
+                        </p>
+                        <p class="description">
+                          The global time in seconds. Type "1f". You should never set the value of this uniform yourself.
+                        </p>
+                      </li>
+                      <li>
+                        <p class="property">
+                          <strong>uTimeDelta</strong>
+                        </p>
+                        <p class="description">
+                          The render time in seconds. Type "1f". You should never set the value of this uniform yourself.
+                        </p>
+                      </li>
+                      <li>
+                        <p class="property">
+                          <strong>uBlendColor</strong>
+                        </p>
+                        <p class="description">
+                          The base color against which all blending should occur within an effect. Type "4f". The default value for this uniform is white, or <code>[1.0, 1.0, 1.0, 1.0]</code>, where each index in the array represent an R,G,B, and A value respectively in a 0.0 to 1.0 range.
+                        </p>
+                        <p>
+                          This uniform is important for effects that sample the area around your texts for blending purposes, such as for the RGB splitting that occurs in the <a href="/#/materials/ChannelSplitMaterial">ChannelSplitMaterial</a>, and you should set it to match the RGBA color that will be the background for any of your texts.
+                        </p>
+                      </li>
+                      <li>
+                        <p class="property">
+                          <strong>uPixelRatio</strong>
+                        </p>
+                        <p class="description">
+                          The pixel ratio of the user's device. Type "1f". You should never set the value of this uniform yourself.
+                        </p>
+                      </li>
+                    </ul>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </template>
+
     <span class="site-badge lotus" title="image of a flower"/>
     <script src="src/app.js"></script>
   </body>
