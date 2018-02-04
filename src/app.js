@@ -957,7 +957,7 @@ $(document).ready(function () {
         }
       },
 
-      _updateMinMax () {
+      _updateMinMax : function () {
         this.minX = this._padding;
         this.minY = this._padding;
         this.maxX = this.width - this._padding;
@@ -1264,16 +1264,10 @@ $(document).ready(function () {
       },
 
       onRender : function () {
-        // Ensure fontFace loaded before attempting to render with Blotter.
-        var fontLoader = new FontLoader(['SerapionPro', 'AvenirLTStd-Book'], {
-          'fontLoaded' : function (font) {
-            this.prepareLogo();
-            this.prepareNav();
+        this.prepareLogo();
+        this.prepareNav();
 
-            this.setListeners();
-          }.bind(this)
-        });
-        fontLoader.loadFonts();
+        this.setListeners();
       },
 
       setListeners : function () {

@@ -30,7 +30,8 @@ module.exports = function(grunt) {
         "src/materials/SlidingDoorMaterial.js",
         "src/hero_examples/Material.js",
         "src/hero_examples/ChannelSplitMaterial.js",
-        "src/hero_examples/LiquidDistortMaterial.js"
+        "src/hero_examples/LiquidDistortMaterial.js",
+        "src/app.js"
       ]
     },
 

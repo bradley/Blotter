@@ -1,0 +1,53 @@
+/**
+ * @license
+ * MyFonts Webfont Build ID 3521389, 2018-02-04T18:25:22-0500
+ *
+ * The fonts listed in this notice are subject to the End User License
+ * Agreement(s) entered into by the website owner. All other parties are
+ * explicitly restricted from using the Licensed Webfonts(s).
+ *
+ * You may obtain a valid license at the URLs below.
+ *
+ * Webfont: SerapionPro-BoldItalic by Storm
+ * URL: https://www.myfonts.com/fonts/storm/serapion/bold-italic/
+ * Copyright: Copyright (c) Frantisek Storm. www.stormtype.com, 2005. All rights reserved.
+ * Licensed pageviews: 10,000
+ *
+ * Webfont: SerapionPro by Storm
+ * URL: https://www.myfonts.com/fonts/storm/serapion/regular/
+ * Copyright: Copyright (c) Frantisek Storm. www.stormtype.com, 2005. All rights reserved.
+ * Licensed pageviews: 10,000
+ *
+ * Webfont: AvenirLTStd-Heavy by Linotype
+ * URL: https://www.myfonts.com/fonts/linotype/avenir/85-heavy/
+ * Copyright: Copyright &#x00A9; 1989, 1995, 2002 Adobe Systems Incorporated.  All Rights Reserved. &#x00A9; 1981, 1995, 2002 Heidelberger Druckmaschinen AG. All rights reserved.
+ * Licensed pageviews: 250,000
+ *
+ * Webfont: AvenirLTStd-Book by Linotype
+ * URL: https://www.myfonts.com/fonts/linotype/avenir/45-book/
+ * Copyright: Copyright &#x00A9; 1989, 1995, 2002 Adobe Systems Incorporated.  All Rights Reserved. &#x00A9; 1981, 1995, 2002 Heidelberger Druckmaschinen AG. All rights reserved.
+ * Licensed pageviews: 250,000
+ *
+ *
+ * License: https://www.myfonts.com/viewlicense?type=web&buildid=3521389
+ *
+ * © 2018 MyFonts Inc
+*/
+
+/* NOTE: In order to keep font download minimal, these are the only characters included for all fonts: ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!.:; */
+
+/* @import must be at top of file, otherwise CSS will not work */
+@import url("/count/35bb6d");
+
+
+@font-face {font-family: 'SerapionPro-BoldItalic';src: url('webfonts/35BB6D_0_0.eot');src: url('webfonts/35BB6D_0_0.eot?#iefix') format('embedded-opentype'),url('webfonts/35BB6D_0_0.woff2') format('woff2'),url('webfonts/35BB6D_0_0.woff') format('woff'),url('webfonts/35BB6D_0_0.ttf') format('truetype');}
+
+
+@font-face {font-family: 'SerapionPro';src: url('webfonts/35BB6D_1_0.eot');src: url('webfonts/35BB6D_1_0.eot?#iefix') format('embedded-opentype'),url('webfonts/35BB6D_1_0.woff2') format('woff2'),url('webfonts/35BB6D_1_0.woff') format('woff'),url('webfonts/35BB6D_1_0.ttf') format('truetype');}
+
+
+@font-face {font-family: 'AvenirLTStd-Heavy';src: url('webfonts/35BB6D_2_0.eot');src: url('webfonts/35BB6D_2_0.eot?#iefix') format('embedded-opentype'),url('webfonts/35BB6D_2_0.woff2') format('woff2'),url('webfonts/35BB6D_2_0.woff') format('woff'),url('webfonts/35BB6D_2_0.ttf') format('truetype');}
+
+
+@font-face {font-family: 'AvenirLTStd-Book';src: url('webfonts/35BB6D_3_0.eot');src: url('webfonts/35BB6D_3_0.eot?#iefix') format('embedded-opentype'),url('webfonts/35BB6D_3_0.woff2') format('woff2'),url('webfonts/35BB6D_3_0.woff') format('woff'),url('webfonts/35BB6D_3_0.ttf') format('truetype');}
+
