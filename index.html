@@ -99,8 +99,11 @@
   <body>
     <!-- Preload Serapion -->
     <div style="font-family: 'SerapionPro', serif; height: 0;">&nbsp;</div>
+    <div style="font-family: 'SerapionPro-BoldItalic', serif; height: 0;">&nbsp;</div>
     <!-- Preload Avenir -->
-    <div style="font-family: 'Avenir', serif; height: 0;">&nbsp;</div>
+    <div style="font-family: 'AvenirLTStd-Book', serif; height: 0;">&nbsp;</div>
+    <div style="font-family: 'AvenirLTStd-Black', serif; height: 0;">&nbsp;</div>
+    <div style="font-family: 'AvenirLTStd-Heavy', serif; height: 0;">&nbsp;</div>
 
     <div id="marginalia-container"></div>
 
@@ -447,7 +450,9 @@ scope.appendTo(elem);</script>
           <div class="content-right">
             <div class="documentation">
               <h2 class="anchor"><span id="documentation"></span>Documentation</h2>
-
+              <p>
+                What follows are the main classes an average developer will encounter when working with Blotter. Many classes and utilities are left out of this documentation, as they are more internal to the codebase rather than part of the interface one would need to use Blotter as it comes. If you would like to see Blotter laid bare, please view the <a href="https://github.com/bradley/Blotter">source</a>.
+              </p>
 
               <h3 class="anchor"><span id="documentation-blotter"></span>Blotter</h3>
               <p>
@@ -631,8 +636,7 @@ scope.appendTo(elem);</script>
                 </li>
               </ul>
 
-
-              <h3 class="anchor"><span id="documentation-blotter"></span>Blotter.Material</h3>
+              <h3 class="anchor"><span id="documentation-blotter-material"></span>Blotter.Material</h3>
               <p>
                 Blotter Materials describe how your texts will be rendered and provide the interface through which you can control <code>uniforms</code> to introduce variety in the characteristics of any effect.
               </p>
@@ -667,7 +671,6 @@ scope.appendTo(elem);</script>
                     For every Blotter Material, there is an underlying <code>GLSL</code> fragment shader that describes how the individual Material's effect will be rendered. The <code>material.mainImage</code> property returns the shader's <code>GLSL</code> in string form. Setting this property after your <code>Blotter.Material</code> object's initialization requires that your <code>Blotter.Material</code> instance be rebuilt by setting the value of its <code>needsUpdate</code> property to <code>true</code>.
                   </p>
                 </li>
-
                 <li>
                   <p class="property array">
                     <strong>uniforms</strong>
@@ -769,6 +772,277 @@ scope.appendTo(elem);</script>
                       </li>
                     </ul>
                   </div>
+                </li>
+              </ul>
+              <h3 class="anchor"><span id="documentation-blotter-text"></span>Blotter.Text</h3>
+              <p>
+                For each string of text you wish to render with a given Material, you should create an instance of <code>Blotter.Text</code>.
+              </p>
+              <ul class="documentation">
+                <li id="blotter-text-construction">
+                  <p class="property class">
+                    <strong>construction</strong>
+                    <code>var text = new Blotter.Text(value[, properties]);</code>
+                  </p>
+                  <p class="description">
+                    Create a new instance of <code>Blotter.Text</code> where <code>value</code> is string of text<sup>1</sup> and <code>properties</code> is an optional styles object for applying styles to your texts prior to them being rendered with your Material. The styles object takes any of the following optional parameters.
+                  </p>
+                  <div class="notated-list">
+                    <ul class="properties">
+                      <li>
+                        <p class="property string">
+                          <strong>family</strong>
+                          <code>properties.family</code>
+                        </p>
+                        <p class="description">
+                          A string representing the font family to be applied to the text. The default value is 'sans-serif'.
+                        </p>
+                      </li>
+                      <li>
+                        <p class="property number">
+                          <strong>size</strong>
+                          <code>properties.size</code>
+                        </p>
+                        <p class="description">
+                          A number representing the size of the rendered text. The default value is 12.
+                        </p>
+                      </li>
+                      <li>
+                        <p class="property number">
+                          <strong>leading</strong>
+                          <code>properties.leading</code>
+                        </p>
+                        <p class="description">
+                          A number representing the leading or line-height of the rendered text. The default value is 1.5.
+                        </p>
+                      </li>
+                      <li>
+                        <p class="property string">
+                          <strong>fill</strong>
+                          <code>properties.fill</code>
+                        </p>
+                        <p class="description">
+                          A string representing the color of the rendered text. The default value is '#000'.
+                        </p>
+                      </li>
+                      <li>
+                        <p class="property string">
+                          <strong>style</strong>
+                          <code>properties.style</code>
+                        </p>
+                        <p class="description">
+                          A string representing the style of the rendered text. The options are 'normal', 'italic', or 'bold'. The default value is 'normal'.
+                        </p>
+                      </li>
+                      <li>
+                        <p class="property number">
+                          <strong>weight</strong>
+                          <code>properties.weight</code>
+                        </p>
+                        <p class="description">
+                          A number representing the weight of the rendered text. The default value is 400.
+                        </p>
+                      </li>
+                      <li>
+                        <p class="property number">
+                          <strong>padding</strong>
+                          <code>properties.padding</code>
+                        </p>
+                        <p class="description">
+                          A number representing the padding around the rendered text. The default value is 0.
+                        </p>
+                      </li>
+                      <li>
+                        <p class="property number">
+                          <strong>paddingTop</strong>
+                          <code>properties.paddingTop</code>
+                        </p>
+                        <p class="description">
+                          A number representing the padding above the rendered text. The default value is 0.
+                        </p>
+                      </li>
+                      <li>
+                        <p class="property number">
+                          <strong>paddingRight</strong>
+                          <code>properties.paddingRight</code>
+                        </p>
+                        <p class="description">
+                          A number representing the padding to the right of the rendered text. The default value is 0.
+                        </p>
+                      </li>
+                      <li>
+                        <p class="property number">
+                          <strong>paddingBottom</strong>
+                          <code>properties.paddingBottom</code>
+                        </p>
+                        <p class="description">
+                          A number representing the padding below the rendered text. The default value is 0.
+                        </p>
+                      </li>
+                      <li>
+                        <p class="property number">
+                          <strong>paddingLeft</strong>
+                          <code>properties.paddingLeft</code>
+                        </p>
+                        <p class="description">
+                          A number representing the padding to the left of the rendered text. The default value is 0.
+                        </p>
+                      </li>
+                    </ul>
+                  </div>
+                  <aside data-number="1" class="anchor"><span id="1"></span>Remember, Blotter is meant for small strings of text such as single words, titles, or texts used for graphics purposes. You should not create <code>Blotter.Text</code> instances for whole sentences or longer strings of text.</aside>
+                </li>
+                <li>
+                  <p class="property property">
+                    <strong>needsUpdate</strong>
+                    <code>text.needsUpdate = true</code>
+                  </p>
+                  <p class="description">
+                    Rarely, you may need to perform actions on your instances of <code>Blotter.Text</code> that require it to tell the instance of <code>Blotter</code> to repeat important preparatory steps necessary for rendering the instance's texts. To do so, set the value of <code>text.needsUpdate</code> to <code>true</code> and the instance will take care of the rest. You can listen for the <code>Blotter</code> instance's <code>update</code> event if you need to do any work after the update has completed.
+                  </p>
+                </li>
+                <li>
+                  <p class="property string">
+                    <strong>value</strong>
+                    <code>text.value</code>
+                  </p>
+                  <p class="description">
+                    The string of text for the instance. Setting this property after your <code>Blotter.Text</code> object's initialization requires that your <code>Blotter.Text</code> instance be rebuilt by setting the value of its <code>needsUpdate</code> property to <code>true</code>.
+                  </p>
+                </li>
+                <li>
+                  <p class="property object">
+                    <strong>properties</strong>
+                    <code>text.properties</code>
+                  </p>
+                  <p class="description">
+                    The styles object representing the style properties being applied to your string of text. Setting this property after your <code>Blotter.Text</code> object's initialization requires that your <code>Blotter.Text</code> instance be rebuilt by setting the value of its <code>needsUpdate</code> property to <code>true</code>.
+                  </p>
+                </li>
+              </ul>
+              <h3 class="anchor"><span id="documentation-blotter-render-scope"></span>Blotter.RenderScope</h3>
+              <p>
+                Blotter RenderScopes are the primary interface for interacting with your texts on an individual basis. When you render one or more texts inside an instance of <code>Blotter</code>, the instance will create the scopes for you automatically, and you can use them to perform a number of critical actions, such as placing your rendered texts within DOM elements and setting uniform values specific to individual texts while rendering texts collectively in a single material.
+              </p>
+              <ul class="documentation">
+                <li id="blotter-text-construction">
+                  <p class="property class">
+                    <strong>obtainment</strong>
+                    <code>var scope = blotter.forText(text);</code>
+                  </p>
+                  <p class="description">
+                    You will never create <code>Blotter.RenderScope</code> objects directly. Instead, you should obtain them from your instance of blotter by calling <code>blotter.forText(text)</code> where <code>text</code> is an instance of <code>Blotter.Text</code> known to your <code>blotter</code> object.
+                  </p>
+                </li>
+                <li>
+                  <p class="property object">
+                    <strong>text</strong>
+                    <code>scope.text</code>
+                  </p>
+                  <p class="description">
+                    The instance of <code>Blotter.Text</code> for the scope.
+                  </p>
+                </li>
+                <li>
+                  <p class="property boolean">
+                    <strong>playing</strong>
+                    <code>scope.playing</code>
+                  </p>
+                  <p class="description">
+                    A boolean value indicating whether or not the scope will actively be rendered by the <code>Blotter</code> instance. On initialization, this value is set to the value of the <code>Blotter</code> instance's <code>autoplay</code> property.
+                  </p>
+                </li>
+                <li>
+                  <p class="property number">
+                    <strong>timeDelta</strong>
+                    <code>scope.timeDelta</code>
+                  </p>
+                  <p class="description">
+                    The scope's render time in seconds.
+                  </p>
+                </li>
+                <li>
+                  <p class="property object">
+                    <strong>lastDrawTime</strong>
+                    <code>scope.lastDrawTime</code>
+                  </p>
+                  <p class="description">
+                    The scope's last draw time.
+                  </p>
+                </li>
+                <li>
+                  <p class="property number">
+                    <strong>frameCount</strong>
+                    <code>scope.frameCount</code>
+                  </p>
+                  <p class="description">
+                    The number of times the scope has been rendered.
+                  </p>
+                </li>
+                <li>
+                  <p class="property object">
+                    <strong>domElement</strong>
+                    <code>scope.domElement</code>
+                  </p>
+                  <p class="description">
+                    The DOM element for the given scope. This will return a HiDPI canvas with a <code>2d</code> context containing an up-to-date rendering of your text. You should place this element where you want the text for the scope to appear on the page. You may access it directly through this property, or append it to another DOM element using the convenience method, <code>scope.appendTo(domElement)</code>.
+                  </p>
+                </li>
+                <li>
+                  <p class="property number">
+                    <strong>context</strong>
+                    <code>scope.context</code>
+                  </p>
+                  <p class="description">
+                    The <code>2d</code> context for the scope's <code>domElement</code>.
+                  </p>
+                </li>
+                <li>
+                  <p class="property object">
+                    <strong>material</strong>
+                    <code>scope.material</code>
+                  </p>
+                  <p class="description">
+                    The primary interface for interacting with the Material being rendered by your <code>Blotter</code> instance in a manner specific to an individual text. This is critically important for updating uniforms in a non-global way. For example, if you are rendering several texts using a single Material, and want to have one of those texts update its visual appearance on a mouseover event without changing the other texts, you would want to access the uniforms for the Material through the scope, and not on the Material's instance directly.<br/>
+                    <code>material.uniforms.myUniform.value = 0.5; // GLOBAL TO ALL TEXTS</code>
+                    <code>scope.material.uniforms.myUniform.value = 0.5; // TEXT SPECIFIC</code>
+                  </p>
+                </li>
+                <li>
+                  <p class="property function">
+                    <strong>play</strong>
+                    <code>scope.play()</code>
+                  </p>
+                  <p class="description">
+                    Tells the scope to begin or resume being rendered by the instance of <code>Blotter</code>.
+                  </p>
+                </li>
+                <li>
+                  <p class="property function">
+                    <strong>pause</strong>
+                    <code>scope.pause()</code>
+                  </p>
+                  <p class="description">
+                    Tells the scope to pause being rendered by the instance of <code>Blotter</code>.
+                  </p>
+                </li>
+                <li>
+                  <p class="property function">
+                    <strong>render</strong>
+                    <code>scope.render()</code>
+                  </p>
+                  <p class="description">
+                    Tells the scope to update its rendering one time.
+                  </p>
+                </li>
+                <li>
+                  <p class="property function">
+                    <strong>appendTo</strong>
+                    <code>scope.appendTo(domElement)</code>
+                  </p>
+                  <p class="description">
+                    A convenience method for appending the scope's <code>domElement</code> to the page.
+                  </p>
                 </li>
               </ul>
             </div>
