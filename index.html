@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=400">
-    <meta name="description" content="DESCRIPTION HERE">
-    <meta name="keywords" content="blotter.js, blotter, javascript, library, graphics, text, rendering, effects, styles, web, html5">
+    <meta name="description" content="A JavaScript API for drawing unconventional text effects on the web.">
+    <meta name="keywords" content="blotter.js, blotter, webgl, glsl, glsl-shaders, javascript, typography, text, css, animation, design, creative-coding, lsd">
     <meta name="author" content="bradley">
     <meta name="viewport" content="width=device-width">
     <meta name="viewport" content="initial-scale=1.0">
@@ -66,35 +66,7 @@
       window.BlotterSite = {};
     </script>
 
-    <script src="./third_party/jquery.min.js"></script>
-    <script src="./third_party/blotter.min.js"></script>
-    <script src="./third_party/codemirror.min.js"></script>
-    <script src="./third_party/javascript.js"></script>
-    <script src="./third_party/EventEmitter.js"></script>
-    <script src="./third_party/velocity.min.js"></script>
-    <script src="./third_party/velocity.ui.min.js"></script>
-    <script src="./third_party/underscore.min.js"></script>
-    <script src="./third_party/backbone-min.js"></script>
-    <script src="./third_party/backbone.marionette.min.js"></script>
-    <script src="./third_party/requestAnimationFrame.js"></script>
-    <script src="./third_party/FontLoader.js"></script>
-
-    <script src="./third_party/materials/channelSplitMaterial.js"></script>
-    <script src="./third_party/materials/fliesMaterial.js"></script>
-    <script src="./third_party/materials/liquidDistortMaterial.js"></script>
-    <script src="./third_party/materials/rollingDistortMaterial.js"></script>
-    <script src="./third_party/materials/slidingDoorMaterial.js"></script>
-
-    <script src="./src/materials/Material.js"></script>
-    <script src="./src/materials/ChannelSplitMaterial.js"></script>
-    <script src="./src/materials/FliesMaterial.js"></script>
-    <script src="./src/materials/LiquidDistortMaterial.js"></script>
-    <script src="./src/materials/RollingDistortMaterial.js"></script>
-    <script src="./src/materials/SlidingDoorMaterial.js"></script>
-
-    <script src="./src/hero_examples/Material.js"></script>
-    <script src="./src/hero_examples/ChannelSplitMaterial.js"></script>
-    <script src="./src/hero_examples/LiquidDistortMaterial.js"></script>
+    <script src="./dist/blotter-site.min.js"></script>
   </head>
   <body>
     <!-- Preload Serapion -->
@@ -635,7 +607,6 @@ scope.appendTo(elem);</script>
                   </p>
                 </li>
               </ul>
-
               <h3 class="anchor"><span id="documentation-blotter-material"></span>Blotter.Material</h3>
               <p>
                 Blotter Materials describe how your texts will be rendered and provide the interface through which you can control <code>uniforms</code> to introduce variety in the characteristics of any effect.
