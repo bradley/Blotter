@@ -909,7 +909,10 @@ scope.appendTo(elem);</script>
                     <code>scope.domElement</code>
                   </p>
                   <p class="description">
-                    The DOM element for the given scope. This will return a HiDPI canvas with a <code>2d</code> context containing an up-to-date rendering of your text. You should place this element where you want the text for the scope to appear on the page. You may access it directly through this property, or append it to another DOM element using the convenience method, <code>scope.appendTo(domElement)</code>.
+                    The DOM element for the given scope. This will return a HiDPI canvas with a <code>2d</code> context containing an up-to-date rendering of your text. You should place this element where you want the text for the scope to appear on the page. You may access the element directly through this property, or append it to another DOM element using the convenience method, <code>scope.appendTo(domElement)</code>.
+                  </p>
+                  <p class="description">
+                    Because it is likely you will want to respond to pointer events on these elements, Blotter RenderScopes emit the <code>"mousedown"</code>, <code>"mouseup"</code>, <code>"mousemove"</code>, <code>"mouseenter"</code>, and <code>"mouseleave"</code> events.
                   </p>
                 </li>
                 <li>
