@@ -15,7 +15,7 @@ module.exports = function(grunt) {
         "third_party/backbone-min.js",
         "third_party/backbone.marionette.min.js",
         "third_party/requestAnimationFrame.js",
-        "third_party/FontLoader.js",
+        "third_party/dat.gui.js",
         "third_party/blotter.min.js",
         "third_party/materials/channelSplitMaterial.js",
         "third_party/materials/fliesMaterial.js",

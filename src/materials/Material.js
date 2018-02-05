@@ -26,6 +26,8 @@ BlotterSite.Materials.Material.prototype = (function () {
       this.blotter = new Blotter(this.material, { texts : this.text });
       this.textScope = this.blotter.forText(this.text);
       this.textScope.appendTo(this.el);
+
+      this.uniformDefinitions = [];
     },
 
     render : function () {

@@ -1191,6 +1191,11 @@ ul.documentation {
         font-weight: normal;
         line-height: 1.5; }
 
+/*  Dat GUI
+    ------------------------------------- */
+.dg.ac {
+  z-index: 100 !important; }
+
 /* documentation-toc is used by Two to do the sections of documentation specifically. may not need this but nice that it's the same styling */
 #toc, #documentation-toc {
   display: inline-block;

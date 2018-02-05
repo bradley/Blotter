@@ -1626,6 +1626,7 @@ $(document).ready(function () {
     onDestroy : function () {
       this.materialInstance.blotter.stop();
       this.materialInstance.blotter.teardown();
+      this.gui.destroy();
     },
 
     _setBlotter : function () {
@@ -1637,6 +1638,17 @@ $(document).ready(function () {
       this.blotterText = new Blotter.Text(this.textStr, this.textProperties);
 
       this.materialInstance = new Material($container, this.blotterText);
+
+      this.gui = new dat.GUI();
+
+      var controls = _.reduce(this.materialInstance.uniformDefinitions, function (memo, uniformObj) {
+        memo[uniformObj.name] = uniformObj.value;
+        return memo;
+      }, {});
+
+      _.each(this.materialInstance.uniformDefinitions, function (uniformObj) {
+        this.gui.add(controls, uniformObj.name, uniformObj.min, uniformObj.max).onChange(uniformObj.onChange);
+      }.bind(this));
     },
 
     _setNotation : function () {
