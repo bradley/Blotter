@@ -17,13 +17,14 @@ _.extend(BlotterSite.Materials.RollingDistortMaterial.prototype, (function () {
       this.uniformDefinitions = [
         {
           name : "uSineDistortSpread",
-          value : this.material.uniforms.uSineDistortSpread.value,
+          value : 0.025,
           min : 0.0,
           max : 1.0,
           step : 0.001,
           onChange : function (value) {
             this.material.uniforms.uSineDistortSpread.value = value;
-          }.bind(this)
+          }.bind(this),
+          setImmediate : true
         },
         {
           name : "uSineDistortCycleCount",
@@ -37,13 +38,14 @@ _.extend(BlotterSite.Materials.RollingDistortMaterial.prototype, (function () {
         },
         {
           name : "uSineDistortAmplitude",
-          value : this.material.uniforms.uSineDistortAmplitude.value,
+          value : 0.125,
           min : 0.0,
           max : 1.0,
           step : 0.001,
           onChange : function (value) {
             this.material.uniforms.uSineDistortAmplitude.value = value;
-          }.bind(this)
+          }.bind(this),
+          setImmediate : true
         },
         {
           name : "uNoiseDistortVolatility",

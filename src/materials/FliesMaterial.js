@@ -20,23 +20,25 @@ _.extend(BlotterSite.Materials.FliesMaterial.prototype, (function () {
       this.uniformDefinitions = [
         {
           name : "uPointCellWidth",
-          value : this.material.uniforms.uPointCellWidth.value,
+          value : 0.012,
           min : 0.0,
           max : 0.1,
           step : 0.001,
           onChange : function (value) {
             this.material.uniforms.uPointCellWidth.value = value;
-          }.bind(this)
+          }.bind(this),
+          setImmediate : true
         },
         {
           name : "uPointRadius",
-          value : this.material.uniforms.uPointRadius.value,
+          value : 0.85,
           min : 0.0,
           max : 1.0,
           step : 0.001,
           onChange : function (value) {
             this.material.uniforms.uPointRadius.value = value;
-          }.bind(this)
+          }.bind(this),
+          setImmediate : true
         },
         {
           name : "uDodge",

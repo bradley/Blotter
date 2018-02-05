@@ -1610,10 +1610,10 @@ $(document).ready(function () {
         family : "'SerapionPro', sans-serif",
         size : 68,
         leading : "68px",
-        paddingBottom : 6,
-        paddingLeft : 40,
-        paddingRight : 40,
-        paddingTop : 26,
+        paddingBottom : 126,
+        paddingLeft : 140,
+        paddingRight : 140,
+        paddingTop : 126,
         fill : "#202020"
       };
     },
@@ -1648,6 +1648,9 @@ $(document).ready(function () {
 
       _.each(this.materialInstance.uniformDefinitions, function (uniformObj) {
         this.gui.add(controls, uniformObj.name, uniformObj.min, uniformObj.max).onChange(uniformObj.onChange);
+        if (uniformObj.setImmediate) {
+          uniformObj.onChange(uniformObj.value);
+        }
       }.bind(this));
     },
 

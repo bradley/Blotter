@@ -17,13 +17,14 @@ _.extend(BlotterSite.Materials.ChannelSplitMaterial.prototype, (function () {
       this.uniformDefinitions = [
         {
           name : "uOffset",
-          value : this.material.uniforms.uOffset.value,
+          value : 0.0175,
           min : 0.0,
           max : 1.0,
           step : 0.001,
           onChange : function (value) {
             this.material.uniforms.uOffset.value = value;
-          }.bind(this)
+          }.bind(this),
+          setImmediate : true
         },
         {
           name : "uRotation",

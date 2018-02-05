@@ -6872,13 +6872,14 @@ _.extend(BlotterSite.Materials.ChannelSplitMaterial.prototype, (function () {
       this.uniformDefinitions = [
         {
           name : "uOffset",
-          value : this.material.uniforms.uOffset.value,
+          value : 0.0175,
           min : 0.0,
           max : 1.0,
           step : 0.001,
           onChange : function (value) {
             this.material.uniforms.uOffset.value = value;
-          }.bind(this)
+          }.bind(this),
+          setImmediate : true
         },
         {
           name : "uRotation",
@@ -6931,23 +6932,25 @@ _.extend(BlotterSite.Materials.FliesMaterial.prototype, (function () {
       this.uniformDefinitions = [
         {
           name : "uPointCellWidth",
-          value : this.material.uniforms.uPointCellWidth.value,
+          value : 0.012,
           min : 0.0,
           max : 0.1,
           step : 0.001,
           onChange : function (value) {
             this.material.uniforms.uPointCellWidth.value = value;
-          }.bind(this)
+          }.bind(this),
+          setImmediate : true
         },
         {
           name : "uPointRadius",
-          value : this.material.uniforms.uPointRadius.value,
+          value : 0.85,
           min : 0.0,
           max : 1.0,
           step : 0.001,
           onChange : function (value) {
             this.material.uniforms.uPointRadius.value = value;
-          }.bind(this)
+          }.bind(this),
+          setImmediate : true
         },
         {
           name : "uDodge",
@@ -7072,13 +7075,14 @@ _.extend(BlotterSite.Materials.RollingDistortMaterial.prototype, (function () {
       this.uniformDefinitions = [
         {
           name : "uSineDistortSpread",
-          value : this.material.uniforms.uSineDistortSpread.value,
+          value : 0.025,
           min : 0.0,
           max : 1.0,
           step : 0.001,
           onChange : function (value) {
             this.material.uniforms.uSineDistortSpread.value = value;
-          }.bind(this)
+          }.bind(this),
+          setImmediate : true
         },
         {
           name : "uSineDistortCycleCount",
@@ -7092,13 +7096,14 @@ _.extend(BlotterSite.Materials.RollingDistortMaterial.prototype, (function () {
         },
         {
           name : "uSineDistortAmplitude",
-          value : this.material.uniforms.uSineDistortAmplitude.value,
+          value : 0.125,
           min : 0.0,
           max : 1.0,
           step : 0.001,
           onChange : function (value) {
             this.material.uniforms.uSineDistortAmplitude.value = value;
-          }.bind(this)
+          }.bind(this),
+          setImmediate : true
         },
         {
           name : "uNoiseDistortVolatility",
@@ -7184,13 +7189,14 @@ _.extend(BlotterSite.Materials.SlidingDoorMaterial.prototype, (function () {
       this.uniformDefinitions = [
         {
           name : "uDivisions",
-          value : this.material.uniforms.uDivisions.value,
+          value : 11,
           min : 0.0,
           max : 30.0,
           step : 1.0,
           onChange : function (value) {
             this.material.uniforms.uDivisions.value = value;
-          }.bind(this)
+          }.bind(this),
+          setImmediate : true
         },
         {
           name : "uDivisionWidth",
@@ -9099,10 +9105,10 @@ $(document).ready(function () {
         family : "'SerapionPro', sans-serif",
         size : 68,
         leading : "68px",
-        paddingBottom : 6,
-        paddingLeft : 40,
-        paddingRight : 40,
-        paddingTop : 26,
+        paddingBottom : 126,
+        paddingLeft : 140,
+        paddingRight : 140,
+        paddingTop : 126,
         fill : "#202020"
       };
     },
@@ -9137,6 +9143,9 @@ $(document).ready(function () {
 
       _.each(this.materialInstance.uniformDefinitions, function (uniformObj) {
         this.gui.add(controls, uniformObj.name, uniformObj.min, uniformObj.max).onChange(uniformObj.onChange);
+        if (uniformObj.setImmediate) {
+          uniformObj.onChange(uniformObj.value);
+        }
       }.bind(this));
     },
 

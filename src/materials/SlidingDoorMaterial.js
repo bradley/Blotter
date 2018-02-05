@@ -17,13 +17,14 @@ _.extend(BlotterSite.Materials.SlidingDoorMaterial.prototype, (function () {
       this.uniformDefinitions = [
         {
           name : "uDivisions",
-          value : this.material.uniforms.uDivisions.value,
+          value : 11,
           min : 0.0,
           max : 30.0,
           step : 1.0,
           onChange : function (value) {
             this.material.uniforms.uDivisions.value = value;
-          }.bind(this)
+          }.bind(this),
+          setImmediate : true
         },
         {
           name : "uDivisionWidth",

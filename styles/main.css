@@ -991,7 +991,8 @@ code {
   height: 78px;
   margin-bottom: 26px; }
   .material-example-wrap canvas {
-    margin-top: -26px;
+    margin-left: -140px;
+    margin-top: -120px;
     vertical-align: top; }
     @media screen and (max-width: 728px), screen and (max-device-width: 728px) {
       .material-example-wrap canvas {

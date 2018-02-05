@@ -37,7 +37,7 @@
 /* NOTE: In order to keep font download minimal, these are the only characters included for all fonts: ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!.:; */
 
 /* @import must be at top of file, otherwise CSS will not work */
-@import url("/count/35bb6d");
+@import url("//hello.myfonts.net/count/35bb6d");
 
 
 @font-face {font-family: 'SerapionPro-BoldItalic';src: url('webfonts/35BB6D_0_0.eot');src: url('webfonts/35BB6D_0_0.eot?#iefix') format('embedded-opentype'),url('webfonts/35BB6D_0_0.woff2') format('woff2'),url('webfonts/35BB6D_0_0.woff') format('woff'),url('webfonts/35BB6D_0_0.ttf') format('truetype');}
