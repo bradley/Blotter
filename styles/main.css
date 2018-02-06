@@ -401,10 +401,6 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
 @font-face {
   font-family: "Garamond";
   src: url("./fonts/EBGaramond12-Regular.ttf"); }
-@font-face {
-  font-family: "Garamond";
-  src: url("./fonts/EBGaramond12-Italic.ttf");
-  font-style: italic; }
 /*  Base
     ------------------------------------- */
 * {
