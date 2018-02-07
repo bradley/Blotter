@@ -51,7 +51,6 @@
     return {
 
       build : function (mapping, completion) {
-        // ### - remove this shit following documentation.
         // There is a negative coorelation between the sampleAccuracy value and
         // the speed at which texture generation happens.
         // However, the lower this value, the less sampleAccuracy you can expect

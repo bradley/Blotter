@@ -1,4 +1,4 @@
-(function(Blotter, _) {
+(function(Blotter) {
 
   Blotter.Messaging = (function () {
 
@@ -36,5 +36,5 @@
   })();
 
 })(
-  this.Blotter, this._
+  this.Blotter
 );

@@ -1,4 +1,4 @@
-(function(Blotter, _) {
+(function(Blotter) {
 
   Blotter.CanvasUtils = {
 
@@ -82,5 +82,5 @@
   };
 
 })(
-  this.Blotter, this._
+  this.Blotter
 );

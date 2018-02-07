@@ -24093,7 +24093,6 @@ THREE = {
   DataTexture: THREE.DataTexture,
   FloatType: THREE.FloatType,
   Material: THREE.Material,
-  Math: THREE.Math,
   Mesh: THREE.Mesh,
   MeshBasicMaterial: THREE.MeshBasicMaterial,
   OrthographicCamera: THREE.OrthographicCamera,

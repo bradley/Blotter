@@ -12,9 +12,9 @@
           url = canvas.toDataURL();
 
           loader.load(url, _.bind(function(texture) {
-            texture.generateMipmaps = true; // TODO: Make optional.
             texture.minFilter = THREE.LinearFilter;
             texture.magFilter = THREE.LinearFilter;
+            texture.generateMipmaps = true;
             texture.needsUpdate = true;
 
             completion(texture);

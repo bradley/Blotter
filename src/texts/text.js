@@ -1,7 +1,7 @@
 (function(Blotter, _, THREE, EventEmitter) {
 
   Blotter.Text = function (value, properties) {
-    this.id = THREE.Math.generateUUID();
+    this.id = Blotter.Math.generateUUID();
     this.value = value;
     this.properties = properties;
   };

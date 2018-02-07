@@ -25749,7 +25749,6 @@ THREE = {
   DataTexture: THREE.DataTexture,
   FloatType: THREE.FloatType,
   Material: THREE.Material,
-  Math: THREE.Math,
   Mesh: THREE.Mesh,
   MeshBasicMaterial: THREE.MeshBasicMaterial,
   OrthographicCamera: THREE.OrthographicCamera,
@@ -27039,7 +27038,35 @@ GrowingPacker.prototype = {
   this.Blotter, this._, this.THREE, this.Detector, this.EventEmitter
 );
 
-(function(Blotter, _) {
+(function(Blotter) {
+
+  Blotter.Math = {
+    generateUUID : (function () {
+      // http://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid-in-javascript/21963136#21963136
+      var lut = [];
+
+      for ( var i = 0; i < 256; i ++ ) {
+        lut[i] = ( i < 16 ? '0' : '' ) + (i).toString(16).toUpperCase();
+      }
+
+      return function generateUUID() {
+        var d0 = Math.random() * 0xffffffff | 0;
+        var d1 = Math.random() * 0xffffffff | 0;
+        var d2 = Math.random() * 0xffffffff | 0;
+        var d3 = Math.random() * 0xffffffff | 0;
+        return lut[d0 & 0xff] + lut[d0 >> 8 & 0xff] + lut[d0 >> 16 & 0xff] + lut[d0 >> 24 & 0xff] + '-' +
+          lut[d1 & 0xff] + lut[d1 >> 8 & 0xff] + '-' + lut[d1 >> 16 & 0x0f | 0x40] + lut[d1 >> 24 & 0xff] + '-' +
+          lut[d2 & 0x3f | 0x80] + lut[d2 >> 8 & 0xff] + '-' + lut[d2 >> 16 & 0xff] + lut[d2 >> 24 & 0xff] +
+          lut[d3 & 0xff] + lut[d3 >> 8 & 0xff] + lut[d3 >> 16 & 0xff] + lut[d3 >> 24 & 0xff];
+      };
+    })()
+  };
+
+})(
+  this.Blotter
+);
+
+(function(Blotter) {
 
   Blotter.Messaging = (function () {
 
@@ -27077,7 +27104,7 @@ GrowingPacker.prototype = {
   })();
 
 })(
-  this.Blotter, this._
+  this.Blotter
 );
 
 (function(Blotter, _) {
@@ -27101,33 +27128,12 @@ GrowingPacker.prototype = {
   this.Blotter, this._
 );
 
-(function(Blotter, _) {
+(function(Blotter) {
 
   Blotter.VendorPrefixes = ["ms", "moz", "webkit", "o"];
 
 })(
-  this.Blotter, this._
-);
-
-(function(Blotter, _, EventEmitter) {
-
-  Blotter.EmitterObject = function (settings) {
-    this.init.call(this, arguments);
-  };
-
-  Blotter.EmitterObject.prototype = {
-
-    constructor : Blotter.ModelEventBinding,
-
-    init : function (settings) {
-      _.defaults(this, settings);
-    }
-  };
-
-  _.extend(Blotter.EmitterObject.prototype, EventEmitter.prototype);
-
-})(
-  this.Blotter, this._, this.EventEmitter
+  this.Blotter
 );
 
   (function(Blotter, _) {
@@ -27152,7 +27158,7 @@ GrowingPacker.prototype = {
   this.Blotter, this._
 );
 
-(function(Blotter, _) {
+(function(Blotter) {
 
   Blotter.CanvasUtils = {
 
@@ -27236,7 +27242,7 @@ GrowingPacker.prototype = {
   };
 
 })(
-  this.Blotter, this._
+  this.Blotter
 );
 
 (function(Blotter, _) {
@@ -27484,7 +27490,7 @@ GrowingPacker.prototype = {
 (function(Blotter, _, THREE, EventEmitter) {
 
   Blotter.Text = function (value, properties) {
-    this.id = THREE.Math.generateUUID();
+    this.id = Blotter.Math.generateUUID();
     this.value = value;
     this.properties = properties;
   };
@@ -29542,7 +29548,6 @@ GrowingPacker.prototype = {
     return {
 
       build : function (mapping, completion) {
-        // ### - remove this shit following documentation.
         // There is a negative coorelation between the sampleAccuracy value and
         // the speed at which texture generation happens.
         // However, the lower this value, the less sampleAccuracy you can expect
@@ -29584,9 +29589,9 @@ GrowingPacker.prototype = {
           url = canvas.toDataURL();
 
           loader.load(url, _.bind(function(texture) {
-            texture.generateMipmaps = true; // TODO: Make optional.
             texture.minFilter = THREE.LinearFilter;
             texture.magFilter = THREE.LinearFilter;
+            texture.generateMipmaps = true;
             texture.needsUpdate = true;
 
             completion(texture);
