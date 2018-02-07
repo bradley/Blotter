@@ -8,7 +8,7 @@ module.exports = function(grunt) {
 
       depFiles : [
         "third_party/underscore/underscore.js",
-        "third_party/three/three.js",
+        "third_party/three/three.custom.js",
         "third_party/three/Detector.js",
         "third_party/set_immediate/setimmediate.js",
         "third_party/event_emitter/EventEmitter.js",
