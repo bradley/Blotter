@@ -1637,7 +1637,7 @@ $(document).ready(function () {
 
       this.materialInstance = new Material($container, this.blotterText);
 
-      this.gui = new dat.GUI();
+      this.gui = new dat.GUI({ autoplace: false,width: 312 });
 
       var controls = _.reduce(this.materialInstance.uniformDefinitions, function (memo, uniformObj) {
         memo[uniformObj.name] = uniformObj.value;
