@@ -19,9 +19,9 @@ $min-device-width: $layout-width + ($leading * 2); // iPhone 5 portrait width
 $hero-content-width: $min-device-width;
 $hero-content-height: $leading * 24;
 
-$font-stack: "Garamond", serif;
-$h-font-stack: "SerapionPro", "Garamond", serif;
-$h-font-stack-bold: "SerapionPro-BoldItalic", "Garamond", serif;
+$font-stack: "EB Garamond", serif;
+$h-font-stack: "SerapionPro", serif;
+$h-font-stack-bold: "SerapionPro-BoldItalic", serif;
 $grotesque-font-stack: "AvenirLTStd-Book", "Helvetica Neue", "Helvetica", Arial, sans-serif;
 $grotesque-font-stack-bold: "AvenirLTStd-Heavy", "Helvetica Neue", "Helvetica", Arial, sans-serif;
 $code-font-stack: "Ubuntu Mono", monospace;

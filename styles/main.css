@@ -396,11 +396,6 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
 .CodeMirror-focused .CodeMirror-selected {
   background: #373737; }
 
-/*  Typography
-    ------------------------------------- */
-@font-face {
-  font-family: "Garamond";
-  src: url("./fonts/EBGaramond12-Regular.ttf"); }
 /*  Base
     ------------------------------------- */
 * {
@@ -421,7 +416,7 @@ html {
 
 body {
   color: #202020;
-  font-family: "Garamond", serif;
+  font-family: "EB Garamond", serif;
   font-size: 17px;
   line-height: 26px;
   padding: 26px;
@@ -433,7 +428,7 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
   color: #202020;
-  font-family: "SerapionPro", "Garamond", serif;
+  font-family: "SerapionPro", serif;
   font-weight: 400;
   letter-spacing: 0.015em;
   line-height: 1.5;
@@ -451,7 +446,7 @@ h2 {
 h3 {
   /* Serapion is a weird font.
      These settings basically make it the font is vertically centered within a line-height of $leading */
-  font-family: "SerapionPro-BoldItalic", "Garamond", serif;
+  font-family: "SerapionPro-BoldItalic", serif;
   font-size: 20px;
   line-height: 23px;
   margin-top: 26px;
@@ -1154,7 +1149,7 @@ ul.documentation {
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
     float: left;
-    font-family: "SerapionPro", "Garamond", serif;
+    font-family: "SerapionPro", serif;
     font-size: 68px;
     height: 104px;
     line-height: 123px;
