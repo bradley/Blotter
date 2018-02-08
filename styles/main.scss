@@ -1027,6 +1027,11 @@ ul.documentation {
     ------------------------------------- */
 .dg.ac {
   z-index: 100!important;
+
+  @media screen and (max-width: $min-screen-width),
+  screen and (max-device-width: $min-device-width) {
+    display: none !important;
+  }
 }
 
 

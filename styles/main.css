@@ -1192,6 +1192,9 @@ ul.documentation {
     ------------------------------------- */
 .dg.ac {
   z-index: 100 !important; }
+  @media screen and (max-width: 728px), screen and (max-device-width: 728px) {
+    .dg.ac {
+      display: none !important; } }
 
 /* documentation-toc is used by Two to do the sections of documentation specifically. may not need this but nice that it's the same styling */
 #toc, #documentation-toc {
