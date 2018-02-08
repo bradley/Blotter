@@ -979,15 +979,15 @@ code {
   margin-bottom: 52px; }
 
 .material-example-wrap {
-  height: 78px;
+  height: 145px;
   margin-bottom: 26px; }
   .material-example-wrap canvas {
-    margin-left: -140px;
-    margin-top: -120px;
+    margin-left: -148px;
+    margin-top: -116px;
     vertical-align: top; }
     @media screen and (max-width: 728px), screen and (max-device-width: 728px) {
       .material-example-wrap canvas {
-        margin-left: -40px; } }
+        margin-left: -148px; } }
 
 .bullet-list {
   list-style: none; }
@@ -1044,6 +1044,9 @@ ul.documentation {
     margin-bottom: 0; }
     ul.documentation > li:last-child ul > li:last-child .notated-list ul > li:last-child {
       margin-bottom: 0; }
+
+p.description {
+  margin-top: 0; }
 
 /*  Example Editor
     ------------------------------------- */
@@ -1140,8 +1143,10 @@ ul.documentation {
 
 .materials-list {
   list-style: none;
-  margin-right: -26px;
-  overflow: hidden; }
+  margin-right: -26px; }
+  @media screen and (max-width: 728px), screen and (max-device-width: 728px) {
+    .materials-list {
+      width: 100%; } }
   .materials-list > li {
     background: #fff;
     border: 2px solid #202020;

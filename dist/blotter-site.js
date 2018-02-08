@@ -6507,7 +6507,7 @@ BlotterSite.HeroExamples.LiquidDistortMaterial = Marionette.ItemView.extend((fun
         paddingRight : 60,
         paddingTop : 50,
         paddingBottom : 50,
-        fill : "#202020"
+        fill : "#FD5307"
       };
 
       return new Blotter.Text("3", textProperties);
@@ -8002,7 +8002,7 @@ $(document).ready(function () {
     },
 
     _setExample : function () {
-      var materialName = "LiquidDistortMaterial";
+      var materialName = "ChannelSplitMaterial";//"LiquidDistortMaterial";
 
       var $container = this.$el.find(".hero-blotter"),
           Example = window["BlotterSite"]["HeroExamples"][materialName];
@@ -8146,8 +8146,8 @@ $(document).ready(function () {
 
       this.textProperties = {
         family : "'SerapionPro', serif",
-        size : 68,
-        leading : "68px",
+        size : 187,
+        leading : "187px",
         paddingBottom : 126,
         paddingLeft : 140,
         paddingRight : 140,

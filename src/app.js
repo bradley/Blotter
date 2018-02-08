@@ -1606,8 +1606,8 @@ $(document).ready(function () {
 
       this.textProperties = {
         family : "'SerapionPro', serif",
-        size : 68,
-        leading : "68px",
+        size : 187,
+        leading : "187px",
         paddingBottom : 126,
         paddingLeft : 140,
         paddingRight : 140,

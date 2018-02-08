@@ -50,7 +50,7 @@ BlotterSite.HeroExamples.LiquidDistortMaterial = Marionette.ItemView.extend((fun
         paddingRight : 60,
         paddingTop : 50,
         paddingBottom : 50,
-        fill : "#202020"
+        fill : "#FD5307"
       };
 
       return new Blotter.Text("3", textProperties);

@@ -729,17 +729,17 @@ code {
 }
 
 .material-example-wrap {
-  height: $leading * 3;
+  height: 145px;
   margin-bottom: $leading;
 
   canvas {
-    margin-left: -140px;
-    margin-top: -120px;
+    margin-left: -148px;
+    margin-top: -116px;
     vertical-align: top;
 
     @media screen and (max-width: $min-screen-width),
     screen and (max-device-width: $min-device-width) {
-      margin-left: -40px;
+      margin-left: -148px;
     }
   }
 }
@@ -846,6 +846,10 @@ ul.documentation {
       margin-bottom: 0;
     }
   }
+}
+
+p.description {
+  margin-top: 0;
 }
 
 
@@ -961,7 +965,11 @@ ul.documentation {
 .materials-list  {
   list-style: none;
   margin-right: -($leading);
-  overflow: hidden;
+
+  @media screen and (max-width: $min-screen-width),
+  screen and (max-device-width: $min-device-width) {
+    width: 100%;
+  }
 
   > li {
     background: $white;
