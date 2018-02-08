@@ -1,6 +1,7 @@
 global.THREE = require('three');
 
 THREE = {
+  ClampToEdgeWrapping: THREE.ClampToEdgeWrapping,
   DataTexture: THREE.DataTexture,
   FloatType: THREE.FloatType,
   LinearFilter: THREE.LinearFilter,

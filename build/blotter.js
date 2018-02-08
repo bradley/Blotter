@@ -25735,6 +25735,7 @@ exports.MeshBasicMaterial = MeshBasicMaterial;
 exports.Material = Material;
 exports.TextureLoader = TextureLoader;
 exports.OrthographicCamera = OrthographicCamera;
+exports.ClampToEdgeWrapping = ClampToEdgeWrapping;
 exports.FloatType = FloatType;
 exports.LinearFilter = LinearFilter;
 exports.NearestFilter = NearestFilter;
@@ -25751,6 +25752,7 @@ require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof requ
 global.THREE = require('three');
 
 THREE = {
+  ClampToEdgeWrapping: THREE.ClampToEdgeWrapping,
   DataTexture: THREE.DataTexture,
   FloatType: THREE.FloatType,
   LinearFilter: THREE.LinearFilter,
