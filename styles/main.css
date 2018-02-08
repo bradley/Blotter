@@ -807,7 +807,6 @@ code {
     width: 100%; }
 
 .content {
-  overflow: hidden;
   margin-left: -52px;
   margin-right: -52px;
   padding: 182px 52px; }
@@ -828,6 +827,9 @@ code {
 
 .content-left {
   float: left; }
+
+.clear {
+  clear: both; }
 
 /*  Header
     ------------------------------------- */

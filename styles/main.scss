@@ -473,7 +473,6 @@ code {
 }
 
 .content {
-  overflow: hidden;
   margin-left: -($leading * 2);
   margin-right: -($leading * 2);
   padding: ($leading * 7) ($leading * 2);
@@ -501,6 +500,10 @@ code {
 
 .content-left {
   float: left;
+}
+
+.clear {
+  clear: both;
 }
 
 
