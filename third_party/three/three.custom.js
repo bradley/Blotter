@@ -24080,7 +24080,9 @@ exports.Material = Material;
 exports.TextureLoader = TextureLoader;
 exports.OrthographicCamera = OrthographicCamera;
 exports.FloatType = FloatType;
+exports.LinearFilter = LinearFilter;
 exports.RGBAFormat = RGBAFormat;
+exports.UnsignedByteType = UnsignedByteType;
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
@@ -24092,6 +24094,7 @@ global.THREE = require('three');
 THREE = {
   DataTexture: THREE.DataTexture,
   FloatType: THREE.FloatType,
+  LinearFilter: THREE.LinearFilter,
   Material: THREE.Material,
   Mesh: THREE.Mesh,
   MeshBasicMaterial: THREE.MeshBasicMaterial,
@@ -24102,7 +24105,8 @@ THREE = {
   ShaderMaterial: THREE.ShaderMaterial,
   TextureLoader: THREE.TextureLoader,
   WebGLRenderer: THREE.WebGLRenderer,
-  WebGLRenderTarget: THREE.WebGLRenderTarget
+  WebGLRenderTarget: THREE.WebGLRenderTarget,
+  UnsignedByteType: THREE.UnsignedByteType
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
