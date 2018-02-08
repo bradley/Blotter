@@ -25737,6 +25737,9 @@ exports.TextureLoader = TextureLoader;
 exports.OrthographicCamera = OrthographicCamera;
 exports.FloatType = FloatType;
 exports.LinearFilter = LinearFilter;
+exports.NearestFilter = NearestFilter;
+exports.NearestMipMapNearestFilter = NearestMipMapNearestFilter;
+exports.RepeatWrapping = RepeatWrapping;
 exports.RGBAFormat = RGBAFormat;
 exports.UnsignedByteType = UnsignedByteType;
 
@@ -25754,15 +25757,18 @@ THREE = {
   Material: THREE.Material,
   Mesh: THREE.Mesh,
   MeshBasicMaterial: THREE.MeshBasicMaterial,
+  NearestFilter: THREE.NearestFilter,
+  NearestMipMapNearestFilter: THREE.NearestMipMapNearestFilter,
   OrthographicCamera: THREE.OrthographicCamera,
   PlaneGeometry: THREE.PlaneGeometry,
+  RepeatWrapping: THREE.RepeatWrapping,
   RGBAFormat: THREE.RGBAFormat,
   Scene: THREE.Scene,
   ShaderMaterial: THREE.ShaderMaterial,
   TextureLoader: THREE.TextureLoader,
+  UnsignedByteType: THREE.UnsignedByteType,
   WebGLRenderer: THREE.WebGLRenderer,
-  WebGLRenderTarget: THREE.WebGLRenderTarget,
-  UnsignedByteType: THREE.UnsignedByteType
+  WebGLRenderTarget: THREE.WebGLRenderTarget
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
