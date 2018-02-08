@@ -8130,7 +8130,7 @@ $(document).ready(function () {
 
       this.textStr = "B";
       this.textProperties = {
-        family : "'SerapionPro', sans-serif",
+        family : "'SerapionPro', serif",
         size : 68,
         leading : "68px",
         paddingBottom : 6,
@@ -8175,7 +8175,7 @@ $(document).ready(function () {
       this.textStr = "B";
 
       this.textProperties = {
-        family : "'SerapionPro', sans-serif",
+        family : "'SerapionPro', serif",
         size : 68,
         leading : "68px",
         paddingBottom : 126,
