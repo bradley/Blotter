@@ -1439,9 +1439,12 @@ $(document).ready(function () {
     }
   })
 
-  BlotterSite.Views.Home = Marionette.ItemView.extend({
+  BlotterSite.Views.Home = Marionette.LayoutView.extend({
     className : "home",
     template : _.template($("template[name=home]").html())(),
+    regions : {
+      "heroBlotterRegion" : ".hero-blotter"
+    },
 
     onRender : function () {
       this.dropwdownEl = this.$el.find(".dropdown-select");
@@ -1455,21 +1458,16 @@ $(document).ready(function () {
     },
 
     onShow : function () {
-      this.exampleInstance.render();
-    },
-
-    onDestroy : function () {
-      this.exampleInstance.blotter.stop();
-      this.exampleInstance.blotter.teardown();
+      this.heroBlotterRegion.show(this.exampleView);
     },
 
     _setExample : function () {
-      var materialName = "ChannelSplitMaterial"; //"LiquidDistortMaterial";
+      var materialName = "ChannelSplitMaterial";//"LiquidDistortMaterial";
 
       var $container = this.$el.find(".hero-blotter"),
           Example = window["BlotterSite"]["HeroExamples"][materialName];
 
-      this.exampleInstance = new Example($container);
+      this.exampleView= new Example($container);
     },
 
     setupListeners : function () {

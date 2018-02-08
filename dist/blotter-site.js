@@ -6312,41 +6312,7 @@ _.extend(BlotterSite.Materials.SlidingDoorMaterial.prototype, (function () {
 
 BlotterSite.HeroExamples = {};
 
-BlotterSite.HeroExamples.Material = function (el) {
-  this.init.apply(this, arguments);
-}
-
-BlotterSite.HeroExamples.Material.prototype = (function () {
-
-  return {
-    constructor : BlotterSite.HeroExamples.Material,
-
-    init : function (el) {
-      this.el = el;
-      this.$el = $(this.el);
-
-      this.prepare();
-    },
-
-    prepare : function () {
-      this.material = new Blotter.Material();
-      this.blotter = new Blotter(this.material);
-    },
-
-    render : function () {
-      // override
-    }
-  }
-})();
-
-BlotterSite.HeroExamples.ChannelSplitMaterial = function(el, text) {
-  this.init.apply(this, arguments);
-}
-
-BlotterSite.HeroExamples.ChannelSplitMaterial.prototype =
-  Object.create(BlotterSite.HeroExamples.Material.prototype);
-
-_.extend(BlotterSite.HeroExamples.ChannelSplitMaterial.prototype, (function () {
+BlotterSite.HeroExamples.ChannelSplitMaterial = Marionette.ItemView.extend((function () {
 
   function angleBetweenPointsInDegrees(x1, y1, x2, y2) {
     var angle = Math.atan2(y2 - y1, x2 - x1) * 180.0 / Math.PI;
@@ -6364,7 +6330,9 @@ _.extend(BlotterSite.HeroExamples.ChannelSplitMaterial.prototype, (function () {
   }
 
   return {
-    prepare : function () {
+    template : _.template("<div></div>")(),
+
+    initialize : function () {
       this._prepareBlotter();
     },
 
@@ -6372,7 +6340,7 @@ _.extend(BlotterSite.HeroExamples.ChannelSplitMaterial.prototype, (function () {
       $(document).mousemove(_.bind(this._handleMousemove, this));
     },
 
-    render : function () {
+    onRender : function () {
       this.blotter.on("ready", _.bind(function() {
         this._setListeners();
 
@@ -6383,6 +6351,11 @@ _.extend(BlotterSite.HeroExamples.ChannelSplitMaterial.prototype, (function () {
         this._setRandomPositions(_.pluck(this.scopes, "domElement"));
         this._setInitialCenter();
       }, this));
+    },
+
+    onDestroy : function () {
+      this.blotter.stop();
+      this.blotter.teardown();
     },
 
     _prepareBlotter : function () {
@@ -6482,14 +6455,7 @@ _.extend(BlotterSite.HeroExamples.ChannelSplitMaterial.prototype, (function () {
   }
 })());
 
-BlotterSite.HeroExamples.LiquidDistortMaterial = function(el, text) {
-  this.init.apply(this, arguments);
-}
-
-BlotterSite.HeroExamples.LiquidDistortMaterial.prototype =
-  Object.create(BlotterSite.HeroExamples.Material.prototype);
-
-_.extend(BlotterSite.HeroExamples.LiquidDistortMaterial.prototype, (function () {
+BlotterSite.HeroExamples.LiquidDistortMaterial = Marionette.ItemView.extend((function () {
 
   function distanceBetweenPoints(x1, y1, x2, y2) {
     var a = x1 - x2;
@@ -6499,21 +6465,26 @@ _.extend(BlotterSite.HeroExamples.LiquidDistortMaterial.prototype, (function () 
   }
 
   return {
-    prepare : function () {
+    template : _.template("<div></div>")(),
+
+    initialize : function () {
       this._prepareBlotter();
       this._setListeners();
     },
 
-    _setListeners : function () {
-      $(document).mousemove(_.bind(this._handleMousemove, this));
-    },
-
-    render : function () {
+    onRender : function () {
       this.blotter.on("ready", _.bind(function() {
         this.scope.appendTo(this.el);
-
-        this._setRandomPositions(_.pluck(this.scopes, "domElement"));
       }, this));
+    },
+
+    onDestroy : function () {
+      this.blotter.stop();
+      this.blotter.teardown();
+    },
+
+    _setListeners : function () {
+      $(document).mousemove(_.bind(this._handleMousemove, this));
     },
 
     _prepareBlotter : function () {
@@ -6528,7 +6499,7 @@ _.extend(BlotterSite.HeroExamples.LiquidDistortMaterial.prototype, (function () 
 
     _blotterText : function () {
       var textProperties = {
-        family :  "'Avenir', sans-serif",
+        family :  "'AvenirLTStd-Heavy', 'Helvetica Neue', 'Helvetica', Arial, sans-serif",
         leading : 1.0,
         weight : 800,
         size : 104,
@@ -6539,7 +6510,7 @@ _.extend(BlotterSite.HeroExamples.LiquidDistortMaterial.prototype, (function () 
         fill : "#202020"
       };
 
-      return new Blotter.Text("Memory", textProperties);
+      return new Blotter.Text("3", textProperties);
     },
 
     _handleMousemove : function (e) {
@@ -6565,6 +6536,7 @@ _.extend(BlotterSite.HeroExamples.LiquidDistortMaterial.prototype, (function () 
     }
   }
 })());
+
 
 $(document).ready(function () {
 
@@ -8007,9 +7979,12 @@ $(document).ready(function () {
     }
   })
 
-  BlotterSite.Views.Home = Marionette.ItemView.extend({
+  BlotterSite.Views.Home = Marionette.LayoutView.extend({
     className : "home",
     template : _.template($("template[name=home]").html())(),
+    regions : {
+      "heroBlotterRegion" : ".hero-blotter"
+    },
 
     onRender : function () {
       this.dropwdownEl = this.$el.find(".dropdown-select");
@@ -8023,21 +7998,16 @@ $(document).ready(function () {
     },
 
     onShow : function () {
-      this.exampleInstance.render();
-    },
-
-    onDestroy : function () {
-      this.exampleInstance.blotter.stop();
-      this.exampleInstance.blotter.teardown();
+      this.heroBlotterRegion.show(this.exampleView);
     },
 
     _setExample : function () {
-      var materialName = "ChannelSplitMaterial"; //"LiquidDistortMaterial";
+      var materialName = "LiquidDistortMaterial";
 
       var $container = this.$el.find(".hero-blotter"),
           Example = window["BlotterSite"]["HeroExamples"][materialName];
 
-      this.exampleInstance = new Example($container);
+      this.exampleView= new Example($container);
     },
 
     setupListeners : function () {

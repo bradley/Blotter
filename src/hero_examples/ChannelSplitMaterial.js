@@ -1,11 +1,4 @@
-BlotterSite.HeroExamples.ChannelSplitMaterial = function(el, text) {
-  this.init.apply(this, arguments);
-}
-
-BlotterSite.HeroExamples.ChannelSplitMaterial.prototype =
-  Object.create(BlotterSite.HeroExamples.Material.prototype);
-
-_.extend(BlotterSite.HeroExamples.ChannelSplitMaterial.prototype, (function () {
+BlotterSite.HeroExamples.ChannelSplitMaterial = Marionette.ItemView.extend((function () {
 
   function angleBetweenPointsInDegrees(x1, y1, x2, y2) {
     var angle = Math.atan2(y2 - y1, x2 - x1) * 180.0 / Math.PI;
@@ -23,7 +16,9 @@ _.extend(BlotterSite.HeroExamples.ChannelSplitMaterial.prototype, (function () {
   }
 
   return {
-    prepare : function () {
+    template : _.template("<div></div>")(),
+
+    initialize : function () {
       this._prepareBlotter();
     },
 
@@ -31,7 +26,7 @@ _.extend(BlotterSite.HeroExamples.ChannelSplitMaterial.prototype, (function () {
       $(document).mousemove(_.bind(this._handleMousemove, this));
     },
 
-    render : function () {
+    onRender : function () {
       this.blotter.on("ready", _.bind(function() {
         this._setListeners();
 
@@ -42,6 +37,11 @@ _.extend(BlotterSite.HeroExamples.ChannelSplitMaterial.prototype, (function () {
         this._setRandomPositions(_.pluck(this.scopes, "domElement"));
         this._setInitialCenter();
       }, this));
+    },
+
+    onDestroy : function () {
+      this.blotter.stop();
+      this.blotter.teardown();
     },
 
     _prepareBlotter : function () {
