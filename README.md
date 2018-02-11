@@ -85,3 +85,46 @@ $ npm run build
 ```
 
 You will the updated build files at `/build/blotter.js` and `/build/blotter.min.js`.
+
+#### Without Three.js / Without Underscore.js
+
+Blotter.js requires Three.js and Underscore.js. If you're already including these files in your project, you should remove them from the `defFiles` array in the [Gruntfile](https://github.com/bradley/Blotter/blob/master/Gruntfile.js) and re-run the build script.
+
+*Note: In order to decrease the total build size, Blotter uses a custom build of Three.js that only includes modules Blotter.js relies on. For more information view the `build-custom-three` script in [package.json](https://github.com/bradley/Blotter/blob/master/package.json).*
+
+
+## Credits
+
+Blotter is not possible without these contibutions to JavaScript.
+<br/>
+
+* [Underscore.js](http://underscorejs.org/)<br/>
+Utility functions for JavaScript
+* [Three.js](https://threejs.org/)<br/>
+WebGL Render Pipeline
+* [requestAnimationFrame](https://www.paulirish.com/2011/requestanimationframe-for-smart-animating/)<br/>
+Polyfill by Paul Irish
+* [bin-packing](https://github.com/jakesgordon/bin-packing)<br/>
+How Blotter positions texts for batched rendering
+* [EventEmitter](https://github.com/Olical/EventEmitter)<br/>
+Simple API for JavaScript events
+
+<br/>
+Some projects and people who have helped inspire along the way.
+<br/>
+
+* [Two.js](https://two.js.org/)<br/>
+Jono Brandel's Two.js has provided much inpsiration for Blotter's documentation and API design.
+* [Reza Ali](http://www.syedrezaali.com/)<br/>
+Reza's [Fragment](http://www.syedrezaali.com/store/fragment-osx-app) was a fundamental part of the development process for writing Blotter's Fragment shaders, and Reza kindly allowed Blotter to include an array of shader [helper functions](https://github.com/bradley/Blotter/tree/master/src/assets/shaders) from Fragment.
+* [Mitch Paone](https://twitter.com/DIA_Mitch)<br/>
+I was introduced to Mitch's work in computational typography while working on Blotter, and the work Mitch has done with [DIA](http://dia.tv/) has been hugely motivational.
+* [Stan Haanappel](https://www.instagram.com/stanhaanappel/)<br/>
+Stan Haanappel is a designer whose work with type has been inspirational to Blotter.
+* [The Book of Shaders](https://thebookofshaders.com/)<br/>
+The Book of Shaders by [Patricio Gonzalez Vivo](http://patriciogonzalezvivo.com/) and [Jen Lowe](http://jenlowe.net/) is where anyone looking to learn more about writing shaders should begin.
+* [Shadertoy](https://www.shadertoy.com/)<br/>
+Shadertoy has been a critical part of my personal learning experience while working on Blotter.
+
+✌️
+
