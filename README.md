@@ -112,6 +112,7 @@ Simple API for JavaScript events
 <br/>
 Some projects and people who have helped inspire along the way.
 <br/>
+<br/>
 
 * [Two.js](https://two.js.org/)<br/>
 Jono Brandel's Two.js has provided much inpsiration for Blotter's documentation and API design.
