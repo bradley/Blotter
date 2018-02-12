@@ -15,7 +15,7 @@ When applying effects to text on the web, designers have traditionally been cons
 
 #### Atlasing Effects in a Single WebGL Back Buffer
 
-*Blotter bypasses the limit browsers place on the number of live WebGL contexts in the document by using an atlas. This atlas maps elements that share the same effects so that they may be rendered together in a single WebGL context. The resulting image data is then output to individual 2d contexts for each element.*
+*Blotter renders all texts in a single WebGL context and limits the number of draw calls it makes by using atlases. When multiple texts share the same effect they are mapped into a single texture and rendered together. The resulting image data is then output to individual 2d contexts for each element.*
 
 #### Animation Loop
 
