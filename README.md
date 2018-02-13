@@ -93,6 +93,11 @@ Blotter.js requires Three.js and Underscore.js. If you're already including thes
 *Note: In order to decrease the total build size, Blotter uses a custom build of Three.js that only includes modules Blotter.js relies on. For more information view the `build-custom-three` script in [package.json](https://github.com/bradley/Blotter/blob/master/package.json).*
 
 
+## Custom Materials
+
+The documentation for creating custom materials can be found in [the Wiki](https://github.com/bradley/Blotter/wiki/Custom-Materials).
+
+
 ## Credits
 
 Blotter is not possible without these contibutions to JavaScript.
