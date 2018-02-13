@@ -160,12 +160,11 @@ code {
   padding: 3px 4px 4px;
 }
 
-.site-badge {
+.source-badge {
   bottom: $leading * 2;
-  height: $leading * 2;
-  left: $leading * 2;
   position: fixed;
-  width: $leading * 2;
+  right: $leading * 2;
+  text-transform: capitalize;
 
   @media screen and (max-width: $min-screen-width),
   screen and (max-device-width: $min-device-width) {
@@ -173,12 +172,12 @@ code {
     left: $leading !important;
   }
 
-  &.lotus {
+/*  &.lotus {
     background: url(../images/lotus.png);
     background-position: center;
     background-repeat: no-repeat;
     background-size: 100%;
-  }
+  }*/
 }
 
 
@@ -961,6 +960,7 @@ p.description {
 
 /*  Materials
     ------------------------------------- */
+
 .materials-list-region {
   float: left;
 }
@@ -1026,8 +1026,10 @@ p.description {
   }
 }
 
+
 /*  Dat GUI
     ------------------------------------- */
+
 .dg.ac {
   z-index: 100!important;
 
