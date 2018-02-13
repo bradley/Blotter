@@ -99,15 +99,17 @@ Blotter is not possible without these contibutions to JavaScript.
 <br/>
 
 * [Underscore.js](http://underscorejs.org/)<br/>
-Utility functions for JavaScript
+Utility functions for JavaScript.
 * [Three.js](https://threejs.org/)<br/>
-WebGL Render Pipeline
+WebGL Render Pipeline.
 * [requestAnimationFrame](https://www.paulirish.com/2011/requestanimationframe-for-smart-animating/)<br/>
-Polyfill by Paul Irish
+Polyfill by Paul Irish.
 * [bin-packing](https://github.com/jakesgordon/bin-packing)<br/>
-How Blotter positions texts for batched rendering
+How Blotter positions texts for batched rendering.
 * [EventEmitter](https://github.com/Olical/EventEmitter)<br/>
-Simple API for JavaScript events
+Simple API for JavaScript events.
+* [dat.GUI](https://github.com/dataarts/dat.gui)<br/>
+A lightweight GUI for changing variables in JavaScript. Used in Blotter's [Material](https://blotter.js.org/#/materials) documention pages.
 
 <br/>
 Some projects and people who have helped inspire along the way.
@@ -127,5 +129,7 @@ The Book of Shaders by [Patricio Gonzalez Vivo](http://patriciogonzalezvivo.com/
 * [Shadertoy](https://www.shadertoy.com/)<br/>
 Shadertoy has been a critical part of my personal learning experience while working on Blotter.
 
-✌️
+<br/>
+<br/>
 
+✌️ - [Bradley Griffith](http://bradley.computer)
