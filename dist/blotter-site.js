@@ -7664,11 +7664,6 @@ $(document).ready(function () {
 
   BlotterSite.Views.Navigation = Marionette.ItemView.extend((function () {
     var _logoMainImage = [
-      "#ifdef GL_ES",
-      "precision mediump float;",
-      "#endif",
-
-
       "float rand(vec2 co){",
       "    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);",
       "}",
@@ -7676,12 +7671,10 @@ $(document).ready(function () {
 
       "void mainImage( out vec4 mainImage, in vec2 fragCoord )",
       "{",
-
-
       "    // Setup ========================================================================",
 
       "    vec2 uv = fragCoord.xy / uResolution.xy;",
-      "    float time = uTime / 4.0;",
+      "    float time = uGlobalTime / 4.0;",
 
       "    vec4 finalColour = vec4(0.0);",
 
@@ -7811,15 +7804,7 @@ $(document).ready(function () {
       },
 
       setListeners : function () {
-        this.logoScope.on("render", _.bind(this.updateLogo, this));
-
         $("body").on("pathChange", _.bind(this.handlePathChange, this));
-      },
-
-      updateLogo : function () {
-        var time = (new Date().getTime() - this.startTime) / 1000;
-
-        this.logoScope.material.uniforms.uTime.value = time;
       },
 
       handlePathChange : function (e, dataId) {
@@ -7858,9 +7843,7 @@ $(document).ready(function () {
           });
 
           var material = new Blotter.ShaderMaterial(_logoMainImage, {
-            uniforms : {
-              uTime : { type : "1f", value : 0.0 }
-            }
+            uniforms : {}
           });
 
           this.logoBlotter = new Blotter(material, {
