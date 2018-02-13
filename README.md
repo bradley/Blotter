@@ -2,7 +2,7 @@
 
 A JavaScript API for drawing unconventional text effects on the web.
 
-[Home](http://bradley.github.io/Blotter) &mdash;
+[Home](https://blotter.js.org) &mdash;
 [Help](https://github.com/bradley/blotter/issues?labels=question)
 
 ## Overview
@@ -39,7 +39,7 @@ Include both in your HTML.
 <script src="path/to/ChannelSplitMaterial.js"></script>
 ```
 
-The following illustrates how to render Blotter's [ChannelSplitMaterial](http://bradley.github.io/Blotter/#/materials/ChannelSplitMaterial) in the `body` of your page with default settings.
+The following illustrates how to render Blotter's [ChannelSplitMaterial](https://blotter.js.org/#/materials/ChannelSplitMaterial) in the `body` of your page with default settings.
 
 ```html
 <!doctype html>
