@@ -593,7 +593,7 @@ scope.appendTo(elem);</script>
                 Blotter Materials describe how your texts will be rendered and provide the interface through which you can control <code>uniforms</code> to introduce variety in the characteristics of any effect.
               </p>
               <p>
-                As the <code>Blotter.Material</code> class is the abstract base class for all Blotter <a href="#/materials">Materials</a>, using this class will simply render your texts according to their font and style properties.
+                As the <code>Blotter.Material</code> class is the abstract base class for all Blotter <a href="#/materials">Materials</a>, using this class will simply render your texts according to their font and style properties. See the documentation for specific <a href="#/materials">Materials</a> for further details on their individual usages.
               </p>
               <ul class="documentation">
                 <li id="blotter-material-construction">
@@ -765,7 +765,7 @@ scope.appendTo(elem);</script>
                           <code>properties.leading</code>
                         </p>
                         <p class="description">
-                          A number representing the leading or line-height of the rendered text. The default value is 1.5.
+                          A number representing the leading or line-height of the rendered text. The default value is 1.5. You should try to keep this number above 1.0, as Blotter bases text positions within the text atlas on computed text heights, and leading values that are lower than the text size they coorespond with can cause texts to overflow into adjacent canvases.
                         </p>
                       </li>
                       <li>
