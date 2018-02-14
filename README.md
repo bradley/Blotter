@@ -28,9 +28,9 @@ When applying effects to text on the web, designers have traditionally been cons
 
 ## Usage
 
-Download the [minified version](https://raw.github.com/bradley/blotter/build/blotter.min.js).
+Download the [minified version](https://raw.githubusercontent.com/bradley/Blotter/master/build/blotter.min.js).
 
-To apply text effects, you'll also want to include at least one [material](https://github.com/bradley/Blotter/tree/master/build/materials/), so download one of Blotter's ready-made effects, such as the [ChannelSplitMaterial](https://raw.github.com/bradley/blotter/build/materials/ChannelSplitMaterial.js).
+To apply text effects, you'll also want to include at least one [material](https://github.com/bradley/Blotter/tree/master/build/materials/), so download one of Blotter's ready-made effects, such as the [ChannelSplitMaterial](https://raw.githubusercontent.com/bradley/Blotter/master/build/materials/channelSplitMaterial.js).
 
 Include both in your HTML.
 
