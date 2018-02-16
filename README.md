@@ -36,7 +36,7 @@ Include both in your HTML.
 
 ```html
 <script src="path/to/blotter.min.js"></script>
-<script src="path/to/ChannelSplitMaterial.js"></script>
+<script src="path/to/channelSplitMaterial.js"></script>
 ```
 
 The following illustrates how to render Blotter's [ChannelSplitMaterial](https://blotter.js.org/#/materials/ChannelSplitMaterial) in the `body` of your page with default settings.
@@ -46,7 +46,7 @@ The following illustrates how to render Blotter's [ChannelSplitMaterial](https:/
 <html>
   <head>
     <script src="path/to/blotter.min.js"></script>
-    <script src="path/to/ChannelSplitMaterial.js"></script>
+    <script src="path/to/channelSplitMaterial.js"></script>
   </head>
   <body>
     <script>
