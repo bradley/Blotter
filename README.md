@@ -30,13 +30,13 @@ When applying effects to text on the web, designers have traditionally been cons
 
 Download the [minified version](https://raw.github.com/bradley/blotter/build/blotter.min.js).
 
-To apply text effects, you'll also want to include at least one [material](https://github.com/bradley/Blotter/tree/master/build/materials/), so download one of Blotter's ready-made effects, such as the [ChannelSplitMaterial](https://raw.github.com/bradley/blotter/build/materials/ChannelSplitMaterial.js).
+To apply text effects, you'll also want to include at least one [material](https://github.com/bradley/Blotter/tree/master/build/materials/), so download one of Blotter's ready-made effects, such as the [ChannelSplitMaterial](https://raw.githubusercontent.com/bradley/Blotter/master/build/materials/channelSplitMaterial.js).
 
 Include both in your HTML.
 
 ```html
 <script src="path/to/blotter.min.js"></script>
-<script src="path/to/ChannelSplitMaterial.js"></script>
+<script src="path/to/channelSplitMaterial.js"></script>
 ```
 
 The following illustrates how to render Blotter's [ChannelSplitMaterial](https://blotter.js.org/#/materials/ChannelSplitMaterial) in the `body` of your page with default settings.
@@ -46,7 +46,7 @@ The following illustrates how to render Blotter's [ChannelSplitMaterial](https:/
 <html>
   <head>
     <script src="path/to/blotter.min.js"></script>
-    <script src="path/to/ChannelSplitMaterial.js"></script>
+    <script src="path/to/channelSplitMaterial.js"></script>
   </head>
   <body>
     <script>
