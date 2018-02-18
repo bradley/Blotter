@@ -6972,8 +6972,11 @@ $(document).ready(function () {
         this.jsDoc = this.jsMirror.getDoc();
 
         this.setupListeners();
-        this.update();
-        this.showJSContent();
+
+        document.fonts.ready.then(function () {
+          this.update();
+          this.showJSContent();
+        }.bind(this));
       },
 
       setupListeners : function () {
@@ -7797,10 +7800,12 @@ $(document).ready(function () {
       },
 
       onRender : function () {
-        this.prepareLogo();
-        this.prepareNav();
+        document.fonts.ready.then(function () {
+          this.prepareLogo();
+          this.prepareNav();
 
-        this.setListeners();
+          this.setListeners();
+        }.bind(this));
       },
 
       setListeners : function () {
@@ -7975,13 +7980,14 @@ $(document).ready(function () {
 
       this.downloadBtn = this.$el.find(".download-btn");
 
-      this._setExample();
-
       this.setupListeners();
     },
 
     onShow : function () {
-      this.heroBlotterRegion.show(this.exampleView);
+      document.fonts.ready.then(function () {
+        this._setExample();
+        this.heroBlotterRegion.show(this.exampleView);
+      }.bind(this));
     },
 
     _setExample : function () {
@@ -7990,7 +7996,7 @@ $(document).ready(function () {
       var $container = this.$el.find(".hero-blotter"),
           Example = window["BlotterSite"]["HeroExamples"][materialName];
 
-      this.exampleView= new Example($container);
+      this.exampleView = new Example($container);
     },
 
     setupListeners : function () {
@@ -8049,13 +8055,17 @@ $(document).ready(function () {
     },
 
     onRender : function () {
-      var Material = this.model.material();
-      this.materialInstance = new Material(this.$el, this.text);
+      document.fonts.ready.then(function () {
+        var Material = this.model.material();
+        this.materialInstance = new Material(this.$el, this.text);
+      }.bind(this));
     },
 
     onDestroy : function () {
-      this.materialInstance.blotter.stop();
-      this.materialInstance.blotter.teardown();
+      if (this.materialInstance) {
+        this.materialInstance.blotter.stop();
+        this.materialInstance.blotter.teardown();
+      }
     },
 
     handleClick : function (e) {
@@ -8140,14 +8150,19 @@ $(document).ready(function () {
     },
 
     onRender : function () {
-      this._setBlotter();
+      document.fonts.ready.then(function () {
+        this._setBlotter();
+      }.bind(this));
+
       this._setNotation();
     },
 
     onDestroy : function () {
-      this.materialInstance.blotter.stop();
-      this.materialInstance.blotter.teardown();
-      this.gui.destroy();
+      if (this.materialInstance) {
+        this.materialInstance.blotter.stop();
+        this.materialInstance.blotter.teardown();
+        this.gui.destroy();
+      }
     },
 
     _setBlotter : function () {
@@ -8160,7 +8175,7 @@ $(document).ready(function () {
 
       this.materialInstance = new Material($container, this.blotterText);
 
-      this.gui = new dat.GUI({ autoplace: false,width: 312 });
+      this.gui = new dat.GUI({ autoplace: false, width: 312 });
 
       var controls = _.reduce(this.materialInstance.uniformDefinitions, function (memo, uniformObj) {
         memo[uniformObj.name] = uniformObj.value;
