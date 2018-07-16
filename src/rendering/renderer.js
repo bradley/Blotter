@@ -100,8 +100,8 @@
       },
 
       setSize : function (width, height) {
-        this._width = width || 1;
-        this._height = height || 1;
+        this._width = Math.trunc(width) || 1;
+        this._height = Math.trunc(height) || 1;
 
         this._mesh.scale.set(this._width, this._height, 1);
 
