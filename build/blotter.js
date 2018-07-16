@@ -29446,7 +29446,7 @@ GrowingPacker.prototype = {
 
         this._renderTarget = _getRenderTargetWithSize(this._width, this._height);
 
-        this._viewBuffer = new ArrayBuffer(this._width * this._height * 4);
+        this._viewBuffer = new ArrayBuffer(Math.trunc(this._width) * Math.trunc(this._height) * 4);
         this._imageDataArray = new Uint8Array(this._viewBuffer);
         this._clampedImageDataArray = new Uint8ClampedArray(this._viewBuffer);
 
