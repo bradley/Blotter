@@ -56,7 +56,7 @@ module.exports = function(grunt) {
           "<%= meta.depFiles %>",
           "<%= meta.srcFiles %>"
         ],
-        dest: "build/<%= pkg.name %>.js"
+        dest: "build/blotter.js"
       }
     },
 
@@ -65,8 +65,8 @@ module.exports = function(grunt) {
         preserveComments: "some"
       },
       release: {
-        src: ["build/<%= pkg.name %>.js"],
-        dest: "build/<%= pkg.name %>.min.js"
+        src: ["build/blotter.js"],
+        dest: "build/blotter.min.js"
       }
     }
   });
