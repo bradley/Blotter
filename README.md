@@ -100,7 +100,7 @@ The documentation for creating custom materials can be found in [the Wiki](https
 
 ## Credits
 
-Blotter is not possible without these contibutions to JavaScript.
+Blotter is not possible without these contributions to JavaScript.
 <br/>
 
 * [Underscore.js](http://underscorejs.org/)<br/>
@@ -114,7 +114,7 @@ How Blotter positions texts for batched rendering.
 * [EventEmitter](https://github.com/Olical/EventEmitter)<br/>
 Simple API for JavaScript events.
 * [dat.GUI](https://github.com/dataarts/dat.gui)<br/>
-A lightweight GUI for changing variables in JavaScript. Used in Blotter's [Material](https://blotter.js.org/#/materials) documention pages.
+A lightweight GUI for changing variables in JavaScript. Used in Blotter's [Material](https://blotter.js.org/#/materials) documentation pages.
 
 <br/>
 Some projects and people who have helped inspire along the way.
@@ -122,7 +122,7 @@ Some projects and people who have helped inspire along the way.
 <br/>
 
 * [Two.js](https://two.js.org/)<br/>
-Jono Brandel's Two.js has provided much inpsiration for Blotter's documentation and API design.
+Jono Brandel's Two.js has provided much inspiration for Blotter's documentation and API design.
 * [Reza Ali](http://www.syedrezaali.com/)<br/>
 Reza's [Fragment](http://www.syedrezaali.com/store/fragment-osx-app) was a fundamental part of the development process for writing Blotter's Fragment shaders, and Reza kindly allowed Blotter to include an array of shader [helper functions](https://github.com/bradley/Blotter/tree/master/src/assets/shaders) from Fragment.
 * [Mitch Paone](https://twitter.com/DIA_Mitch)<br/>
